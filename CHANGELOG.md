@@ -4,6 +4,12 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added – Step 2: voices (0.2.0)
+- eSpeak-NG WebAssembly (bundled locally, English + Hindi only, about 1.8 MB) runs in an offscreen document's module worker. The page CSP allows only `'self'` and `'wasm-unsafe-eval'`.
+- `lib/tts.js` and `lib/wav.js` are shared by the worker and the tests. The offscreen document returns WAV bytes, which go through the bridge to the mic hook, which decodes them into the soundboard node.
+- Six tones, each combining eSpeak pitch/speed/range with a playbackRate: Normal, Chipmunk, Villain, Robot (monotone plus ring modulator), Slow-mo and Excited.
+- Tests: real eSpeak synthesis in Node for every tone × {hi, en}, checking format, length and volume, and that tone speed is in the right order. The bundle is checked for having no remote URLs.
+
 ### Added – Step 1: mic hook
 - `mic-hook.js` (MAIN world, `document_start`, all frames, on the 5 call sites) wraps `getUserMedia`:
   - Mixes real mic → micGain → MediaStreamDestination, plus a soundboard GainNode, in one shared AudioContext.

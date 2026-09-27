@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MemeBox – Meme Soundboard & Voice Changer for Calls",
   "short_name": "MemeBox",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Meme soundboard for video calls: play meme lines and sounds into your mic so everyone in the call hears them.",
   "minimum_chrome_version": "116",
   "permissions": [
