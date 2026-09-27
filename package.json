@@ -1,0 +1,12 @@
+{
+  "name": "memebox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MemeBox – meme soundboard & voice changer for browser video calls (Chrome MV3 extension + Cloudflare Pages site).",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test tests/unit/"
+  }
+}
