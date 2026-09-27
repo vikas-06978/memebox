@@ -1,0 +1,115 @@
+{
+  "manifest_version": 3,
+  "name": "MemeBox – Meme Soundboard & Voice Changer for Calls",
+  "short_name": "MemeBox",
+  "version": "0.1.0",
+  "description": "Meme soundboard for video calls: play meme lines and sounds into your mic so everyone in the call hears them.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "storage",
+    "offscreen",
+    "tabCapture"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "MemeBox",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*",
+        "https://app.zoom.us/wc/*",
+        "https://teams.microsoft.com/*",
+        "https://teams.live.com/*",
+        "https://discord.com/*"
+      ],
+      "js": [
+        "mic-hook.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://meet.google.com/*",
+        "https://app.zoom.us/wc/*",
+        "https://teams.microsoft.com/*",
+        "https://teams.live.com/*",
+        "https://discord.com/*"
+      ],
+      "js": [
+        "defaults.js",
+        "bridge.js",
+        "ui.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "commands": {
+    "fav-1": {
+      "suggested_key": {
+        "default": "Alt+1"
+      },
+      "description": "Play favourite 1"
+    },
+    "fav-2": {
+      "suggested_key": {
+        "default": "Alt+2"
+      },
+      "description": "Play favourite 2"
+    },
+    "fav-3": {
+      "suggested_key": {
+        "default": "Alt+3"
+      },
+      "description": "Play favourite 3"
+    },
+    "fav-4": {
+      "suggested_key": {
+        "default": "Alt+4"
+      },
+      "description": "Play favourite 4"
+    },
+    "fav-5": {
+      "description": "Play favourite 5"
+    },
+    "fav-6": {
+      "description": "Play favourite 6"
+    },
+    "fav-7": {
+      "description": "Play favourite 7"
+    },
+    "fav-8": {
+      "description": "Play favourite 8"
+    },
+    "fav-9": {
+      "description": "Play favourite 9"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}

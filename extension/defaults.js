@@ -1,0 +1,103 @@
+// MemeBox – shared constants: tones and the default meme pack.
+// Loaded as a classic script by the content scripts, the service worker
+// (importScripts), the options page and the offscreen document.
+(() => {
+  'use strict';
+
+  // espeak: rate = words per minute (80–450), pitch/range 0–99, volume 0–200.
+  // playbackRate / gain / effect are applied by mic-hook.js when playing.
+  const TONES = {
+    normal:   { label: 'Normal',   emoji: '🙂', espeak: { rate: 175, pitch: 50, range: 50, volume: 100 }, playbackRate: 1,    gain: 1 },
+    chipmunk: { label: 'Chipmunk', emoji: '🐿️', espeak: { rate: 210, pitch: 95, range: 70, volume: 100 }, playbackRate: 1.3,  gain: 1 },
+    villain:  { label: 'Villain',  emoji: '😈', espeak: { rate: 135, pitch: 10, range: 35, volume: 110 }, playbackRate: 0.82, gain: 1.1 },
+    robot:    { label: 'Robot',    emoji: '🤖', espeak: { rate: 160, pitch: 40, range: 0,  volume: 100 }, playbackRate: 1,    gain: 1, effect: 'robot' },
+    slowmo:   { label: 'Slow-mo',  emoji: '🐢', espeak: { rate: 90,  pitch: 35, range: 50, volume: 100 }, playbackRate: 0.75, gain: 1 },
+    excited:  { label: 'Excited',  emoji: '🤩', espeak: { rate: 225, pitch: 78, range: 95, volume: 125 }, playbackRate: 1.1,  gain: 1.35 },
+  };
+
+  // `text` is what is shown; `say` (optional) is what eSpeak pronounces.
+  // Hinglish lines get a Devanagari `say` so the Hindi voice reads them naturally.
+  const LINES = [
+    { id: 'd-hi-1', lang: 'hi', tone: 'normal',   fav: 1, text: 'Bhai tu rehne de', say: 'भाई तू रहने दे' },
+    { id: 'd-hi-2', lang: 'hi', tone: 'excited',  fav: 0, text: 'Ye college hai ya circus?', say: 'ये कॉलेज है या सर्कस?' },
+    { id: 'd-hi-3', lang: 'hi', tone: 'slowmo',   fav: 0, text: 'Aaj bhi WiFi ne dhoka de diya', say: 'आज भी वाईफ़ाई ने धोखा दे दिया' },
+    { id: 'd-hi-4', lang: 'hi', tone: 'villain',  fav: 0, text: 'Kal se pakka padhai karunga', say: 'कल से पक्का पढ़ाई करूँगा' },
+    { id: 'd-hi-5', lang: 'hi', tone: 'normal',   fav: 0, text: 'Presentation se pehle confidence sau percent, baad mein zero', say: 'प्रेज़ेंटेशन से पहले कॉन्फ़िडेंस सौ परसेंट, बाद में ज़ीरो' },
+    { id: 'd-hi-6', lang: 'hi', tone: 'robot',    fav: 2, text: 'Mute kar le bhai', say: 'म्यूट कर ले भाई' },
+    { id: 'd-hi-7', lang: 'hi', tone: 'excited',  fav: 3, text: 'Chai break!', say: 'चाय ब्रेक!' },
+    { id: 'd-hi-8', lang: 'hi', tone: 'chipmunk', fav: 4, text: 'Bhai kya scene hai?', say: 'भाई क्या सीन है?' },
+    { id: 'd-en-1', lang: 'en', tone: 'villain',  fav: 5, text: 'Bruh.' },
+    { id: 'd-en-2', lang: 'en', tone: 'robot',    fav: 6, text: "You're on mute!" },
+    { id: 'd-en-3', lang: 'en', tone: 'excited',  fav: 7, text: 'Emotional damage!' },
+    { id: 'd-en-4', lang: 'en', tone: 'villain',  fav: 8, text: 'Plot twist!' },
+    { id: 'd-en-5', lang: 'en', tone: 'normal',   fav: 0, text: "That's what she said... about the deadline" },
+    { id: 'd-en-6', lang: 'en', tone: 'chipmunk', fav: 9, text: 'Task failed successfully' },
+  ].map((l) => ({ kind: 'tts', ...l }));
+
+  const SETTINGS = {
+    volume: 1,            // meme volume, 0–2
+    monitor: true,        // also play memes quietly on your own speakers (untick in the panel)
+    timersEnabled: false, // master switch for timed lines (off by default)
+    timers: [],           // { id, lineId, mode: 'clock'|'interval', time: 'HH:MM', minutes, enabled }
+  };
+
+  const LIMITS = {
+    textChars: 300,
+    clipBytes: 1024 * 1024,
+    linkBytes: 5 * 1024 * 1024, // audio played from a link is streamed, not stored
+    clipTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/ogg'],
+  };
+
+  // http(s) links only; returns '' for anything else.
+  function cleanUrl(s) {
+    try {
+      const u = new URL(String(s || '').trim());
+      if (u.protocol !== 'https:' && u.protocol !== 'http:') return '';
+      u.hash = '';
+      return u.href.slice(0, 2000);
+    } catch {
+      return '';
+    }
+  }
+
+  // Video/social pages can't be played as a link; they need "Send this tab's sound".
+  const VIDEO_SITES = /(^|\.)(youtube\.com|youtu\.be|instagram\.com|tiktok\.com|facebook\.com|fb\.watch|twitter\.com|x\.com)$/i;
+  function isVideoPage(url) {
+    try { return VIDEO_SITES.test(new URL(url).hostname); } catch { return false; }
+  }
+
+  // Permission pattern for a link's website, e.g. "https://www.myinstants.com/*".
+  function originPattern(url) {
+    try { return new URL(url).origin + '/*'; } catch { return ''; }
+  }
+
+  // Clean a line coming from storage or an imported file.
+  function sanitizeLine(l) {
+    if (!l || typeof l !== 'object') return null;
+    const kind = l.kind === 'clip' ? 'clip' : l.kind === 'url' ? 'url' : 'tts';
+    const text = String(l.text || '').trim().slice(0, LIMITS.textChars);
+    if (!text) return null;
+    const out = {
+      id: String(l.id || '').slice(0, 64) || 'l-' + Math.random().toString(36).slice(2, 10),
+      kind,
+      text,
+      lang: l.lang === 'hi' ? 'hi' : 'en',
+      tone: Object.prototype.hasOwnProperty.call(TONES, l.tone) ? l.tone : 'normal',
+      fav: Number.isInteger(l.fav) && l.fav >= 1 && l.fav <= 9 ? l.fav : 0,
+    };
+    const say = String(l.say || '').trim().slice(0, LIMITS.textChars);
+    if (say) out.say = say;
+    if (kind === 'clip') out.clipId = String(l.clipId || '').slice(0, 64);
+    if (kind === 'url') {
+      out.url = cleanUrl(l.url);
+      if (!out.url) return null;
+    }
+    return out;
+  }
+
+  globalThis.MEME = Object.freeze({
+    TONES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, originPattern,
+    defaultLines: () => LINES.map((l) => ({ ...l })),
+    defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
+  });
+})();

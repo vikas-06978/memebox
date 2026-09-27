@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MemeBox</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" alt="" width="24" height="24">
+    <h1>MemeBox</h1>
+  </header>
+
+  <p id="msg" class="msg">Checking…</p>
+
+  <button type="button" id="send" class="primary" hidden>🎙 Send this tab's sound into my call</button>
+  <button type="button" id="stop" class="danger" hidden>⏹ Stop sending this tab</button>
+
+  <details id="how">
+    <summary>How does this work?</summary>
+    <ol>
+      <li>Join your call in another tab (Meet, Zoom web, Teams web or Discord web).</li>
+      <li>In this tab, open the YouTube video or Instagram reel and start it at the funny moment.</li>
+      <li>Click <b>Send this tab's sound</b>. Everyone in the call hears it through your mic.</li>
+      <li>Click ⏹ when you're done, or use ⏹ in the 😂 panel.</li>
+    </ol>
+    <p>Nothing is downloaded or recorded. The sound is only mixed live into your mic.</p>
+  </details>
+
+  <footer><button type="button" id="options" class="link">⚙️ Lines, clips &amp; links</button></footer>
+  <script src="popup.js"></script>
+</body>
+</html>

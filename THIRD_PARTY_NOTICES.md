@@ -16,4 +16,4 @@
 
 ## Everything else
 
-Everything else is original work for Meme Button, licensed GPL-3.0-or-later: the icons, the default meme lines, and all other code.
+Everything else is original work for MemeBox, licensed GPL-3.0-or-later: the icons, the default meme lines, and all other code.

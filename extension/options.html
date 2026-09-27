@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemeBox – Settings</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="top">
+    <img src="icons/icon48.png" alt="" width="40" height="40">
+    <div>
+      <h1>MemeBox</h1>
+      <p class="sub">Your meme lines, clips, timers and backups. Everything stays in this browser.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="lines-card">
+      <h2>Lines</h2>
+      <form id="line-form" class="grid-form" autocomplete="off">
+        <input type="hidden" id="line-id">
+        <label class="wide">Text shown in the caption
+          <input id="line-text" maxlength="300" required placeholder="e.g. Bhai tu rehne de">
+        </label>
+        <label class="wide">Pronounce as <span class="hint">(optional – e.g. Devanagari for Hinglish lines)</span>
+          <input id="line-say" maxlength="300" placeholder="e.g. भाई तू रहने दे" lang="hi">
+        </label>
+        <label>Language
+          <select id="line-lang"><option value="hi">Hindi (hi)</option><option value="en">English (en)</option></select>
+        </label>
+        <label>Tone <select id="line-tone" class="tone-select"></select></label>
+        <label>Shortcut <select id="line-fav" class="fav-select"></select></label>
+        <div class="actions wide">
+          <button type="submit" class="primary" id="line-submit">Add line</button>
+          <button type="button" id="line-preview">▶ Preview</button>
+          <button type="button" id="line-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+
+      <div class="table-wrap">
+        <table class="lines">
+          <thead><tr><th></th><th>Line</th><th>Lang</th><th>Tone</th><th>Shortcut</th><th class="right">Actions</th></tr></thead>
+          <tbody id="lines-body"></tbody>
+        </table>
+      </div>
+      <p class="hint">Shortcuts Alt+1 … Alt+4 work right away. For Alt+5 … Alt+9 (or to change keys) open
+        <a href="#" id="open-shortcuts">chrome://extensions/shortcuts</a>. While the call page has focus, Alt+5…9 also work without setting them there.</p>
+    </section>
+
+    <section class="card">
+      <h2>Upload a clip</h2>
+      <form id="clip-form" class="grid-form" autocomplete="off">
+        <label class="wide">Audio file <span class="hint">(MP3, WAV or OGG, max 1 MB)</span>
+          <input type="file" id="clip-file" accept=".mp3,.wav,.ogg,audio/mpeg,audio/wav,audio/ogg" required>
+        </label>
+        <label class="wide">Caption text
+          <input id="clip-name" maxlength="300" placeholder="Defaults to the file name">
+        </label>
+        <label>Tone <span class="hint">(speed only)</span> <select id="clip-tone" class="tone-select"></select></label>
+        <label>Shortcut <select id="clip-fav" class="fav-select"></select></label>
+        <div class="actions wide"><button type="submit" class="primary">Upload clip</button></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Add a meme from a link</h2>
+      <form id="link-form" class="grid-form" autocomplete="off">
+        <label class="wide">Link to an audio file <span class="hint">(ends in .mp3, .ogg or .wav – e.g. from myinstants.com: open a sound, right-click <b>Download MP3</b> → Copy link)</span>
+          <input id="link-url" type="url" required placeholder="https://www.myinstants.com/media/sounds/….mp3">
+        </label>
+        <label class="wide">Caption text
+          <input id="link-name" maxlength="300" placeholder="Defaults to the file name">
+        </label>
+        <label>Tone <span class="hint">(speed only)</span> <select id="link-tone" class="tone-select"></select></label>
+        <label>Shortcut <select id="link-fav" class="fav-select"></select></label>
+        <div class="actions wide"><button type="submit" class="primary">Add link</button></div>
+      </form>
+      <p class="hint">Nothing is downloaded or saved: the sound is fetched from the link each time you play it (so it needs internet), and Chrome asks you once per website.
+        <b>YouTube / Instagram videos:</b> open the video in a tab and click the MemeBox toolbar icon → <i>Send this tab's sound into my call</i>.</p>
+    </section>
+
+    <section class="card">
+      <h2>Timed lines</h2>
+      <label class="switch"><input type="checkbox" id="timers-enabled"> Play timed lines automatically</label>
+      <p class="hint">Off by default. Timers only fire while a call tab is open and your mic is connected.</p>
+      <form id="timer-form" class="grid-form" autocomplete="off">
+        <label class="wide">Line <select id="timer-line" required></select></label>
+        <label>When
+          <select id="timer-mode"><option value="clock">At a clock time</option><option value="interval">Every N minutes</option></select>
+        </label>
+        <label id="timer-time-wrap">Time <input type="time" id="timer-time" value="11:00"></label>
+        <label id="timer-min-wrap" hidden>Minutes <input type="number" id="timer-min" min="1" max="240" value="15"></label>
+        <div class="actions wide"><button type="submit" class="primary">Add timer</button></div>
+      </form>
+      <ul id="timers-list" class="timers"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Backup</h2>
+      <div class="actions">
+        <button type="button" id="export">⬇ Export JSON</button>
+        <label class="button">⬆ Import JSON <input type="file" id="import" accept=".json,application/json" hidden></label>
+        <button type="button" id="reset" class="danger">Restore default pack</button>
+      </div>
+      <p class="hint">Export includes all lines, timers and uploaded clips. Import adds to your lines; lines with the same id are replaced.</p>
+    </section>
+
+    <section class="card privacy">
+      <h2>Privacy</h2>
+      <p>Your microphone audio is only mixed inside this browser tab. Nothing is recorded, saved or sent anywhere. There are no accounts, servers or analytics.</p>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="defaults.js"></script>
+  <script src="db.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
