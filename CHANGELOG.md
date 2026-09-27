@@ -4,6 +4,25 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added – Step 3: on-call UI (0.3.0)
+- Panel:
+  - category chips, plus ⭐ Favourites and 🕘 Recent (the last 12 played);
+  - search, where Enter plays the first match;
+  - 🎲 Random, which respects the current filter;
+  - 🔔 Mic test, ⏹ Stop all, and the master volume;
+  - "Hear memes myself" and 🦆 Auto-duck switches.
+- The 😂 position is saved per site.
+- Status dot: green = in the call and hooked, yellow = muted (or click once to enable), grey = no call.
+- Shortcuts:
+  - Alt+1…9 play favourites, Alt+0 stops all, Alt+M shows or hides the UI.
+  - They're ignored while you type in text boxes or chat.
+  - The global shortcuts (chrome.commands) reach your call tab even from another tab.
+- Auto-duck: memes drop to 35% while your real mic is loud. This includes the very first moment of a meme.
+- Lines gain `category`, `star` and per-line `volume` fields.
+- English and Hindi UI through `chrome.i18n` (`_locales/en` and `_locales/hi`) for the panel, popup, manifest and shortcut names.
+- Friendlier messages: "Reload the call tab after updating", and "You are muted – memes are silent too".
+- Tests: i18n completeness (same keys, placeholders, every key used exists). End-to-end tests for auto-duck, Alt+0, Alt+M, per-site position and the Hindi popup.
+
 ### Added – Step 2: voices (0.2.0)
 - eSpeak-NG WebAssembly (bundled locally, English + Hindi only, about 1.8 MB) runs in an offscreen document's module worker. The page CSP allows only `'self'` and `'wasm-unsafe-eval'`.
 - `lib/tts.js` and `lib/wav.js` are shared by the worker and the tests. The offscreen document returns WAV bytes, which go through the bridge to the mic hook, which decodes them into the soundboard node.

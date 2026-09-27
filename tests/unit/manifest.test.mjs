@@ -15,9 +15,20 @@ const CALL_SITES = [
 
 test('Manifest V3 with the MemeBox name (no platform brand in the name)', () => {
   assert.equal(m.manifest_version, 3);
-  assert.match(m.name, /^MemeBox/);
-  assert.ok(m.name.length <= 75);
-  assert.doesNotMatch(m.name, /google|meet|zoom|teams|microsoft|discord/i);
+  assert.equal(m.default_locale, 'en');
+  for (const lang of ['en', 'hi']) {
+    const msgs = readJson(`_locales/${lang}/messages.json`);
+    const name = m.name.replace(/^__MSG_(\w+)__$/, (_, k) => msgs[k].message);
+    assert.match(name, /^MemeBox/);
+    assert.ok(name.length <= 75);
+    assert.doesNotMatch(name, /google|meet|zoom|teams|microsoft|discord/i);
+  }
+});
+
+test('at most 4 shortcuts have suggested keys (Chrome limit), all Alt-based', () => {
+  const suggested = Object.values(m.commands).filter((c) => c.suggested_key);
+  assert.ok(suggested.length <= 4);
+  for (const c of suggested) assert.match(c.suggested_key.default, /^Alt\+[0-9A-Z]$/);
 });
 
 test('mic-hook runs in the MAIN world at document_start in all frames on the 5 call sites', () => {

@@ -32,11 +32,12 @@
     { id: 'd-en-4', lang: 'en', tone: 'villain',  fav: 8, text: 'Plot twist!' },
     { id: 'd-en-5', lang: 'en', tone: 'normal',   fav: 0, text: "That's what she said... about the deadline" },
     { id: 'd-en-6', lang: 'en', tone: 'chipmunk', fav: 9, text: 'Task failed successfully' },
-  ].map((l) => ({ kind: 'tts', ...l }));
+  ].map((l) => ({ kind: 'tts', category: 'general', volume: 1, ...l }));
 
   const SETTINGS = {
     volume: 1,            // meme volume, 0–2
     monitor: true,        // also play memes quietly on your own speakers (untick in the panel)
+    autoDuck: true,       // lower meme volume while you are talking
     timersEnabled: false, // master switch for timed lines (off by default)
     timers: [],           // { id, lineId, mode: 'clock'|'interval', time: 'HH:MM', minutes, enabled }
   };
@@ -71,6 +72,12 @@
     try { return new URL(url).origin + '/*'; } catch { return ''; }
   }
 
+  // Category ids: built-in packs use lowercase ids (college, cricket?); users may type their own.
+  function cleanCategory(c) {
+    const s = String(c || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 30);
+    return s || 'general';
+  }
+
   // Clean a line coming from storage or an imported file.
   function sanitizeLine(l) {
     if (!l || typeof l !== 'object') return null;
@@ -84,7 +91,10 @@
       lang: l.lang === 'hi' ? 'hi' : 'en',
       tone: Object.prototype.hasOwnProperty.call(TONES, l.tone) ? l.tone : 'normal',
       fav: Number.isInteger(l.fav) && l.fav >= 1 && l.fav <= 9 ? l.fav : 0,
+      category: cleanCategory(l.category),
+      volume: Number.isFinite(Number(l.volume)) && l.volume !== null && l.volume !== '' ? Math.min(2, Math.max(0, Number(l.volume))) : 1,
     };
+    if (l.star === true) out.star = true;
     const say = String(l.say || '').trim().slice(0, LIMITS.textChars);
     if (say) out.say = say;
     if (kind === 'clip') out.clipId = String(l.clipId || '').slice(0, 64);

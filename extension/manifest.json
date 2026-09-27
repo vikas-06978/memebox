@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "MemeBox – Meme Soundboard & Voice Changer for Calls",
-  "short_name": "MemeBox",
-  "version": "0.2.0",
-  "description": "Meme soundboard for video calls: play meme lines and sounds into your mic so everyone in the call hears them.",
+  "name": "__MSG_extName__",
+  "short_name": "__MSG_extShortName__",
+  "version": "0.3.0",
+  "description": "__MSG_extDesc__",
+  "default_locale": "en",
   "minimum_chrome_version": "116",
   "permissions": [
     "storage",
@@ -21,7 +22,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "MemeBox",
+    "default_title": "__MSG_actionTitle__",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
@@ -73,40 +74,46 @@
       "suggested_key": {
         "default": "Alt+1"
       },
-      "description": "Play favourite 1"
+      "description": "__MSG_cmdFav1__"
     },
     "fav-2": {
       "suggested_key": {
         "default": "Alt+2"
       },
-      "description": "Play favourite 2"
+      "description": "__MSG_cmdFav2__"
     },
     "fav-3": {
       "suggested_key": {
         "default": "Alt+3"
       },
-      "description": "Play favourite 3"
+      "description": "__MSG_cmdFav3__"
+    },
+    "stop-all": {
+      "suggested_key": {
+        "default": "Alt+0"
+      },
+      "description": "__MSG_cmdStopAll__"
     },
     "fav-4": {
-      "suggested_key": {
-        "default": "Alt+4"
-      },
-      "description": "Play favourite 4"
+      "description": "__MSG_cmdFav4__"
     },
     "fav-5": {
-      "description": "Play favourite 5"
+      "description": "__MSG_cmdFav5__"
     },
     "fav-6": {
-      "description": "Play favourite 6"
+      "description": "__MSG_cmdFav6__"
     },
     "fav-7": {
-      "description": "Play favourite 7"
+      "description": "__MSG_cmdFav7__"
     },
     "fav-8": {
-      "description": "Play favourite 8"
+      "description": "__MSG_cmdFav8__"
     },
     "fav-9": {
-      "description": "Play favourite 9"
+      "description": "__MSG_cmdFav9__"
+    },
+    "toggle-ui": {
+      "description": "__MSG_cmdToggleUi__"
     }
   },
   "content_security_policy": {

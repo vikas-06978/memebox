@@ -73,6 +73,7 @@
       case 'play-audio': playAudio(d); break;
       case 'stop': stopAll(); break;
       case 'volume': setVolume(d.value); break;
+      case 'duck': setDuck(d.value !== false); break;
       case 'monitor': setMonitor(d.value === true); break;
       case 'resume': if (ctx && ctx.state !== 'running') ctx.resume().then(announce, () => {}); break;
       case 'tab-audio-start': startTabAudio(d.value); break;
@@ -159,8 +160,11 @@
     const dest = ctx.createMediaStreamDestination();
     src.connect(mic).connect(dest);
     board.connect(dest);
+    const meter = ctx.createAnalyser(); // for auto-duck (reads the real voice level)
+    meter.fftSize = 1024;
+    src.connect(meter);
 
-    const s = { realAudio, src, mic, dest, tracks: new Set(), closed: false };
+    const s = { realAudio, src, mic, dest, meter, tracks: new Set(), closed: false };
     const out = dest.stream.getAudioTracks()[0];
     wrapTrack(out, s);
     mixedTracks.add(out);
@@ -270,8 +274,10 @@
     try {
       const node = await starter();
       stopAll(); // one meme at a time
-      node.start();
       playing.add(node);
+      duckTick(true); // if you're already talking, start the meme ducked (no loud first moment)
+      startDuckWatch();
+      node.start();
       node.addEventListener('ended', () => playing.delete(node));
       console.log(LOG, 'playing into mic:', label, `(${sessions.size} mic stream${sessions.size === 1 ? '' : 's'}, context ${ctx.state})`);
       post({ type: 'played', reqId, ok: true, muted: isMuted() });
@@ -348,7 +354,67 @@
 
   function setVolume(v) {
     volume = Math.min(2, Math.max(0, Number(v) || 0));
-    if (board) board.gain.setTargetAtTime(volume, ctx.currentTime, 0.02);
+    applyBoardGain(0.02);
+  }
+
+  // ---------- auto-duck: memes get quieter while YOU are talking ----------
+  // Watches the real mic level (before any effects) only while something is playing.
+
+  const DUCK_LEVEL = 0.35;     // meme volume multiplier while you talk
+  const DUCK_RMS = 0.04;       // ≈ -28 dBFS counts as "talking"
+  const DUCK_HOLD_MS = 350;    // keep ducked a moment after you stop
+  let duckEnabled = true;
+  let ducked = false;
+  let lastVoiceAt = 0;
+  let duckTimer = 0;
+  const duckBuf = new Float32Array(1024);
+
+  function applyBoardGain(tau) {
+    if (!board) return;
+    board.gain.setTargetAtTime(volume * (ducked ? DUCK_LEVEL : 1), ctx.currentTime, tau);
+  }
+
+  function voiceLevel() {
+    let best = 0;
+    for (const s of sessions) {
+      if (!s.meter || s.realAudio.readyState !== 'live' || !s.realAudio.enabled) continue;
+      s.meter.getFloatTimeDomainData(duckBuf);
+      let sum = 0;
+      for (const x of duckBuf) sum += x * x;
+      best = Math.max(best, Math.sqrt(sum / duckBuf.length));
+    }
+    return best;
+  }
+
+  function duckTick(atStart = false) {
+    const busy = playing.size > 0 || !!tabAudio;
+    if (!busy || !duckEnabled) {
+      if (ducked) { ducked = false; applyBoardGain(0.15); }
+      if (!busy) { clearInterval(duckTimer); duckTimer = 0; }
+      return;
+    }
+    const now = performance.now();
+    if (voiceLevel() > DUCK_RMS) lastVoiceAt = now;
+    const want = now - lastVoiceAt < DUCK_HOLD_MS;
+    if (want !== ducked || atStart) {
+      ducked = want;
+      if (atStart && board) {
+        // Jump straight to the right level before the meme's first sample.
+        board.gain.cancelScheduledValues(ctx.currentTime);
+        board.gain.setValueAtTime(volume * (ducked ? DUCK_LEVEL : 1), ctx.currentTime);
+      } else {
+        applyBoardGain(want ? 0.03 : 0.25); // duck fast, recover gently
+      }
+    }
+  }
+
+  function startDuckWatch() {
+    if (!duckTimer) duckTimer = setInterval(duckTick, 50);
+  }
+
+  function setDuck(on) {
+    duckEnabled = on;
+    duckTick();
   }
 
   // ---------- another tab's sound (YouTube, Instagram…) into the mic ----------
@@ -375,6 +441,7 @@
       src.connect(gain).connect(board);
       const t = { stream, src, gain };
       tabAudio = t;
+      startDuckWatch();
       for (const track of stream.getAudioTracks()) {
         track.addEventListener('ended', () => { if (tabAudio === t) stopTabAudio(); });
       }

@@ -261,6 +261,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (Number.isInteger(msg.frameId)) handlePlay(tabId, msg);
       break;
 
+    // A meme was played from the panel (used for the one-time "enjoying MemeBox?" ask).
+    case 'played-one':
+      chrome.storage.local.get('stats').then(({ stats }) => {
+        const s = stats && typeof stats === 'object' ? stats : {};
+        return chrome.storage.local.set({ stats: { ...s, plays: (Number(s.plays) || 0) + 1 } });
+      }).catch(() => {});
+      break;
+
     // A call started: load the speech engine in advance.
     case 'warmup':
       ensureOffscreen().catch(() => {});
@@ -268,7 +276,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-chrome.commands.onCommand.addListener((command, tab) => {
-  const m = /^fav-([1-9])$/.exec(command);
-  if (m && tab && tab.id >= 0) sendToTab(tab.id, { type: 'command', slot: Number(m[1]) }, 0);
+// Keyboard shortcuts (chrome://extensions/shortcuts). They go to the tab you are in if it's
+// a call tab, otherwise to your current call – so Alt+1 works even from a YouTube tab.
+const COMMANDS = /^(fav-[1-9]|stop-all|toggle-ui|toggle-voice)$/;
+chrome.commands.onCommand.addListener(async (command, tab) => {
+  if (!COMMANDS.test(command)) return;
+  const all = await getCallTabs();
+  const here = tab && all[tab.id] && Object.keys(all[tab.id].frames).length ? tab.id : null;
+  const call = here ?? (await currentCall())?.tabId;
+  if (call != null) sendToTab(call, { type: 'command', command }, 0);
 });

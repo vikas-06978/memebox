@@ -35,18 +35,36 @@ export const FAKE_CALL = `<!doctype html><html><head><title>fake call</title></h
     setInterval(() => { an.getFloatTimeDomainData(buf); for (const v of buf) window.peak = Math.max(window.peak, Math.abs(v)); }, 20);
   };
   window.peakOver = async (ms) => { window.peak = 0; await new Promise((r) => setTimeout(r, ms)); return window.peak; };
+  // Makes the "site" use its own mic stream (a tone at the given level) – via the devicechange re-wrap.
+  window.useSiteMic = async (level) => {
+    const ac = new RealAudioContext(); const d = ac.createMediaStreamDestination();
+    const o = ac.createOscillator(); o.frequency.value = 200; const g = ac.createGain(); g.gain.value = level;
+    o.connect(g).connect(d); o.start();
+    MediaDevices.prototype.getUserMedia = async () => new MediaStream([d.stream.getAudioTracks()[0].clone()]);
+    navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
+  };
+  window.joinCall = async () => { window.s = await navigator.mediaDevices.getUserMedia({ audio: true }); await window.measure(window.s); };
+  // The fake mic is a steady tone, which auto-duck (correctly) treats as "talking". Tests that
+  // measure pure mixing switch it off – after the UI has sent its own settings on join.
+  window.noDuck = async () => {
+    await new Promise((r) => setTimeout(r, 700));
+    window.postMessage({ source: 'memebox-bridge-9c1e', type: 'duck', value: false }, '*');
+    await new Promise((r) => setTimeout(r, 100));
+  };
   // What the bridge sends to the hook – used to trigger the hard-coded beep directly.
   window.beep = () => window.postMessage({ source: 'memebox-bridge-9c1e', type: 'beep', reqId: 1 }, '*');
 </script></body></html>`;
 
 export const test = base.extend({
-  // eslint-disable-next-line no-empty-pattern
-  context: async ({}, use) => {
+  // Extra Chromium flags for a test file, e.g. test.use({ extraArgs: ['--lang=hi'] }).
+  extraArgs: [[], { option: true }],
+  context: async ({ extraArgs }, use) => {
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
       headless: true,
       viewport: { width: 1280, height: 720 },
       args: [
+        ...extraArgs,
         `--disable-extensions-except=${EXT}`,
         `--load-extension=${EXT}`,
         '--autoplay-policy=no-user-gesture-required',

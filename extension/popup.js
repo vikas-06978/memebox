@@ -4,6 +4,7 @@
 'use strict';
 
 const $ = (id) => document.getElementById(id);
+const { t } = globalThis.MemeI18n;
 let tab = null;
 let info = null;
 
@@ -19,41 +20,39 @@ async function refresh() {
   $('stop').hidden = true;
 
   if (!info || info.callTabId == null) {
-    show('Join a call first (in another tab), then come back to the video tab and click here.', 'warn');
+    show(t('pp_no_call'), 'warn');
     return;
   }
   if (info.thisIsCall) {
-    show('This is your call tab. Open the YouTube / Instagram tab and click MemeBox there to send its sound. Use 😂 on this page for memes.', 'warn');
+    show(t('pp_this_is_call'), 'warn');
     $('how').open = false;
     return;
   }
   if (info.sendingThisTab) {
-    show("✅ This tab's sound is going into your call.", 'ok');
+    show(t('pp_sending'), 'ok');
     $('stop').hidden = false;
     return;
   }
-  show(info.sendingOther
-    ? "Another tab is being sent right now. Sending this one will replace it."
-    : 'Start the video at the funny part, then:', '');
+  show(info.sendingOther ? t('pp_replace') : t('pp_start_video'), '');
   $('send').hidden = false;
 }
 
 $('send').addEventListener('click', async () => {
   $('send').disabled = true;
-  show('Connecting…');
+  show(t('pp_connecting'));
   try {
     const streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tab.id, consumerTabId: info.callTabId });
     const res = await chrome.runtime.sendMessage({ type: 'popup-start-tab-audio', callTabId: info.callTabId, sourceTabId: tab.id, streamId });
     if (!res || !res.ok) {
-      const why = res && res.error === 'no-call' ? 'Join the call and unmute first.' : (res && res.error) || 'Unknown error';
-      show("Couldn't send this tab: " + why, 'err');
+      const why = res && res.error === 'no-call' ? t('pp_join_unmute') : (res && res.error) || '?';
+      show(t('pp_send_failed', why), 'err');
       $('send').disabled = false;
       return;
     }
     await refresh();
   } catch (err) {
     // e.g. chrome:// pages and the Web Store can't be captured.
-    show("Chrome won't let this tab be captured: " + err.message, 'err');
+    show(t('pp_cant_capture', err.message), 'err');
     $('send').disabled = false;
   }
 });
@@ -65,4 +64,4 @@ $('stop').addEventListener('click', async () => {
 
 $('options').addEventListener('click', () => { chrome.runtime.openOptionsPage(); window.close(); });
 
-refresh().catch((err) => show('Error: ' + err.message, 'err'));
+refresh().catch((err) => show(t('pp_error', err.message), 'err'));

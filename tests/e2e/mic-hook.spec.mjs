@@ -20,7 +20,7 @@ test('getUserMedia returns a mixed track that looks like the real mic, plus the 
 });
 
 test('the hard-coded beep goes into the mic stream (what the other device hears)', async ({ callPage }) => {
-  await callPage.evaluate(async () => { window.s = await navigator.mediaDevices.getUserMedia({ audio: true }); await window.measure(window.s); });
+  await callPage.evaluate(async () => { window.s = await navigator.mediaDevices.getUserMedia({ audio: true }); await window.measure(window.s); await window.noDuck(); });
   const micOnly = await callPage.evaluate(() => window.peakOver(600));
   const withBeep = await callPage.evaluate(() => { window.beep(); return window.peakOver(900); });
   expect(micOnly).toBeLessThan(0.3);
@@ -62,6 +62,7 @@ test('a site that replaces getUserMedia later gets re-wrapped on devicechange', 
     return true;
   });
   expect(ok).toBe(true);
+  await callPage.evaluate(() => window.noDuck());
   await expect.poll(() => callPage.logs.some((l) => l.includes('re-wrapped getUserMedia'))).toBe(true);
   const withBeep = await callPage.evaluate(() => { window.beep(); return window.peakOver(900); });
   expect(withBeep).toBeGreaterThan(0.3);

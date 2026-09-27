@@ -11,23 +11,24 @@
     <h1>MemeBox</h1>
   </header>
 
-  <p id="msg" class="msg">Checking…</p>
+  <p id="msg" class="msg" data-i18n="pp_checking">Checking…</p>
 
-  <button type="button" id="send" class="primary" hidden>🎙 Send this tab's sound into my call</button>
-  <button type="button" id="stop" class="danger" hidden>⏹ Stop sending this tab</button>
+  <button type="button" id="send" class="primary" hidden data-i18n="pp_send">🎙 Send this tab's sound to my call</button>
+  <button type="button" id="stop" class="danger" hidden data-i18n="pp_stop">⏹ Stop sending this tab</button>
 
   <details id="how">
-    <summary>How does this work?</summary>
+    <summary data-i18n="pp_how">How does this work?</summary>
     <ol>
-      <li>Join your call in another tab (Meet, Zoom web, Teams web or Discord web).</li>
-      <li>In this tab, open the YouTube video or Instagram reel and start it at the funny moment.</li>
-      <li>Click <b>Send this tab's sound</b>. Everyone in the call hears it through your mic.</li>
-      <li>Click ⏹ when you're done, or use ⏹ in the 😂 panel.</li>
+      <li data-i18n="pp_how1">Join your call in another tab (Meet, Zoom web, Teams web or Discord web).</li>
+      <li data-i18n="pp_how2">In this tab, start the YouTube video or Instagram reel at the funny moment.</li>
+      <li data-i18n="pp_how3">Click “Send this tab's sound” – everyone in the call hears it through your mic.</li>
+      <li data-i18n="pp_how4">Click ⏹ when you're done, or use ⏹ in the 😂 panel.</li>
     </ol>
-    <p>Nothing is downloaded or recorded. The sound is only mixed live into your mic.</p>
+    <p data-i18n="pp_how_note">Nothing is downloaded or recorded – the sound is only mixed live into your mic.</p>
   </details>
 
-  <footer><button type="button" id="options" class="link">⚙️ Lines, clips &amp; links</button></footer>
+  <footer><button type="button" id="options" class="link" data-i18n="pp_settings">⚙️ Lines, clips &amp; settings</button></footer>
+  <script src="lib/i18n-page.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
