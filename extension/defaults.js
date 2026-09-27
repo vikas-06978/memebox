@@ -44,9 +44,13 @@
 
   const LIMITS = {
     textChars: 300,
-    clipBytes: 1024 * 1024,
-    linkBytes: 5 * 1024 * 1024, // audio played from a link is streamed, not stored
-    clipTypes: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/ogg'],
+    clipBytes: 1024 * 1024,        // a saved clip (trimmed WAV) is at most 1 MB
+    sourceBytes: 50 * 1024 * 1024, // uploaded/linked file before trimming
+    recordSeconds: 10,             // "record my own clip"
+    // Uploads: audio files or videos (only the audio track is used).
+    clipExtensions: ['mp3', 'wav', 'ogg', 'oga', 'm4a', 'aac', 'mp4', 'webm'],
+    // Direct links must point at a file with one of these endings.
+    linkExtensions: ['mp3', 'mp4', 'wav', 'ogg', 'webm'],
   };
 
   // http(s) links only; returns '' for anything else.
@@ -61,15 +65,18 @@
     }
   }
 
-  // Video/social pages can't be played as a link; they need "Send this tab's sound".
+  // Video/social pages can't be used as links (never downloaded) – point people to "Tab audio".
   const VIDEO_SITES = /(^|\.)(youtube\.com|youtu\.be|instagram\.com|tiktok\.com|facebook\.com|fb\.watch|twitter\.com|x\.com)$/i;
   function isVideoPage(url) {
     try { return VIDEO_SITES.test(new URL(url).hostname); } catch { return false; }
   }
 
-  // Permission pattern for a link's website, e.g. "https://www.myinstants.com/*".
-  function originPattern(url) {
-    try { return new URL(url).origin + '/*'; } catch { return ''; }
+  // A direct file link: http(s) and a path ending in one of LIMITS.linkExtensions.
+  function isDirectFileLink(url) {
+    try {
+      const ext = new URL(url).pathname.toLowerCase().split('.').pop();
+      return LIMITS.linkExtensions.includes(ext);
+    } catch { return false; }
   }
 
   // Category ids: built-in packs use lowercase ids (college, cricket?); users may type their own.
@@ -81,7 +88,8 @@
   // Clean a line coming from storage or an imported file.
   function sanitizeLine(l) {
     if (!l || typeof l !== 'object') return null;
-    const kind = l.kind === 'clip' ? 'clip' : l.kind === 'url' ? 'url' : 'tts';
+    if (l.kind === 'url') return null; // old streamed links (0.x) – re-add them as clips
+    const kind = l.kind === 'clip' ? 'clip' : 'tts';
     const text = String(l.text || '').trim().slice(0, LIMITS.textChars);
     if (!text) return null;
     const out = {
@@ -98,15 +106,11 @@
     const say = String(l.say || '').trim().slice(0, LIMITS.textChars);
     if (say) out.say = say;
     if (kind === 'clip') out.clipId = String(l.clipId || '').slice(0, 64);
-    if (kind === 'url') {
-      out.url = cleanUrl(l.url);
-      if (!out.url) return null;
-    }
     return out;
   }
 
   globalThis.MEME = Object.freeze({
-    TONES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, originPattern,
+    TONES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

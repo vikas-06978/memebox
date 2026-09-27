@@ -45,11 +45,29 @@ test('sanitizeLine rejects junk and clamps fields', () => {
   assert.ok(!('evil' in l));
 });
 
-test('link lines only accept http(s) and flag video pages', () => {
-  assert.equal(MEME.sanitizeLine({ kind: 'url', text: 'a', url: 'javascript:alert(1)' }), null);
-  assert.equal(MEME.sanitizeLine({ kind: 'url', text: 'a', url: 'https://x.test/a.mp3#t' }).url, 'https://x.test/a.mp3');
+test('direct links: only http(s) files with an audio/video ending; video pages are refused', () => {
+  assert.equal(MEME.cleanUrl('javascript:alert(1)'), '');
+  assert.equal(MEME.cleanUrl('https://x.test/a.mp3#t'), 'https://x.test/a.mp3');
+  for (const ok of ['https://x.test/a.mp3', 'https://x.test/b.MP4?x=1', 'http://x.test/c.wav', 'https://x.test/d.ogg', 'https://x.test/e.webm']) {
+    assert.ok(MEME.isDirectFileLink(ok), ok);
+  }
+  for (const bad of ['https://x.test/page.html', 'https://x.test/', 'https://x.test/a.mp3.exe', 'not a url']) {
+    assert.ok(!MEME.isDirectFileLink(bad), bad);
+  }
   assert.ok(MEME.isVideoPage('https://www.youtube.com/watch?v=1'));
   assert.ok(MEME.isVideoPage('https://youtu.be/1'));
   assert.ok(MEME.isVideoPage('https://www.instagram.com/reel/1'));
   assert.ok(!MEME.isVideoPage('https://www.myinstants.com/media/sounds/a.mp3'));
+  // Old streamed-link lines from 0.x are dropped (they needed an extra permission).
+  assert.equal(MEME.sanitizeLine({ kind: 'url', text: 'a', url: 'https://x.test/a.mp3' }), null);
+});
+
+test('lines keep category, star and a clamped per-line volume', () => {
+  const l = MEME.sanitizeLine({ text: 'x', category: ' office ', star: true, volume: 5 });
+  assert.equal(l.category, 'office');
+  assert.equal(l.star, true);
+  assert.equal(l.volume, 2);
+  assert.equal(MEME.sanitizeLine({ text: 'x', category: '<b>' }).category, 'b');
+  assert.equal(MEME.sanitizeLine({ text: 'x' }).category, 'general');
+  assert.equal(MEME.sanitizeLine({ text: 'x', star: 'yes' }).star, undefined);
 });

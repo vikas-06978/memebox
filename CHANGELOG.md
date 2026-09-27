@@ -4,6 +4,29 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added – Step 4: lines, clips, files, packs (0.4.0)
+- Rewritten Options page, in English and Hindi. Each line has text, "pronounce as", language, tone, category, favourite slot (1–9), per-line volume (0–200%) and ⭐. It also has search and a category filter.
+- Clips from:
+  - an audio file (MP3/WAV/OGG/M4A);
+  - a **video file** (MP4/WEBM, only its sound is kept);
+  - a **direct file link** (.mp3 .mp4 .wav .ogg .webm), fetched with the normal browser rules. If the server blocks it (CORS), a clear message says to download the file and upload it instead;
+  - **recording yourself** (up to 10 s).
+- YouTube, Instagram and other video page links are refused, with a pointer to "Send this tab's sound".
+- Waveform trimmer: drag the edges or use the sliders, preview the selection, and save as a mono WAV at the best sample rate that fits in **1 MB**.
+- Built-in **College, Cricket, Office and Party** packs (original, friendly Hinglish and English lines) alongside the general pack. Each pack can be added, reset or removed.
+- Export and import `.memepack.json` (a category, or all lines, with their clips). Validation is strict: unknown fields, types, lengths, counts, ids, clip references, base64, WAV-only and 1 MB per clip are all checked, and the page lists every problem it finds.
+- Timed lines / party mode is kept (off by default).
+
+### Changed
+- Removed the 0.x "stream from link" line type and its optional "access any website" permission. That permission is outside the final permission list.
+
+### Fixed
+- A per-line volume of 0 was treated as 100%. The bridge used `|| 1`.
+
+### Tests
+- Unit tests for the trimmer maths, pack validation (valid, round trip, and more than 20 invalid cases), and the built-in pack content, including a check for words about groups or looks.
+- End-to-end tests for installing packs; WAV and webm uploads through the trimmer into the call; direct links with a real CORS-open and CORS-closed server; YouTube refusal; recording; pack export → wipe → import; invalid packs; and per-line volume in the call.
+
 ### Added – Step 3: on-call UI (0.3.0)
 - Panel:
   - category chips, plus ⭐ Favourites and 🕘 Recent (the last 12 played);

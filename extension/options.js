@@ -1,7 +1,10 @@
-// MemeBox – options page: lines, clips, timed lines, import/export.
+// MemeBox – options page: lines, clips (file / video / link / recording + trimmer), packs,
+// timed lines (party mode). Lines live in chrome.storage.local, clips in IndexedDB.
 'use strict';
 
 const { TONES, LIMITS, sanitizeLine } = globalThis.MEME;
+const { t } = globalThis.MemeI18n;
+const Trim = globalThis.MemeTrim;
 const $ = (id) => document.getElementById(id);
 
 let lines = [];
@@ -10,12 +13,12 @@ let settings = MEME.defaultSettings();
 // ---------- helpers ----------
 
 function toast(text, isError) {
-  const t = $('toast');
-  t.textContent = text;
-  t.classList.toggle('error', !!isError);
-  t.classList.add('show');
+  const el = $('toast');
+  el.textContent = text;
+  el.classList.toggle('error', !!isError);
+  el.classList.add('show');
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => t.classList.remove('show'), 3000);
+  toast.timer = setTimeout(() => el.classList.remove('show'), isError ? 6000 : 3000);
 }
 
 const newId = (p) => p + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -27,26 +30,17 @@ function el(tag, props = {}, ...kids) {
   return n;
 }
 
-function toBase64(buf) {
-  const bytes = new Uint8Array(buf);
-  let s = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-  return btoa(s);
+function categoryLabel(id) {
+  const m = t('cat_' + id);
+  return m === 'cat_' + id ? id : m;
 }
 
-function fromBase64(b64) {
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes.buffer;
-}
-
-function sanitizeTimer(t) {
-  if (!t || typeof t !== 'object' || typeof t.lineId !== 'string') return null;
-  const mode = t.mode === 'interval' ? 'interval' : 'clock';
-  const time = /^([01]\d|2[0-3]):[0-5]\d$/.test(t.time) ? t.time : '11:00';
-  const minutes = Math.min(240, Math.max(1, Math.round(Number(t.minutes) || 15)));
-  return { id: String(t.id || newId('t')).slice(0, 64), lineId: t.lineId.slice(0, 64), mode, time, minutes, enabled: t.enabled !== false };
+function sanitizeTimer(x) {
+  if (!x || typeof x !== 'object' || typeof x.lineId !== 'string') return null;
+  const mode = x.mode === 'interval' ? 'interval' : 'clock';
+  const time = /^([01]\d|2[0-3]):[0-5]\d$/.test(x.time) ? x.time : '11:00';
+  const minutes = Math.min(240, Math.max(1, Math.round(Number(x.minutes) || 15)));
+  return { id: String(x.id || newId('t')).slice(0, 64), lineId: x.lineId.slice(0, 64), mode, time, minutes, enabled: x.enabled !== false };
 }
 
 async function saveLines() {
@@ -68,12 +62,27 @@ function claimSlot(slot, ownerId) {
   for (const l of lines) if (l.fav === slot && l.id !== ownerId) l.fav = 0;
 }
 
-// ---------- preview (plays locally in this page only) ----------
+function download(name, blob) {
+  const url = URL.createObjectURL(blob);
+  const a = el('a', { href: url, download: name });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
 
-let previewCtx = null;
+// ---------- audio: preview (plays here only, never into a call) ----------
+
+let ctx = null;
 let previewSrc = null;
 let worker = null;
 const pendingSynth = new Map();
+
+function audioCtx() {
+  ctx = ctx || new AudioContext();
+  ctx.resume();
+  return ctx;
+}
 
 function synth(text, lang, tone) {
   if (!worker) {
@@ -97,48 +106,57 @@ function synth(text, lang, tone) {
   });
 }
 
+// Bytes (WAV/MP3/…) for a line: synthesized speech or the stored clip.
+async function lineBytes(line) {
+  if (line.kind === 'clip') {
+    const clip = await MemeDB.getClip(line.clipId);
+    if (!clip) throw new Error(t('op_err_clip_missing'));
+    return clip.bytes.slice(0);
+  }
+  return synth(line.say || line.text, line.lang, TONES[line.tone] ? line.tone : 'normal');
+}
+
+function stopPreview() {
+  if (previewSrc) try { previewSrc.stop(); } catch { /* already stopped */ }
+  previewSrc = null;
+}
+
+// Plays an AudioBuffer here with a tone's speed/gain (+ robot effect), optionally a slice.
+function playBuffer(buffer, toneId, volume = 1, from = 0, dur) {
+  const c = audioCtx();
+  stopPreview();
+  const tone = TONES[toneId] || TONES.normal;
+  const src = c.createBufferSource();
+  src.buffer = buffer;
+  src.playbackRate.value = tone.playbackRate;
+  const gain = c.createGain();
+  gain.gain.value = tone.gain * volume;
+  if (tone.effect === 'robot') {
+    const ring = c.createGain();
+    ring.gain.value = 0;
+    const osc = c.createOscillator();
+    osc.frequency.value = 55;
+    osc.connect(ring.gain);
+    osc.start();
+    const dry = c.createGain();
+    dry.gain.value = 0.35;
+    src.connect(ring).connect(gain);
+    src.connect(dry).connect(gain);
+    src.onended = () => osc.stop();
+  } else {
+    src.connect(gain);
+  }
+  gain.connect(c.destination);
+  src.start(0, from, dur);
+  previewSrc = src;
+}
+
 async function preview(line) {
   try {
-    const tone = TONES[line.tone] ? line.tone : 'normal';
-    let bytes;
-    if (line.kind === 'clip') {
-      const clip = await MemeDB.getClip(line.clipId);
-      if (!clip) throw new Error('Clip not found');
-      bytes = clip.bytes.slice(0);
-    } else if (line.kind === 'url') {
-      bytes = await fetchLink(line.url);
-    } else {
-      bytes = await synth(line.say || line.text, line.lang, tone);
-    }
-    previewCtx = previewCtx || new AudioContext();
-    await previewCtx.resume();
-    const buffer = await previewCtx.decodeAudioData(bytes);
-    if (previewSrc) try { previewSrc.stop(); } catch {}
-    const src = previewCtx.createBufferSource();
-    src.buffer = buffer;
-    src.playbackRate.value = TONES[tone].playbackRate;
-    const gain = previewCtx.createGain();
-    gain.gain.value = TONES[tone].gain;
-    if (TONES[tone].effect === 'robot') {
-      const ring = previewCtx.createGain();
-      ring.gain.value = 0;
-      const osc = previewCtx.createOscillator();
-      osc.frequency.value = 55;
-      osc.connect(ring.gain);
-      osc.start();
-      const dry = previewCtx.createGain();
-      dry.gain.value = 0.35;
-      src.connect(ring).connect(gain);
-      src.connect(dry).connect(gain);
-      src.onended = () => osc.stop();
-    } else {
-      src.connect(gain);
-    }
-    gain.connect(previewCtx.destination);
-    src.start();
-    previewSrc = src;
+    const buffer = await audioCtx().decodeAudioData(await lineBytes(line));
+    playBuffer(buffer, line.tone, line.volume ?? 1);
   } catch (err) {
-    toast('Preview failed: ' + err.message, true);
+    toast(t('op_err_preview', err.message), true);
   }
 }
 
@@ -146,82 +164,66 @@ async function preview(line) {
 
 function fillSelects() {
   for (const sel of document.querySelectorAll('.tone-select')) {
-    sel.replaceChildren(...Object.entries(TONES).map(([id, t]) => el('option', { value: id }, `${t.emoji} ${t.label}`)));
+    sel.replaceChildren(...Object.entries(TONES).map(([id, x]) => el('option', { value: id }, `${x.emoji} ${x.label}`)));
   }
   for (const sel of document.querySelectorAll('.fav-select')) {
-    sel.replaceChildren(el('option', { value: '0' }, 'None'),
+    sel.replaceChildren(el('option', { value: '0' }, t('op_none')),
       ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => el('option', { value: String(n) }, 'Alt+' + n)));
   }
 }
 
+function categories() {
+  return [...new Set(lines.map((l) => l.category))];
+}
+
 function render() {
-  const body = $('lines-body');
-  body.replaceChildren();
-  const editingId = $('line-id').value;
-  if (!lines.length) {
-    body.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint' }, 'No lines. Add one above, or restore the default pack.')));
+  const cats = categories();
+  $('cat-list').replaceChildren(...cats.map((c) => el('option', { value: c }, categoryLabel(c))));
+  for (const [sel, first] of [[$('lines-filter'), t('op_all_categories')], [$('export-which'), t('op_export_all')]]) {
+    const keep = sel.value;
+    sel.replaceChildren(el('option', { value: '' }, first), ...cats.map((c) => el('option', { value: c }, categoryLabel(c))));
+    if (cats.includes(keep)) sel.value = keep;
   }
-  for (const line of lines) {
-    const tone = TONES[line.tone] || TONES.normal;
-    const text = el('td', { className: 'text' }, line.text);
-    if (line.say) text.append(el('span', { className: 'say', lang: line.lang }, line.say));
-    const play = el('button', { type: 'button', className: 'small', title: 'Preview here (only you hear it)' }, '▶');
-    play.addEventListener('click', () => preview(line));
-    const edit = el('button', { type: 'button', className: 'small' }, 'Edit');
-    edit.addEventListener('click', () => startEdit(line));
-    const del = el('button', { type: 'button', className: 'small danger' }, 'Delete');
-    del.addEventListener('click', () => removeLine(line));
-    const kindTag = line.kind === 'clip' ? '🎵 clip' : line.kind === 'url' ? '🔗 link' : line.lang;
-    if (line.kind === 'url') {
-      text.append(el('span', { className: 'say' }, new URL(line.url).hostname));
-      // Imported links may still need the website permission.
-      chrome.permissions.contains({ origins: [MEME.originPattern(line.url)] }).then((ok) => {
-        if (ok) return;
-        const allow = el('button', { type: 'button', className: 'small primary', title: 'Let MemeBox fetch sounds from this website' }, 'Allow');
-        allow.addEventListener('click', async () => {
-          if (await askPermission(line.url)) { toast('Allowed'); render(); }
-        });
-        text.append(' ', allow);
-      });
-    }
-    const tr = el('tr', { className: line.id === editingId ? 'editing' : '' },
-      el('td', {}, play),
-      text,
-      el('td', {}, el('span', { className: 'tag', title: line.url || '' }, kindTag)),
-      el('td', {}, el('span', { className: 'tag', title: tone.label }, `${tone.emoji} ${tone.label}`)),
-      el('td', {}, line.fav ? el('span', { className: 'tag' }, 'Alt+' + line.fav) : ''),
-      el('td', { className: 'right' }, edit, ' ', del));
-    body.append(tr);
-  }
+  renderLines();
+  renderPacks();
   renderTimerLineOptions();
   renderTimers();
 }
 
-function renderTimerLineOptions() {
-  const sel = $('timer-line');
-  const keep = sel.value;
-  sel.replaceChildren(...lines.map((l) => el('option', { value: l.id }, l.text)));
-  if (lines.some((l) => l.id === keep)) sel.value = keep;
-}
-
-function renderTimers() {
-  $('timers-enabled').checked = !!settings.timersEnabled;
-  const list = $('timers-list');
-  list.replaceChildren();
-  const timers = Array.isArray(settings.timers) ? settings.timers : [];
-  if (!timers.length) list.append(el('li', { className: 'empty' }, 'No timers yet.'));
-  for (const t of timers) {
-    const line = lines.find((l) => l.id === t.lineId);
-    const when = t.mode === 'clock' ? `every day at ${t.time}` : `every ${t.minutes} min`;
-    const on = el('input', { type: 'checkbox', checked: t.enabled, title: 'Enabled' });
-    on.addEventListener('change', () => { t.enabled = on.checked; saveSettings(); });
-    const del = el('button', { type: 'button', className: 'small danger' }, 'Delete');
-    del.addEventListener('click', () => {
-      settings.timers = settings.timers.filter((x) => x !== t);
-      saveSettings();
-    });
-    list.append(el('li', {}, on,
-      el('span', { className: 'what' }, `“${line ? line.text : '(deleted line)'}” – ${when}`), del));
+function renderLines() {
+  const body = $('lines-body');
+  body.replaceChildren();
+  const q = $('lines-search').value.trim().toLowerCase();
+  const cat = $('lines-filter').value;
+  const shown = lines.filter((l) => (!cat || l.category === cat) && (!q || l.text.toLowerCase().includes(q) || (l.say || '').toLowerCase().includes(q)));
+  $('lines-count').textContent = t('op_count', shown.length, lines.length);
+  const editingId = $('line-id').value;
+  if (!shown.length) body.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint' }, lines.length ? t('empty_search') : t('op_no_lines'))));
+  for (const line of shown) {
+    const tone = TONES[line.tone] || TONES.normal;
+    const text = el('td', { className: 'text' }, line.text);
+    if (line.say) text.append(el('span', { className: 'say', lang: line.lang }, line.say));
+    const play = el('button', { type: 'button', className: 'small', title: t('op_preview_tip') }, '▶');
+    play.addEventListener('click', () => preview(line));
+    const star = el('button', { type: 'button', className: 'small star' + (line.star ? ' on' : ''), title: line.star ? t('unstar') : t('star') }, line.star ? '★' : '☆');
+    star.addEventListener('click', async () => { line.star = !line.star || undefined; if (!line.star) delete line.star; await saveLines(); });
+    const edit = el('button', { type: 'button', className: 'small' }, t('op_edit'));
+    edit.addEventListener('click', () => startEdit(line));
+    const del = el('button', { type: 'button', className: 'small danger' }, t('op_delete'));
+    del.addEventListener('click', () => removeLine(line));
+    const vol = Math.round((line.volume ?? 1) * 100);
+    const about = el('td', { className: 'about' },
+      el('span', { className: 'tag' }, line.kind === 'clip' ? '🎵 ' + t('tag_clip') : line.lang),
+      ' ', el('span', { className: 'tag', title: tone.label }, `${tone.emoji} ${tone.label}`),
+      ' ', el('span', { className: 'tag' }, categoryLabel(line.category)),
+      vol !== 100 ? el('span', { className: 'tag' }, `🔊 ${vol}%`) : '');
+    body.append(el('tr', { className: line.id === editingId ? 'editing' : '' },
+      el('td', {}, play),
+      text,
+      about,
+      el('td', {}, line.fav ? el('span', { className: 'tag' }, 'Alt+' + line.fav) : ''),
+      el('td', {}, star),
+      el('td', { className: 'right' }, edit, ' ', del)));
   }
 }
 
@@ -233,9 +235,14 @@ function resetForm() {
   $('line-lang').value = 'hi';
   $('line-tone').value = 'normal';
   $('line-fav').value = '0';
-  $('line-submit').textContent = 'Add line';
+  $('line-cat').value = 'mine';
+  $('line-vol').value = '100';
+  $('line-vol-out').value = '100%';
+  $('line-say').disabled = false;
+  $('line-lang').disabled = false;
+  $('line-submit').textContent = t('op_add_line');
   $('line-cancel').hidden = true;
-  render();
+  renderLines();
 }
 
 function startEdit(line) {
@@ -245,151 +252,391 @@ function startEdit(line) {
   $('line-lang').value = line.lang;
   $('line-tone').value = line.tone;
   $('line-fav').value = String(line.fav || 0);
-  const isClip = line.kind !== 'tts'; // clips and links have no voice settings
+  $('line-cat').value = line.category;
+  $('line-vol').value = String(Math.round((line.volume ?? 1) * 100));
+  $('line-vol-out').value = $('line-vol').value + '%';
+  const isClip = line.kind !== 'tts'; // clips have no voice settings
   $('line-say').disabled = isClip;
   $('line-lang').disabled = isClip;
-  $('line-submit').textContent = 'Save changes';
+  $('line-submit').textContent = t('op_save_changes');
   $('line-cancel').hidden = false;
-  render();
+  renderLines();
   $('line-text').focus();
   $('lines-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function formLine() {
-  const id = $('line-id').value;
-  const existing = lines.find((l) => l.id === id);
+  const existing = lines.find((l) => l.id === $('line-id').value);
   return sanitizeLine({
     ...(existing || { id: newId('l'), kind: 'tts' }),
     text: $('line-text').value,
     say: $('line-say').value,
     lang: $('line-lang').value,
     tone: $('line-tone').value,
+    category: $('line-cat').value,
     fav: Number($('line-fav').value),
+    volume: Number($('line-vol').value) / 100,
   });
 }
+
+$('line-vol').addEventListener('input', () => { $('line-vol-out').value = $('line-vol').value + '%'; });
 
 $('line-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const line = formLine();
-  if (!line) { toast('Please type the line text', true); return; }
+  if (!line) { toast(t('op_err_text'), true); return; }
   claimSlot(line.fav, line.id);
   const i = lines.findIndex((l) => l.id === line.id);
   if (i >= 0) lines[i] = line; else lines.push(line);
   await saveLines();
-  toast(i >= 0 ? 'Line saved' : 'Line added');
-  $('line-say').disabled = false;
-  $('line-lang').disabled = false;
+  toast(i >= 0 ? t('op_saved') : t('op_added'));
   resetForm();
 });
 
-$('line-cancel').addEventListener('click', () => {
-  $('line-say').disabled = false;
-  $('line-lang').disabled = false;
-  resetForm();
-});
-
+$('line-cancel').addEventListener('click', resetForm);
 $('line-preview').addEventListener('click', () => {
   const line = formLine();
-  if (line) preview(line); else toast('Type some text first', true);
+  if (line) preview(line); else toast(t('op_err_text'), true);
 });
+$('lines-search').addEventListener('input', renderLines);
+$('lines-filter').addEventListener('change', renderLines);
 
 async function removeLine(line) {
-  if (!confirm(`Delete “${line.text}”?`)) return;
+  if (!confirm(t('op_confirm_delete', line.text))) return;
   lines = lines.filter((l) => l.id !== line.id);
-  if (line.kind === 'clip' && line.clipId) await MemeDB.deleteClip(line.clipId).catch(() => {});
+  if (line.kind === 'clip' && line.clipId && !lines.some((l) => l.clipId === line.clipId)) {
+    await MemeDB.deleteClip(line.clipId).catch(() => {});
+  }
   if ($('line-id').value === line.id) resetForm();
   await saveLines();
-  toast('Deleted');
+  toast(t('op_deleted'));
 }
 
-// ---------- clips ----------
+// ---------- clips: sources ----------
 
-function looksLikeAudio(file) {
-  return LIMITS.clipTypes.includes(file.type) || /\.(mp3|wav|ogg)$/i.test(file.name);
-}
+let source = null; // { buffer: AudioBuffer, name }
+let sel = { start: 0, end: 0 };
 
-async function checkDecodes(bytes) {
-  const ctx = new OfflineAudioContext(1, 1, 44100);
-  await ctx.decodeAudioData(bytes.slice(0));
-}
-
-$('clip-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const file = $('clip-file').files[0];
-  if (!file) return;
-  if (!looksLikeAudio(file)) { toast('Only MP3, WAV or OGG files', true); return; }
-  if (file.size > LIMITS.clipBytes) { toast(`That file is ${(file.size / 1048576).toFixed(2)} MB – the limit is 1 MB`, true); return; }
+async function loadSource(bytes, name) {
+  if (bytes.byteLength > LIMITS.sourceBytes) throw new Error(t('op_err_too_big_source'));
+  let buffer;
   try {
-    const bytes = await file.arrayBuffer();
-    await checkDecodes(bytes);
-    const clipId = newId('c');
-    await MemeDB.putClip({ id: clipId, name: file.name, type: file.type || 'audio/mpeg', bytes });
-    const line = sanitizeLine({
-      id: newId('l'), kind: 'clip', clipId,
-      text: $('clip-name').value.trim() || file.name.replace(/\.[^.]+$/, ''),
-      lang: 'en', tone: $('clip-tone').value, fav: Number($('clip-fav').value),
-    });
-    claimSlot(line.fav, line.id);
-    lines.push(line);
-    await saveLines();
-    $('clip-form').reset();
-    toast('Clip uploaded');
-  } catch (err) {
-    toast("Couldn't read that audio file: " + err.message, true);
-  }
-});
-
-// ---------- links ----------
-
-// Must be called straight from a click (Chrome only shows the prompt during a user gesture).
-function askPermission(url) {
-  return chrome.permissions.request({ origins: [MEME.originPattern(url)] }).catch(() => false);
-}
-
-async function fetchLink(url) {
-  let res;
-  try {
-    res = await fetch(url, { credentials: 'omit', referrerPolicy: 'no-referrer' });
+    buffer = await audioCtx().decodeAudioData(bytes);
   } catch {
-    throw new Error(`couldn't reach ${new URL(url).hostname} – check the link`);
+    throw new Error(t('op_err_no_audio'));
   }
-  if (!res.ok) throw new Error(`the website answered HTTP ${res.status}`);
-  const bytes = await res.arrayBuffer();
-  if (bytes.byteLength > LIMITS.linkBytes) throw new Error('that file is bigger than 5 MB');
-  return bytes;
+  if (!buffer.duration) throw new Error(t('op_err_no_audio'));
+  source = { buffer, name };
+  // Start with the longest selection that fits at decent quality (≥ 16 kHz), from the beginning.
+  const fitAt16k = Trim.maxSeconds(16000, LIMITS.clipBytes);
+  sel = Trim.clampRange(0, Math.min(buffer.duration, fitAt16k), buffer.duration);
+  $('clip-name').value = name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 300);
+  $('trimmer').hidden = false;
+  syncSliders();
+  drawWave();
+  $('trimmer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+
+$('clip-file').addEventListener('change', async () => {
+  const file = $('clip-file').files[0];
+  $('clip-file').value = '';
+  if (!file) return;
+  const ext = file.name.toLowerCase().split('.').pop();
+  if (!LIMITS.clipExtensions.includes(ext) && !/^(audio|video)\//.test(file.type)) { toast(t('op_err_type'), true); return; }
+  try { await loadSource(await file.arrayBuffer(), file.name); } catch (err) { toast(err.message, true); }
+});
 
 $('link-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const url = MEME.cleanUrl($('link-url').value);
-  if (!url) { toast('Please paste a full link starting with https://', true); return; }
-  if (MEME.isVideoPage(url)) {
-    toast('YouTube / Instagram pages aren\'t audio files. Open the video in a tab and use the toolbar button → "Send this tab\'s sound".', true);
+  if (!url) { toast(t('op_err_url'), true); return; }
+  if (MEME.isVideoPage(url)) { toast(t('op_err_video_page'), true); return; }
+  if (!MEME.isDirectFileLink(url)) { toast(t('op_err_not_file'), true); return; }
+  let res;
+  try {
+    // No extra permissions: the website itself must allow other sites to fetch the file (CORS).
+    res = await fetch(url, { credentials: 'omit', mode: 'cors', referrerPolicy: 'no-referrer' });
+  } catch {
+    toast(t('op_err_blocked', new URL(url).hostname), true);
     return;
   }
-  // Ask first, while we still have the click's user gesture.
-  if (!(await askPermission(url))) { toast('MemeBox needs your OK to fetch sounds from that website', true); return; }
+  if (!res.ok) { toast(t('op_err_http', res.status), true); return; }
+  const len = Number(res.headers.get('content-length'));
+  if (len > LIMITS.sourceBytes) { toast(t('op_err_too_big_source'), true); return; }
   try {
-    const bytes = await fetchLink(url);
-    try { await checkDecodes(bytes); } catch { throw new Error("that link isn't a playable MP3/OGG/WAV file"); }
-    let file = new URL(url).pathname.split('/').pop() || 'sound';
-    try { file = decodeURIComponent(file); } catch { /* keep it encoded */ }
+    await loadSource(await res.arrayBuffer(), decodeURIComponent(new URL(url).pathname.split('/').pop() || 'clip'));
+    $('link-url').value = '';
+  } catch (err) { toast(err.message, true); }
+});
+
+// Record my own clip (max 10 s) – only while this page is open, straight into the trimmer.
+let recorder = null;
+$('rec-btn').addEventListener('click', async () => {
+  if (recorder) { recorder.stop(); return; }
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch {
+    toast(t('op_err_mic'), true);
+    return;
+  }
+  const chunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+  const started = Date.now();
+  const tick = setInterval(() => {
+    const left = LIMITS.recordSeconds - Math.floor((Date.now() - started) / 1000);
+    $('rec-btn').textContent = t('op_recording', Math.max(0, left));
+    if (left <= 0 && recorder) recorder.stop();
+  }, 200);
+  recorder.onstop = async () => {
+    clearInterval(tick);
+    stream.getTracks().forEach((x) => x.stop());
+    recorder = null;
+    $('rec-btn').textContent = t('op_record');
+    try {
+      await loadSource(await new Blob(chunks, { type: chunks[0] ? chunks[0].type : 'audio/webm' }).arrayBuffer(), t('op_my_recording'));
+    } catch (err) { toast(err.message, true); }
+  };
+  recorder.start(250);
+  $('rec-btn').textContent = t('op_recording', LIMITS.recordSeconds);
+});
+
+// ---------- clips: trimmer ----------
+
+function syncSliders() {
+  const d = source.buffer.duration;
+  $('trim-start').value = String(Math.round((sel.start / d) * 1000));
+  $('trim-end').value = String(Math.round((sel.end / d) * 1000));
+  const len = sel.end - sel.start;
+  $('trim-label').textContent = t('op_selection', Trim.formatTime(sel.start), Trim.formatTime(sel.end), len.toFixed(1));
+  const rate = Trim.fitSampleRate(len, LIMITS.clipBytes, source.buffer.sampleRate);
+  $('trim-fit').textContent = rate ? t('op_fit', Math.round(rate / 100) / 10) : t('op_too_long', Trim.maxSeconds(8000, LIMITS.clipBytes).toFixed(0));
+  $('trim-fit').classList.toggle('bad', !rate);
+}
+
+function drawWave() {
+  const canvas = $('wave');
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(200, canvas.clientWidth);
+  const h = 120;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  const g = canvas.getContext('2d');
+  g.scale(dpr, dpr);
+  const css = getComputedStyle(document.documentElement);
+  g.fillStyle = css.getPropertyValue('--wave-bg') || '#f1f3f4';
+  g.fillRect(0, 0, w, h);
+  const data = source.buffer.getChannelData(0);
+  const pk = Trim.peaks(data, w);
+  const x0 = Trim.timeToPx(sel.start, w, source.buffer.duration);
+  const x1 = Trim.timeToPx(sel.end, w, source.buffer.duration);
+  g.fillStyle = css.getPropertyValue('--sel') || 'rgba(255,212,59,.35)';
+  g.fillRect(x0, 0, x1 - x0, h);
+  for (let x = 0; x < pk.length; x++) {
+    const [lo, hi] = pk[x];
+    g.fillStyle = x >= x0 && x <= x1 ? '#f59f00' : '#9aa0a6';
+    g.fillRect(x, h / 2 - hi * (h / 2), 1, Math.max(1, (hi - lo) * (h / 2)));
+  }
+  g.fillStyle = '#202124';
+  g.fillRect(x0 - 1, 0, 3, h);
+  g.fillRect(x1 - 1, 0, 3, h);
+}
+
+function setSel(start, end) {
+  sel = Trim.clampRange(start, end, source.buffer.duration);
+  syncSliders();
+  drawWave();
+}
+
+$('trim-start').addEventListener('input', () => {
+  const d = source.buffer.duration;
+  setSel((Number($('trim-start').value) / 1000) * d, sel.end);
+});
+$('trim-end').addEventListener('input', () => {
+  const d = source.buffer.duration;
+  setSel(sel.start, (Number($('trim-end').value) / 1000) * d);
+});
+
+// Drag on the waveform: moves whichever edge is nearer.
+let dragEdge = null;
+$('wave').addEventListener('pointerdown', (e) => {
+  if (!source) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  const time = Trim.pxToTime(e.clientX - r.left, r.width, source.buffer.duration);
+  dragEdge = Math.abs(time - sel.start) < Math.abs(time - sel.end) ? 'start' : 'end';
+  e.currentTarget.setPointerCapture(e.pointerId);
+  moveEdge(time);
+});
+$('wave').addEventListener('pointermove', (e) => {
+  if (!dragEdge) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  moveEdge(Trim.pxToTime(e.clientX - r.left, r.width, source.buffer.duration));
+});
+$('wave').addEventListener('pointerup', () => { dragEdge = null; });
+function moveEdge(time) {
+  if (dragEdge === 'start') setSel(time, sel.end); else setSel(sel.start, time);
+}
+window.addEventListener('resize', () => { if (source) drawWave(); });
+
+$('trim-play').addEventListener('click', () => {
+  if (source) playBuffer(source.buffer, $('clip-tone').value, 1, sel.start, sel.end - sel.start);
+});
+$('trim-stop').addEventListener('click', stopPreview);
+$('trim-cancel').addEventListener('click', () => { stopPreview(); source = null; $('trimmer').hidden = true; });
+
+// Selection -> mono WAV at the best sample rate that fits in 1 MB.
+async function renderSelection() {
+  const len = sel.end - sel.start;
+  const rate = Trim.fitSampleRate(len, LIMITS.clipBytes, source.buffer.sampleRate);
+  if (!rate) throw new Error(t('op_too_long', Trim.maxSeconds(8000, LIMITS.clipBytes).toFixed(0)));
+  const frames = Math.max(1, Math.ceil(len * rate));
+  const off = new OfflineAudioContext(1, frames, rate);
+  const src = off.createBufferSource();
+  src.buffer = source.buffer; // multi-channel is mixed down to mono by the 1-channel context
+  src.connect(off.destination);
+  src.start(0, sel.start, len);
+  const rendered = await off.startRendering();
+  const wav = Trim.floatToWav16(rendered.getChannelData(0), rate);
+  if (wav.byteLength > LIMITS.clipBytes) throw new Error(t('op_too_long', Trim.maxSeconds(8000, LIMITS.clipBytes).toFixed(0)));
+  return wav;
+}
+
+$('clip-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!source) return;
+  try {
+    const wav = await renderSelection();
+    const clipId = newId('c');
+    await MemeDB.putClip({ id: clipId, name: source.name.slice(0, 120), type: 'audio/wav', bytes: wav });
     const line = sanitizeLine({
-      id: newId('l'), kind: 'url', url,
-      text: $('link-name').value.trim() || file.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' '),
-      lang: 'en', tone: $('link-tone').value, fav: Number($('link-fav').value),
+      id: newId('l'), kind: 'clip', clipId, lang: 'en',
+      text: $('clip-name').value.trim() || source.name,
+      tone: $('clip-tone').value, category: $('clip-cat').value || 'clips', fav: Number($('clip-fav').value),
     });
     claimSlot(line.fav, line.id);
     lines.push(line);
     await saveLines();
-    $('link-form').reset();
-    toast('Link added');
+    stopPreview();
+    source = null;
+    $('trimmer').hidden = true;
+    $('clip-form').reset();
+    $('clip-cat').value = 'clips';
+    toast(t('op_clip_saved', (wav.byteLength / 1024).toFixed(0)));
   } catch (err) {
-    toast("Couldn't add that link: " + err.message, true);
+    toast(err.message, true);
   }
 });
 
-// ---------- timers ----------
+// ---------- packs ----------
+
+function renderPacks() {
+  const list = $('builtin-packs');
+  list.replaceChildren();
+  const have = new Set(lines.map((l) => l.id));
+  for (const id of MEME_PACKS.ids) {
+    const packLines = MEME_PACKS.lines(id);
+    const n = packLines.filter((l) => have.has(l.id)).length;
+    const add = el('button', { type: 'button', className: 'small primary' }, n === packLines.length ? t('op_pack_reset') : t('op_pack_add'));
+    add.addEventListener('click', async () => {
+      for (const l of packLines) {
+        const i = lines.findIndex((x) => x.id === l.id);
+        if (l.fav && lines.some((x) => x.fav === l.fav && x.id !== l.id)) l.fav = 0; // don't steal your shortcuts
+        if (i >= 0) lines[i] = l; else lines.push(l);
+      }
+      await saveLines();
+      toast(t('op_pack_added', categoryLabel(id)));
+    });
+    const remove = el('button', { type: 'button', className: 'small danger', disabled: n === 0 }, t('op_pack_remove'));
+    remove.addEventListener('click', async () => {
+      const ids = new Set(packLines.map((l) => l.id));
+      lines = lines.filter((l) => !ids.has(l.id));
+      await saveLines();
+      toast(t('op_pack_removed', categoryLabel(id)));
+    });
+    list.append(el('li', {},
+      el('span', { className: 'what' }, el('b', {}, categoryLabel(id)), ' ', el('span', { className: 'hint' }, t('op_pack_count', n, packLines.length))),
+      add, remove));
+  }
+}
+
+$('export').addEventListener('click', async () => {
+  const cat = $('export-which').value;
+  const chosen = lines.filter((l) => !cat || l.category === cat);
+  if (!chosen.length) { toast(t('op_no_lines'), true); return; }
+  const clips = [];
+  let skipped = 0;
+  for (const c of await MemeDB.listClips()) {
+    if (c.type === 'audio/wav') clips.push(c); else skipped++;
+  }
+  const usable = chosen.filter((l) => l.kind !== 'clip' || clips.some((c) => c.id === l.clipId));
+  const name = cat ? categoryLabel(cat) : t('op_my_library');
+  const pack = MemePack.build(name, usable, clips);
+  const slug = name.toLowerCase().replace(/[^a-z0-9ऀ-ॿ]+/g, '-').replace(/^-|-$/g, '') || 'memebox';
+  download(`${slug}.memepack.json`, new Blob([JSON.stringify(pack, null, 2)], { type: 'application/json' }));
+  toast(skipped || usable.length < chosen.length ? t('op_export_partial', usable.length) : t('op_exported', usable.length));
+});
+
+$('import').addEventListener('change', async () => {
+  const file = $('import').files[0];
+  $('import').value = '';
+  const errList = $('import-errors');
+  errList.hidden = true;
+  errList.replaceChildren();
+  if (!file) return;
+  let data;
+  try {
+    if (file.size > 60 * 1024 * 1024) throw new Error(t('op_err_too_big_source'));
+    data = JSON.parse(await file.text());
+  } catch (err) {
+    toast(t('op_import_failed', err.message), true);
+    return;
+  }
+  const res = MemePack.validate(data);
+  if (!res.ok) {
+    errList.replaceChildren(...res.errors.map((x) => el('li', {}, x)));
+    errList.hidden = false;
+    toast(t('op_import_invalid'), true);
+    return;
+  }
+  for (const c of res.pack.clips) await MemeDB.putClip(c);
+  for (const line of res.pack.lines) {
+    claimSlot(line.fav, line.id);
+    const i = lines.findIndex((l) => l.id === line.id);
+    if (i >= 0) lines[i] = line; else lines.push(line);
+  }
+  await saveLines();
+  toast(t('op_imported', res.pack.lines.length, res.pack.clips.length, res.pack.name));
+});
+
+// ---------- timed lines / party mode ----------
+
+function renderTimerLineOptions() {
+  const s = $('timer-line');
+  const keep = s.value;
+  s.replaceChildren(...lines.map((l) => el('option', { value: l.id }, l.text)));
+  if (lines.some((l) => l.id === keep)) s.value = keep;
+}
+
+function renderTimers() {
+  $('timers-enabled').checked = !!settings.timersEnabled;
+  const list = $('timers-list');
+  list.replaceChildren();
+  const timers = Array.isArray(settings.timers) ? settings.timers : [];
+  if (!timers.length) list.append(el('li', { className: 'empty' }, t('op_no_timers')));
+  for (const x of timers) {
+    const line = lines.find((l) => l.id === x.lineId);
+    const when = x.mode === 'clock' ? t('op_daily_at', x.time) : t('op_every', x.minutes);
+    const on = el('input', { type: 'checkbox', checked: x.enabled, title: t('op_enabled') });
+    on.addEventListener('change', () => { x.enabled = on.checked; saveSettings(); });
+    const del = el('button', { type: 'button', className: 'small danger' }, t('op_delete'));
+    del.addEventListener('click', () => {
+      settings.timers = settings.timers.filter((y) => y !== x);
+      saveSettings();
+    });
+    list.append(el('li', {}, on, el('span', { className: 'what' }, `“${line ? line.text : t('op_deleted_line')}” – ${when}`), del));
+  }
+}
 
 $('timer-mode').addEventListener('change', () => {
   const clock = $('timer-mode').value === 'clock';
@@ -400,89 +647,16 @@ $('timer-mode').addEventListener('change', () => {
 $('timers-enabled').addEventListener('change', () => {
   settings.timersEnabled = $('timers-enabled').checked;
   saveSettings();
-  toast(settings.timersEnabled ? 'Timed lines on' : 'Timed lines off');
+  toast(settings.timersEnabled ? t('op_party_on') : t('op_party_off'));
 });
 
 $('timer-form').addEventListener('submit', (e) => {
   e.preventDefault();
-  if (!$('timer-line').value) { toast('Add a line first', true); return; }
-  const t = sanitizeTimer({
-    lineId: $('timer-line').value, mode: $('timer-mode').value,
-    time: $('timer-time').value, minutes: $('timer-min').value, enabled: true,
-  });
-  settings.timers = [...(settings.timers || []), t];
+  if (!$('timer-line').value) { toast(t('op_no_lines'), true); return; }
+  const x = sanitizeTimer({ lineId: $('timer-line').value, mode: $('timer-mode').value, time: $('timer-time').value, minutes: $('timer-min').value, enabled: true });
+  settings.timers = [...(settings.timers || []), x];
   saveSettings();
-  toast(settings.timersEnabled ? 'Timer added' : 'Timer added – switch on “Play timed lines automatically” to use it');
-});
-
-// ---------- import / export ----------
-
-$('export').addEventListener('click', async () => {
-  const clips = [];
-  for (const c of await MemeDB.listClips()) clips.push({ id: c.id, name: c.name, type: c.type, b64: toBase64(c.bytes) });
-  const data = {
-    format: 'memebox', version: 1, exportedAt: new Date().toISOString(),
-    lines, settings: { timersEnabled: settings.timersEnabled, timers: settings.timers, volume: settings.volume }, clips,
-  };
-  const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-  const a = el('a', { href: url, download: `memebox-${new Date().toISOString().slice(0, 10)}.json` });
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
-});
-
-$('import').addEventListener('change', async () => {
-  const file = $('import').files[0];
-  $('import').value = '';
-  if (!file) return;
-  try {
-    if (file.size > 60 * 1024 * 1024) throw new Error('file is too large');
-    const data = JSON.parse(await file.text());
-    if (!data || !['memebox', 'meme-button'].includes(data.format) || !Array.isArray(data.lines)) throw new Error('not a MemeBox export');
-
-    const clipIds = new Set((await MemeDB.listClips()).map((c) => c.id));
-    for (const c of Array.isArray(data.clips) ? data.clips : []) {
-      if (!c || typeof c.id !== 'string' || typeof c.b64 !== 'string') continue;
-      const bytes = fromBase64(c.b64);
-      if (bytes.byteLength > LIMITS.clipBytes) continue;
-      try { await checkDecodes(bytes); } catch { continue; }
-      await MemeDB.putClip({ id: c.id.slice(0, 64), name: String(c.name || 'clip').slice(0, 200), type: String(c.type || 'audio/mpeg'), bytes });
-      clipIds.add(c.id.slice(0, 64));
-    }
-
-    let added = 0;
-    for (const raw of data.lines) {
-      const line = sanitizeLine(raw);
-      if (!line || (line.kind === 'clip' && !clipIds.has(line.clipId))) continue;
-      const i = lines.findIndex((l) => l.id === line.id);
-      claimSlot(line.fav, line.id);
-      if (i >= 0) lines[i] = line; else lines.push(line);
-      added++;
-    }
-    if (data.settings && Array.isArray(data.settings.timers)) {
-      const known = new Set(settings.timers.map((t) => t.id));
-      for (const t of data.settings.timers.map(sanitizeTimer).filter(Boolean)) {
-        if (!known.has(t.id) && lines.some((l) => l.id === t.lineId)) settings.timers.push(t);
-      }
-    }
-    await saveLines();
-    await saveSettings();
-    toast(`Imported ${added} line${added === 1 ? '' : 's'}`);
-  } catch (err) {
-    toast('Import failed: ' + err.message, true);
-  }
-});
-
-$('reset').addEventListener('click', async () => {
-  if (!confirm('Put the default meme pack back? Your own lines and clips stay; default lines you edited are reset.')) return;
-  for (const d of MEME.defaultLines()) {
-    const i = lines.findIndex((l) => l.id === d.id);
-    claimSlot(d.fav, d.id);
-    if (i >= 0) lines[i] = d; else lines.push(d);
-  }
-  await saveLines();
-  toast('Default pack restored');
+  toast(settings.timersEnabled ? t('op_timer_added') : t('op_timer_added_off'));
 });
 
 $('open-shortcuts').addEventListener('click', (e) => {
@@ -498,14 +672,20 @@ chrome.storage.onChanged.addListener((changes, area) => {
     settings = { ...MEME.defaultSettings(), ...changes.settings.newValue };
     renderTimers();
   }
+  if (changes.lines && Array.isArray(changes.lines.newValue)) {
+    lines = changes.lines.newValue.map(sanitizeLine).filter(Boolean);
+    render();
+  }
 });
 
 (async () => {
   fillSelects();
   const r = await chrome.storage.local.get(['lines', 'settings']);
-  lines = Array.isArray(r.lines) ? r.lines.map(sanitizeLine).filter(Boolean) : MEME.defaultLines();
+  lines = Array.isArray(r.lines) ? r.lines.map(sanitizeLine).filter(Boolean) : MEME_PACKS.all();
   settings = { ...MEME.defaultSettings(), ...(r.settings || {}) };
   settings.timers = (Array.isArray(settings.timers) ? settings.timers : []).map(sanitizeTimer).filter(Boolean);
   if (!Array.isArray(r.lines)) await chrome.storage.local.set({ lines });
+  render();
   resetForm();
+  $('clip-cat').value = 'clips';
 })();

@@ -3,16 +3,25 @@
 //   while the frame that owns the microphone (usually the top one) plays the audio.
 // - Turns lines into audio: text via the offscreen eSpeak-NG engine, clips from IndexedDB.
 // - Forwards chrome.commands shortcuts (Alt+1…9) to the call tab.
-importScripts('defaults.js', 'db.js');
+importScripts('config.js', 'defaults.js', 'packs.js', 'db.js');
 
 const { TONES, LIMITS } = globalThis.MEME;
 
+// First install: the general pack + every built-in pack. Updates from before packs existed
+// get the new packs added once (their own lines are kept).
+const PACKS_SEEDED = 1;
 chrome.runtime.onInstalled.addListener(async () => {
-  const { lines, settings } = await chrome.storage.local.get(['lines', 'settings']);
+  const { lines, settings, seeded } = await chrome.storage.local.get(['lines', 'settings', 'seeded']);
   const patch = {};
-  if (!Array.isArray(lines)) patch.lines = MEME.defaultLines();
+  if (!Array.isArray(lines)) {
+    patch.lines = MEME_PACKS.all();
+  } else if ((seeded || 0) < PACKS_SEEDED) {
+    const have = new Set(lines.map((l) => l && l.id));
+    patch.lines = [...lines, ...MEME_PACKS.all().filter((l) => !have.has(l.id)).map((l) => ({ ...l, fav: 0 }))];
+  }
+  patch.seeded = PACKS_SEEDED;
   if (!settings || typeof settings !== 'object') patch.settings = MEME.defaultSettings();
-  if (Object.keys(patch).length) await chrome.storage.local.set(patch);
+  await chrome.storage.local.set(patch);
 });
 
 function sendToTab(tabId, msg, frameId) {
@@ -62,33 +71,6 @@ function toBase64(buf) {
   return btoa(s);
 }
 
-// ---------- memes from a link (streamed when played, never stored) ----------
-
-const linkCache = new Map(); // url -> base64 (small LRU, memory only)
-
-async function linkAudio(rawUrl) {
-  const url = MEME.cleanUrl(rawUrl);
-  if (!url) throw new Error('Bad link');
-  if (linkCache.has(url)) return linkCache.get(url);
-  const host = new URL(url).hostname;
-  if (!(await chrome.permissions.contains({ origins: [MEME.originPattern(url)] }))) {
-    throw new Error(`Allow ${host} first (Options → Lines → Allow)`);
-  }
-  let res;
-  try {
-    res = await fetch(url, { credentials: 'omit', referrerPolicy: 'no-referrer' });
-  } catch {
-    throw new Error(`Couldn't reach ${host}`);
-  }
-  if (!res.ok) throw new Error(`${host} answered HTTP ${res.status}`);
-  const buf = await res.arrayBuffer();
-  if (buf.byteLength > LIMITS.linkBytes) throw new Error('That link is bigger than 5 MB');
-  const b64 = toBase64(buf);
-  linkCache.set(url, b64);
-  while (linkCache.size > 10) linkCache.delete(linkCache.keys().next().value);
-  return b64;
-}
-
 async function audioFor(item) {
   if (!item || typeof item !== 'object') throw new Error('Nothing to play');
   const tone = Object.prototype.hasOwnProperty.call(TONES, item.tone) ? item.tone : 'normal';
@@ -97,7 +79,6 @@ async function audioFor(item) {
     if (!clip) throw new Error('Clip not found – re-upload it in Options');
     return { b64: toBase64(clip.bytes), tone };
   }
-  if (item.kind === 'url') return { b64: await linkAudio(item.url), tone };
   const text = String(item.say || item.text || '').trim().slice(0, LIMITS.textChars);
   if (!text) throw new Error('Empty line');
   return { b64: await tts(text, item.lang === 'hi' ? 'hi' : 'en', tone), tone };
@@ -107,10 +88,11 @@ async function handlePlay(tabId, { frameId, reqId, item }) {
   try {
     const { b64, tone } = await audioFor(item);
     const t = TONES[tone];
+    const lineVolume = Number.isFinite(Number(item.volume)) ? Math.min(2, Math.max(0, Number(item.volume))) : 1;
     sendToTab(tabId, {
       type: 'hook',
       cmd: {
-        type: 'play-audio', reqId, b64, playbackRate: t.playbackRate, gain: t.gain, effect: t.effect || '',
+        type: 'play-audio', reqId, b64, playbackRate: t.playbackRate, gain: t.gain * lineVolume, effect: t.effect || '',
         text: String(item.text || '').slice(0, LIMITS.textChars),
       },
     }, frameId);

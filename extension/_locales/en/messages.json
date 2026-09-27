@@ -280,5 +280,320 @@
   },
   "pp_error": {
     "message": "Error: $1"
+  },
+  "op_sub": {
+    "message": "Your lines, clips, packs and party mode. Everything stays in this browser."
+  },
+  "op_nav_lines": {
+    "message": "Lines"
+  },
+  "op_nav_clips": {
+    "message": "Clips"
+  },
+  "op_nav_packs": {
+    "message": "Packs"
+  },
+  "op_nav_party": {
+    "message": "Party mode"
+  },
+  "op_lines": {
+    "message": "Lines"
+  },
+  "op_text": {
+    "message": "Text shown in the caption"
+  },
+  "op_text_ph": {
+    "message": "e.g. Bhai tu rehne de"
+  },
+  "op_say": {
+    "message": "Pronounce as (optional – e.g. Devanagari for Hinglish lines)"
+  },
+  "op_lang": {
+    "message": "Language"
+  },
+  "op_tone": {
+    "message": "Tone"
+  },
+  "op_category": {
+    "message": "Category"
+  },
+  "op_shortcut": {
+    "message": "Shortcut"
+  },
+  "op_line_volume": {
+    "message": "Volume of this line"
+  },
+  "op_add_line": {
+    "message": "Add line"
+  },
+  "op_save_changes": {
+    "message": "Save changes"
+  },
+  "op_preview": {
+    "message": "▶ Preview"
+  },
+  "op_cancel": {
+    "message": "Cancel"
+  },
+  "op_search": {
+    "message": "Search…"
+  },
+  "op_all_categories": {
+    "message": "All categories"
+  },
+  "op_count": {
+    "message": "$1 of $2 lines"
+  },
+  "op_col_line": {
+    "message": "Line"
+  },
+  "op_col_about": {
+    "message": "About"
+  },
+  "op_col_actions": {
+    "message": "Actions"
+  },
+  "op_shortcut_hint": {
+    "message": "Alt+1…3 and Alt+0 work everywhere. Change keys or add Alt+4…9 at"
+  },
+  "op_none": {
+    "message": "None"
+  },
+  "op_no_lines": {
+    "message": "No lines yet. Add one above, or add a pack below."
+  },
+  "op_preview_tip": {
+    "message": "Preview here (only you hear it)"
+  },
+  "op_edit": {
+    "message": "Edit"
+  },
+  "op_delete": {
+    "message": "Delete"
+  },
+  "op_err_text": {
+    "message": "Please type the line text"
+  },
+  "op_saved": {
+    "message": "Line saved"
+  },
+  "op_added": {
+    "message": "Line added"
+  },
+  "op_confirm_delete": {
+    "message": "Delete “$1”?"
+  },
+  "op_deleted": {
+    "message": "Deleted"
+  },
+  "op_err_preview": {
+    "message": "Preview failed: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "Clip not found – add it again"
+  },
+  "op_clips": {
+    "message": "Add a clip"
+  },
+  "op_clips_hint": {
+    "message": "Use an audio file or a video (only its sound is kept), a direct file link, or record yourself. Then trim it – a saved clip is at most 1 MB."
+  },
+  "op_choose_file": {
+    "message": "📁 Choose a file"
+  },
+  "op_link_ph": {
+    "message": "https://…/sound.mp3  (direct .mp3 .mp4 .wav .ogg .webm link)"
+  },
+  "op_fetch": {
+    "message": "🔗 Fetch"
+  },
+  "op_record": {
+    "message": "🎙 Record (10 s)"
+  },
+  "op_recording": {
+    "message": "⏹ Stop recording ($1 s left)"
+  },
+  "op_my_recording": {
+    "message": "My recording"
+  },
+  "op_video_sites": {
+    "message": "YouTube, Instagram and other video pages are never downloaded – play them live with the toolbar button → “Send this tab's sound”."
+  },
+  "op_start": {
+    "message": "Start"
+  },
+  "op_end": {
+    "message": "End"
+  },
+  "op_preview_sel": {
+    "message": "▶ Preview selection"
+  },
+  "op_stop": {
+    "message": "⏹ Stop"
+  },
+  "op_caption": {
+    "message": "Caption text"
+  },
+  "op_tone_speed": {
+    "message": "Tone (speed only)"
+  },
+  "op_save_clip": {
+    "message": "💾 Save clip"
+  },
+  "op_selection": {
+    "message": "$1 → $2 ($3 s)"
+  },
+  "op_fit": {
+    "message": "Saves at $1 kHz, under 1 MB"
+  },
+  "op_too_long": {
+    "message": "Too long for 1 MB – keep it under about $1 s"
+  },
+  "op_clip_saved": {
+    "message": "Clip saved ($1 KB)"
+  },
+  "op_err_type": {
+    "message": "Use an audio or video file (MP3, WAV, OGG, M4A, MP4, WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "Couldn't find any sound in that file"
+  },
+  "op_err_too_big_source": {
+    "message": "That file is too big (max 50 MB before trimming)"
+  },
+  "op_err_url": {
+    "message": "Paste a full link starting with https://"
+  },
+  "op_err_video_page": {
+    "message": "That's a video page, not a file – MemeBox never downloads from YouTube, Instagram or other video sites. Open it in a tab and use the toolbar button → “Send this tab's sound”."
+  },
+  "op_err_not_file": {
+    "message": "The link must end in .mp3, .mp4, .wav, .ogg or .webm"
+  },
+  "op_err_blocked": {
+    "message": "$1 doesn't let other sites use its files (it blocks CORS). Download the file and use “Choose a file” instead."
+  },
+  "op_err_http": {
+    "message": "The website answered with error $1"
+  },
+  "op_err_mic": {
+    "message": "MemeBox needs your OK to use the microphone for recording"
+  },
+  "op_packs": {
+    "message": "Packs"
+  },
+  "op_pack_add": {
+    "message": "Add"
+  },
+  "op_pack_reset": {
+    "message": "Reset"
+  },
+  "op_pack_remove": {
+    "message": "Remove"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 lines"
+  },
+  "op_pack_added": {
+    "message": "“$1” pack added"
+  },
+  "op_pack_removed": {
+    "message": "“$1” pack removed"
+  },
+  "op_share_packs": {
+    "message": "Share packs"
+  },
+  "op_export_all": {
+    "message": "All my lines"
+  },
+  "op_export": {
+    "message": "⬇ Export .memepack.json"
+  },
+  "op_import": {
+    "message": "⬆ Import .memepack.json"
+  },
+  "op_packs_hint": {
+    "message": "A pack holds lines and their clips. Importing adds to your lines; lines with the same id are replaced. Files are checked strictly."
+  },
+  "op_my_library": {
+    "message": "My MemeBox lines"
+  },
+  "op_exported": {
+    "message": "Exported $1 lines"
+  },
+  "op_export_partial": {
+    "message": "Exported $1 lines (clips from older versions were skipped)"
+  },
+  "op_import_failed": {
+    "message": "Import failed: $1"
+  },
+  "op_import_invalid": {
+    "message": "That pack file isn't valid – see the list below"
+  },
+  "op_imported": {
+    "message": "Imported $1 lines and $2 clips from “$3”"
+  },
+  "op_party": {
+    "message": "Timed lines / Party mode"
+  },
+  "op_party_switch": {
+    "message": "Play timed lines automatically"
+  },
+  "op_party_hint": {
+    "message": "Off by default. Timers only fire while a call tab is open and your mic is connected."
+  },
+  "op_line": {
+    "message": "Line"
+  },
+  "op_when": {
+    "message": "When"
+  },
+  "op_at_clock": {
+    "message": "At a clock time"
+  },
+  "op_every_n": {
+    "message": "Every N minutes"
+  },
+  "op_time": {
+    "message": "Time"
+  },
+  "op_minutes": {
+    "message": "Minutes"
+  },
+  "op_add_timer": {
+    "message": "Add timer"
+  },
+  "op_no_timers": {
+    "message": "No timers yet."
+  },
+  "op_daily_at": {
+    "message": "every day at $1"
+  },
+  "op_every": {
+    "message": "every $1 min"
+  },
+  "op_enabled": {
+    "message": "Enabled"
+  },
+  "op_deleted_line": {
+    "message": "(deleted line)"
+  },
+  "op_party_on": {
+    "message": "Party mode on 🎉"
+  },
+  "op_party_off": {
+    "message": "Party mode off"
+  },
+  "op_timer_added": {
+    "message": "Timer added"
+  },
+  "op_timer_added_off": {
+    "message": "Timer added – switch on “Play timed lines automatically” to use it"
+  },
+  "op_privacy": {
+    "message": "Privacy"
+  },
+  "op_privacy_text": {
+    "message": "Your microphone and tab audio are only mixed inside this browser. Nothing is recorded, saved or sent anywhere. No accounts, servers or analytics."
   }
 }

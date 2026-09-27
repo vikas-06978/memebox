@@ -6,11 +6,12 @@ import vm from 'node:vm';
 export const ROOT = path.resolve(import.meta.dirname, '..', '..');
 export const EXT = path.join(ROOT, 'extension');
 
+// rel: one path or a list, loaded in order into the same sandbox.
 export function loadScript(rel, extraGlobals = {}) {
-  const sandbox = { console, URL, ...extraGlobals };
+  const sandbox = { console, URL, atob, btoa, ...extraGlobals };
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
-  vm.runInContext(fs.readFileSync(path.join(EXT, rel), 'utf8'), sandbox, { filename: rel });
+  for (const f of [].concat(rel)) vm.runInContext(fs.readFileSync(path.join(EXT, f), 'utf8'), sandbox, { filename: f });
   return sandbox;
 }
 

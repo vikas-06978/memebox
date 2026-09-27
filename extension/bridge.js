@@ -25,6 +25,9 @@
     window.postMessage({ ...msg, source: BRIDGE }, '*', transfer || []);
   }
 
+  // A real number or the default (0 is a valid gain, so no `|| 1`).
+  const num = (v, dflt) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : dflt);
+
   function base64ToBuffer(b64) {
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
@@ -57,7 +60,7 @@
         const bytes = base64ToBuffer(cmd.b64);
         toHook({
           type: 'play-audio', reqId: cmd.reqId, bytes,
-          playbackRate: Number(cmd.playbackRate) || 1, gain: Number(cmd.gain) || 1, effect: String(cmd.effect || ''),
+          playbackRate: num(cmd.playbackRate, 1), gain: num(cmd.gain, 1), effect: String(cmd.effect || ''),
           text: String(cmd.text || '').slice(0, 300),
         }, [bytes]);
       } else if (HOOK_COMMANDS.has(cmd.type)) {

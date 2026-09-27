@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "__MSG_extShortName__",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "__MSG_extDesc__",
   "default_locale": "en",
   "minimum_chrome_version": "116",
@@ -10,10 +10,6 @@
     "storage",
     "offscreen",
     "tabCapture"
-  ],
-  "optional_host_permissions": [
-    "https://*/*",
-    "http://*/*"
   ],
   "icons": {
     "16": "icons/icon16.png",
