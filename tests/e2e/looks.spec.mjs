@@ -20,6 +20,34 @@ test('Options: picking a color theme applies it to Options and to the on-call pa
   await expect(again.locator('html')).toHaveAttribute('data-theme', 'neon');
 });
 
+test('Options: the language menu switches MemeBox to Hindi, then Arabic (right to left), then back to Auto', async ({ context, extensionId }) => {
+  const page = await context.newPage();
+  await page.goto(`chrome-extension://${extensionId}/options.html`);
+  await expect(page.locator('#ui-lang option')).toHaveCount(13);
+  await expect(page.locator('#ui-lang')).toHaveValue('auto');
+
+  await Promise.all([page.waitForEvent('load'), page.locator('#ui-lang').selectOption('hi')]);
+  await expect(page.locator('#feedback')).toHaveText('💬 फ़ीडबैक भेजें');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'hi');
+  await expect(page.locator('#ui-lang')).toHaveValue('hi');
+  const popup = await context.newPage();
+  await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+  await expect(popup.locator('#how summary')).toHaveText('यह कैसे काम करता है?');
+  // The panel reads the same choice from storage.
+  const pack = await page.evaluate(async () => (await chrome.storage.local.get('langPack')).langPack);
+  expect(pack.code).toBe('hi');
+  expect(pack.messages.btn_random).toBe('🎲 कोई भी');
+
+  await Promise.all([page.waitForEvent('load'), page.locator('#ui-lang').selectOption('ar')]);
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await expect(page.locator('#feedback')).toHaveText('💬 أرسل رأيك');
+
+  await Promise.all([page.waitForEvent('load'), page.locator('#ui-lang').selectOption('auto')]);
+  await expect(page.locator('#feedback')).toHaveText('💬 Send feedback');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+  expect(await page.evaluate(async () => (await chrome.storage.local.get('langPack')).langPack)).toBeUndefined();
+});
+
 test('welcome page swatches set the theme too', async ({ context, extensionId }) => {
   const page = context.welcome;
   void extensionId;
@@ -94,6 +122,15 @@ siteTest('site: try-it soundboard plays, shows the caption, counts, and emoji bu
   // The demo voice really loaded (a WAV from the site).
   const ok = await page.evaluate(async () => (await fetch('/assets/demo/chai.wav')).headers.get('content-type'));
   expect2(ok).toBe('audio/wav');
+});
+
+siteTest('site: on a phone the language and colors menus are in the top bar', async ({ page, site }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto(site.url + '/');
+  await expect2(page.locator('header select.pref').first()).toBeVisible();
+  await expect2(page.locator('header select.pref-theme')).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  expect2(overflow).toBe(false);
 });
 
 siteTest('site: clicking a floating emoji bursts it', async ({ page, site }) => {

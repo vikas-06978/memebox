@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "gu",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 ભાષા"
+  },
+  "lang_auto": {
+    "message": "આપોઆપ (Chrome જેવી)"
+  },
+  "lang_reload": {
+    "message": "ભાષા બદલાઈ. MemeBox તેમાં જોવા આ કૉલ ટૅબ રીલોડ કરો."
   }
 }

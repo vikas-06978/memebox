@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "ta",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 மொழி"
+  },
+  "lang_auto": {
+    "message": "தானியங்கி (Chrome போல)"
+  },
+  "lang_reload": {
+    "message": "மொழி மாற்றப்பட்டது. MemeBox-ஐ அதில் பார்க்க இந்த அழைப்புத் தாவலை மீண்டும் ஏற்றுங்கள்."
   }
 }

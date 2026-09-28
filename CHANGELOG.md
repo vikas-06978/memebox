@@ -4,6 +4,15 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-09-28
+
+### Added
+- A **🌐 Language** menu at the top of the extension's Settings page. Pick any of the 12 languages or Auto (like Chrome). The popup, Settings and the on-call panel all follow it. Reload an open call tab to see the panel change.
+
+### Fixed
+- On phones the website's language and colors menus were hidden. They now sit in the top bar.
+- The Settings page header wraps cleanly in longer languages.
+
 ## [1.2.1] - 2026-09-28
 
 ### Fixed

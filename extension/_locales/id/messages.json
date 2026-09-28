@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "id",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 Bahasa"
+  },
+  "lang_auto": {
+    "message": "Otomatis (seperti Chrome)"
+  },
+  "lang_reload": {
+    "message": "Bahasa diganti. Muat ulang tab panggilan ini untuk melihat MemeBox dalam bahasa itu."
   }
 }

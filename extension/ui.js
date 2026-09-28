@@ -1,11 +1,15 @@
 // MemeBox: on-page UI (content script, ISOLATED world, top frame only).
 // Floating 😂 button, panel (categories, search, ⭐ favourites, recent), captions,
 // shortcuts, auto-duck switch and timed lines. Everything lives in a closed Shadow DOM
-// so the call site's CSS can't touch it. All text goes through chrome.i18n (en / hi).
-(() => {
+// so the call site's CSS can't touch it. Text comes from the language picked in Options
+// (langPack in storage) or, on "Auto", from chrome.i18n.
+(async () => {
   'use strict';
   if (window !== window.top || globalThis.__memeboxUi || !globalThis.MemeBridge) return;
   globalThis.__memeboxUi = true;
+
+  let langPack = null;
+  try { langPack = (await chrome.storage.local.get('langPack')).langPack || null; } catch { /* orphaned */ }
 
   const { TONES, VOICES, THEMES, sanitizeLine } = globalThis.MEME;
   const bridge = globalThis.MemeBridge;
@@ -13,9 +17,13 @@
   const HOST = location.hostname;
   const SITE = /meet\.google/.test(HOST) ? 'meet' : /zoom/.test(HOST) ? 'zoom' : /teams/.test(HOST) ? 'teams' : /discord/.test(HOST) ? 'discord' : '';
 
-  // chrome.i18n with a safe fallback (after an extension reload the old script is orphaned).
+  // The picked language, else chrome.i18n, with a safe fallback (after an extension reload the
+  // old script is orphaned).
   const t = (key, ...subs) => {
-    try { return chrome.i18n.getMessage(key, subs.map(String)) || key; } catch { return key; }
+    const s = subs.map(String);
+    const m = langPack && langPack.messages && langPack.messages[key];
+    if (m) return s.reduce((acc, v, i) => acc.split('$' + (i + 1)).join(v), m);
+    try { return chrome.i18n.getMessage(key, s) || key; } catch { return key; }
   };
 
   const RECENT_MAX = 12;
@@ -71,6 +79,8 @@
     }).catch(() => {});
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local') return;
+      // A new language needs the panel rebuilt: ask for a reload (the texts are fixed once built).
+      if (changes.langPack) toast(t('lang_reload'));
       const r = {};
       for (const k of Object.keys(changes)) r[k] = changes[k].newValue;
       if ('lines' in r && !Array.isArray(r.lines)) r.lines = MEME.defaultLines();
@@ -622,7 +632,7 @@
   );
   panel.setAttribute('role', 'dialog');
   // Right-to-left languages (Arabic) lay the panel out from the right.
-  const DIR = (() => { try { return chrome.i18n.getMessage('text_dir') === 'rtl' ? 'rtl' : 'ltr'; } catch { return 'ltr'; } })();
+  const DIR = t('text_dir') === 'rtl' ? 'rtl' : 'ltr';
   panel.dir = DIR;
   panel.setAttribute('aria-label', 'MemeBox');
 

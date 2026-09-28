@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "bn",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 ভাষা"
+  },
+  "lang_auto": {
+    "message": "অটো (Chrome-এর মতো)"
+  },
+  "lang_reload": {
+    "message": "ভাষা বদলেছে। MemeBox এতে দেখতে এই কলের ট্যাব রিলোড করুন।"
   }
 }

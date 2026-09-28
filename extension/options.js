@@ -837,6 +837,20 @@ $('timer-form').addEventListener('submit', (e) => {
 
 $('feedback').addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-feedback' }).catch(() => {}));
 
+// ---------- language ----------
+// "Auto" follows Chrome's language. Picking one loads its texts for every MemeBox page and
+// the on-call panel (see lib/i18n-page.js).
+
+const UI_LANGS = [
+  ['en', 'English'], ['hi', 'हिन्दी'], ['bn', 'বাংলা'], ['mr', 'मराठी'], ['ta', 'தமிழ்'], ['te', 'తెలుగు'],
+  ['gu', 'ગુજરાતી'], ['es', 'Español'], ['ar', 'العربية'], ['pt_BR', 'Português'], ['fr', 'Français'], ['id', 'Bahasa Indonesia'],
+];
+$('ui-lang').replaceChildren(el('option', { value: 'auto' }, t('lang_auto')), ...UI_LANGS.map(([code, name]) => el('option', { value: code }, name)));
+$('ui-lang').value = globalThis.MemeI18n.language;
+$('ui-lang').addEventListener('change', () => {
+  globalThis.MemeI18n.setLanguage($('ui-lang').value).catch((err) => toast(err.message, true));
+});
+
 // ---------- colors (theme) ----------
 // Saved in settings.theme. lib/theme.js and the on-call panel follow it right away.
 

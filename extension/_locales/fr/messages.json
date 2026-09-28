@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "fr",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 Langue"
+  },
+  "lang_auto": {
+    "message": "Auto (comme Chrome)"
+  },
+  "lang_reload": {
+    "message": "Langue changée. Rechargez cet onglet d'appel pour voir MemeBox dans cette langue."
   }
 }

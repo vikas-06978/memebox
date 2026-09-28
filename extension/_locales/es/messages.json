@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "es",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 Idioma"
+  },
+  "lang_auto": {
+    "message": "Automático (como Chrome)"
+  },
+  "lang_reload": {
+    "message": "Idioma cambiado. Recarga esta pestaña de la llamada para ver MemeBox en él."
   }
 }

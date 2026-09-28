@@ -9,7 +9,7 @@ compatibility_date = "2026-09-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "memebox-feedback"
-database_id = "PASTE-YOUR-D1-DATABASE-ID-HERE"
+database_id = "77518261-7425-4352-838d-f0d474ca67ec"
 
 # Settings are NOT kept in this file. Add them in the Cloudflare dashboard:
 # Workers & Pages → memebox → Settings → Variables and secrets → Add (type: Secret).

@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "te",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 భాష"
+  },
+  "lang_auto": {
+    "message": "ఆటో (Chrome లాగా)"
+  },
+  "lang_reload": {
+    "message": "భాష మారింది. MemeBox ను అందులో చూడటానికి ఈ కాల్ ట్యాబ్‌ను రీలోడ్ చేయండి."
   }
 }

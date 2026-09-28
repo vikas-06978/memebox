@@ -132,7 +132,7 @@ Add it in the Cloudflare dashboard: **Workers & Pages → memebox → Settings �
 ## Languages, colors and the try-it demo
 
 **12 languages:** English, Hindi, Bengali, Marathi, Tamil, Telugu, Gujarati, Spanish, Arabic, Portuguese, French and Indonesian.
-- Extension texts: `extension/_locales/<lang>/messages.json`. Chrome picks the language from the browser.
+- Extension texts: `extension/_locales/<lang>/messages.json`. By default they follow Chrome's language. Anyone can pick another one from **🌐 Language** at the top of the Settings page.
 - Website texts: `site/public/assets/i18n/<lang>.json`, applied by `assets/prefs.js` to every element with `data-t="key"`.
 - The English in the HTML is the fallback, and a test checks it matches `en.json`.
 - To add a text, add the key to every language file. The tests list anything missing.

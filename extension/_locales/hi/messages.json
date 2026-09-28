@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "hi",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 भाषा"
+  },
+  "lang_auto": {
+    "message": "अपने आप (Chrome जैसी)"
+  },
+  "lang_reload": {
+    "message": "भाषा बदल गई। MemeBox को इसमें देखने के लिए यह कॉल टैब रीलोड करें।"
   }
 }

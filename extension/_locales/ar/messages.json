@@ -867,5 +867,14 @@
   "lang_code": {
     "message": "ar",
     "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 اللغة"
+  },
+  "lang_auto": {
+    "message": "تلقائي (مثل Chrome)"
+  },
+  "lang_reload": {
+    "message": "تم تغيير اللغة. أعد تحميل تبويب المكالمة لترى MemeBox بها."
   }
 }
