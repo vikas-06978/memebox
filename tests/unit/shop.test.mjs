@@ -49,8 +49,8 @@ test('prices: 5 pictures for ₹29, Pro for ₹99', () => {
   assert.equal(PRODUCTS.pro.unlimited, true);
 });
 
-test('wrangler.toml ships the placeholder UPI ID memebox@upi', () => {
-  assert.deepEqual(readTomlVars(), { UPI_ID: 'memebox@upi', UPI_NAME: 'MemeBox' });
+test('wrangler.toml has no UPI ID or other settings, so the dashboard values are never overwritten', () => {
+  assert.deepEqual(readTomlVars(), {});
 });
 
 test('/api/config tells the buy page the products and whether payments are open', async () => {

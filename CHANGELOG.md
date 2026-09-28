@@ -4,6 +4,9 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Changed
+- `UPI_ID` and `UPI_NAME` are no longer in `site/wrangler.toml`. Add them as secrets in the Cloudflare dashboard, where the file can't overwrite them. The local example `site/.dev.vars.example` keeps the placeholder `memebox@upi` for testing.
+
 ## [1.1.0] - 2026-09-28
 
 ### Added

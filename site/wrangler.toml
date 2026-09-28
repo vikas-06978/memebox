@@ -11,16 +11,14 @@ binding = "DB"
 database_name = "memebox-feedback"
 database_id = "PASTE-YOUR-D1-DATABASE-ID-HERE"
 
-# UPI payments for /buy. These are public (they are shown on the page), so they live here.
-# Put your own UPI ID and the name buyers should see, then deploy again.
-# A UPI merchant ID (PhonePe Business, Paytm for Business, BharatPe) also pays into your bank.
-[vars]
-UPI_ID = "memebox@upi"
-UPI_NAME = "MemeBox"
-
-# Secrets are NOT set here. Add them in Cloudflare (never commit them):
-#   npx wrangler pages secret put TURNSTILE_SITE_KEY
-#   npx wrangler pages secret put TURNSTILE_SECRET_KEY
-#   npx wrangler pages secret put ADMIN_KEY
-#   npx wrangler pages secret put RATE_SALT   (optional, a long random string)
+# Settings are NOT kept in this file. Add them in the Cloudflare dashboard:
+# Workers & Pages → memebox → Settings → Variables and secrets → Add (type: Secret).
+# (Or: npx wrangler pages secret put NAME). Values in this file would overwrite the dashboard.
+#   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY   the feedback form's spam check
+#   ADMIN_KEY                                   your /admin password
+#   RATE_SALT                                   optional, a long random string
+#   UPI_ID                                      your UPI ID for /buy, e.g. yourname@okaxis
+#   UPI_NAME                                    optional, the name buyers see (default MemeBox)
+# Until UPI_ID is set, /buy says "Payments aren't open yet". Until the Turnstile keys and
+# ADMIN_KEY are set, the feedback form and /admin say they aren't set up yet.
 # For local runs, put the same names in site/.dev.vars (git-ignored).

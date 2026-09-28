@@ -120,7 +120,7 @@ In `/admin` → **License keys**:
 
 ### Your UPI ID
 
-`site/wrangler.toml` has `UPI_ID = "memebox@upi"`, a **placeholder**. Put your real UPI ID there (and `UPI_NAME`, the name buyers see), then deploy again. For many small payments, a free **UPI merchant ID** (PhonePe Business, Paytm for Business or BharatPe) is better than a personal one. It still pays into your main bank account.
+Add it in the Cloudflare dashboard: **Workers & Pages → memebox → Settings → Variables and secrets → Add**, type **Secret**, name `UPI_ID`, value your UPI ID (for example `yourname@okaxis`). Optionally add `UPI_NAME`, the name buyers see. Then **Deployments → Retry deployment** so the site uses it. Until `UPI_ID` is set, the buy page says "Payments aren't open yet". For many small payments, a free **UPI merchant ID** (PhonePe Business, Paytm for Business or BharatPe) is better than a personal one. It still pays into your main bank account.
 
 ### Switching Pro on
 
