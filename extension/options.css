@@ -28,12 +28,12 @@
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
 .top { display: flex; gap: 14px; align-items: center; max-width: 880px; margin: 0 auto; padding: 28px 16px 8px; }
-.top h1 { margin: 0; font-size: 24px; }
+.top h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
 .top > div { flex: 1; }
 .feedback-btn { flex: none; }
 .sub { margin: 2px 0 0; color: var(--muted); }
 main { max-width: 880px; margin: 0 auto; padding: 8px 16px 48px; display: grid; gap: 16px; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 14px rgba(0,0,0,.04); }
 .card h2 { margin: 0 0 12px; font-size: 17px; }
 .hint { color: var(--muted); font-size: 12.5px; font-weight: 400; }
 p.hint { margin: 10px 0 0; }
@@ -50,11 +50,12 @@ input[type=file] { font-weight: 400; }
 input:focus-visible, select:focus-visible, button:focus-visible, .button:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 button, .button {
-  display: inline-flex; flex-direction: row; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px;
+  display: inline-flex; flex-direction: row; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; transition: transform .1s, box-shadow .1s;
   border: 1px solid var(--line); background: var(--field); cursor: pointer; font-weight: 600; font-size: 13px;
 }
 button:hover, .button:hover { filter: brightness(.97); }
-button.primary { background: var(--accent); border-color: var(--accent); color: #202124; }
+button.primary, .button.primary { background: linear-gradient(135deg, #ffd43b, #ffa94d); border-color: transparent; color: #1c1b20; box-shadow: 0 4px 12px rgba(255, 146, 43, .3); }
+button:hover:not(:disabled), .button:hover { transform: translateY(-1px); }
 button.danger { color: var(--danger); background: var(--danger-bg); border-color: transparent; }
 button.small { padding: 3px 8px; font-size: 12px; }
 .switch { flex-direction: row; align-items: center; gap: 8px; font-size: 14px; }

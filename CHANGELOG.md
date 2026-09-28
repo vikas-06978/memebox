@@ -5,6 +5,12 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 ## [Unreleased]
 
 ### Changed
+- **Fresh look across the site and the extension.**
+  - Landing page: a sticky header with an install button, a bolder hero with a framed demo, floating emoji and an "Everyone heard" bubble, "works with" chips, feature cards with icons, numbered steps, a Free vs Pro section, a privacy note, an expandable FAQ and a final call to action.
+  - Site pages (feedback, uninstall, buy, privacy, terms, admin) share one design system: soft brand background, rounder cards, gradient buttons, labelled rating faces, highlighted choices, and full dark mode.
+  - On-call panel: memes come first. Volume, voice and the three switches fold into a "🎛 Sound & voice" section with a one-line summary, and it remembers whether it's open. Bigger play buttons, cleaner rows, a gradient 😂 button and a smooth open animation.
+  - Toolbar popup and Options: a matching header, gradient main buttons and softer cards.
+  - Store screenshots and the landing demo image were regenerated.
 - `UPI_ID` and `UPI_NAME` are no longer in `site/wrangler.toml`. Add them as secrets in the Cloudflare dashboard, where the file can't overwrite them. The local example `site/.dev.vars.example` keeps the placeholder `memebox@upi` for testing.
 
 ## [1.1.0] - 2026-09-28

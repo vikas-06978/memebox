@@ -832,5 +832,8 @@
   },
   "op_license_slots": {
     "message": "Key $1: $2 extra picture memes."
+  },
+  "settings_label": {
+    "message": "🎛 Sound & voice"
   }
 }

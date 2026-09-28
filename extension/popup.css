@@ -1,32 +1,39 @@
 :root {
-  --bg: #ffffff; --text: #202124; --muted: #5f6368; --line: #e3e5e8;
-  --accent: #ffd43b; --danger: #c5221f; --danger-bg: #fce8e6; --ok: #1e8e3e; --focus: #1a73e8;
+  --bg: #ffffff; --text: #1c1b20; --muted: #5d5f66; --line: #ececf0;
+  --brand: #ffd43b; --brand-2: #ffa94d; --danger: #c5221f; --danger-bg: #fdecea; --ok: #2b8a3e; --focus: #1a73e8;
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #202124; --text: #e8eaed; --muted: #9aa0a6; --line: #3c4043; --danger: #f28b82; --danger-bg: #4a2523; --ok: #81c995; }
+  :root { --bg: #1f1f24; --text: #ecebf0; --muted: #a3a4ad; --line: #34343c; --danger: #f28b82; --danger-bg: #3b1f1d; --ok: #8ce99a; }
 }
 * { box-sizing: border-box; }
-body { width: 320px; margin: 0; padding: 14px 16px; background: var(--bg); color: var(--text);
-  font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; gap: 10px; }
+body { width: 330px; margin: 0; padding: 0 0 12px; background: var(--bg); color: var(--text);
+  font: 13.5px/1.5 system-ui, -apple-system, "Segoe UI", "Nirmala UI", sans-serif; display: grid; gap: 12px; }
+body > :not(header) { margin-left: 16px; margin-right: 16px; }
 [hidden] { display: none !important; }
-header { display: flex; align-items: center; gap: 8px; }
-h1 { margin: 0; font-size: 15px; }
-.msg { margin: 0; }
-.msg.ok { color: var(--ok); font-weight: 600; }
-.msg.warn { color: var(--muted); }
+header { display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 55%, var(--bg)), color-mix(in srgb, var(--brand-2) 30%, var(--bg))); }
+header img { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .15)); }
+h1 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+.msg { margin-top: 0; margin-bottom: 0; font-weight: 600; }
+.msg.ok { color: var(--ok); }
+.msg.warn { color: var(--muted); font-weight: 500; }
 .msg.err { color: var(--danger); }
-button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--line); padding: 9px 12px; font-weight: 600; background: transparent; color: inherit; }
-button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-button.primary { background: var(--accent); border-color: var(--accent); color: #202124; }
+button { font: inherit; cursor: pointer; border-radius: 12px; border: 1px solid var(--line); padding: 11px 14px; font-weight: 700;
+  background: transparent; color: inherit; transition: transform .1s, filter .1s, box-shadow .1s; }
+button:hover { transform: translateY(-1px); }
+button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+button.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent; color: #1c1b20;
+  box-shadow: 0 6px 16px rgba(255, 146, 43, .35); font-size: 14px; }
 button.danger { background: var(--danger-bg); color: var(--danger); border-color: transparent; }
-button:disabled { opacity: .55; cursor: default; }
-button.link { border: 0; padding: 0; color: var(--focus); font-weight: 500; }
-.vol-row { display: flex; align-items: center; gap: 8px; color: var(--muted); }
-.vol-row input { flex: 1; accent-color: #f59f00; }
-.vol-row output { width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
-details { color: var(--muted); }
-summary { cursor: pointer; }
-ol { margin: 6px 0; padding-left: 18px; }
-details p { margin: 4px 0 0; }
-footer { border-top: 1px solid var(--line); padding-top: 8px; }
+button:disabled { opacity: .55; cursor: default; transform: none; }
+button.link { border: 0; padding: 0; color: var(--focus); font-weight: 600; background: none; }
+button.link:hover { transform: none; text-decoration: underline; }
+.vol-row { display: flex; align-items: center; gap: 10px; color: var(--muted); font-weight: 600; }
+.vol-row input { flex: 1; accent-color: var(--brand-2); }
+.vol-row output { width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
+details { color: var(--muted); background: color-mix(in srgb, var(--muted) 8%, transparent); border-radius: 12px; padding: 10px 12px; }
+summary { cursor: pointer; font-weight: 600; color: var(--text); }
+ol { margin: 8px 0 4px; padding-left: 18px; display: grid; gap: 4px; }
+details p { margin: 6px 0 0; }
+footer { border-top: 1px solid var(--line); padding-top: 10px; }

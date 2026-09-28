@@ -832,5 +832,8 @@
   },
   "op_license_slots": {
     "message": "की $1: $2 अतिरिक्त तस्वीर वाले मीम।"
+  },
+  "settings_label": {
+    "message": "🎛 आवाज़ और सेटिंग"
   }
 }
