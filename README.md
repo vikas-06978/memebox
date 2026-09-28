@@ -4,7 +4,14 @@ MemeBox plays meme lines, clips and sound effects **into your microphone** durin
 
 It works in the browser versions of Google Meet, Zoom (web client), Microsoft Teams and Discord.
 
-> 🚧 Being built in steps. See [CHANGELOG.md](CHANGELOG.md) for what's done.
+Version 1.0.0. See [CHANGELOG.md](CHANGELOG.md) for what's in it, and [STORE.md](STORE.md) for the store listing and publishing checklists.
+
+**Before you publish, fill in these placeholders:**
+- `extension/config.js`: `SITE_URL` (your Cloudflare Pages address) and, after approval, `STORE_URL`.
+- `site/public/index.html`: the install button (`id="install"`) points to GitHub releases until the store address exists.
+- `site/public/privacy.html`, `terms.html`, `index.html` and `PRIVACY.md`: the contact email `hello@example.com`.
+- `site/public/sitemap.xml` and `robots.txt`: the site address, if it isn't `memebox.pages.dev`.
+- `site/public/assets/demo.png`: a screenshot for now. Swap in a short demo GIF when you have one.
 
 ## Project layout
 
@@ -17,6 +24,7 @@ It works in the browser versions of Google Meet, Zoom (web client), Microsoft Te
 | `site/functions/` | Cloudflare Pages Functions, the site's small API (feedback, admin) |
 | `site/src/` | Code shared by the functions (validation, rate limit, admin) |
 | `site/db/schema.sql` | The D1 database tables |
+| `store/` | Store screenshots, promo tile and the Edge logo |
 | `tests/` | Automated tests |
 | `tools/` | Maintenance scripts (bundling eSpeak, drawing icons, running the site locally) |
 
@@ -109,6 +117,23 @@ CI (`.github/workflows/ci.yml`) runs everything on each push:
 
 It uploads the zip as the **memebox-extension** build artifact.
 
+## Store images
+
+```sh
+npm run store-images   # store/screenshot-*.png (1280x800) and store/promo-440x280.png
+npm run icons          # extension/icons/*.png and store/icon-300.png (Edge logo)
+```
+
+The screenshots are taken from the real extension on a mock call page (coloured tiles, no people or logos).
+
+## Release
+
+1. `npm run version:set -- 1.2.3` sets the version in `package.json` and the manifest.
+2. Add a `## [1.2.3]` section to CHANGELOG.md.
+3. Run the tests, then `npm run build` and `npm run zip`.
+4. Commit, then `git tag v1.2.3` and `git push origin main --tags`.
+5. Upload `memebox-1.2.3.zip` to the stores (see STORE.md).
+
 ## Step 1: test by hand (the mic hook)
 
 1. Load `extension/` as above, then open a **new** Google Meet tab and join a meeting.
@@ -158,6 +183,18 @@ Use the same laptop and muted phone as in Step 1. Reload the extension, then rel
 
 Steps 1 and 4 only show a working page after the site is deployed and `SITE_URL` is filled in.
 
-## License
+## Step 8: test by hand (store readiness)
 
-GPL-3.0-or-later. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+1. Remove MemeBox, then load `extension/` again. The **welcome page** opens by itself. Click **🎙 Start mic test** and talk: it says "We hear you". Click **🔊 Hear a meme**.
+2. Open a Meet tab, then reload the extension at `chrome://extensions`. Without reloading the Meet tab, click the MemeBox toolbar icon on it. It says to reload the tab.
+3. At `chrome://extensions`, open MemeBox **Details**. Site access lists only the 5 call sites.
+4. Run `npm run site:dev` and open `http://127.0.0.1:8788/`. Check the landing page on a phone-sized window too (F12, device toolbar). Open `/terms` and `/privacy`.
+5. Look through `store/` and check the images.
+
+## License and credits
+
+MemeBox is free software under the GNU General Public License, version 3 or later (GPL-3.0-or-later). See [LICENSE](LICENSE).
+
+Credits:
+- **eSpeak-NG** speech synthesizer (GPL-3.0-or-later) by Jonathan Duddington, Reece H. Dunn and the eSpeak-NG contributors, built for WebAssembly by the Echogarden project. Details in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- The icon, meme lines, packs, pictures and all other code are original work for MemeBox.

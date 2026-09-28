@@ -88,6 +88,16 @@ export const test = base.extend({
   extensionId: async ({ context }, use) => {
     let [sw] = context.serviceWorkers();
     if (!sw) sw = await context.waitForEvent('serviceworker');
+    // A fresh install opens the welcome page. Wait until it's there, so tests that wait for
+    // a *new* page never catch it by mistake. Leave it open: closing an extension page right
+    // before a test opens another one can hand the new page a dying extension process
+    // (chrome.i18n.getMessage then returns "").
+    let welcome = null;
+    for (let i = 0; i < 50 && !welcome; i++) {
+      welcome = context.pages().find((p) => p.url().endsWith('/onboarding.html')) || null;
+      if (!welcome) await new Promise((r) => setTimeout(r, 100));
+    }
+    context.welcome = welcome;
     await use(sw.url().split('/')[2]);
   },
   // A fake call tab with the extension's content scripts running, collects [MemeBox] logs.

@@ -6,7 +6,7 @@
     "message": "MemeBox"
   },
   "extDesc": {
-    "message": "Meme soundboard for video calls: play meme lines and sounds into your mic so everyone in the call hears them."
+    "message": "Meme soundboard & voice changer for calls: play meme sounds and sound effects into your mic on Google Meet, Zoom, Teams, Discord."
   },
   "actionTitle": {
     "message": "MemeBox: send this tab's sound to your call"
@@ -685,5 +685,68 @@
   },
   "pro_only": {
     "message": "This is a MemeBox Pro feature."
+  },
+  "ob_title": {
+    "message": "Welcome to MemeBox 😂"
+  },
+  "ob_sub": {
+    "message": "Three steps and you're the funniest person in the call."
+  },
+  "ob_s1": {
+    "message": "Join your call in the browser"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet, Zoom (web), Microsoft Teams (web) or Discord (web). The 😂 button appears in the corner. If the call was already open, reload it once."
+  },
+  "ob_s2": {
+    "message": "Click 😂 to play a meme"
+  },
+  "ob_s2_text": {
+    "message": "It goes into your microphone, so everyone in the call hears it. They don't need MemeBox. When you're muted, memes are silent too."
+  },
+  "ob_s3": {
+    "message": "Right-click 😂 for everything else"
+  },
+  "ob_s3_text": {
+    "message": "Pick any line, search, change your voice (Alt+V), or play favourites with Alt+1 to Alt+9. To play a YouTube video into the call, click the MemeBox icon in the toolbar on that tab."
+  },
+  "ob_mic": {
+    "message": "Mic test"
+  },
+  "ob_mic_hint": {
+    "message": "Check that your microphone works. The sound stays on this page. Nothing is recorded."
+  },
+  "ob_mic_start": {
+    "message": "🎙 Start mic test"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ Stop"
+  },
+  "ob_hear": {
+    "message": "🔊 Hear a meme"
+  },
+  "ob_mic_talk": {
+    "message": "Say something…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ We hear you. Your mic works."
+  },
+  "ob_mic_blocked": {
+    "message": "The microphone is blocked. Click the camera/mic icon in the address bar and allow it."
+  },
+  "ob_mic_none": {
+    "message": "No microphone found. Plug one in and try again."
+  },
+  "ob_done": {
+    "message": "You're ready. Your lines, clips and packs are in Settings."
+  },
+  "ob_settings": {
+    "message": "⚙️ Open settings"
+  },
+  "ob_close": {
+    "message": "Let's go!"
+  },
+  "pp_reload_tab": {
+    "message": "This call tab was open before MemeBox was installed or updated. Reload it (F5), then join the call again."
   }
 }

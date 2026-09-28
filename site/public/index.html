@@ -3,10 +3,82 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MemeBox: Meme Soundboard for Calls</title>
+  <title>MemeBox: Meme Soundboard &amp; Voice Changer for Calls</title>
+  <meta name="description" content="Play meme sounds and funny lines into your mic on Google Meet, Zoom, Teams and Discord in the browser. Hindi and English voices, voice changer, free.">
+  <meta property="og:title" content="MemeBox: Meme Soundboard &amp; Voice Changer for Calls">
+  <meta property="og:description" content="Click 😂 and everyone in the call hears the meme. Free browser extension.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body>
-  <h1>MemeBox</h1>
-  <p>Landing page coming in Step 8.</p>
+<body class="landing">
+  <header class="wrap nav">
+    <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
+    <nav><a href="#features">Features</a> <a href="#how">How it works</a> <a href="#faq">FAQ</a></nav>
+  </header>
+
+  <main>
+    <section class="wrap hero">
+      <div>
+        <h1>Meme sounds and a voice changer for your calls</h1>
+        <p class="lead">Click 😂 and a meme plays through your microphone, so everyone in the call hears it. Only you need MemeBox.</p>
+        <p class="actions">
+          <!-- INSTALL LINK: replace with the Chrome Web Store address once published. -->
+          <a class="button primary big" id="install" href="https://github.com/vikas-06978/memebox/releases/latest">Add to Chrome, it's free</a>
+          <a class="button big" href="#how">See how it works</a>
+        </p>
+        <p class="muted small">Works in the browser on Google Meet, Zoom, Microsoft Teams and Discord. Also in Microsoft Edge.</p>
+      </div>
+      <figure class="demo">
+        <!-- DEMO GIF: replace demo.png with a short screen recording (demo.gif) when you have one. -->
+        <img src="/assets/demo.png" width="1280" height="800" alt="A video call with the MemeBox panel open and a big CHAI BREAK! caption on screen">
+        <figcaption class="muted small">Demo GIF coming soon</figcaption>
+      </figure>
+    </section>
+
+    <section id="features" class="wrap">
+      <h2 class="section">What you can do</h2>
+      <div class="features">
+        <article class="card"><h3>😂 One-click memes</h3><p>A random line on click, or pick from the panel. Alt+1 to Alt+9 for your favourites.</p></article>
+        <article class="card"><h3>🗣️ Hindi and English voices</h3><p>Six tones from Chipmunk to Villain. The speech engine runs on your own computer.</p></article>
+        <article class="card"><h3>🎤 Voice changer</h3><p>Chipmunk, Deep, Robot, Echo or Radio for your own voice. Alt+V switches it on and off.</p></article>
+        <article class="card"><h3>📺 Any tab into the call</h3><p>A funny YouTube moment? Send that tab's sound into the call. Nothing is downloaded.</p></article>
+        <article class="card"><h3>🎵 Your own clips</h3><p>Upload audio or video, record yourself, trim it, and play it with one key.</p></article>
+        <article class="card"><h3>📦 Packs</h3><p>College, Cricket, Office and Party packs with friendly roasts. Share your own as a file.</p></article>
+      </div>
+    </section>
+
+    <section id="how" class="wrap">
+      <h2 class="section">How it works</h2>
+      <ol class="how">
+        <li class="card"><b>1. Add MemeBox</b><p>Install it from the store. A short welcome page shows the basics and tests your mic.</p></li>
+        <li class="card"><b>2. Join your call</b><p>Open Meet, Zoom, Teams or Discord in the browser. The 😂 button appears in the corner.</p></li>
+        <li class="card"><b>3. Click 😂</b><p>The meme goes into your mic. Everyone hears it, and a big caption shows on your screen.</p></li>
+      </ol>
+    </section>
+
+    <section class="wrap">
+      <div class="card privacy-note">
+        <h2>Private by design</h2>
+        <p>Your microphone, camera and tab audio are only mixed inside your browser. Nothing is recorded or uploaded. No accounts, no ads, no tracking. <a href="/privacy">Read the privacy policy</a>.</p>
+      </div>
+    </section>
+
+    <section id="faq" class="wrap faq">
+      <h2 class="section">Questions</h2>
+      <details class="card"><summary>Do the others in the call need MemeBox?</summary><p>No. The meme goes out through your microphone, so they hear it like your voice.</p></details>
+      <details class="card"><summary>Does it work in the Zoom or Teams desktop app?</summary><p>No, only in the browser versions. Open your meeting link in Chrome or Edge.</p></details>
+      <details class="card"><summary>Why can't anyone hear the memes?</summary><p>Check that you're not muted in the call. Memes are silent while you're muted. If you just installed or updated MemeBox, reload the call tab once.</p></details>
+      <details class="card"><summary>Is it free?</summary><p>Yes, every feature is free right now.</p></details>
+    </section>
+  </main>
+
+  <footer class="wrap site-foot">
+    <a href="/feedback">Feedback</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+    <a href="https://github.com/vikas-06978/memebox">Source code</a>
+    <a href="mailto:hello@example.com">hello@example.com</a>
+  </footer>
 </body>
 </html>

@@ -1,118 +1,152 @@
-# Chrome Web Store listing draft
+# Store listing (Chrome Web Store and Microsoft Edge Add-ons)
+
+Everything you need to paste into the store forms, plus the publishing checklists at the end.
 
 ## Name
 
-MemeBox
+MemeBox: Meme Soundboard & Voice Changer for Calls
+
+(From `_locales/en/messages.json` → `extName`. 50 characters, the limit is 75. No platform names or logos in the name or icon.)
 
 ## Short description (132 characters max)
 
-> Meme soundboard for video calls: click 😂 and a meme line plays through your mic so everyone hears it. Hindi + English. No accounts.
+> Meme soundboard & voice changer for calls: play meme sounds and sound effects into your mic on Google Meet, Zoom, Teams, Discord.
 
-(131 characters, or 132 UTF-16 units because of the emoji. Both are within the limit.)
+(129 characters. It's the manifest `description`, from `extDesc`. The Hindi listing uses the Hindi `extDesc`.)
 
 ## Category
 
-Fun (or: Social & Communication)
+- Chrome Web Store: **Lifestyle → Just for Fun**. Second choice: **Productivity → Communication**.
+- Edge Add-ons: **Entertainment**.
+
+Language: English. Add Hindi as a second listing language with the Hindi texts from `_locales/hi`.
 
 ## Full description
 
 Make every video call a little more fun. 😂
 
-MemeBox adds a small floating 😂 button to your call page. Click it, and a meme line is spoken **into your microphone**, so everyone in the call hears it. The other people in the call don't need the extension.
+MemeBox is a meme soundboard and voice changer for your calls. Click the floating 😂 button and meme sounds, funny lines and sound effects play **through your microphone**, so everyone in the call hears them. The other people don't need to install anything.
 
-**Works in the browser versions of popular calling apps:**
-Google Meet, Zoom (web client), Microsoft Teams (web) and Discord (web).
+**Works in the browser on Google Meet, Zoom, Teams, Discord**
+Google Meet, Zoom (web client), Microsoft Teams (web) and Discord (web), in Chrome and Edge.
 
-**Features**
-• One click = a random meme line. Hold or right-click the button for the full panel: search, play any line, Random, Stop, and a meme volume slider.
-• Hindi/Hinglish and English voices, built right in. The speech engine runs on your own computer.
+**Soundboard**
+• One click plays a random meme. Right-click the button for the full panel: search, categories, favourites, recently played, Random and Stop all.
+• Hindi, Hinglish and English meme lines, spoken by a voice engine that runs on your own computer.
 • Six tones: Normal, Chipmunk, Villain, Robot, Slow-mo and Excited.
-• A big meme-style caption appears on your screen for 3 seconds, so you know what everyone just heard.
-• Keyboard shortcuts Alt+1 … Alt+9 for your favourite lines. They're ignored while you're typing.
-• Add your own lines, or upload short sound clips (MP3/WAV/OGG, up to 1 MB).
-• Play a meme straight from a video tab (YouTube, Instagram and more): click the toolbar icon and "Send this tab's sound". It has its own volume, you keep hearing it, and nothing is downloaded. You can also turn direct MP3/MP4 links into clips.
-• Live voice changer for your own voice: Chipmunk, Deep, Robot, Echo and Radio. Alt+V switches it on and off.
-• Optional meme captions on your own camera, so everyone sees the joke too.
-• Save any meme as a WAV file, or share its text on WhatsApp (you choose the chat).
-• Optional timed lines: "Chai break!" every day at 11:00, or a line every N minutes while a call is open. Off by default.
-• Import and export everything as a JSON file.
-• A status dot shows green when memes go into your mic, and grey when you haven't joined a call yet.
+• A big meme caption appears on your screen for 3 seconds.
+• Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They're ignored while you type.
+• Auto-duck lowers the meme sounds while you're talking.
 
-**Default meme pack (friendly roasts only)**
-"Bhai tu rehne de", "Ye college hai ya circus?", "Aaj bhi WiFi ne dhoka de diya", "Mute kar le bhai", "Chai break!", "Bruh.", "You're on mute!", "Emotional damage!", "Plot twist!", "Task failed successfully" and more.
+**Voice changer**
+• Change your own live voice: Chipmunk, Deep, Robot, Echo or Radio. Alt+V switches it on and off.
+
+**Sound effects and clips**
+• Upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor.
+• College, Cricket, Office and Party packs with friendly roasts. Share your own packs as a file.
+• Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
+
+**Extras**
+• Optional meme captions on your own camera.
+• Save any meme as a WAV file, or share its text on WhatsApp (you pick the chat).
+• Party mode: a line at a set time or every few minutes. Off by default.
 
 **Private by design**
-Your microphone audio is only mixed inside your browser. Nothing is recorded, saved or sent anywhere. There are no accounts, servers, analytics or ads. Your lines and clips are stored only on your device.
+Your microphone, camera and tab audio are only mixed inside your browser. Nothing is recorded, saved or uploaded. No accounts, no ads, no analytics.
 
 **Good to know**
 • Memes are silent while you're muted in the call. That's on purpose.
-• The desktop apps for Zoom and Teams aren't supported. Use the browser versions.
-• Please meme responsibly. Keep it friendly, and follow the rules of your class or workplace.
+• The Zoom and Teams desktop apps aren't supported. Use the browser versions.
+• After installing or updating, reload an open call tab once.
+• Keep it friendly and follow the rules of your class or workplace.
 
-MemeBox is free and open source (GPL-3.0-or-later). It uses the eSpeak-NG speech synthesizer.
+MemeBox is free and open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox
+It uses the eSpeak-NG speech synthesizer. Not affiliated with Google, Zoom, Microsoft or Discord.
 
 ## Single purpose
 
-MemeBox is a soundboard for browser-based video calls. It plays short meme lines or user-uploaded clips into the user's outgoing microphone audio on supported call websites.
+MemeBox is a soundboard for browser video calls. It plays meme lines, sound effects and the user's own clips into the user's outgoing microphone on supported call websites. The voice changer, tab audio and camera captions are part of the same purpose: changing what the user sends into their own call.
 
 ## Permission justifications
 
 **storage**
-Saves the user's meme lines, favourite shortcuts, meme volume, timed-line settings and the position of the floating button on the user's device (chrome.storage.local). Nothing is synced or sent anywhere.
+Saves the user's lines, favourite shortcuts, volumes and settings, the button position, and the play count for a one-time feedback question. Stored on the device with chrome.storage.local. Uploaded clips are kept in the extension's IndexedDB. Nothing is synced or sent anywhere.
 
 **offscreen**
-Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG text-to-speech engine, compiled to WebAssembly, inside a Web Worker. It turns meme text into audio. A service worker can't run this engine, and running it inside the call page would slow the call down.
+Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG text-to-speech engine, compiled to WebAssembly, in a Web Worker. It turns meme text into audio. A service worker can't run it, and running it in the call page would slow the call down.
 
 **tabCapture**
-Used only when the user opens the toolbar popup on a tab (for example a YouTube video) and clicks "Send this tab's sound into my call". The extension creates a tab-capture stream ID for that tab (chrome.tabCapture.getMediaStreamId, with the user's call tab as consumer). The call tab mixes that audio live into the outgoing microphone. Nothing is recorded, saved, downloaded or transmitted by the extension. Capture stops when the user presses Stop or closes either tab.
+Used only when the user opens the toolbar popup on a tab (for example a YouTube video) and clicks "Send this tab's sound to my call". The extension gets a stream ID for that tab (chrome.tabCapture.getMediaStreamId, with the user's call tab as the consumer). The call tab mixes that audio live into the outgoing microphone and plays it back to the user. Nothing is recorded, saved, downloaded or transmitted. It stops when the user presses Stop or closes either tab.
 
-**Host permissions / content scripts: https://meet.google.com/\*, https://app.zoom.us/wc/\*, https://teams.microsoft.com/\*, https://teams.live.com/\*, https://discord.com/\***
-On these video-call websites only, the extension:
-(1) wraps navigator.mediaDevices.getUserMedia so the microphone track the site receives is a mix of the real microphone plus the meme audio the user chooses to play, and
-(2) shows the floating 😂 button, panel and captions, and
-(3) only if the user switches them on, applies the live voice changer to the user's own microphone and draws meme captions on the user's own camera picture (canvas.captureStream).
-The AudioWorklet file for the voice changer (voice-worklet.js, lib/pitch-shift.js) is the only web-accessible resource, and only on these five sites.
-Microphone audio is processed only locally with the Web Audio API. It is never recorded, stored or transmitted by the extension. The extension doesn't run on any other site.
+**Host permissions: https://meet.google.com/\*, https://app.zoom.us/wc/\*, https://teams.microsoft.com/\*, https://teams.live.com/\*, https://discord.com/\***
+Only these five call websites. There the extension:
+1. wraps navigator.mediaDevices.getUserMedia, so the microphone track the site receives is the real microphone mixed with the meme audio the user plays
+2. shows the floating 😂 button, panel and captions
+3. only if the user switches them on, applies the voice changer to the user's own microphone and draws meme captions on the user's own camera picture
+4. in the popup, reads whether the current tab is one of these sites, so it can say "reload this tab" when the tab was open before MemeBox was installed or updated.
+
+Audio and video are processed only locally with the Web Audio and Canvas APIs. They are never recorded, stored or transmitted. The only web-accessible files are the voice changer's AudioWorklet (voice-worklet.js, lib/pitch-shift.js), and only on these five sites.
+
+No permission is needed for the MemeBox website. The feedback, welcome and uninstall pages are opened as normal tabs, which needs no permission.
 
 **Remote code**
-No. All code is packaged with the extension. eSpeak-NG's WebAssembly binary is bundled locally and needs `'wasm-unsafe-eval'` in the extension-page CSP. Nothing is downloaded or evaluated at runtime.
+No. All code is in the package. eSpeak-NG's WebAssembly is bundled and needs `'wasm-unsafe-eval'` in the extension-page CSP. Nothing is downloaded or evaluated at runtime.
 
 **Content Security Policy**
-`script-src 'self' 'wasm-unsafe-eval'; object-src 'self'`. This is needed to instantiate the bundled eSpeak-NG WebAssembly module.
+`script-src 'self' 'wasm-unsafe-eval'; object-src 'self'`. This allows only the bundled WebAssembly speech engine.
 
-## Data usage disclosures (Privacy practices tab)
+## Data usage (Privacy practices tab)
 
-- Does the extension collect or use user data? **No.**
-  - Microphone audio is only mixed locally in the tab and is never collected or transmitted.
-  - User-created lines and clips are stored only on the device.
+- **Does the extension collect or use user data? No.** Leave every data type unticked.
+  - Microphone, camera and tab audio are processed only in the tab and are never collected or sent.
+  - Lines, clips and settings are stored only on the device.
+  - The extension opens the feedback page with only the extension version and the call site name (for example `?v=1.0.0&site=meet`), and the uninstall survey with only the version. People may choose to type an answer there. That is covered by the website's privacy policy.
 - Tick all three certifications:
-  - not sold to third parties,
-  - not used for unrelated purposes,
-  - not used for creditworthiness or lending.
-- Privacy policy URL: publish `PRIVACY.md`, for example as a GitHub page or gist, and paste its URL here.
+  - I do not sell or transfer user data to third parties, outside of the approved use cases.
+  - I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
+  - I do not use or transfer user data to determine creditworthiness or for lending purposes.
+- **Privacy policy URL:** `https://memebox.pages.dev/privacy` (your `SITE_URL` + `/privacy`).
+- **Homepage URL:** `https://memebox.pages.dev/`. **Support URL:** `https://memebox.pages.dev/feedback`.
 
-## Assets checklist
+## Images
 
-- Icon 128×128: `icons/icon128.png`.
-- At least one screenshot, 1280×800 or 640×400. Suggested shots:
-  1. a call with the 😂 button and a caption,
-  2. the panel,
-  3. the options page.
-  Use a test call with only your own devices and don't show other people's faces.
-- Small promo tile, 440×280 (optional).
+All made by `npm run store-images` from the real extension (in `store/`):
 
-## Package for upload
+| File | Size | Use |
+| --- | --- | --- |
+| `extension/icons/icon128.png` | 128×128 | Chrome store icon |
+| `store/icon-300.png` | 300×300 | Edge store logo (from `npm run icons`) |
+| `store/screenshot-1-call.png` | 1280×800 | A call with the panel and a caption |
+| `store/screenshot-2-options.png` | 1280×800 | Lines and settings |
+| `store/screenshot-3-welcome.png` | 1280×800 | Welcome page and mic test |
+| `store/screenshot-4-tab-audio.png` | 1280×800 | Sending a tab's sound |
+| `store/promo-440x280.png` | 440×280 | Small promo tile |
 
-Zip the extension files only. Leave out `tools/`, `node_modules/`, `package.json` and `.git`, although including them is harmless. The zip must have `manifest.json` at its root.
+The call scene is a mock-up with coloured tiles and first names only. No real people, no platform logos.
 
-PowerShell:
-```powershell
-Compress-Archive -Force -DestinationPath meme-button.zip -Path manifest.json,*.js,*.html,*.css,icons,vendor,LICENSE,THIRD_PARTY_NOTICES.md,PRIVACY.md
-# (*.js / *.html / *.css include popup.* and options.*)
-```
-macOS / Linux:
-```sh
-zip -r meme-button.zip manifest.json *.js *.html *.css icons vendor LICENSE THIRD_PARTY_NOTICES.md PRIVACY.md
-```
+## Publishing checklist: Chrome Web Store
 
-**GPL note:** the extension is GPL-3.0-or-later. Link the source repository from the listing, or offer the source on request.
+1. Deploy the site first (README, "Deploy the site") and put its address in `extension/config.js` as `SITE_URL`. Check that `/privacy`, `/feedback` and `/uninstall` load.
+2. Run `npm test`, `npm run test:e2e`, `npm run build` and `npm run zip`. The file to upload is `memebox-<version>.zip`.
+3. Open the Chrome Web Store Developer Dashboard (https://chrome.google.com/webstore/devconsole). Pay the one-time registration fee if you haven't, and verify your contact email.
+4. **Add new item** → upload the zip.
+5. **Store listing** tab: paste the description, pick the category, upload the icon, the 4 screenshots and the promo tile. Add the homepage and support URLs.
+6. **Privacy practices** tab: paste the single purpose and each permission justification from this file. Answer "No" to remote code, leave every data type unticked, tick the three certifications, and paste the privacy policy URL.
+7. **Distribution:** Public, all regions (or the ones you want). Free.
+8. **Submit for review.** Reviews usually take a few days. Permissions like tabCapture and host permissions can take longer.
+9. After approval, copy the store address into `extension/config.js` as `STORE_URL` and into the landing page's install button (`site/public/index.html`, `id="install"`). Release a small update with those.
+
+## Publishing checklist: Microsoft Edge Add-ons
+
+1. The same zip works in Edge. No changes needed.
+2. Open Partner Center (https://partner.microsoft.com/dashboard/microsoftedge) and register as an Edge developer. It's free.
+3. **Create new extension** → upload the zip.
+4. **Availability:** Public, all markets.
+5. **Properties:** category Entertainment, privacy policy URL, website URL, support URL. Say that the extension doesn't need an account.
+6. **Store listings:** English (and Hindi if you like). Paste the description and short description, and upload the logo `store/icon-300.png` (300×300), the screenshots and the promo tile.
+7. **Submit.** Add a note for testers: "Join a Google Meet call in the browser, click the 😂 button in the corner. Everyone in the call hears the meme through your microphone."
+8. After approval, you can add the Edge address to the landing page next to the Chrome one.
+
+## GPL note
+
+The extension is GPL-3.0-or-later, because eSpeak-NG is GPL-3.0. The source is public on GitHub and linked from the listing, which meets the license.

@@ -96,3 +96,9 @@ for (const size of [16, 32, 48, 128]) {
   fs.writeFileSync(path.join(outDir, `icon${size}.png`), png(size, render(size)));
   console.log('icons/icon' + size + '.png');
 }
+
+// Edge Add-ons asks for a 300×300 store logo.
+const storeDir = path.resolve(import.meta.dirname, '..', 'store');
+fs.mkdirSync(storeDir, { recursive: true });
+fs.writeFileSync(path.join(storeDir, 'icon-300.png'), png(300, render(300)));
+console.log('store/icon-300.png');

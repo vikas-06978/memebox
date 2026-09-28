@@ -4,6 +4,55 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-28
+
+The first store release. It includes everything from Steps 0 to 8 below.
+
+### Added in Step 8: store readiness and polish
+- **Welcome page** after install:
+  - 3 illustrated steps (inline pictures)
+  - a **Mic test** with a live level meter that stays on the page
+  - **Hear a meme**, which plays a sample line on your own speakers
+  - English and Hindi.
+- **Permissions:** exactly `storage`, `offscreen`, `tabCapture` and host permissions for the 5 call sites. There is no `<all_urls>`, no optional permissions, no analytics and no remote code. Each one is explained in STORE.md.
+- **Friendlier errors:** the popup now says "reload this tab" when a call tab was open before MemeBox was installed or updated. It checks this with a ping to the tab.
+- **Store images:** `npm run store-images` takes real screenshots of the extension:
+  - 4 screenshots at 1280×800 (a mock call with the panel and a caption, Options, the welcome page, the tab audio popup)
+  - the 440×280 promo tile.
+  - `npm run icons` also makes the 300×300 Edge logo.
+- **Website:**
+  - a landing page (features, how it works, FAQ, an install button, and a screenshot standing in for the demo GIF)
+  - terms of use and an updated privacy page
+  - `sitemap.xml`, with robots.txt pointing to it.
+  - All pages are mobile-friendly and use no inline scripts or styles, so they fit the strict CSP.
+- **STORE.md rewritten:**
+  - the name, and a 129-character short description (also the manifest description)
+  - a full description with the keywords "soundboard", "meme sounds", "voice changer", "sound effects" and "Google Meet, Zoom, Teams, Discord"
+  - categories, single purpose, and a justification for each permission
+  - the data-use answers, and publishing checklists for the Chrome Web Store and Edge Add-ons.
+- **README:**
+  - a placeholders list to fill in before publishing
+  - store images, release steps, and Step 8 manual tests
+  - license and credits (GPL-3.0-or-later, eSpeak-NG).
+
+### Fixed
+- The background ignored popup messages when popup.html was open in a tab. It now accepts them from any extension page.
+
+### Tests
+- **Unit tests:**
+  - the short description matches the manifest and fits 132 characters, and the full description has the keywords
+  - the exact permission list, with a justification for each
+  - no analytics, remote scripts or eval
+  - no brand names in the extension name
+  - the icon and store image sizes
+  - the site pages have a viewport, lang and title, only local scripts, and no inline script or style
+  - the sitemap matches the real pages, and the landing page has its links.
+- **End-to-end:**
+  - the welcome page opens by itself after install and the mic test hears the fake mic
+  - "Hear a meme" speaks
+  - the popup can read a call tab's URL and a running call tab answers the ping.
+- The test setup waits for the welcome tab and leaves it open, so later "new page" waits can't catch it. Closing it caused a rare test-only race where the next extension page got no translations.
+
 ### Added in Step 7: Pro prepared, switched off (0.7.0)
 - `extension/lib/plan.js` defines `MemePlan.isPro()`, `MemePlan.can(feature)`, the five future Pro features and the future free limits (10 clips, the General and College packs).
 - While `PRO_ENABLED` is false (as shipped), `isPro()` is true for everyone, so nothing changes for users.

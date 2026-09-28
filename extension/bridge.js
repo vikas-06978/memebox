@@ -51,9 +51,11 @@
   });
 
   // Extension -> page.
-  chrome.runtime.onMessage.addListener((msg, sender) => {
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (sender.id !== chrome.runtime.id || !msg || typeof msg !== 'object' || msg.target) return;
-    if (msg.type === 'query-status') {
+    if (msg.type === 'ping') {
+      sendResponse({ ok: true }); // the popup checks that this tab has MemeBox running
+    } else if (msg.type === 'query-status') {
       toHook({ type: 'query-status' });
     } else if (msg.type === 'hook' && msg.cmd && typeof msg.cmd === 'object') {
       const cmd = msg.cmd;

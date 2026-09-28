@@ -71,7 +71,7 @@ We don't store your IP address or browser details. To stop spam, the site counts
 - **storage**: saves your lines and settings on your device.
 - **offscreen**: runs the bundled speech engine in a hidden extension page.
 - **tabCapture**: sends the sound of a tab you pick into your call, only after you click the button in the toolbar popup.
-- **Access to meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com**: needed to show the 😂 button on those call pages and to mix meme audio into the microphone there. MemeBox doesn't run on any other website.
+- **Access to meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com**: needed to show the 😂 button on those call pages and to mix meme audio into the microphone there. The toolbar popup also checks whether the current tab is one of these sites, so it can tell you to reload a tab that was open before MemeBox was installed. MemeBox doesn't run on any other website.
 
 ## Children
 
@@ -83,4 +83,4 @@ If this policy changes, the new version will be published at the same address, w
 
 ## Contact
 
-Questions? Contact the developer through the support link on the Chrome Web Store listing.
+Questions, or want a feedback message deleted? Email hello@example.com or use the feedback page.

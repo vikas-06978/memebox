@@ -1,6 +1,6 @@
 {
   "name": "memebox",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "private": true,
   "description": "MemeBox: meme soundboard & voice changer for browser video calls (Chrome MV3 extension + Cloudflare Pages site).",
   "license": "GPL-3.0-or-later",
@@ -17,7 +17,8 @@
     "vendor": "node tools/vendor-espeak.mjs",
     "icons": "node tools/make-icons.mjs",
     "version:set": "node tools/version.mjs",
-    "site:dev": "node tools/site-dev.mjs"
+    "site:dev": "node tools/site-dev.mjs",
+    "store-images": "node tools/store-images.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0"

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to MemeBox</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+  <header class="top">
+    <img src="icons/icon48.png" alt="" width="40" height="40">
+    <div>
+      <h1 data-i18n="ob_title">Welcome to MemeBox 😂</h1>
+      <p class="sub" data-i18n="ob_sub">Three steps and you're the funniest person in the call.</p>
+    </div>
+  </header>
+
+  <main>
+    <ol class="steps">
+      <li class="card step">
+        <svg viewBox="0 0 240 150" role="img" aria-labelledby="s1t">
+          <title id="s1t">A video call in a browser tab</title>
+          <rect x="4" y="4" width="232" height="142" rx="12" class="win"/>
+          <rect x="4" y="4" width="232" height="22" rx="12" class="bar"/>
+          <circle cx="18" cy="15" r="4" class="dot1"/><circle cx="30" cy="15" r="4" class="dot2"/><circle cx="42" cy="15" r="4" class="dot3"/>
+          <rect x="16" y="36" width="100" height="62" rx="8" class="tile1"/>
+          <rect x="124" y="36" width="100" height="62" rx="8" class="tile2"/>
+          <circle cx="66" cy="60" r="12" class="head"/><rect x="50" y="76" width="32" height="16" rx="8" class="head"/>
+          <circle cx="174" cy="60" r="12" class="head"/><rect x="158" y="76" width="32" height="16" rx="8" class="head"/>
+          <circle cx="36" cy="124" r="14" class="fab"/><text x="36" y="129" text-anchor="middle" font-size="15">😂</text>
+          <rect x="96" y="112" width="48" height="22" rx="11" class="ctl"/>
+        </svg>
+        <h2><span class="num">1</span> <span data-i18n="ob_s1">Join your call in the browser</span></h2>
+        <p data-i18n="ob_s1_text">Google Meet, Zoom (web), Microsoft Teams (web) or Discord (web). The 😂 button appears in the corner. If the call was already open, reload it once.</p>
+      </li>
+      <li class="card step">
+        <svg viewBox="0 0 240 150" role="img" aria-labelledby="s2t">
+          <title id="s2t">Clicking the laughing button sends a meme to everyone</title>
+          <circle cx="54" cy="75" r="34" class="fab"/><text x="54" y="88" text-anchor="middle" font-size="36">😂</text>
+          <path d="M100 55 q12 20 0 40 M114 45 q20 30 0 60 M128 35 q28 40 0 80" class="wave"/>
+          <circle cx="180" cy="52" r="12" class="head"/><rect x="164" y="68" width="32" height="16" rx="8" class="head"/>
+          <circle cx="210" cy="96" r="12" class="head"/><rect x="194" y="112" width="32" height="16" rx="8" class="head"/>
+          <text x="174" y="42" font-size="14">😆</text><text x="214" y="86" font-size="14">🤣</text>
+        </svg>
+        <h2><span class="num">2</span> <span data-i18n="ob_s2">Click 😂 to play a meme</span></h2>
+        <p data-i18n="ob_s2_text">It goes into your microphone, so everyone in the call hears it. They don't need MemeBox. When you're muted, memes are silent too.</p>
+      </li>
+      <li class="card step">
+        <svg viewBox="0 0 240 150" role="img" aria-labelledby="s3t">
+          <title id="s3t">The MemeBox panel with a list of lines</title>
+          <rect x="30" y="8" width="180" height="134" rx="12" class="win"/>
+          <rect x="44" y="22" width="152" height="14" rx="7" class="ctl"/>
+          <rect x="44" y="44" width="40" height="12" rx="6" class="chip"/><rect x="90" y="44" width="40" height="12" rx="6" class="ctl"/><rect x="136" y="44" width="40" height="12" rx="6" class="ctl"/>
+          <g class="rows"><rect x="44" y="66" width="152" height="16" rx="6"/><rect x="44" y="88" width="152" height="16" rx="6"/><rect x="44" y="110" width="152" height="16" rx="6"/></g>
+          <circle cx="54" cy="74" r="5" class="fab"/><circle cx="54" cy="96" r="5" class="fab"/><circle cx="54" cy="118" r="5" class="fab"/>
+        </svg>
+        <h2><span class="num">3</span> <span data-i18n="ob_s3">Right-click 😂 for everything else</span></h2>
+        <p data-i18n="ob_s3_text">Pick any line, search, change your voice (Alt+V), or play favourites with Alt+1 to Alt+9. To play a YouTube video into the call, click the MemeBox icon in the toolbar on that tab.</p>
+      </li>
+    </ol>
+
+    <section class="card" id="mic-card">
+      <h2 data-i18n="ob_mic">Mic test</h2>
+      <p class="hint" data-i18n="ob_mic_hint">Check that your microphone works. The sound stays on this page. Nothing is recorded.</p>
+      <div class="actions">
+        <button type="button" id="mic-start" class="primary" data-i18n="ob_mic_start">🎙 Start mic test</button>
+        <button type="button" id="mic-stop" hidden data-i18n="ob_mic_stop">⏹ Stop</button>
+        <button type="button" id="hear" data-i18n="ob_hear">🔊 Hear a meme</button>
+      </div>
+      <div class="meter" aria-hidden="true"><span id="meter-fill"></span></div>
+      <p id="mic-status" class="mic-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card done">
+      <p data-i18n="ob_done">You're ready. Your lines, clips and packs are in Settings.</p>
+      <div class="actions">
+        <button type="button" id="open-settings" data-i18n="ob_settings">⚙️ Open settings</button>
+        <button type="button" id="close" class="primary" data-i18n="ob_close">Let's go!</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="lib/i18n-page.js"></script>
+  <script src="defaults.js"></script>
+  <script src="onboarding.js"></script>
+</body>
+</html>

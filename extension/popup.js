@@ -7,6 +7,8 @@ const $ = (id) => document.getElementById(id);
 const { t } = globalThis.MemeI18n;
 let tab = null;
 let info = null;
+// The 5 call sites (the same as the manifest). tab.url is readable there through host_permissions.
+const CALL_SITE = /^https:\/\/(meet\.google\.com|app\.zoom\.us\/wc|teams\.microsoft\.com|teams\.live\.com|discord\.com)\//;
 
 function show(text, kind) {
   $('msg').textContent = text;
@@ -21,6 +23,11 @@ async function refresh() {
   $('vol-row').hidden = true;
 
   if (!info || info.callTabId == null) {
+    // On a call site without MemeBox running: the tab was open before install or update.
+    if (tab && CALL_SITE.test(tab.url || '')) {
+      const alive = await chrome.tabs.sendMessage(tab.id, { type: 'ping' }, { frameId: 0 }).catch(() => null);
+      if (!alive) { show(t('pp_reload_tab'), 'err'); return; }
+    }
     show(t('pp_no_call'), 'warn');
     return;
   }

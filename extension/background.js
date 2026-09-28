@@ -10,7 +10,8 @@ const { TONES, LIMITS } = globalThis.MEME;
 // First install: the general pack + every built-in pack. Updates from before packs existed
 // get the new packs added once (their own lines are kept).
 const PACKS_SEEDED = 1;
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (reason === 'install') chrome.tabs.create({ url: 'onboarding.html' }).catch(() => {});
   const { lines, settings, seeded } = await chrome.storage.local.get(['lines', 'settings', 'seeded']);
   const patch = {};
   if (!Array.isArray(lines)) {
@@ -220,14 +221,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     openFeedback({ site: String(msg.site || ''), rate: msg.rate === true });
     return;
   }
-  if (!sender.tab) {
-    // The toolbar popup (an extension page).
-    if (/^popup-/.test(msg.type)) {
-      popupMessage(msg, sendResponse);
-      return true; // async response
-    }
-    return;
+  // The toolbar popup: an extension page (also when popup.html is opened in a tab).
+  const fromExtensionPage = typeof sender.url === 'string' && sender.url.startsWith(chrome.runtime.getURL(''));
+  if (fromExtensionPage && /^popup-/.test(msg.type)) {
+    popupMessage(msg, sendResponse);
+    return true; // async response
   }
+  if (!sender.tab) return;
   const tabId = sender.tab.id;
 
   switch (msg.type) {
