@@ -117,7 +117,9 @@ export async function startSite({ port = 0, env = {}, db = new D1() } = {}) {
 
   await new Promise((resolve) => server.listen(port, '127.0.0.1', resolve));
   const url = `http://127.0.0.1:${server.address().port}`;
-  return { url, db, close: () => new Promise((r) => server.close(r)) };
+  // close() also ends kept-alive browser connections, or server.close() can wait on them.
+  const close = () => new Promise((r) => { server.close(r); server.closeAllConnections(); });
+  return { url, db, close };
 }
 
 // Run directly: npm run site:dev
