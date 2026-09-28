@@ -1,4 +1,4 @@
-// Step 3 – every UI string exists in English and Hindi.
+// Step 3: every UI string exists in English and Hindi.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

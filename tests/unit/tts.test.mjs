@@ -1,4 +1,4 @@
-// Step 2 – the bundled eSpeak-NG WASM really speaks Hindi and English with every tone.
+// Step 2: the bundled eSpeak-NG WASM really speaks Hindi and English with every tone.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

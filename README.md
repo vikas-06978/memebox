@@ -1,4 +1,4 @@
-# MemeBox – Meme Soundboard & Voice Changer for Calls
+# MemeBox: Meme Soundboard & Voice Changer for Calls
 
 MemeBox plays meme lines, clips and sound effects **into your microphone** during browser video calls, so everyone in the call hears them. Only you need the extension.
 
@@ -45,14 +45,14 @@ npm run zip      # -> memebox-<version>.zip, with manifest.json at the zip root
 ```
 
 CI (`.github/workflows/ci.yml`) runs everything on each push:
-1. unit tests;
-2. end-to-end tests;
-3. build and zip;
+1. unit tests
+2. end-to-end tests
+3. build and zip
 4. end-to-end tests again, on the unzipped zip.
 
 It uploads the zip as the **memebox-extension** build artifact.
 
-## Step 1 – test by hand (the mic hook)
+## Step 1: test by hand (the mic hook)
 
 1. Load `extension/` as above, then open a **new** Google Meet tab and join a meeting.
 2. Join the same meeting on your phone, **mute the phone**, and turn its volume up.
@@ -61,14 +61,14 @@ It uploads the zip as the **memebox-extension** build artifact.
 5. Press F12 → Console and filter for `[MemeBox]`. You should see `hook installed`, `mic intercepted` and `playing into mic: (test beep)`.
 6. Mute in Meet and press 🔔 again. The phone hears nothing.
 
-## Step 5 – test by hand (tab audio and voice changer)
+## Step 5: test by hand (tab audio and voice changer)
 
 Use the same laptop and muted phone as in Step 1. Reload the extension, then reload the Meet tab.
 
 **Tab audio**
 1. In another tab, play a YouTube video.
 2. Click the MemeBox toolbar icon → **Send this tab's sound to my call**. The phone hears the video, and you still hear it on the laptop.
-3. Move **Volume in the call** in the popup, or the 🔉 slider in the 😂 panel. The phone gets louder or quieter; your own copy doesn't change.
+3. Move **Volume in the call** in the popup, or the 🔉 slider in the 😂 panel. The phone gets louder or quieter, but your own copy doesn't change.
 4. Click **⏹ Stop** (in the popup or the panel). The phone goes quiet.
 
 **Voice changer**
@@ -82,7 +82,7 @@ Use the same laptop and muted phone as in Step 1. Reload the extension, then rel
 
 **Sharing**
 1. In Options, click **💾 WAV** on a line. A .wav file is saved.
-2. Click **WhatsApp** on a line. WhatsApp opens with the text filled in; you choose the chat.
+2. Click **WhatsApp** on a line. WhatsApp opens with the text filled in, and you choose the chat.
 
 ## License
 

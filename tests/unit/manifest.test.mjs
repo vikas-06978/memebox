@@ -70,7 +70,7 @@ test('meme audio never goes to speaker-only APIs in the call page scripts', () =
     assert.doesNotMatch(src, /speechSynthesis|new Audio\(|createElement\(['"]audio/, `${f} uses no speaker-only audio`);
   }
   // In mic-hook, ctx.destination is only used by the optional monitor, and to keep a
-  // captured tab audible for you (capturing a tab silences it) – never for meme audio.
+  // captured tab audible for you (capturing a tab silences it), never for meme audio.
   const hook = fs.readFileSync(path.join(EXT, 'mic-hook.js'), 'utf8');
   const uses = hook.split('\n').filter((l) => /ctx\.destination/.test(l) && !l.trim().startsWith('//'));
   assert.equal(uses.length, 2, 'exactly two ctx.destination uses');

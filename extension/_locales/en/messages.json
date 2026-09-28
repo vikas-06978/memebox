@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "MemeBox – Meme Soundboard & Voice Changer for Calls"
+    "message": "MemeBox: Meme Soundboard & Voice Changer for Calls"
   },
   "extShortName": {
     "message": "MemeBox"
@@ -9,7 +9,7 @@
     "message": "Meme soundboard for video calls: play meme lines and sounds into your mic so everyone in the call hears them."
   },
   "actionTitle": {
-    "message": "MemeBox – send this tab's sound to your call"
+    "message": "MemeBox: send this tab's sound to your call"
   },
   "cmdFav1": {
     "message": "Play favourite 1"
@@ -48,28 +48,28 @@
     "message": "Join the call first, then press 😂"
   },
   "err_reload": {
-    "message": "MemeBox was updated – reload the call tab"
+    "message": "MemeBox was updated. Reload the call tab."
   },
   "err_play": {
     "message": "Could not play: $1"
   },
   "muted_nobody": {
-    "message": "You are muted – memes are silent too. Unmute and try again."
+    "message": "You are muted, so memes are silent too. Unmute and try again."
   },
   "mic_test_caption": {
     "message": "🔔 Mic test"
   },
   "no_lines": {
-    "message": "No lines yet – add some in Options"
+    "message": "No lines yet. Add some in Options."
   },
   "slot_empty": {
-    "message": "Nothing on Alt+$1 yet – pick a favourite slot in Options"
+    "message": "Nothing on Alt+$1 yet. Pick a favourite slot in Options."
   },
   "stopped": {
     "message": "⏹ Stopped"
   },
   "ui_hidden": {
-    "message": "MemeBox hidden – press Alt+M to show it again"
+    "message": "MemeBox is hidden. Press Alt+M to show it again."
   },
   "ui_shown": {
     "message": "MemeBox is back 😂"
@@ -90,13 +90,13 @@
     "message": "⏹ Stop tab"
   },
   "st_none": {
-    "message": "No call joined yet – join the call, then press 😂"
+    "message": "You haven't joined a call yet. Join the call, then press 😂"
   },
   "st_suspended": {
     "message": "Click anywhere on the page once to switch memes on"
   },
   "st_muted": {
-    "message": "You are muted – memes are silent until you unmute"
+    "message": "You are muted, so memes stay silent until you unmute"
   },
   "st_live": {
     "message": "Memes go into your mic"
@@ -120,7 +120,7 @@
     "message": "🔔 Mic test"
   },
   "btn_mic_test_tip": {
-    "message": "Plays a short ding-dong into your mic – ask someone in the call if they heard it"
+    "message": "Plays a short ding-dong into your mic. Ask someone in the call if they heard it."
   },
   "btn_stop_all": {
     "message": "⏹ Stop all"
@@ -141,10 +141,10 @@
     "message": "🔇 Only the call hears memes now"
   },
   "monitor_on_tip": {
-    "message": "You hear memes too (click to stop hearing them – the call still hears them)"
+    "message": "You hear memes too (click to stop hearing them, the call still hears them)"
   },
   "monitor_off_tip": {
-    "message": "You don't hear memes (click to hear them too – the call hears them either way)"
+    "message": "You don't hear memes (click to hear them too, the call hears them either way)"
   },
   "duck_label": {
     "message": "🦆 Auto-duck"
@@ -195,7 +195,7 @@
     "message": "My lines"
   },
   "empty_star": {
-    "message": "No favourites yet – tap ☆ on a line"
+    "message": "No favourites yet. Tap ☆ on a line."
   },
   "empty_recent": {
     "message": "Nothing played yet"
@@ -240,13 +240,13 @@
     "message": "In this tab, start the YouTube video or Instagram reel at the funny moment."
   },
   "pp_how3": {
-    "message": "Click “Send this tab's sound” – everyone in the call hears it through your mic."
+    "message": "Click “Send this tab's sound” and everyone in the call hears it through your mic."
   },
   "pp_how4": {
     "message": "Click ⏹ when you're done, or use ⏹ in the 😂 panel."
   },
   "pp_how_note": {
-    "message": "Nothing is downloaded or recorded – the sound is only mixed live into your mic."
+    "message": "Nothing is downloaded or recorded. The sound is only mixed live into your mic."
   },
   "pp_settings": {
     "message": "⚙️ Lines, clips & settings"
@@ -306,7 +306,7 @@
     "message": "e.g. Bhai tu rehne de"
   },
   "op_say": {
-    "message": "Pronounce as (optional – e.g. Devanagari for Hinglish lines)"
+    "message": "Pronounce as (optional, e.g. Devanagari for Hinglish lines)"
   },
   "op_lang": {
     "message": "Language"
@@ -390,13 +390,13 @@
     "message": "Preview failed: $1"
   },
   "op_err_clip_missing": {
-    "message": "Clip not found – add it again"
+    "message": "Clip not found. Add it again."
   },
   "op_clips": {
     "message": "Add a clip"
   },
   "op_clips_hint": {
-    "message": "Use an audio file or a video (only its sound is kept), a direct file link, or record yourself. Then trim it – a saved clip is at most 1 MB."
+    "message": "Use an audio file or a video (only its sound is kept), a direct file link, or record yourself. Then trim it. A saved clip can be up to 1 MB."
   },
   "op_choose_file": {
     "message": "📁 Choose a file"
@@ -417,7 +417,7 @@
     "message": "My recording"
   },
   "op_video_sites": {
-    "message": "YouTube, Instagram and other video pages are never downloaded – play them live with the toolbar button → “Send this tab's sound”."
+    "message": "YouTube, Instagram and other video pages are never downloaded. Play them live with the toolbar button → “Send this tab's sound”."
   },
   "op_start": {
     "message": "Start"
@@ -447,7 +447,7 @@
     "message": "Saves at $1 kHz, under 1 MB"
   },
   "op_too_long": {
-    "message": "Too long for 1 MB – keep it under about $1 s"
+    "message": "Too long for 1 MB. Keep it under about $1 s."
   },
   "op_clip_saved": {
     "message": "Clip saved ($1 KB)"
@@ -465,7 +465,7 @@
     "message": "Paste a full link starting with https://"
   },
   "op_err_video_page": {
-    "message": "That's a video page, not a file – MemeBox never downloads from YouTube, Instagram or other video sites. Open it in a tab and use the toolbar button → “Send this tab's sound”."
+    "message": "That's a video page, not a file. MemeBox never downloads from YouTube, Instagram or other video sites. Open it in a tab and use the toolbar button → “Send this tab's sound”."
   },
   "op_err_not_file": {
     "message": "The link must end in .mp3, .mp4, .wav, .ogg or .webm"
@@ -513,7 +513,7 @@
     "message": "⬆ Import .memepack.json"
   },
   "op_packs_hint": {
-    "message": "A pack holds lines and their clips. Importing adds to your lines; lines with the same id are replaced. Files are checked strictly."
+    "message": "A pack holds lines and their clips. Importing adds to your lines, and lines with the same id are replaced. Files are checked strictly."
   },
   "op_my_library": {
     "message": "My MemeBox lines"
@@ -528,7 +528,7 @@
     "message": "Import failed: $1"
   },
   "op_import_invalid": {
-    "message": "That pack file isn't valid – see the list below"
+    "message": "That pack file isn't valid. See the list below."
   },
   "op_imported": {
     "message": "Imported $1 lines and $2 clips from “$3”"
@@ -588,7 +588,7 @@
     "message": "Timer added"
   },
   "op_timer_added_off": {
-    "message": "Timer added – switch on “Play timed lines automatically” to use it"
+    "message": "Timer added. Switch on “Play timed lines automatically” to use it."
   },
   "op_privacy": {
     "message": "Privacy"
@@ -630,22 +630,22 @@
     "message": "Your voice: $1"
   },
   "voice_now_off": {
-    "message": "Voice changer off – your normal voice"
+    "message": "Voice changer off, your normal voice is back"
   },
   "voice_after_join": {
-    "message": "Saved – it starts when you join the call"
+    "message": "Saved. It starts when you join the call."
   },
   "cam_label": {
     "message": "📷 Caption on my camera"
   },
   "cam_tip": {
-    "message": "Draws the meme text on the video others see from you. Turn your camera off and on to apply. Your own preview may show it mirrored – others see it the right way."
+    "message": "Draws the meme text on the video others see from you. Turn your camera off and on to apply. Your own preview may show it mirrored, but others see it the right way."
   },
   "cam_on": {
-    "message": "Camera captions on – turn your camera off and on"
+    "message": "Camera captions on. Turn your camera off and on to apply."
   },
   "cam_off": {
-    "message": "Camera captions off – turn your camera off and on"
+    "message": "Camera captions off. Turn your camera off and on to apply."
   },
   "pp_volume": {
     "message": "Volume in the call"
@@ -663,9 +663,9 @@
     "message": "WhatsApp"
   },
   "op_share_wa_tip": {
-    "message": "Opens WhatsApp with the text filled in – you choose the chat and press send"
+    "message": "Opens WhatsApp with the text filled in. You choose the chat and press send."
   },
   "op_share_text": {
-    "message": "$1 😂 – made with MemeBox: $2"
+    "message": "$1 😂 Made with MemeBox: $2"
   }
 }

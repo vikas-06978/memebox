@@ -1,4 +1,4 @@
-// MemeBox – real-time pitch shifter for the live voice changer (pure maths, no Web Audio).
+// MemeBox: real-time pitch shifter for the live voice changer (pure maths, no Web Audio).
 // Classic script that sets globalThis.MemePitchShifter. It is loaded three ways:
 //   - imported by voice-worklet.js inside the AudioWorklet (the normal path),
 //   - as a MAIN-world content script before mic-hook.js (ScriptProcessor fallback),

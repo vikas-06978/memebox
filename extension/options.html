@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MemeBox – Settings</title>
+  <title>MemeBox Settings</title>
   <link rel="icon" href="icons/icon32.png">
   <link rel="stylesheet" href="options.css">
 </head>
@@ -31,7 +31,7 @@
         <label class="wide"><span data-i18n="op_text">Text shown in the caption</span>
           <input id="line-text" maxlength="300" required data-i18n-placeholder="op_text_ph" placeholder="e.g. Bhai tu rehne de">
         </label>
-        <label class="wide"><span data-i18n="op_say">Pronounce as (optional – e.g. Devanagari for Hinglish lines)</span>
+        <label class="wide"><span data-i18n="op_say">Pronounce as (optional, e.g. Devanagari for Hinglish lines)</span>
           <input id="line-say" maxlength="300" placeholder="भाई तू रहने दे" lang="hi">
         </label>
         <label><span data-i18n="op_lang">Language</span>
@@ -71,7 +71,7 @@
     <!-- ============ CLIPS ============ -->
     <section class="card" id="clips-card">
       <h2 data-i18n="op_clips">Add a clip</h2>
-      <p class="hint" data-i18n="op_clips_hint">Use an audio file or a video (only its sound is kept), a direct file link, or record yourself. Then trim it – a saved clip is at most 1 MB.</p>
+      <p class="hint" data-i18n="op_clips_hint">Use an audio file or a video (only its sound is kept), a direct file link, or record yourself. Then trim it. A saved clip can be up to 1 MB.</p>
       <div class="sources">
         <label class="button primary"><span data-i18n="op_choose_file">📁 Choose a file</span>
           <input type="file" id="clip-file" accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.mp4,.webm,audio/*,video/mp4,video/webm" hidden>
@@ -82,7 +82,7 @@
         </form>
         <button type="button" id="rec-btn" data-i18n="op_record">🎙 Record (10 s)</button>
       </div>
-      <p class="hint" data-i18n="op_video_sites">YouTube, Instagram and other video pages are never downloaded – play them live with the toolbar button → “Send this tab's sound”.</p>
+      <p class="hint" data-i18n="op_video_sites">YouTube, Instagram and other video pages are never downloaded. Play them live with the toolbar button → “Send this tab's sound”.</p>
 
       <div id="trimmer" class="trimmer" hidden>
         <div class="wave-wrap"><canvas id="wave" height="120" aria-label="Waveform"></canvas></div>
@@ -120,7 +120,7 @@
           <input type="file" id="import" accept=".json,.memepack.json,application/json" hidden></label>
       </div>
       <ul id="import-errors" class="errors" hidden></ul>
-      <p class="hint" data-i18n="op_packs_hint">A pack holds lines and their clips. Importing adds to your lines; lines with the same id are replaced. Files are checked strictly.</p>
+      <p class="hint" data-i18n="op_packs_hint">A pack holds lines and their clips. Importing adds to your lines, and lines with the same id are replaced. Files are checked strictly.</p>
     </section>
 
     <!-- ============ PARTY MODE ============ -->

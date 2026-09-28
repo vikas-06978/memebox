@@ -1,10 +1,10 @@
-// Step 4 – waveform trimmer maths.
+// Step 4: waveform trimmer maths.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadScript } from './helpers.mjs';
 
 const { MemeTrim: T } = loadScript('lib/trim.js');
-// Values from the sandbox have another realm's prototypes; compare plain copies.
+// Values from the sandbox have another realm's prototypes, so compare plain copies.
 const plain = (v) => JSON.parse(JSON.stringify(v));
 const MB = 1024 * 1024;
 

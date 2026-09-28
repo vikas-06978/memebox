@@ -1,4 +1,4 @@
-// MemeBox – on-page UI (content script, ISOLATED world, top frame only).
+// MemeBox: on-page UI (content script, ISOLATED world, top frame only).
 // Floating 😂 button, panel (categories, search, ⭐ favourites, recent), captions,
 // shortcuts, auto-duck switch and timed lines. Everything lives in a closed Shadow DOM
 // so the call site's CSS can't touch it. All text goes through chrome.i18n (en / hi).
@@ -31,7 +31,7 @@
     lastRandomId: null,
     nowPlayingId: null,     // highlighted in the list for 3 s
     tabAudio: false,        // another tab's sound is going into the mic
-    voice: 'off',           // live voice changer – always starts Off on a new page
+    voice: 'off',           // live voice changer, always starts Off on a new page
     query: '',
     filter: 'all',          // 'all' | 'star' | 'recent' | <category>
   };
@@ -156,7 +156,7 @@
     bridge.toRuntime({ type: 'played-one' }); // counts plays (for the one-time feedback ask)
   }
 
-  // Hard-coded "ding-dong" straight into the mic – the quickest way to check the hook.
+  // Hard-coded "ding-dong" straight into the mic, the quickest way to check the hook.
   function playBeep() {
     const f = activeFrame();
     if (!f) { toast(t('join_first')); return; }
@@ -233,7 +233,7 @@
   function toggleStar(line) {
     const star = !line.star;
     update('lines', (lines) => (Array.isArray(lines) ? lines : state.lines).map((l) => (l.id === line.id ? { ...l, star } : l)));
-    line.star = star; // instant feedback; storage.onChanged re-renders too
+    line.star = star; // instant feedback, storage.onChanged re-renders too
     renderList();
   }
 
@@ -546,7 +546,7 @@
     fabDot.style.background = STATUS_COLOR[s];
     statusDot.style.background = STATUS_COLOR[s];
     statusText.textContent = t('st_' + s);
-    fab.title = 'MemeBox – ' + t('st_' + s) + '\n' + t('fab_tip');
+    fab.title = 'MemeBox: ' + t('st_' + s) + '\n' + t('fab_tip');
   }
 
   function renderTabAudio() {
@@ -764,7 +764,7 @@
     volSaveTimer = setTimeout(() => saveSetting('volume', state.settings.volume), 300);
   });
 
-  // "Hear memes myself" – switches instantly, even in the middle of a meme.
+  // "Hear memes myself": switches instantly, even in the middle of a meme.
   function setMonitor(on) {
     state.settings = { ...state.settings, monitor: on };
     sendAudioSettings();
@@ -782,7 +782,7 @@
     saveSetting('autoDuck', duckBox.checked);
   });
   voiceSel.addEventListener('change', () => setVoice(voiceSel.value));
-  // The bridge in every frame reads this setting; it applies the next time the camera starts.
+  // The bridge in every frame reads this setting. It applies the next time the camera starts.
   camBox.addEventListener('change', () => {
     state.settings = { ...state.settings, camCaptions: camBox.checked };
     saveSetting('camCaptions', camBox.checked);

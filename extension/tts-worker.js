@@ -1,4 +1,4 @@
-// MemeBox – eSpeak-NG text-to-speech worker (module worker inside the offscreen document).
+// MemeBox: eSpeak-NG text-to-speech worker (module worker inside the offscreen document).
 // Input:  { id, text, lang: 'hi'|'en', espeak: { rate, pitch, range, volume } }
 // Output: { id, ok: true, wav: ArrayBuffer } or { id, ok: false, error }
 import { synthesizeWav } from './lib/tts.js';

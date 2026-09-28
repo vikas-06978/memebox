@@ -1,4 +1,4 @@
-// Step 1 – the mic hook puts meme audio INTO the stream the call site gets from getUserMedia.
+// Step 1: the mic hook puts meme audio INTO the stream the call site gets from getUserMedia.
 import { test, expect } from './fixtures.mjs';
 
 test('hook is installed at document_start', async ({ callPage }) => {
@@ -51,7 +51,7 @@ test('clicking 😂 speaks a meme line (eSpeak) into the mic', async ({ callPage
 test('a site that replaces getUserMedia later gets re-wrapped on devicechange', async ({ callPage }) => {
   const ok = await callPage.evaluate(async () => {
     // The "site" swaps in its own getUserMedia that never calls ours.
-    const plain = await navigator.mediaDevices.getUserMedia({ audio: true }); // (mixed; we only borrow its label)
+    const plain = await navigator.mediaDevices.getUserMedia({ audio: true }); // (mixed, we only borrow its label)
     const ac = new AudioContext(); const d = ac.createMediaStreamDestination();
     const o = ac.createOscillator(); const g = ac.createGain(); g.gain.value = 0.05; o.connect(g).connect(d); o.start();
     MediaDevices.prototype.getUserMedia = async () => new MediaStream([d.stream.getAudioTracks()[0].clone()]);

@@ -1,4 +1,4 @@
-// npm run version:set -- 1.2.3   – sets the version in package.json and extension/manifest.json.
+// npm run version:set -- 1.2.3   sets the version in package.json and extension/manifest.json.
 import fs from 'node:fs';
 import path from 'node:path';
 

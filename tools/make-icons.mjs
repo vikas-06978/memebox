@@ -1,5 +1,5 @@
 // Draws the MemeBox icon (a laughing face with sound waves) into icons/icon{16,32,48,128}.png.
-// Pure Node – no image libraries. Run: npm run icons
+// Pure Node, no image libraries. Run: npm run icons
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';

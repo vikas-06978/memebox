@@ -1,4 +1,4 @@
-// MemeBox – options page: lines, clips (file / video / link / recording + trimmer), packs,
+// MemeBox options page: lines, clips (file / video / link / recording + trimmer), packs,
 // timed lines (party mode). Lines live in chrome.storage.local, clips in IndexedDB.
 'use strict';
 
@@ -185,7 +185,7 @@ async function saveWav(line) {
   }
 }
 
-// Opens WhatsApp's own share page with the text filled in – you pick the chat and press send.
+// Opens WhatsApp's own share page with the text filled in. You pick the chat and press send.
 function shareWhatsApp(line) {
   const text = t('op_share_text', line.text, MEMEBOX_CONFIG.SITE_URL);
   window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
@@ -413,7 +413,7 @@ $('link-form').addEventListener('submit', async (e) => {
   } catch (err) { toast(err.message, true); }
 });
 
-// Record my own clip (max 10 s) – only while this page is open, straight into the trimmer.
+// Record my own clip (max 10 s), only while this page is open, straight into the trimmer.
 let recorder = null;
 $('rec-btn').addEventListener('click', async () => {
   if (recorder) { recorder.stop(); return; }
@@ -678,7 +678,7 @@ function renderTimers() {
       settings.timers = settings.timers.filter((y) => y !== x);
       saveSettings();
     });
-    list.append(el('li', {}, on, el('span', { className: 'what' }, `“${line ? line.text : t('op_deleted_line')}” – ${when}`), del));
+    list.append(el('li', {}, on, el('span', { className: 'what' }, `“${line ? line.text : t('op_deleted_line')}”: ${when}`), del));
   }
 }
 

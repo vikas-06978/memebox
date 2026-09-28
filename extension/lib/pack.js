@@ -1,4 +1,4 @@
-// MemeBox – .memepack.json format: strict validation, building and base64 helpers.
+// MemeBox .memepack.json format: strict validation, building and base64 helpers.
 // Classic script (options page + unit tests). Depends on globalThis.MEME (defaults.js).
 //
 // {
@@ -51,7 +51,7 @@
     for (const k of Object.keys(data)) if (!TOP_KEYS.has(k)) err(k, 'unknown field');
     if (data.format !== FORMAT) err('format', `must be "${FORMAT}"`);
     if (data.version !== VERSION) err('version', `must be ${VERSION}`);
-    if (!isStr(data.name, LIMITS.name, 1) || !noControl(data.name)) err('name', `1–${LIMITS.name} characters`);
+    if (!isStr(data.name, LIMITS.name, 1) || !noControl(data.name)) err('name', `1-${LIMITS.name} characters`);
     if (data.description !== undefined && (!isStr(data.description, LIMITS.description) || !noControl(data.description))) err('description', `up to ${LIMITS.description} characters`);
 
     const clips = new Map();
@@ -63,7 +63,7 @@
         for (const k of Object.keys(c)) if (!CLIP_KEYS.has(k)) err(`${p}.${k}`, 'unknown field');
         if (!isStr(c.id, 64) || !ID.test(c.id)) err(`${p}.id`, 'letters, digits, - or _ (max 64)');
         else if (clips.has(c.id)) err(`${p}.id`, 'duplicate');
-        if (!isStr(c.name, LIMITS.clipName, 1) || !noControl(c.name)) err(`${p}.name`, `1–${LIMITS.clipName} characters`);
+        if (!isStr(c.name, LIMITS.clipName, 1) || !noControl(c.name)) err(`${p}.name`, `1-${LIMITS.clipName} characters`);
         if (c.type !== 'audio/wav') err(`${p}.type`, 'must be "audio/wav"');
         if (typeof c.data !== 'string' || !BASE64.test(c.data) || c.data.length % 4 !== 0) { err(`${p}.data`, 'not base64'); return; }
         if (c.data.length > Math.ceil(LIMITS.clipBytes / 3) * 4) { err(`${p}.data`, 'clip is bigger than 1 MB'); return; }
@@ -76,7 +76,7 @@
 
     const lines = [];
     if (!Array.isArray(data.lines) || data.lines.length < 1 || data.lines.length > LIMITS.lines) {
-      err('lines', `a list of 1–${LIMITS.lines} lines`);
+      err('lines', `a list of 1-${LIMITS.lines} lines`);
     } else {
       const ids = new Set();
       data.lines.forEach((l, i) => {
@@ -87,13 +87,13 @@
         else if (ids.has(l.id)) err(`${p}.id`, 'duplicate');
         ids.add(l.id);
         if (l.kind !== 'tts' && l.kind !== 'clip') err(`${p}.kind`, 'must be "tts" or "clip"');
-        if (!isStr(l.text, LIMITS.text, 1) || !l.text.trim() || !noControl(l.text)) err(`${p}.text`, `1–${LIMITS.text} characters`);
+        if (!isStr(l.text, LIMITS.text, 1) || !l.text.trim() || !noControl(l.text)) err(`${p}.text`, `1-${LIMITS.text} characters`);
         if (l.say !== undefined && (!isStr(l.say, LIMITS.text) || !noControl(l.say))) err(`${p}.say`, `up to ${LIMITS.text} characters`);
         if (l.lang !== 'hi' && l.lang !== 'en') err(`${p}.lang`, 'must be "hi" or "en"');
         if (!Object.prototype.hasOwnProperty.call(TONES, l.tone)) err(`${p}.tone`, `one of ${Object.keys(TONES).join(', ')}`);
-        if (!isStr(l.category, LIMITS.category, 1) || !noControl(l.category)) err(`${p}.category`, `1–${LIMITS.category} characters`);
-        if (l.fav !== undefined && !(Number.isInteger(l.fav) && l.fav >= 0 && l.fav <= 9)) err(`${p}.fav`, 'whole number 0–9');
-        if (l.volume !== undefined && !(typeof l.volume === 'number' && l.volume >= 0 && l.volume <= 2)) err(`${p}.volume`, 'number 0–2');
+        if (!isStr(l.category, LIMITS.category, 1) || !noControl(l.category)) err(`${p}.category`, `1-${LIMITS.category} characters`);
+        if (l.fav !== undefined && !(Number.isInteger(l.fav) && l.fav >= 0 && l.fav <= 9)) err(`${p}.fav`, 'whole number 0-9');
+        if (l.volume !== undefined && !(typeof l.volume === 'number' && l.volume >= 0 && l.volume <= 2)) err(`${p}.volume`, 'number 0-2');
         if (l.star !== undefined && typeof l.star !== 'boolean') err(`${p}.star`, 'true or false');
         if (l.kind === 'clip') {
           if (!isStr(l.clipId, 64) || !clips.has(l.clipId)) err(`${p}.clipId`, 'must match a clip in "clips"');
@@ -106,7 +106,7 @@
     return { ok: true, pack: { name: data.name, description: data.description || '', lines, clips: [...clips.values()] } };
   }
 
-  // lines: sanitized lines; clips: [{ id, name, bytes: ArrayBuffer }] (only those the lines use).
+  // lines: sanitized lines, clips: [{ id, name, bytes: ArrayBuffer }] (only those the lines use).
   function build(name, lines, clips, description) {
     const used = new Set(lines.filter((l) => l.kind === 'clip').map((l) => l.clipId));
     const pack = {

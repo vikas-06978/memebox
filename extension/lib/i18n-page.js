@@ -1,4 +1,4 @@
-// MemeBox – translate extension pages (popup, options, onboarding) with chrome.i18n.
+// MemeBox: translate extension pages (popup, options, onboarding) with chrome.i18n.
 //   <span data-i18n="key">English fallback</span>
 //   <input data-i18n-placeholder="key">   <button data-i18n-title="key">
 // Also exposes t(key, ...subs) for scripts.

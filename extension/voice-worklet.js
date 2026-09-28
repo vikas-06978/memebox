@@ -1,5 +1,5 @@
-// MemeBox – AudioWorklet for the live voice changer (loaded by mic-hook.js into the
-// call page's AudioContext). Mono in, mono out; the pitch ratio is an AudioParam.
+// MemeBox: AudioWorklet for the live voice changer (loaded by mic-hook.js into the
+// call page's AudioContext). Mono in, mono out. The pitch ratio is an AudioParam.
 import './lib/pitch-shift.js';
 
 registerProcessor('memebox-pitch', class extends AudioWorkletProcessor {

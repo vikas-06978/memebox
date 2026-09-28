@@ -1,4 +1,4 @@
-// Step 4 – options page: packs, clips (file / video / link / recording), trimmer, pack files, per-line volume.
+// Step 4 options page: packs, clips (file / video / link / recording), trimmer, pack files, per-line volume.
 import { test, expect } from './fixtures.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -69,7 +69,7 @@ test('upload a WAV, trim it, save as a clip, and it plays into the call', async 
   await expect.poll(() => callPage.evaluate(() => window.peak), { timeout: 5000 }).toBeGreaterThan(0.4);
 });
 
-test('a video file (webm) is accepted – only its sound is kept', async ({ context, extensionId }) => {
+test('a video file (webm) is accepted and only its sound is kept', async ({ context, extensionId }) => {
   const page = await openOptions(context, extensionId);
   // Make a real 1.5 s webm in the page (MediaRecorder of a tone), then "choose" it.
   await page.evaluate(async () => {

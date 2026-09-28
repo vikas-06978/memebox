@@ -1,4 +1,4 @@
-// MemeBox – clip trimmer maths (pure functions; classic script, also loaded by unit tests).
+// MemeBox: clip trimmer maths (pure functions, classic script, also loaded by unit tests).
 (() => {
   'use strict';
 

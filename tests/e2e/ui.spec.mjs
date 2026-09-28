@@ -1,4 +1,4 @@
-// Step 3 – on-call UI: shortcuts, auto-duck, per-site position.
+// Step 3 on-call UI: shortcuts, auto-duck, per-site position.
 import { test, expect } from './fixtures.mjs';
 
 const FAB = { x: 16 + 26, y: 720 - 120 - 26 }; // centre of the 😂 button at its default spot
@@ -10,7 +10,7 @@ async function joined(page, { duck = false } = {}) {
 }
 
 test('auto-duck: memes get quieter while I am talking', async ({ callPage }) => {
-  // My "voice" is a loud tone (0.4) the whole time; compare the beep on top of it with duck on/off.
+  // My "voice" is a loud tone (0.4) the whole time. Compare the beep on top of it with duck on/off.
   await callPage.evaluate(() => window.useSiteMic(0.4));
   await joined(callPage, { duck: true });
   await callPage.waitForTimeout(700); // let the UI send its settings (auto-duck on)

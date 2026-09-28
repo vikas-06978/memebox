@@ -44,7 +44,7 @@ export const FAKE_CALL = `<!doctype html><html><head><title>fake call</title></h
     setInterval(() => { an.getFloatTimeDomainData(buf); for (const v of buf) window.peak = Math.max(window.peak, Math.abs(v)); }, 20);
   };
   window.peakOver = async (ms) => { window.peak = 0; await new Promise((r) => setTimeout(r, ms)); return window.peak; };
-  // Makes the "site" use its own mic stream (a tone at the given level) – via the devicechange re-wrap.
+  // Makes the "site" use its own mic stream (a tone at the given level), via the devicechange re-wrap.
   window.useSiteMic = async (level) => {
     const ac = new RealAudioContext(); const d = ac.createMediaStreamDestination();
     const o = ac.createOscillator(); o.frequency.value = 200; const g = ac.createGain(); g.gain.value = level;
@@ -54,13 +54,13 @@ export const FAKE_CALL = `<!doctype html><html><head><title>fake call</title></h
   };
   window.joinCall = async () => { window.s = await navigator.mediaDevices.getUserMedia({ audio: true }); await window.measure(window.s); };
   // The fake mic is a steady tone, which auto-duck (correctly) treats as "talking". Tests that
-  // measure pure mixing switch it off – after the UI has sent its own settings on join.
+  // measure pure mixing switch it off, after the UI has sent its own settings on join.
   window.noDuck = async () => {
     await new Promise((r) => setTimeout(r, 700));
     window.postMessage({ source: 'memebox-bridge-9c1e', type: 'duck', value: false }, '*');
     await new Promise((r) => setTimeout(r, 100));
   };
-  // What the bridge sends to the hook – used to trigger the hard-coded beep directly.
+  // What the bridge sends to the hook, used to trigger the hard-coded beep directly.
   window.beep = () => window.postMessage({ source: 'memebox-bridge-9c1e', type: 'beep', reqId: 1 }, '*');
 </script></body></html>`;
 
@@ -90,7 +90,7 @@ export const test = base.extend({
     if (!sw) sw = await context.waitForEvent('serviceworker');
     await use(sw.url().split('/')[2]);
   },
-  // A fake call tab with the extension's content scripts running; collects [MemeBox] logs.
+  // A fake call tab with the extension's content scripts running, collects [MemeBox] logs.
   callPage: async ({ context, extensionId }, use) => {
     void extensionId; // make sure the extension is up first
     const page = await context.newPage();

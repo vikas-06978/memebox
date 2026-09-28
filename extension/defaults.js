@@ -1,10 +1,10 @@
-// MemeBox – shared constants: tones and the default meme pack.
+// MemeBox shared constants: tones and the default meme pack.
 // Loaded as a classic script by the content scripts, the service worker
 // (importScripts), the options page and the offscreen document.
 (() => {
   'use strict';
 
-  // espeak: rate = words per minute (80–450), pitch/range 0–99, volume 0–200.
+  // espeak: rate = words per minute (80-450), pitch/range 0-99, volume 0-200.
   // playbackRate / gain / effect are applied by mic-hook.js when playing.
   const TONES = {
     normal:   { label: 'Normal',   emoji: '🙂', espeak: { rate: 175, pitch: 50, range: 50, volume: 100 }, playbackRate: 1,    gain: 1 },
@@ -15,7 +15,7 @@
     excited:  { label: 'Excited',  emoji: '🤩', espeak: { rate: 225, pitch: 78, range: 95, volume: 125 }, playbackRate: 1.1,  gain: 1.35 },
   };
 
-  // `text` is what is shown; `say` (optional) is what eSpeak pronounces.
+  // `text` is what is shown and `say` (optional) is what eSpeak pronounces.
   // Hinglish lines get a Devanagari `say` so the Hindi voice reads them naturally.
   const LINES = [
     { id: 'd-hi-1', lang: 'hi', tone: 'normal',   fav: 1, text: 'Bhai tu rehne de', say: 'भाई तू रहने दे' },
@@ -45,10 +45,10 @@
   };
 
   const SETTINGS = {
-    volume: 1,            // meme volume, 0–2
+    volume: 1,            // meme volume, 0-2
     monitor: true,        // also play memes quietly on your own speakers (untick in the panel)
     autoDuck: true,       // lower meme volume while you are talking
-    tabVolume: 1,         // another tab's sound in the call, 0–2
+    tabVolume: 1,         // another tab's sound in the call, 0-2
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
     timersEnabled: false, // master switch for timed lines (off by default)
@@ -66,7 +66,7 @@
     linkExtensions: ['mp3', 'mp4', 'wav', 'ogg', 'webm'],
   };
 
-  // http(s) links only; returns '' for anything else.
+  // http(s) links only. Returns '' for anything else.
   function cleanUrl(s) {
     try {
       const u = new URL(String(s || '').trim());
@@ -78,7 +78,7 @@
     }
   }
 
-  // Video/social pages can't be used as links (never downloaded) – point people to "Tab audio".
+  // Video/social pages can't be used as links (never downloaded). Point people to "Tab audio".
   const VIDEO_SITES = /(^|\.)(youtube\.com|youtu\.be|instagram\.com|tiktok\.com|facebook\.com|fb\.watch|twitter\.com|x\.com)$/i;
   function isVideoPage(url) {
     try { return VIDEO_SITES.test(new URL(url).hostname); } catch { return false; }
@@ -92,7 +92,7 @@
     } catch { return false; }
   }
 
-  // Category ids: built-in packs use lowercase ids (college, cricket?); users may type their own.
+  // Category ids: built-in packs use lowercase ids (college, cricket?). Users may type their own.
   function cleanCategory(c) {
     const s = String(c || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 30);
     return s || 'general';
@@ -101,7 +101,7 @@
   // Clean a line coming from storage or an imported file.
   function sanitizeLine(l) {
     if (!l || typeof l !== 'object') return null;
-    if (l.kind === 'url') return null; // old streamed links (0.x) – re-add them as clips
+    if (l.kind === 'url') return null; // old streamed links (0.x), re-add them as clips
     const kind = l.kind === 'clip' ? 'clip' : 'tts';
     const text = String(l.text || '').trim().slice(0, LIMITS.textChars);
     if (!text) return null;

@@ -1,4 +1,4 @@
-# MemeBox – Privacy Policy
+# MemeBox Privacy Policy
 
 _Last updated: 28 September 2026_
 
@@ -55,10 +55,10 @@ If you add a clip from a direct file link (.mp3, .mp4, .wav, .ogg or .webm), Mem
 
 ## Permissions
 
-- **storage** – saves your lines and settings on your device.
-- **offscreen** – runs the bundled speech engine in a hidden extension page.
-- **tabCapture** – sends the sound of a tab you pick into your call, only after you click the button in the toolbar popup.
-- **Access to meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com** – needed to show the 😂 button on those call pages and to mix meme audio into the microphone there. MemeBox doesn't run on any other website.
+- **storage**: saves your lines and settings on your device.
+- **offscreen**: runs the bundled speech engine in a hidden extension page.
+- **tabCapture**: sends the sound of a tab you pick into your call, only after you click the button in the toolbar popup.
+- **Access to meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com**: needed to show the 😂 button on those call pages and to mix meme audio into the microphone there. MemeBox doesn't run on any other website.
 
 ## Children
 

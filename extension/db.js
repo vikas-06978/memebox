@@ -1,4 +1,4 @@
-// MemeBox – tiny IndexedDB store for uploaded clips (extension origin only).
+// MemeBox: tiny IndexedDB store for uploaded clips (extension origin only).
 // Used by the service worker (importScripts) and the options page.
 (() => {
   'use strict';

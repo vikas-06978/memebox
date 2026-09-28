@@ -1,6 +1,6 @@
-// MemeBox – toolbar popup: send THIS tab's sound (YouTube, Instagram…) into the call's mic.
+// MemeBox toolbar popup: send THIS tab's sound (YouTube, Instagram…) into the call's mic.
 // Opening the popup counts as "invoking the extension" on this tab, which is what
-// chrome.tabCapture requires – so the capture only ever happens on a tab you chose.
+// chrome.tabCapture requires, so the capture only ever happens on a tab you chose.
 'use strict';
 
 const $ = (id) => document.getElementById(id);

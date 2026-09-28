@@ -1,4 +1,4 @@
-// Step 5 – live voice changer, captions on my own camera, tab-sound volume, WAV / WhatsApp sharing.
+// Step 5: live voice changer, captions on my own camera, tab-sound volume, WAV / WhatsApp sharing.
 import { test, expect } from './fixtures.mjs';
 import fs from 'node:fs';
 

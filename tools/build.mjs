@@ -1,4 +1,4 @@
-// npm run build – copies the extension into extension/dist, ready to load unpacked or zip.
+// npm run build: copies the extension into extension/dist, ready to load unpacked or zip.
 // The extension is plain JavaScript, so "building" is a clean copy plus license files.
 import fs from 'node:fs';
 import path from 'node:path';

@@ -1,4 +1,4 @@
-// Step 5 – the live voice changer's pitch shifter (lib/pitch-shift.js).
+// Step 5: the live voice changer's pitch shifter (lib/pitch-shift.js).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadScript } from './helpers.mjs';

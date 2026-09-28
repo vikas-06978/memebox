@@ -4,10 +4,10 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
-### Added – Step 5: tab audio and voice changer (0.5.0)
+### Added in Step 5: tab audio and voice changer (0.5.0)
 - **Tab audio to the mic:**
   - The tab you send stays audible for you. Capturing a tab silences it, so a local copy is played back.
-  - The tab sound has its own volume (0–200%). It can be set in the toolbar popup and in the 😂 panel, and both share one setting.
+  - The tab sound has its own volume (0-200%). It can be set in the toolbar popup and in the 😂 panel, and both share one setting.
 - **Live voice changer** for your own voice: Chipmunk and Deep, plus Robot, Echo and Radio.
   - Chipmunk and Deep use an AudioWorklet pitch shifter (`voice-worklet.js` + `lib/pitch-shift.js`). If a page blocks the worklet, the same maths runs on the main thread as a fallback.
   - It sits between the real mic and the mixer. Auto-duck still reads your raw voice.
@@ -33,17 +33,17 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 - Unit tests for the pitch shifter: passthrough, 200→320 Hz and 300→216 Hz, level, clamping, and counter wrap. Manifest tests for the worklet resources and load order.
 - End-to-end tests:
   - Alt+V raises the sent voice's pitch through the AudioWorklet and restores it.
-  - Deep works through the fallback; Robot, Echo and Radio keep the voice flowing, with memes on top.
-  - Camera captions are off by default; when on, the camera goes through a canvas that ends when stopped.
+  - Deep works through the fallback. Robot, Echo and Radio keep the voice flowing, with memes on top.
+  - Camera captions are off by default. When on, the camera goes through a canvas that ends when stopped.
   - The popup's tab volume is saved.
   - WAV download and the WhatsApp link work.
 
-### Added – Step 4: lines, clips, files, packs (0.4.0)
-- Rewritten Options page, in English and Hindi. Each line has text, "pronounce as", language, tone, category, favourite slot (1–9), per-line volume (0–200%) and ⭐. It also has search and a category filter.
+### Added in Step 4: lines, clips, files, packs (0.4.0)
+- Rewritten Options page, in English and Hindi. Each line has text, "pronounce as", language, tone, category, favourite slot (1-9), per-line volume (0-200%) and ⭐. It also has search and a category filter.
 - Clips from:
-  - an audio file (MP3/WAV/OGG/M4A);
-  - a **video file** (MP4/WEBM, only its sound is kept);
-  - a **direct file link** (.mp3 .mp4 .wav .ogg .webm), fetched with the normal browser rules. If the server blocks it (CORS), a clear message says to download the file and upload it instead;
+  - an audio file (MP3/WAV/OGG/M4A)
+  - a **video file** (MP4/WEBM, only its sound is kept)
+  - a **direct file link** (.mp3 .mp4 .wav .ogg .webm), fetched with the normal browser rules. If the server blocks it (CORS), a clear message says to download the file and upload it instead
   - **recording yourself** (up to 10 s).
 - YouTube, Instagram and other video page links are refused, with a pointer to "Send this tab's sound".
 - Waveform trimmer: drag the edges or use the sliders, preview the selection, and save as a mono WAV at the best sample rate that fits in **1 MB**.
@@ -59,14 +59,14 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ### Tests
 - Unit tests for the trimmer maths, pack validation (valid, round trip, and more than 20 invalid cases), and the built-in pack content, including a check for words about groups or looks.
-- End-to-end tests for installing packs; WAV and webm uploads through the trimmer into the call; direct links with a real CORS-open and CORS-closed server; YouTube refusal; recording; pack export → wipe → import; invalid packs; and per-line volume in the call.
+- End-to-end tests for installing packs, WAV and webm uploads through the trimmer into the call, direct links with a real CORS-open and CORS-closed server, YouTube refusal, recording, pack export → wipe → import, invalid packs, and per-line volume in the call.
 
-### Added – Step 3: on-call UI (0.3.0)
+### Added in Step 3: on-call UI (0.3.0)
 - Panel:
-  - category chips, plus ⭐ Favourites and 🕘 Recent (the last 12 played);
-  - search, where Enter plays the first match;
-  - 🎲 Random, which respects the current filter;
-  - 🔔 Mic test, ⏹ Stop all, and the master volume;
+  - category chips, plus ⭐ Favourites and 🕘 Recent (the last 12 played)
+  - search, where Enter plays the first match
+  - 🎲 Random, which respects the current filter
+  - 🔔 Mic test, ⏹ Stop all, and the master volume
   - "Hear memes myself" and 🦆 Auto-duck switches.
 - The 😂 position is saved per site.
 - Status dot: green = in the call and hooked, yellow = muted (or click once to enable), grey = no call.
@@ -77,16 +77,16 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 - Auto-duck: memes drop to 35% while your real mic is loud. This includes the very first moment of a meme.
 - Lines gain `category`, `star` and per-line `volume` fields.
 - English and Hindi UI through `chrome.i18n` (`_locales/en` and `_locales/hi`) for the panel, popup, manifest and shortcut names.
-- Friendlier messages: "Reload the call tab after updating", and "You are muted – memes are silent too".
+- Friendlier messages: "Reload the call tab after updating", and "You are muted, so memes are silent too".
 - Tests: i18n completeness (same keys, placeholders, every key used exists). End-to-end tests for auto-duck, Alt+0, Alt+M, per-site position and the Hindi popup.
 
-### Added – Step 2: voices (0.2.0)
+### Added in Step 2: voices (0.2.0)
 - eSpeak-NG WebAssembly (bundled locally, English + Hindi only, about 1.8 MB) runs in an offscreen document's module worker. The page CSP allows only `'self'` and `'wasm-unsafe-eval'`.
 - `lib/tts.js` and `lib/wav.js` are shared by the worker and the tests. The offscreen document returns WAV bytes, which go through the bridge to the mic hook, which decodes them into the soundboard node.
 - Six tones, each combining eSpeak pitch/speed/range with a playbackRate: Normal, Chipmunk, Villain, Robot (monotone plus ring modulator), Slow-mo and Excited.
 - Tests: real eSpeak synthesis in Node for every tone × {hi, en}, checking format, length and volume, and that tone speed is in the right order. The bundle is checked for having no remote URLs.
 
-### Added – Step 1: mic hook
+### Added in Step 1: mic hook
 - `mic-hook.js` (MAIN world, `document_start`, all frames, on the 5 call sites) wraps `getUserMedia`:
   - Mixes real mic → micGain → MediaStreamDestination, plus a soundboard GainNode, in one shared AudioContext.
   - Returns the mixed audio together with the original video tracks.
@@ -104,5 +104,5 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
   - Playwright end-to-end tests: mixing, beep, mute, 😂 → eSpeak, devicechange re-wrap, and fallback.
   - GitHub Actions CI that uploads the store zip.
 
-### Added – Step 0
+### Added in Step 0
 - Project skeleton: `/extension`, `/site`, `/site/functions` and `/tests`, plus `extension/config.js` (`SITE_URL`, `PRO_ENABLED = false`).

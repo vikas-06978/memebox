@@ -1,4 +1,4 @@
-// MemeBox – WAV helpers (ES module; used by tts-worker.js and the tests).
+// MemeBox: WAV helpers (ES module, used by tts-worker.js and the tests).
 
 // Int16 chunks (mono) -> 16-bit PCM WAV file.
 export function encodeWav16(chunks, sampleRate) {

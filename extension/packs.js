@@ -1,4 +1,4 @@
-// MemeBox – built-in meme packs (original lines; friendly roasts only – nothing about religion,
+// MemeBox: built-in meme packs. Original lines, friendly roasts only, nothing about religion,
 // caste, gender, sexuality, looks, disability or any group). Classic script.
 // The "general" pack is MEME.LINES in defaults.js.
 (() => {

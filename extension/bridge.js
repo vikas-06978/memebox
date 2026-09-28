@@ -1,4 +1,4 @@
-// MemeBox – bridge (content script, ISOLATED world, every frame).
+// MemeBox: bridge (content script, ISOLATED world, every frame).
 //
 // page (mic-hook.js)  <-- window.postMessage, checked `source` -->  this script
 // this script         <-- chrome.runtime messaging            -->  service worker
@@ -18,7 +18,7 @@
       chrome.runtime.sendMessage(msg).catch(() => {});
       return true;
     } catch {
-      return false; // Extension was reloaded; this old content script is orphaned.
+      return false; // Extension was reloaded. This old content script is orphaned.
     }
   }
 

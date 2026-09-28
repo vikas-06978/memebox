@@ -1,4 +1,4 @@
-// MemeBox – offscreen document. Hosts the eSpeak-NG worker and answers
+// MemeBox: offscreen document. Hosts the eSpeak-NG worker and answers
 // { target: 'offscreen', type: 'tts', text, lang, espeak } with { ok, b64 } (a WAV file).
 'use strict';
 

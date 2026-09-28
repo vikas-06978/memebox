@@ -4,7 +4,7 @@
 
 - Files: `vendor/espeak-ng/espeak-ng.js` (JavaScript glue with the WebAssembly binary embedded) and `vendor/espeak-ng/espeak-ng.data` (phoneme data plus the English and Hindi dictionaries).
 - License: GNU General Public License v3.0 or later. The full text is in `vendor/espeak-ng/COPYING` and in `LICENSE`.
-- Copyright: © 2005–2014 Jonathan Duddington (original eSpeak), © 2015 onwards Reece H. Dunn and the eSpeak-NG contributors.
+- Copyright: © 2005-2014 Jonathan Duddington (original eSpeak), © 2015 onwards Reece H. Dunn and the eSpeak-NG contributors.
 - Upstream project: https://github.com/espeak-ng/espeak-ng
 - Emscripten build: `@echogarden/espeak-ng-emscripten` version 0.3.5, from the Echogarden project, licensed GPL-3.0.
   - Build scripts: https://github.com/echogarden-project/espeak-ng-emscripten

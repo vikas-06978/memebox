@@ -1,4 +1,4 @@
-// npm run zip – packs extension/dist into memebox-<version>.zip (manifest.json at the zip root).
+// npm run zip: packs extension/dist into memebox-<version>.zip (manifest.json at the zip root).
 // Tiny dependency-free ZIP writer (deflate), so it behaves the same on Windows, macOS and CI.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,7 +7,7 @@ import zlib from 'node:zlib';
 const root = path.resolve(import.meta.dirname, '..');
 const dist = path.join(root, 'extension', 'dist');
 if (!fs.existsSync(path.join(dist, 'manifest.json'))) {
-  console.error('extension/dist is missing – run `npm run build` first');
+  console.error('extension/dist is missing. Run `npm run build` first.');
   process.exit(1);
 }
 const { version } = JSON.parse(fs.readFileSync(path.join(dist, 'manifest.json'), 'utf8'));

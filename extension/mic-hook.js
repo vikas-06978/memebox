@@ -1,4 +1,4 @@
-// MemeBox – mic hook (runs in the page's MAIN world at document_start).
+// MemeBox: mic hook (runs in the page's MAIN world at document_start).
 //
 // Wraps getUserMedia so that every audio track the call site receives is a mix of
 //   real microphone -> micGain -> destination
@@ -7,7 +7,7 @@
 // user's "microphone" to everyone in the call. It reaches the user's own
 // speakers only through the optional "monitor" node (the panel's 🎧 toggle).
 // Nothing is recorded or sent
-// anywhere by this script; it only rewires audio inside this tab.
+// anywhere by this script. It only rewires audio inside this tab.
 (() => {
   'use strict';
 
@@ -101,7 +101,7 @@
     return ctx;
   }
 
-  // Autoplay policy may start the context suspended; the first user gesture fixes it.
+  // Autoplay policy may start the context suspended. The first user gesture fixes it.
   const resumeOnGesture = () => {
     if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
     ensureWrapped('user gesture');
@@ -230,7 +230,7 @@
   MediaDevices.prototype.getUserMedia = makeGetUserMedia(origGetUserMedia);
 
   // Some sites replace getUserMedia later (their own wrappers, SDK updates). Whenever the
-  // devices change – or on the next gesture – make sure ours is still in the chain.
+  // devices change (or on the next gesture), make sure ours is still in the chain.
   function ensureWrapped(reason) {
     const md = navigator.mediaDevices;
     if (!md) return;
@@ -245,7 +245,7 @@
 
   if (navigator.mediaDevices) {
     navigator.mediaDevices.addEventListener('devicechange', () => {
-      console.log(LOG, 'devices changed – the call will ask for the mic again and it will be re-mixed');
+      console.log(LOG, 'devices changed, the call will ask for the mic again and it will be re-mixed');
       ensureWrapped('devicechange');
     });
   }
@@ -360,7 +360,7 @@
     o.frequency.setValueAtTime(880, t);
     o.frequency.setValueAtTime(660, t + 0.25);
     o.connect(g);
-    // play() calls start() without arguments; schedule the stop at the same time.
+    // play() calls start() without arguments, so schedule the stop at the same time.
     const start = o.start;
     o.start = () => { start.call(o, t); o.stop(t + 0.62); };
     o.addEventListener('ended', () => g.disconnect());
@@ -441,7 +441,7 @@
   // The popup gets a tabCapture stream id for the video tab, with this call tab as the
   // consumer. We open it with the ORIGINAL getUserMedia (it's not a mic, so no mixing)
   // and feed it into the soundboard like any meme. Capturing a tab silences it, so a
-  // copy also goes to your speakers (`hear`) – the video keeps playing out loud for you.
+  // copy also goes to your speakers (`hear`), so the video keeps playing out loud for you.
 
   let tabAudio = null; // { stream, src, gain, hear }
   let tabVolume = 1;
@@ -653,7 +653,7 @@
 
   // ---------- meme captions on YOUR OWN camera (optional) ----------
   // camera -> hidden <video> -> canvas (frame + meme text) -> canvas.captureStream(30).
-  // Only the video you send is changed; nobody else's.
+  // Only the video you send is changed, nobody else's.
 
   const captionedTracks = new WeakSet();
   let camText = '';

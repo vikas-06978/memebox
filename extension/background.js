@@ -1,4 +1,4 @@
-// MemeBox – service worker.
+// MemeBox: service worker.
 // - Routes messages between the frames of a call tab: the top frame hosts the UI,
 //   while the frame that owns the microphone (usually the top one) plays the audio.
 // - Turns lines into audio: text via the offscreen eSpeak-NG engine, clips from IndexedDB.
@@ -76,7 +76,7 @@ async function audioFor(item) {
   const tone = Object.prototype.hasOwnProperty.call(TONES, item.tone) ? item.tone : 'normal';
   if (item.kind === 'clip') {
     const clip = await MemeDB.getClip(String(item.clipId));
-    if (!clip) throw new Error('Clip not found – re-upload it in Options');
+    if (!clip) throw new Error('Clip not found. Re-upload it in Options.');
     return { b64: toBase64(clip.bytes), tone };
   }
   const text = String(item.say || item.text || '').trim().slice(0, LIMITS.textChars);
@@ -140,7 +140,7 @@ async function currentCall() {
   return best;
 }
 
-// Popup asked to start tab audio; answered when the call tab reports back.
+// Popup asked to start tab audio, answered when the call tab reports back.
 const pendingTabAudio = new Map(); // callTabId -> sendResponse
 
 async function popupMessage(msg, sendResponse) {
@@ -163,7 +163,7 @@ async function popupMessage(msg, sendResponse) {
       setTimeout(() => {
         if (pendingTabAudio.get(msg.callTabId) === sendResponse) {
           pendingTabAudio.delete(msg.callTabId);
-          sendResponse({ ok: false, error: "The call tab didn't answer – reload it and try again" });
+          sendResponse({ ok: false, error: "The call tab didn't answer. Reload it and try again." });
         }
       }, 6000);
       await updateCallTab(msg.callTabId, (e) => { e.pendingFrom = msg.sourceTabId; });
@@ -259,7 +259,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 // Keyboard shortcuts (chrome://extensions/shortcuts). They go to the tab you are in if it's
-// a call tab, otherwise to your current call – so Alt+1 works even from a YouTube tab.
+// a call tab, otherwise to your current call, so Alt+1 works even from a YouTube tab.
 const COMMANDS = /^(fav-[1-9]|stop-all|toggle-ui|toggle-voice)$/;
 chrome.commands.onCommand.addListener(async (command, tab) => {
   if (!COMMANDS.test(command)) return;

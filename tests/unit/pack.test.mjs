@@ -1,4 +1,4 @@
-// Step 4 – .memepack.json strict validation, and the built-in packs' content.
+// Step 4: .memepack.json strict validation, and the built-in packs' content.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadScript } from './helpers.mjs';

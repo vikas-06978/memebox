@@ -1,4 +1,4 @@
-// MemeBox – eSpeak-NG text-to-speech core (ES module).
+// MemeBox: eSpeak-NG text-to-speech core (ES module).
 // Used by tts-worker.js inside the offscreen document, and directly by the Node tests.
 import createModule from '../vendor/espeak-ng/espeak-ng.js';
 import { encodeWav16 } from './wav.js';
