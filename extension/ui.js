@@ -622,7 +622,7 @@
   );
   panel.setAttribute('role', 'dialog');
   // Right-to-left languages (Arabic) lay the panel out from the right.
-  const DIR = (() => { try { return chrome.i18n.getMessage('@@bidi_dir') || 'ltr'; } catch { return 'ltr'; } })();
+  const DIR = (() => { try { return chrome.i18n.getMessage('text_dir') === 'rtl' ? 'rtl' : 'ltr'; } catch { return 'ltr'; } })();
   panel.dir = DIR;
   panel.setAttribute('aria-label', 'MemeBox');
 

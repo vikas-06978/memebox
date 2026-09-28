@@ -859,5 +859,13 @@
   },
   "ob_theme_hint": {
     "message": "MemeBox साठी एक लुक निवडा. Settings मध्ये कधीही बदलू शकता."
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "mr",
+    "description": "Language code for the HTML lang attribute. Not shown."
   }
 }

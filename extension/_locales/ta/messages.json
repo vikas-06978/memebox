@@ -859,5 +859,13 @@
   },
   "ob_theme_hint": {
     "message": "MemeBox-க்கு ஒரு தோற்றத்தைத் தேர்ந்தெடுங்கள். Settings-ல் எப்போது வேண்டுமானாலும் மாற்றலாம்."
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "ta",
+    "description": "Language code for the HTML lang attribute. Not shown."
   }
 }

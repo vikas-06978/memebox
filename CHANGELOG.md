@@ -4,6 +4,11 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-09-28
+
+### Fixed
+- Arabic could show left to right when Chrome's own language differed from the language MemeBox showed. Each language file now states its direction (`text_dir`) and code (`lang_code`), and the pages and on-call panel use those instead of Chrome's `@@bidi_dir`. Found by CI on Linux.
+
 ## [1.2.0] - 2026-09-28
 
 ### Added

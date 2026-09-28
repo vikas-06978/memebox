@@ -17,10 +17,11 @@
         if (m !== key) n.setAttribute(attr, m);
       }
     }
-    // The language MemeBox is shown in (e.g. "pt_BR" -> "pt-BR") and its direction (Arabic: rtl).
-    const locale = chrome.i18n.getMessage('@@ui_locale') || 'en';
-    document.documentElement.lang = locale.replace('_', '-');
-    document.documentElement.dir = chrome.i18n.getMessage('@@bidi_dir') || 'ltr';
+    // The language the texts are actually in, and its direction (Arabic: rtl). Each language
+    // file says it itself: Chrome's @@bidi_dir follows the browser's own language instead,
+    // which can differ from the one MemeBox shows.
+    document.documentElement.lang = chrome.i18n.getMessage('lang_code') || 'en';
+    document.documentElement.dir = chrome.i18n.getMessage('text_dir') === 'rtl' ? 'rtl' : 'ltr';
   }
   globalThis.MemeI18n = { t, apply };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => apply(), { once: true });

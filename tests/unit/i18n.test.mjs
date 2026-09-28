@@ -28,6 +28,13 @@ test('every language has exactly the English keys, none empty, same $1…$9 plac
   }
 });
 
+test('each language states its own direction and code (Arabic right to left, the rest left to right)', () => {
+  for (const [lang, msgs] of Object.entries(all)) {
+    assert.equal(msgs.text_dir.message, lang === 'ar' ? 'rtl' : 'ltr', `${lang} text_dir`);
+    assert.equal(msgs.lang_code.message, lang.replace('_', '-'), `${lang} lang_code`);
+  }
+});
+
 test('every t("key") used in scripts exists', () => {
   for (const f of jsFiles) {
     for (const [, key] of read(f).matchAll(/\bt\('([a-z0-9_]+)'/g)) {

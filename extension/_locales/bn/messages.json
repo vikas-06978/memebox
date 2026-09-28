@@ -859,5 +859,13 @@
   },
   "ob_theme_hint": {
     "message": "MemeBox-এর জন্য একটি লুক বাছুন। Settings-এ যেকোনো সময় বদলাতে পারবেন।"
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "bn",
+    "description": "Language code for the HTML lang attribute. Not shown."
   }
 }

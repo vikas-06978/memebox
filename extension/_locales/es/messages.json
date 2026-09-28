@@ -859,5 +859,13 @@
   },
   "ob_theme_hint": {
     "message": "Elige un estilo para MemeBox. Puedes cambiarlo cuando quieras en Ajustes."
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "es",
+    "description": "Language code for the HTML lang attribute. Not shown."
   }
 }

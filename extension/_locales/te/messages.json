@@ -859,5 +859,13 @@
   },
   "ob_theme_hint": {
     "message": "MemeBox కు ఒక లుక్ ఎంచుకోండి. Settings లో ఎప్పుడైనా మార్చుకోవచ్చు."
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "te",
+    "description": "Language code for the HTML lang attribute. Not shown."
   }
 }
