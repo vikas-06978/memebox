@@ -4,6 +4,17 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added in Step 7: Pro prepared, switched off (0.7.0)
+- `extension/lib/plan.js` defines `MemePlan.isPro()`, `MemePlan.can(feature)`, the five future Pro features and the future free limits (10 clips, the General and College packs).
+- While `PRO_ENABLED` is false (as shipped), `isPro()` is true for everyone, so nothing changes for users.
+- Gates marked `// PRO:` for the voice changer, camera captions, unlimited clips, all packs and party mode. Each gate shows "This is a MemeBox Pro feature." (English and Hindi) once Pro is switched on.
+- `hasLicense()` is a TODO that returns false. `config.js` warns not to switch Pro on before it exists.
+- README "Pro and payments": the later plan. Razorpay Payment Page, then a `/thanks` function that verifies the payment with Cloudflare secrets, then a license key in D1, then `/activate` returns a signed token, then the extension verifies it.
+- No payment code, no new permissions.
+
+### Tests
+- Unit tests: Pro is off in the shipped config and everything is allowed, the five features are exactly the planned ones, and with Pro on but no license only Pro features lock. Only an explicit `true` turns Pro on. Every gate names a real feature and is marked `// PRO:`, and plan.js loads before the scripts that use it.
+
 ### Added in Step 6: feedback system (0.6.0)
 - **Site layout:** static pages in `site/public`, Pages Functions in `site/functions`, shared code in `site/src`, D1 schema in `site/db/schema.sql`, and `site/wrangler.toml`.
 - **/feedback page:**

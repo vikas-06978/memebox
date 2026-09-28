@@ -9,6 +9,7 @@
 
   const { TONES, VOICES, sanitizeLine } = globalThis.MEME;
   const bridge = globalThis.MemeBridge;
+  const plan = globalThis.MemePlan;
   const HOST = location.hostname;
   const SITE = /meet\.google/.test(HOST) ? 'meet' : /zoom/.test(HOST) ? 'zoom' : /teams/.test(HOST) ? 'teams' : /discord/.test(HOST) ? 'discord' : '';
 
@@ -213,6 +214,11 @@
 
   function setVoice(fx) {
     if (!Object.prototype.hasOwnProperty.call(VOICES, fx)) fx = 'off';
+    if (fx !== 'off' && !plan.can('voiceChanger')) { // PRO: voice changer
+      renderVoice();
+      toast(t('pro_only'));
+      return;
+    }
     state.voice = fx;
     if (fx !== 'off' && state.settings.voiceLast !== fx) {
       state.settings = { ...state.settings, voiceLast: fx };
@@ -325,6 +331,7 @@
   setInterval(() => {
     const s = state.settings;
     if (!s.timersEnabled || !Array.isArray(s.timers) || status() === 'none') return;
+    if (!plan.can('partyMode')) return; // PRO: party mode
     const now = new Date();
     const hhmm = pad(now.getHours()) + ':' + pad(now.getMinutes());
     const today = now.toDateString();
@@ -822,6 +829,11 @@
   voiceSel.addEventListener('change', () => setVoice(voiceSel.value));
   // The bridge in every frame reads this setting. It applies the next time the camera starts.
   camBox.addEventListener('change', () => {
+    if (camBox.checked && !plan.can('captions')) { // PRO: camera captions
+      camBox.checked = false;
+      toast(t('pro_only'));
+      return;
+    }
     state.settings = { ...state.settings, camCaptions: camBox.checked };
     saveSetting('camCaptions', camBox.checked);
     toast(camBox.checked ? t('cam_on') : t('cam_off'));

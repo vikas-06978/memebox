@@ -682,5 +682,8 @@
   },
   "op_feedback": {
     "message": "💬 Send feedback"
+  },
+  "pro_only": {
+    "message": "This is a MemeBox Pro feature."
   }
 }

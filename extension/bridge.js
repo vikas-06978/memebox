@@ -78,7 +78,8 @@
   // Camera captions must be known before the call asks for the camera, and in every
   // frame (the camera may be opened by an iframe), so each bridge passes the setting on.
   try {
-    const sendCam = (settings) => toHook({ type: 'cam-captions', value: !!(settings && settings.camCaptions === true) });
+    const allowed = () => !globalThis.MemePlan || globalThis.MemePlan.can('captions'); // PRO: camera captions
+    const sendCam = (settings) => toHook({ type: 'cam-captions', value: !!(settings && settings.camCaptions === true) && allowed() });
     chrome.storage.local.get('settings').then((r) => sendCam(r.settings)).catch(() => {});
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && changes.settings) sendCam(changes.settings.newValue);

@@ -5,6 +5,7 @@
 const { TONES, LIMITS, sanitizeLine } = globalThis.MEME;
 const { t } = globalThis.MemeI18n;
 const Trim = globalThis.MemeTrim;
+const plan = globalThis.MemePlan;
 const $ = (id) => document.getElementById(id);
 
 let lines = [];
@@ -549,6 +550,11 @@ async function renderSelection() {
 $('clip-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!source) return;
+  // PRO: unlimited clips (the free plan will keep FREE_LIMITS.clips)
+  if (!plan.can('unlimitedClips') && lines.filter((l) => l.kind === 'clip').length >= plan.FREE_LIMITS.clips) {
+    toast(t('pro_only'), true);
+    return;
+  }
   try {
     const wav = await renderSelection();
     const clipId = newId('c');
@@ -583,6 +589,7 @@ function renderPacks() {
     const n = packLines.filter((l) => have.has(l.id)).length;
     const add = el('button', { type: 'button', className: 'small primary' }, n === packLines.length ? t('op_pack_reset') : t('op_pack_add'));
     add.addEventListener('click', async () => {
+      if (!plan.can('allPacks') && !plan.FREE_LIMITS.packs.includes(id)) { toast(t('pro_only'), true); return; } // PRO: all packs
       for (const l of packLines) {
         const i = lines.findIndex((x) => x.id === l.id);
         if (l.fav && lines.some((x) => x.fav === l.fav && x.id !== l.id)) l.fav = 0; // don't steal your shortcuts
@@ -689,6 +696,11 @@ $('timer-mode').addEventListener('change', () => {
 });
 
 $('timers-enabled').addEventListener('change', () => {
+  if ($('timers-enabled').checked && !plan.can('partyMode')) { // PRO: party mode
+    $('timers-enabled').checked = false;
+    toast(t('pro_only'), true);
+    return;
+  }
   settings.timersEnabled = $('timers-enabled').checked;
   saveSettings();
   toast(settings.timersEnabled ? t('op_party_on') : t('op_party_off'));

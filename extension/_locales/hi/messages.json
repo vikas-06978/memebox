@@ -682,5 +682,8 @@
   },
   "op_feedback": {
     "message": "💬 फ़ीडबैक भेजें"
+  },
+  "pro_only": {
+    "message": "यह MemeBox Pro फ़ीचर है।"
   }
 }

@@ -72,6 +72,28 @@ You need a free Cloudflare account. Run these from the `site/` folder.
 
 The D1 binding is named `DB` in `wrangler.toml`. If you use the dashboard instead, go to **Pages → memebox → Settings → Bindings**, add a D1 binding called `DB` pointing to `memebox-feedback`, and add the same secrets as encrypted variables.
 
+## Pro and payments (TODO, not built yet)
+
+Pro is prepared but switched off. `extension/config.js` has `PRO_ENABLED = false`, so `MemePlan.isPro()` in `extension/lib/plan.js` returns true for everyone and every feature is free.
+
+The future Pro features are marked in the code with `// PRO:` next to a `MemePlan.can(...)` check:
+
+| Feature | Where |
+| --- | --- |
+| Live voice changer | `ui.js` (setVoice) |
+| Captions on my camera | `ui.js` (checkbox), `bridge.js` |
+| Unlimited clips (free: 10) | `options.js` (save clip) |
+| All packs (free: General and College) | `options.js` (add pack) |
+| Party mode / timed lines | `options.js` (switch), `ui.js` (timer loop) |
+
+**Later plan for payments.** No payment code exists yet.
+1. A **Razorpay Payment Page** sells MemeBox Pro. After paying, Razorpay sends the buyer to `SITE_URL/thanks?payment_id=…`.
+2. A new Pages Function, `site/functions/thanks.js`, checks that payment with the Razorpay API. The Razorpay key id and secret are Cloudflare secrets (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) and never go in the extension.
+3. If the payment is real and captured, it creates a **license key**, stores it in D1 (a new `licenses` table with key, payment id, email, created_at and status), and shows it to the buyer once.
+4. In Options, the buyer pastes the key. The extension calls `POST SITE_URL/activate`. The function checks the key in D1 and returns a **signed token**: the license id and expiry, signed with an Ed25519 private key kept as a Cloudflare secret.
+5. The extension stores the token and verifies it offline with the matching **public key** bundled in the extension. This goes in `hasLicense()` in `lib/plan.js`.
+6. Only then set `PRO_ENABLED = true`. Setting it earlier locks the Pro features for everyone, because `hasLicense()` is still `false`.
+
 ## Build and zip for the store
 
 ```sh
