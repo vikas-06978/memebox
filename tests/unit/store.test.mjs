@@ -84,7 +84,7 @@ const PUBLIC = path.join(ROOT, 'site', 'public');
 const pages = fs.readdirSync(PUBLIC).filter((f) => f.endsWith('.html'));
 
 test('site has the landing, feedback, uninstall, privacy and terms pages', () => {
-  for (const p of ['index.html', 'feedback.html', 'uninstall.html', 'privacy.html', 'terms.html']) assert.ok(pages.includes(p), p);
+  for (const p of ['index.html', 'buy.html', 'feedback.html', 'uninstall.html', 'privacy.html', 'terms.html']) assert.ok(pages.includes(p), p);
 });
 
 test('every site page is mobile-ready, titled and uses only local scripts and styles', () => {
@@ -103,7 +103,7 @@ test('every site page is mobile-ready, titled and uses only local scripts and st
 test('sitemap lists the public pages that exist, and robots.txt points to it', () => {
   const sitemap = fs.readFileSync(path.join(PUBLIC, 'sitemap.xml'), 'utf8');
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
-  assert.deepEqual(locs, ['/', '/feedback', '/privacy', '/terms']);
+  assert.deepEqual(locs, ['/', '/buy', '/feedback', '/privacy', '/terms']);
   for (const l of locs) assert.ok(pages.includes(l === '/' ? 'index.html' : l.slice(1) + '.html'), l);
   const robots = fs.readFileSync(path.join(PUBLIC, 'robots.txt'), 'utf8');
   assert.match(robots, /^Sitemap: https:\/\/.+\/sitemap\.xml$/m);

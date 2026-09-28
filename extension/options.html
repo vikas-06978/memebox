@@ -21,6 +21,7 @@
     <a href="#clips-card" data-i18n="op_nav_clips">Clips</a>
     <a href="#packs-card" data-i18n="op_nav_packs">Packs</a>
     <a href="#party-card" data-i18n="op_nav_party">Party mode</a>
+    <a href="#pro-card" data-i18n="op_nav_pro">Pro</a>
   </nav>
 
   <main>
@@ -46,6 +47,16 @@
         <label class="span2"><span data-i18n="op_line_volume">Volume of this line</span>
           <span class="range"><input id="line-vol" type="range" min="0" max="200" step="10" value="100"><output id="line-vol-out">100%</output></span>
         </label>
+        <div class="wide picture-field">
+          <span class="label" data-i18n="op_picture">Picture (optional)</span>
+          <div class="picture-row">
+            <img id="line-pic-preview" alt="" hidden>
+            <label class="button"><span data-i18n="op_picture_choose">🖼 Choose picture</span>
+              <input type="file" id="line-pic" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label>
+            <button type="button" id="line-pic-remove" class="small" hidden data-i18n="op_picture_remove">Remove picture</button>
+          </div>
+          <span class="hint" data-i18n="op_picture_hint">Flashes on your screen while the line plays, and on your camera if "Caption on my camera" is on.</span>
+        </div>
         <div class="actions wide">
           <button type="submit" class="primary" id="line-submit" data-i18n="op_add_line">Add line</button>
           <button type="button" id="line-preview" data-i18n="op_preview">▶ Preview</button>
@@ -82,7 +93,12 @@
           <button type="submit" data-i18n="op_fetch">🔗 Fetch</button>
         </form>
         <button type="button" id="rec-btn" data-i18n="op_record">🎙 Record (10 s)</button>
+        <label class="button"><span data-i18n="op_bulk">📂 Import many files</span>
+          <input type="file" id="bulk-files" multiple accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.mp4,.webm,audio/*,video/mp4,video/webm" hidden>
+        </label>
       </div>
+      <p class="hint" data-i18n="op_bulk_hint">Import many files: each one becomes a clip (cut to fit 1 MB) named after its file, in the "clips" category.</p>
+      <p id="bulk-status" class="hint" role="status" aria-live="polite"></p>
       <p class="hint" data-i18n="op_video_sites">YouTube, Instagram and other video pages are never downloaded. Play them live with the toolbar button → “Send this tab's sound”.</p>
 
       <div id="trimmer" class="trimmer" hidden>
@@ -139,6 +155,20 @@
         <div class="actions wide"><button type="submit" class="primary" data-i18n="op_add_timer">Add timer</button></div>
       </form>
       <ul id="timers-list" class="timers"></ul>
+    </section>
+
+    <!-- ============ PRO ============ -->
+    <section class="card" id="pro-card">
+      <h2 data-i18n="op_pro">MemeBox Pro</h2>
+      <p id="pro-status"></p>
+      <form id="license-form" class="linkrow" autocomplete="off">
+        <input id="license-key" data-i18n-placeholder="op_license_ph" placeholder="MBX-XXXX-XXXX-XXXX" spellcheck="false" aria-label="License key">
+        <button type="submit" class="primary" data-i18n="op_activate">Activate</button>
+      </form>
+      <div class="actions">
+        <button type="button" id="buy" data-i18n="op_buy">⭐ Buy Pro or more pictures</button>
+        <button type="button" id="license-remove" class="small" hidden data-i18n="op_license_remove">Remove key</button>
+      </div>
     </section>
 
     <section class="card privacy">

@@ -748,5 +748,89 @@
   },
   "pp_reload_tab": {
     "message": "This call tab was open before MemeBox was installed or updated. Reload it (F5), then join the call again."
+  },
+  "tag_picture": {
+    "message": "Has a picture"
+  },
+  "op_picture": {
+    "message": "Picture (optional)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 Choose picture"
+  },
+  "op_picture_remove": {
+    "message": "Remove picture"
+  },
+  "op_picture_hint": {
+    "message": "Flashes on your screen while the line plays, and on your camera if \"Caption on my camera\" is on. Use your own pictures, or others' only with their OK."
+  },
+  "op_err_picture": {
+    "message": "That file isn't a picture MemeBox can use. Try PNG, JPG, WEBP or GIF."
+  },
+  "op_err_picture_big": {
+    "message": "That picture is too big. Try a smaller one (up to 20 MB)."
+  },
+  "pro_pictures": {
+    "message": "You have used your $1 picture meme(s). Get more with MemeBox Pro or a picture pack (Options → MemeBox Pro)."
+  },
+  "op_bulk": {
+    "message": "📂 Import many files"
+  },
+  "op_bulk_hint": {
+    "message": "Import many files: each one becomes a clip (cut to fit 1 MB) named after its file, in the \"clips\" category."
+  },
+  "op_bulk_working": {
+    "message": "Importing $1 of $2…"
+  },
+  "op_bulk_done": {
+    "message": "Added $1 clips. Skipped $2."
+  },
+  "op_bulk_skipped": {
+    "message": "Skipped: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "Pro is switched off right now, so every feature is free for everyone."
+  },
+  "op_pro_active": {
+    "message": "✅ MemeBox Pro is active in this browser."
+  },
+  "op_pro_free": {
+    "message": "Free plan: up to $1 picture meme(s), 10 clips, the General and College packs."
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "Activate"
+  },
+  "op_buy": {
+    "message": "⭐ Buy Pro or more pictures"
+  },
+  "op_license_remove": {
+    "message": "Remove key"
+  },
+  "op_license_ok": {
+    "message": "Key activated. Enjoy!"
+  },
+  "op_license_offline": {
+    "message": "Couldn't reach the MemeBox site. Check your internet and try again."
+  },
+  "op_license_revoked": {
+    "message": "The key $1 was turned off."
+  },
+  "op_license_stale": {
+    "message": "The key $1 couldn't be checked for a long time. Go online so MemeBox can check it again."
+  },
+  "op_license_pro": {
+    "message": "Key $1: Pro, unlimited."
+  },
+  "op_license_slots": {
+    "message": "Key $1: $2 extra picture memes."
   }
 }

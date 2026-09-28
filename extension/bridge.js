@@ -61,11 +61,13 @@
       const cmd = msg.cmd;
       if (cmd.type === 'play-audio' && typeof cmd.b64 === 'string') {
         const bytes = base64ToBuffer(cmd.b64);
+        const picture = typeof cmd.picture === 'string' ? base64ToBuffer(cmd.picture) : null;
         toHook({
           type: 'play-audio', reqId: cmd.reqId, bytes,
           playbackRate: num(cmd.playbackRate, 1), gain: num(cmd.gain, 1), effect: String(cmd.effect || ''),
           text: String(cmd.text || '').slice(0, 300),
-        }, [bytes]);
+          ...(picture ? { picture, pictureType: String(cmd.pictureType || '') } : {}),
+        }, picture ? [bytes, picture] : [bytes]);
       } else if (cmd.type === 'voice') {
         // The hook (page world) can't look up extension URLs itself.
         toHook({ type: 'voice', value: String(cmd.value), url: chrome.runtime.getURL('voice-worklet.js') });

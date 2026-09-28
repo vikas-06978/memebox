@@ -211,9 +211,12 @@ test('POST /api/feedback: honeypot looks like a success but stores nothing', asy
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM feedback').first()).n, 0);
 });
 
-test('GET /api/config gives the public Turnstile site key only', async () => {
+test('GET /api/config gives public settings only, never a secret', async () => {
   const res = await call(configApi, new Request('https://x/api/config'));
-  assert.deepEqual(await res.json(), { turnstileSiteKey: 'site-key' });
+  const body = await res.json();
+  assert.equal(body.turnstileSiteKey, 'site-key');
+  const text = JSON.stringify(body);
+  for (const secret of ['secret-key', 'correct horse battery staple', 'salt']) assert.ok(!text.includes(secret), secret);
 });
 
 const adminReq = (p, init = {}) => new Request('https://memebox.pages.dev' + p, { ...init, headers: { 'CF-Connecting-IP': '203.0.113.50', ...(init.headers || {}) } });

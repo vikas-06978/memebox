@@ -87,6 +87,17 @@ table { border-collapse: collapse; width: 100%; font-size: 14px; }
 th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
 .nowrap { white-space: nowrap; }
 body.admin .wrap > .card { margin-top: 16px; }
+form.inline { display: inline; margin: 0; }
+form.inline button { padding: 6px 12px; }
+.keyform { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; margin-bottom: 14px; }
+.keyform label { display: grid; gap: 4px; font-weight: 600; font-size: 14px; }
+.keyform label.check { display: flex; align-items: center; gap: 6px; }
+.keyform input[type=number] { width: 110px; }
+select { font: inherit; color: inherit; background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.notice { background: #ebfbee; color: #1b5e20; border: 1px solid #b2f2bb; padding: 12px 16px; border-radius: 12px; margin-top: 16px; }
+.section-title { margin-top: 28px; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .95em; background: color-mix(in srgb, var(--muted) 14%, transparent); padding: 1px 6px; border-radius: 6px; }
+@media (prefers-color-scheme: dark) { .notice { background: #16301c; color: #b2f2bb; border-color: #2b8a3e; } }
 
 /* landing */
 .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 0; flex-wrap: wrap; }
@@ -114,6 +125,23 @@ body.admin .wrap > .card { margin-top: 16px; }
 @media (max-width: 820px) {
   .hero { grid-template-columns: 1fr; padding-top: 12px; }
 }
+
+/* buy page */
+.products { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 16px; }
+.product { margin: 0; display: grid; gap: 6px; align-content: start; }
+.product h2 { margin: 0; }
+.product.best { border: 2px solid var(--accent-strong); }
+.product .price { font-size: 30px; font-weight: 800; margin: 0; }
+.product p { margin: 0; }
+.product button { margin-top: 8px; }
+.topup summary { cursor: pointer; font-weight: 650; }
+.topup .field { margin-top: 12px; }
+.pay-grid { display: grid; grid-template-columns: 232px 1fr; gap: 20px; align-items: start; margin: 12px 0 16px; }
+#qr { width: 232px; height: 232px; border-radius: 12px; border: 1px solid var(--line); background: #fff; }
+.pay-steps { margin: 0 0 12px; padding-left: 20px; }
+.keybox { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 20px; }
+.keybox code { font-size: 22px; padding: 8px 12px; }
+@media (max-width: 560px) { .pay-grid { grid-template-columns: 1fr; justify-items: center; } }
 
 /* legal pages */
 .prose { max-width: 720px; }

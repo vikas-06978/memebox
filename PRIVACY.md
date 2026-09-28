@@ -66,6 +66,16 @@ If you send either form, we store only:
 
 We don't store your IP address or browser details. To stop spam, the site counts messages per hour using a one-way hash of your IP address, and deletes that count after the hour. The form also uses Cloudflare Turnstile, a privacy-friendly spam check. The answers are stored in a Cloudflare D1 database that only the developer can read. To have your message deleted, write to us with the text you sent.
 
+## Picture memes
+
+Pictures you add to your lines are shrunk and stored only in your browser (IndexedDB), like your clips. While a line plays, its picture shows on your screen, and on your camera picture if "Caption on my camera" is on. Pictures are never uploaded, and they aren't included in exported packs.
+
+## Buying Pro and license keys
+
+If you buy MemeBox Pro or extra pictures on the website's /buy page, the site stores the order: what you bought, the amount, the time, the UPI transaction ID (UTR) you type, and the license key it gives. The payment itself happens in your own UPI app. We never see your bank details or UPI PIN.
+
+If you enter a license key in MemeBox, the extension sends only that key to the MemeBox site to check it, about once a day. The site stores the day of the last check. Nothing else is sent.
+
 ## Permissions
 
 - **storage**: saves your lines and settings on your device.

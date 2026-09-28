@@ -60,6 +60,10 @@
     clipBytes: 1024 * 1024,        // a saved clip (trimmed WAV) is at most 1 MB
     sourceBytes: 50 * 1024 * 1024, // uploaded/linked file before trimming
     recordSeconds: 10,             // "record my own clip"
+    pictureBytes: 300 * 1024,      // a saved meme picture (resized) is at most 300 KB
+    pictureSide: 640,              // longest side of a saved picture, in pixels
+    pictureSourceBytes: 20 * 1024 * 1024, // picture file before resizing
+    bulkFiles: 50,                 // files per bulk import
     // Uploads: audio files or videos (only the audio track is used).
     clipExtensions: ['mp3', 'wav', 'ogg', 'oga', 'm4a', 'aac', 'mp4', 'webm'],
     // Direct links must point at a file with one of these endings.
@@ -119,6 +123,8 @@
     const say = String(l.say || '').trim().slice(0, LIMITS.textChars);
     if (say) out.say = say;
     if (kind === 'clip') out.clipId = String(l.clipId || '').slice(0, 64);
+    const pictureId = String(l.pictureId || '').slice(0, 64);
+    if (pictureId) out.pictureId = pictureId; // meme picture shown while the line plays
     return out;
   }
 

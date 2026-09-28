@@ -80,28 +80,55 @@ You need a free Cloudflare account. Run these from the `site/` folder.
 
 The D1 binding is named `DB` in `wrangler.toml`. If you use the dashboard instead, go to **Pages → memebox → Settings → Bindings**, add a D1 binding called `DB` pointing to `memebox-feedback`, and add the same secrets as encrypted variables.
 
-## Pro and payments (TODO, not built yet)
+## Pro, license keys and UPI payments
 
-Pro is prepared but switched off. `extension/config.js` has `PRO_ENABLED = false`, so `MemePlan.isPro()` in `extension/lib/plan.js` returns true for everyone and every feature is free.
+**Right now Pro is switched off.** `extension/config.js` has `PRO_ENABLED = false`, so every feature is free for everyone. Everything below is built and tested, ready for the day you switch it on.
 
-The future Pro features are marked in the code with `// PRO:` next to a `MemePlan.can(...)` check:
+### What is Pro
 
-| Feature | Where |
-| --- | --- |
-| Live voice changer | `ui.js` (setVoice) |
-| Captions on my camera | `ui.js` (checkbox), `bridge.js` |
-| Unlimited clips (free: 10) | `options.js` (save clip) |
-| All packs (free: General and College) | `options.js` (add pack) |
-| Party mode / timed lines | `options.js` (switch), `ui.js` (timer loop) |
+Each Pro feature is marked in the code with `// PRO:` next to a `MemePlan.can(...)` check (`extension/lib/plan.js`):
 
-**Later plan for payments.** No payment code exists yet.
-1. A **Razorpay Payment Page** sells MemeBox Pro. After paying, Razorpay sends the buyer to `SITE_URL/thanks?payment_id=…`.
-2. A new Pages Function, `site/functions/thanks.js`, checks that payment with the Razorpay API. The Razorpay key id and secret are Cloudflare secrets (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) and never go in the extension.
-3. If the payment is real and captured, it creates a **license key**, stores it in D1 (a new `licenses` table with key, payment id, email, created_at and status), and shows it to the buyer once.
-4. In Options, the buyer pastes the key. The extension calls `POST SITE_URL/activate`. The function checks the key in D1 and returns a **signed token**: the license id and expiry, signed with an Ed25519 private key kept as a Cloudflare secret.
-5. The extension stores the token and verifies it offline with the matching **public key** bundled in the extension. This goes in `hasLicense()` in `lib/plan.js`.
-6. Only then set `PRO_ENABLED = true`. Setting it earlier locks the Pro features for everyone, because `hasLicense()` is still `false`.
+| Pro feature | Free plan keeps | Where |
+| --- | --- | --- |
+| Picture memes | 1 picture (plus any bought picture slots) | `options.js` (save line) |
+| Import many audio files at once | one file at a time | `options.js` (bulk import) |
+| Live voice changer | normal voice | `ui.js` (setVoice) |
+| Captions and pictures on my camera | captions on your own screen | `ui.js`, `bridge.js` |
+| Unlimited clips | 10 clips | `options.js` |
+| All packs | General and College | `options.js` |
+| Party mode / timed lines | playing by hand | `options.js`, `ui.js` |
 
+Prices are in `site/src/shop.js`: **5 more pictures for ₹29** and **Pro (lifetime, everything) for ₹99**. Change them there and deploy again.
+
+### How buying works (UPI straight to your bank)
+
+1. The buyer clicks **⭐ Buy Pro or more pictures** in Options. `SITE_URL/buy` opens.
+2. They pick a product. The page shows a **UPI QR code** with the amount and a note like `MemeBox MB7K2P9QXR4T`, plus a **Pay with UPI app** button for phones.
+3. They pay in GPay, PhonePe, Paytm or BHIM. The money goes straight to your UPI ID.
+4. They type the 12-digit **UPI transaction ID (UTR)** and press **I've paid**.
+5. You open **`/admin`**. Under **Payments waiting for you** you see the amount, the UTR and the note. Check your bank or UPI app. If the money is there, press **Approve**. If not, press **Reject**.
+6. The buyer's page shows their license key. They paste it in Options → **MemeBox Pro** → **Activate**.
+
+The extension re-checks the key with your site once a day. If you press **Turn off** on a key in `/admin`, it stops working at the next check. Offline, a key keeps working for up to 30 days.
+
+### You control who gets Pro
+
+In `/admin` → **License keys**:
+- **Me (owner)** + **Pro, unlimited** → **Make a key**: your own free key. Paste it into your MemeBox.
+- **A friend (gift)**: free keys for friends, either unlimited or a number of picture slots.
+- **Turn off / Turn on** any key, for example a key someone shared publicly.
+
+### Your UPI ID
+
+`site/wrangler.toml` has `UPI_ID = "memebox@upi"`, a **placeholder**. Put your real UPI ID there (and `UPI_NAME`, the name buyers see), then deploy again. For many small payments, a free **UPI merchant ID** (PhonePe Business, Paytm for Business or BharatPe) is better than a personal one. It still pays into your main bank account.
+
+### Switching Pro on
+
+1. Deploy the site and make your owner key (above).
+2. In `extension/config.js`, set `PRO_ENABLED: true`.
+3. Build, zip and publish the update. Free users keep the free plan. Anyone with a key gets what their key gives.
+
+**Good to know:** the extension is open source (GPL), so a technical person could edit their own copy to unlock features. Most people won't. The license check keeps honest users honest, and your server decides every key.
 ## Build and zip for the store
 
 ```sh

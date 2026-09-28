@@ -4,6 +4,47 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-28
+
+### Added
+- **Picture memes.** Any line can have a picture (PNG, JPG, WEBP or GIF, shrunk to 640 px and 300 KB WEBP). While the line plays:
+  - the picture flashes above the big caption on your screen, drawn on a canvas so call sites' CSP can't block it
+  - it also shows on your camera picture if "Caption on my camera" is on.
+  - Pictures are stored only in the browser (a new IndexedDB store). They are deleted when no line uses them and are left out of exported packs.
+- **Import many audio files at once** (📂 in Options → Clips). Each file becomes a clip, cut to what fits in 1 MB, named after the file, in "clips". A summary lists skipped files. Up to 50 files at a time.
+- **License keys** you control:
+  - `/admin` → License keys makes owner keys (for yourself) and gift keys (unlimited, or a number of picture slots), and turns any key off or on.
+  - Options → **MemeBox Pro** activates a key.
+  - The service worker re-checks it once a day. A turned-off key stops at the next check, and offline a key is trusted for 30 days.
+  - `POST /api/license` is CORS-open. It stores only the day of the last check.
+- **UPI payments straight to your bank** (`/buy`):
+  - 5 more pictures for ₹29, Pro (lifetime) for ₹99
+  - a UPI QR code and a "Pay with UPI app" link with the amount and the note `MemeBox <order code>`
+  - the buyer types the 12-digit UTR, and you approve or reject on `/admin` after checking your bank app
+  - approving creates a key or tops up an existing one, and the buyer's page shows the key
+  - each UTR can be used once, orders are rate limited, and unclaimed orders are deleted after 2 days.
+  - `UPI_ID` / `UPI_NAME` are in `site/wrangler.toml` (placeholder `memebox@upi`).
+- `/admin` now starts with **Payments waiting for you** (with "Earned so far") and **License keys**, above the feedback.
+- Two new Pro features, `bulkImport` and `pictures`, marked `// PRO:`. They stay free while `PRO_ENABLED` is false.
+- Terms and privacy (site and PRIVACY.md) cover pictures, purchases and license checks. STORE.md declares the license key (Authentication information). The README explains the whole Pro and UPI flow.
+- The website vendors `qrcode-generator` 2.0.4 (MIT) for the QR code. It is not part of the extension.
+
+### Fixed
+- The picture message from the service worker could lose its type field.
+
+### Tests
+- **Unit:**
+  - keys and order codes, the UPI link format, and prices
+  - `/api/license` (active, unknown, malformed, turned off, CORS)
+  - the full order flow (create, claim, approve, key), top-ups, UTR reuse, rejecting, and admin-only actions
+  - rate limits, and payments closed without a UPI ID
+  - plan limits with and without licenses, 30-day expiry, and turned-off keys.
+- **End-to-end** against the real site functions:
+  - bulk import of 4 files (3 added, 1 skipped)
+  - a picture meme saved as WEBP and shown on the camera, then removed and cleaned up
+  - the buy page QR for `memebox@upi` with ₹99 and the order note, the UTR check, admin approval and the key shown
+  - an owner key made in `/admin` activates in Options, and turning it off is picked up.
+
 ## [1.0.0] - 2026-09-28
 
 The first store release. It includes everything from Steps 0 to 8 below.

@@ -75,7 +75,64 @@ function bars(entries) {
     <li><span class="label">${h(label)}</span><progress max="${max}" value="${n}"></progress><b>${n}</b></li>`).join('')}</ul>`;
 }
 
-export function dashboardPage(s) {
+const PRODUCT_TEXT = { pictures5: '5 more pictures', pro: 'Pro (unlimited)' };
+
+function licenseText(l) {
+  return l.unlimited ? 'Pro, unlimited' : `${l.picture_slots} picture slot${l.picture_slots === 1 ? '' : 's'}`;
+}
+
+// Orders waiting for approval and license keys. `notice` is shown at the top (a new key, an approval).
+export function shopSection(shop, notice = '') {
+  const waiting = shop.waiting.map((o) => `
+    <tr>
+      <td class="nowrap">${h(String(o.claimed_at || o.created_at).slice(0, 16).replace('T', ' '))}</td>
+      <td><b>₹${h(o.amount_inr)}</b> ${h(PRODUCT_TEXT[o.product] || o.product)}${o.for_key ? `<div class="muted">top up ${h(o.for_key)}</div>` : ''}</td>
+      <td class="nowrap">UTR <b>${h(o.utr)}</b><div class="muted">Note: MemeBox ${h(o.id)}</div></td>
+      <td class="nowrap">
+        <form method="post" action="/admin/order" class="inline"><input type="hidden" name="id" value="${h(o.id)}"><button name="action" value="approve" class="primary">Approve</button></form>
+        <form method="post" action="/admin/order" class="inline"><input type="hidden" name="id" value="${h(o.id)}"><button name="action" value="reject">Reject</button></form>
+      </td>
+    </tr>`).join('');
+  const recent = shop.recent.map((o) => `
+    <tr><td class="nowrap">${h(String(o.decided_at).slice(0, 16).replace('T', ' '))}</td><td>₹${h(o.amount_inr)} ${h(PRODUCT_TEXT[o.product] || o.product)}</td>
+    <td>${h(o.status)}</td><td class="nowrap">${h(o.utr || '')}</td><td class="nowrap">${h(o.license_key)}</td></tr>`).join('');
+  const keys = shop.licenses.map((l) => `
+    <tr>
+      <td class="nowrap"><code>${h(l.key)}</code></td>
+      <td>${h(l.kind)}</td>
+      <td>${h(licenseText(l))}</td>
+      <td>${h(l.note)}</td>
+      <td class="nowrap">${h(l.last_seen || 'never')}</td>
+      <td class="nowrap">
+        <form method="post" action="/admin/license" class="inline"><input type="hidden" name="key" value="${h(l.key)}">
+          ${l.status === 'active' ? '<button name="action" value="revoke">Turn off</button>' : '<b class="error">off</b> <button name="action" value="restore">Turn on</button>'}
+        </form>
+      </td>
+    </tr>`).join('');
+  return `
+${notice ? `<p class="notice" role="status">${notice}</p>` : ''}
+<section class="card" id="shop">
+  <h2>Payments waiting for you (${shop.waiting.length})</h2>
+  <p class="muted">Open your bank or UPI app. Find a payment with the same amount and UTR (the note says "MemeBox" and the order code). Only then press Approve.</p>
+  ${shop.waiting.length ? `<div class="table-wrap"><table><thead><tr><th>Paid at (UTC)</th><th>What</th><th>Payment</th><th></th></tr></thead><tbody>${waiting}</tbody></table></div>` : '<p class="muted">Nothing waiting.</p>'}
+  <p class="muted">Earned so far: <b>₹${h(shop.earnedInr)}</b> from ${h(shop.paidOrders)} approved order${shop.paidOrders === 1 ? '' : 's'}.</p>
+  ${shop.recent.length ? `<details><summary>Last 20 decisions</summary><div class="table-wrap"><table><thead><tr><th>When</th><th>What</th><th>Result</th><th>UTR</th><th>Key</th></tr></thead><tbody>${recent}</tbody></table></div></details>` : ''}
+</section>
+<section class="card" id="licenses">
+  <h2>License keys</h2>
+  <form method="post" action="/admin/license" class="keyform">
+    <input type="hidden" name="action" value="create">
+    <label>Who <select name="kind"><option value="owner">Me (owner)</option><option value="gift">A friend (gift)</option></select></label>
+    <label class="check"><input type="checkbox" name="unlimited" checked> Pro, unlimited</label>
+    <label>or picture slots <input type="number" name="slots" min="0" max="10000" value="0"></label>
+    <label>Note <input name="note" maxlength="200" placeholder="e.g. my laptop"></label>
+    <button type="submit" class="primary">Make a key</button>
+  </form>
+  ${shop.licenses.length ? `<div class="table-wrap"><table><thead><tr><th>Key</th><th>Kind</th><th>Gives</th><th>Note</th><th>Last check</th><th></th></tr></thead><tbody>${keys}</tbody></table></div>` : '<p class="muted">No keys yet.</p>'}
+</section>`;
+}
+
+export function dashboardPage(s, shopHtml = '') {
   const rated = Object.values(s.byRating).reduce((a, b) => a + b, 0);
   const avg = rated ? (Object.entries(s.byRating).reduce((a, [k, n]) => a + Number(k) * n, 0) / rated).toFixed(2) : 'n/a';
   const rows = s.latest.map((r) => `
@@ -92,6 +149,8 @@ export function dashboardPage(s) {
   <a class="button" href="/admin/csv">Download CSV</a>
   <form method="post" action="/admin/logout"><button type="submit">Sign out</button></form>
 </header>
+${shopHtml}
+<h2 class="section-title">Feedback</h2>
 <p class="muted">${s.total} answers in total. Average rating: ${avg} of 4 (${rated} ratings).</p>
 <div class="grid">
   <section class="card"><h2>Ratings</h2>${bars(Object.entries(s.byRating).map(([k, n]) => [RATING_FACES[k], n]))}</section>

@@ -133,12 +133,24 @@
     if (!bridge.toRuntime({ type: 'play', frameId: f.id, reqId, item: line })) orphaned();
   }
 
-  function onPlayResult(msg) {
+  // Meme pictures arrive just before the sound (by request id) and show with the caption.
+  const pictures = new Map(); // reqId -> Promise<ImageBitmap|null>
+  function keepPicture(msg) {
+    const bin = atob(msg.b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    pictures.set(msg.reqId, createImageBitmap(new Blob([bytes], { type: msg.mime })).catch(() => null));
+    setTimeout(() => pictures.delete(msg.reqId), 20000);
+  }
+
+  async function onPlayResult(msg) {
     const line = state.pending.get(msg.reqId);
     state.pending.delete(msg.reqId);
+    const picture = pictures.has(msg.reqId) ? await pictures.get(msg.reqId) : null;
+    pictures.delete(msg.reqId);
     if (msg.ok) {
       if (line) {
-        showCaption(line.text);
+        showCaption(line.text, picture);
         if (line.id !== 'beep') rememberPlayed(line.id);
         state.nowPlayingId = line.id;
         renderList();
@@ -273,6 +285,8 @@
       runCommand(msg.command);
     } else if (msg.type === 'ask-feedback') {
       showAsk();
+    } else if (msg.type === 'show-picture' && typeof msg.b64 === 'string' && /^image\/(webp|png|jpeg|gif)$/.test(msg.mime)) {
+      keepPicture(msg);
     }
   };
 
@@ -446,6 +460,8 @@
       text-transform: uppercase; color: #fff; -webkit-text-stroke: 2px #000; paint-order: stroke fill;
       text-shadow: 0 0 2px #000, 3px 3px 0 #000, -1px -1px 0 #000, 0 6px 16px rgba(0,0,0,.5); overflow-wrap: anywhere;
       animation: pop 3s ease forwards; }
+    .caption .meme-pic { display: block; margin: 0 auto 10px; max-width: min(46vw, 520px); max-height: 38vh; width: auto; height: auto;
+      border-radius: 14px; box-shadow: 0 8px 26px rgba(0,0,0,.45); }
     @keyframes pop {
       0% { opacity: 0; transform: translateX(-50%) scale(.6) rotate(-3deg); }
       10% { opacity: 1; transform: translateX(-50%) scale(1.08) rotate(1deg); }
@@ -663,9 +679,17 @@
     toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
   }
 
-  function showCaption(text) {
+  // A canvas (not an <img>), so the call site's image rules (CSP) can't block the picture.
+  function showCaption(text, picture) {
     for (const c of shadow.querySelectorAll('.caption')) c.remove();
-    const c = el('div', { className: 'caption' }, text);
+    const c = el('div', { className: 'caption' });
+    if (picture) {
+      const canvas = el('canvas', { className: 'meme-pic', width: picture.width, height: picture.height });
+      canvas.getContext('2d').drawImage(picture, 0, 0);
+      picture.close();
+      c.append(canvas);
+    }
+    c.append(text);
     c.setAttribute('aria-hidden', 'true');
     shadow.append(c);
     setTimeout(() => c.remove(), 3000);

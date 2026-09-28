@@ -14,6 +14,13 @@
 
 `tools/vendor-espeak.mjs` repackages the published npm build. It removes every dictionary except `en_dict` and `hi_dict`, and removes the MBROLA voice stubs. It then rewrites the file-package table in `espeak-ng.js` to match. The WebAssembly code is not modified. Run `npm run vendor` to reproduce the bundled files exactly.
 
+## QR Code Generator (website only)
+
+- File: `site/public/assets/vendor/qrcode.js`, used by the website's /buy page to draw the UPI QR code. It is not part of the extension.
+- Version: `qrcode-generator` 2.0.4 from npm, unchanged.
+- License: MIT. Copyright © 2009 Kazuhiko Arase. https://github.com/kazuhikoarase/qrcode-generator
+- "QR Code" is a registered trademark of DENSO WAVE INCORPORATED.
+
 ## Everything else
 
 Everything else is original work for MemeBox, licensed GPL-3.0-or-later: the icons, the default meme lines, and all other code.

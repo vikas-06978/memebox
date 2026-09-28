@@ -1,7 +1,8 @@
 // /admin: sign in with ADMIN_KEY (a Cloudflare secret), then the dashboard.
 // The session is an HMAC-signed cookie that lasts 8 hours. Sign-in tries are rate limited.
-import { loadStats, loginPage, dashboardPage } from '../../src/admin.js';
-import { adminResponse, adminRedirect } from '../../src/http.js';
+import { loadStats, loginPage, dashboardPage, shopSection } from '../../src/admin.js';
+import { adminResponse, adminRedirect, escapeHtml } from '../../src/http.js';
+import { loadShop, LICENSE_RE, ORDER_RE } from '../../src/shop.js';
 import { isAdmin, safeEqual, makeSession, sessionCookie, SESSION_MS, rateLimit, clientIp } from '../../src/security.js';
 
 export async function onRequest({ request, env }) {
@@ -9,7 +10,13 @@ export async function onRequest({ request, env }) {
 
   if (request.method === 'GET') {
     if (!(await isAdmin(request, env))) return adminResponse(loginPage());
-    return adminResponse(dashboardPage(await loadStats(env.DB)));
+    const q = new URL(request.url).searchParams;
+    const created = String(q.get('created') || '');
+    const approved = String(q.get('approved') || '');
+    const notice = LICENSE_RE.test(created)
+      ? `New key: <code>${escapeHtml(created)}</code>. Copy it into MemeBox Options → MemeBox Pro.`
+      : ORDER_RE.test(approved) ? `Order ${escapeHtml(approved)} approved. The buyer's page now shows their key.` : '';
+    return adminResponse(dashboardPage(await loadStats(env.DB), shopSection(await loadShop(env.DB), notice)));
   }
 
   if (request.method === 'POST') {

@@ -261,7 +261,8 @@ function renderLines() {
       el('span', { className: 'tag' }, line.kind === 'clip' ? '🎵 ' + t('tag_clip') : line.lang),
       ' ', el('span', { className: 'tag', title: tone.label }, `${tone.emoji} ${tone.label}`),
       ' ', el('span', { className: 'tag' }, categoryLabel(line.category)),
-      vol !== 100 ? el('span', { className: 'tag' }, `🔊 ${vol}%`) : '');
+      vol !== 100 ? el('span', { className: 'tag' }, `🔊 ${vol}%`) : '',
+      line.pictureId ? el('span', { className: 'tag', title: t('tag_picture') }, '🖼') : '');
     body.append(el('tr', { className: line.id === editingId ? 'editing' : '' },
       el('td', {}, play),
       text,
@@ -287,8 +288,64 @@ function resetForm() {
   $('line-lang').disabled = false;
   $('line-submit').textContent = t('op_add_line');
   $('line-cancel').hidden = true;
+  pic = { mode: 'keep', data: null };
+  setPicPreview(null);
   renderLines();
 }
+
+// ---------- meme pictures (shown while a line plays) ----------
+
+let pic = { mode: 'keep', data: null }; // mode: keep | new | remove
+let picUrl = '';
+
+function setPicPreview(blob) {
+  if (picUrl) URL.revokeObjectURL(picUrl);
+  picUrl = blob ? URL.createObjectURL(blob) : '';
+  const img = $('line-pic-preview');
+  if (picUrl) img.src = picUrl; else img.removeAttribute('src');
+  img.hidden = !picUrl;
+  $('line-pic-remove').hidden = !picUrl;
+}
+
+// Any image -> at most LIMITS.pictureSide px and LIMITS.pictureBytes (WEBP). GIFs keep their first frame.
+async function shrinkPicture(file) {
+  if (file.size > LIMITS.pictureSourceBytes) throw new Error(t('op_err_picture_big'));
+  let bmp;
+  try { bmp = await createImageBitmap(file); } catch { throw new Error(t('op_err_picture')); }
+  const scale = Math.min(1, LIMITS.pictureSide / Math.max(bmp.width, bmp.height));
+  const width = Math.max(1, Math.round(bmp.width * scale));
+  const height = Math.max(1, Math.round(bmp.height * scale));
+  const canvas = new OffscreenCanvas(width, height);
+  canvas.getContext('2d').drawImage(bmp, 0, 0, width, height);
+  bmp.close();
+  for (const quality of [0.85, 0.7, 0.55, 0.4]) {
+    const blob = await canvas.convertToBlob({ type: 'image/webp', quality });
+    if (blob.size <= LIMITS.pictureBytes) return { bytes: await blob.arrayBuffer(), type: blob.type || 'image/webp', width, height };
+  }
+  throw new Error(t('op_err_picture_big'));
+}
+
+async function dropPictureIfUnused(pictureId) {
+  if (pictureId && !lines.some((l) => l.pictureId === pictureId)) await MemeDB.deletePicture(pictureId).catch(() => {});
+}
+
+$('line-pic').addEventListener('change', async () => {
+  const file = $('line-pic').files[0];
+  $('line-pic').value = '';
+  if (!file) return;
+  try {
+    const data = await shrinkPicture(file);
+    pic = { mode: 'new', data };
+    setPicPreview(new Blob([data.bytes], { type: data.type }));
+  } catch (err) {
+    toast(err.message, true);
+  }
+});
+
+$('line-pic-remove').addEventListener('click', () => {
+  pic = { mode: 'remove', data: null };
+  setPicPreview(null);
+});
 
 function startEdit(line) {
   $('line-id').value = line.id;
@@ -305,6 +362,13 @@ function startEdit(line) {
   $('line-lang').disabled = isClip;
   $('line-submit').textContent = t('op_save_changes');
   $('line-cancel').hidden = false;
+  pic = { mode: 'keep', data: null };
+  setPicPreview(null);
+  if (line.pictureId) {
+    MemeDB.getPicture(line.pictureId).then((p) => {
+      if (p && $('line-id').value === line.id && pic.mode === 'keep') setPicPreview(new Blob([p.bytes], { type: p.type }));
+    }).catch(() => {});
+  }
   renderLines();
   $('line-text').focus();
   $('lines-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -330,10 +394,23 @@ $('line-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const line = formLine();
   if (!line) { toast(t('op_err_text'), true); return; }
+  const before = lines.find((l) => l.id === line.id);
+  if (pic.mode === 'new') {
+    const others = new Set(lines.filter((l) => l.id !== line.id && l.pictureId).map((l) => l.pictureId));
+    if (!plan.can('pictures') && others.size >= plan.pictureLimit()) { // PRO: picture memes beyond the free/bought slots
+      toast(t('pro_pictures', plan.pictureLimit()), true);
+      return;
+    }
+    line.pictureId = newId('p');
+    await MemeDB.putPicture({ id: line.pictureId, name: line.text.slice(0, 120), ...pic.data });
+  } else if (pic.mode === 'remove') {
+    delete line.pictureId;
+  }
   claimSlot(line.fav, line.id);
   const i = lines.findIndex((l) => l.id === line.id);
   if (i >= 0) lines[i] = line; else lines.push(line);
   await saveLines();
+  if (before && before.pictureId !== line.pictureId) await dropPictureIfUnused(before.pictureId);
   toast(i >= 0 ? t('op_saved') : t('op_added'));
   resetForm();
 });
@@ -352,6 +429,7 @@ async function removeLine(line) {
   if (line.kind === 'clip' && line.clipId && !lines.some((l) => l.clipId === line.clipId)) {
     await MemeDB.deleteClip(line.clipId).catch(() => {});
   }
+  await dropPictureIfUnused(line.pictureId);
   if ($('line-id').value === line.id) resetForm();
   await saveLines();
   toast(t('op_deleted'));
@@ -530,22 +608,64 @@ $('trim-play').addEventListener('click', () => {
 $('trim-stop').addEventListener('click', stopPreview);
 $('trim-cancel').addEventListener('click', () => { stopPreview(); source = null; $('trimmer').hidden = true; });
 
-// Selection -> mono WAV at the best sample rate that fits in 1 MB.
-async function renderSelection() {
-  const len = sel.end - sel.start;
-  const rate = Trim.fitSampleRate(len, LIMITS.clipBytes, source.buffer.sampleRate);
+// A part of `buffer` -> mono WAV at the best sample rate that fits in 1 MB.
+async function renderClip(buffer, start, len) {
+  const rate = Trim.fitSampleRate(len, LIMITS.clipBytes, buffer.sampleRate);
   if (!rate) throw new Error(t('op_too_long', Trim.maxSeconds(8000, LIMITS.clipBytes).toFixed(0)));
   const frames = Math.max(1, Math.ceil(len * rate));
   const off = new OfflineAudioContext(1, frames, rate);
   const src = off.createBufferSource();
-  src.buffer = source.buffer; // multi-channel is mixed down to mono by the 1-channel context
+  src.buffer = buffer; // multi-channel is mixed down to mono by the 1-channel context
   src.connect(off.destination);
-  src.start(0, sel.start, len);
+  src.start(0, start, len);
   const rendered = await off.startRendering();
   const wav = Trim.floatToWav16(rendered.getChannelData(0), rate);
   if (wav.byteLength > LIMITS.clipBytes) throw new Error(t('op_too_long', Trim.maxSeconds(8000, LIMITS.clipBytes).toFixed(0)));
   return wav;
 }
+
+const renderSelection = () => renderClip(source.buffer, sel.start, sel.end - sel.start);
+
+// ---------- clips: import many files at once ----------
+// Each file becomes a clip from its start, cut to what fits in 1 MB at 16 kHz, named after the file.
+
+const clipCount = () => lines.filter((l) => l.kind === 'clip').length;
+const nameFromFile = (name) => name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim().slice(0, 300) || name;
+
+$('bulk-files').addEventListener('change', async () => {
+  const files = [...$('bulk-files').files];
+  $('bulk-files').value = '';
+  if (!files.length) return;
+  if (!plan.can('bulkImport')) { toast(t('pro_only'), true); return; } // PRO: bulk import
+  const status = $('bulk-status');
+  const added = [];
+  const skipped = [];
+  const maxLen = Trim.maxSeconds(16000, LIMITS.clipBytes);
+  for (const [i, file] of files.entries()) {
+    status.textContent = t('op_bulk_working', i + 1, files.length);
+    if (i >= LIMITS.bulkFiles) { skipped.push(file.name); continue; }
+    if (!plan.can('unlimitedClips') && clipCount() >= plan.FREE_LIMITS.clips) { skipped.push(file.name); continue; } // PRO: unlimited clips
+    const ext = file.name.toLowerCase().split('.').pop();
+    if ((!LIMITS.clipExtensions.includes(ext) && !/^(audio|video)\//.test(file.type)) || file.size > LIMITS.sourceBytes) {
+      skipped.push(file.name);
+      continue;
+    }
+    try {
+      const buffer = await audioCtx().decodeAudioData(await file.arrayBuffer());
+      if (!buffer.duration) throw new Error('empty');
+      const wav = await renderClip(buffer, 0, Math.min(buffer.duration, maxLen));
+      const clipId = newId('c');
+      await MemeDB.putClip({ id: clipId, name: file.name.slice(0, 120), type: 'audio/wav', bytes: wav });
+      lines.push(sanitizeLine({ id: newId('l'), kind: 'clip', clipId, lang: 'en', text: nameFromFile(file.name), tone: 'normal', category: 'clips', fav: 0 }));
+      added.push(file.name);
+    } catch {
+      skipped.push(file.name);
+    }
+  }
+  if (added.length) await saveLines();
+  status.textContent = t('op_bulk_done', added.length, skipped.length) + (skipped.length ? ' ' + t('op_bulk_skipped', skipped.join(', ')) : '');
+  toast(t('op_bulk_done', added.length, skipped.length), !added.length);
+});
 
 $('clip-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -716,6 +836,59 @@ $('timer-form').addEventListener('submit', (e) => {
 });
 
 $('feedback').addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-feedback' }).catch(() => {}));
+
+// ---------- MemeBox Pro: license key ----------
+// The key is checked with the MemeBox site. The answer is saved as `license` and read by
+// lib/plan.js everywhere (the service worker checks it again once a day).
+
+function renderPro() {
+  const l = plan.license;
+  let text;
+  if (MEMEBOX_CONFIG.PRO_ENABLED !== true) text = t('op_pro_off');
+  else if (plan.hasLicense()) text = t('op_pro_active');
+  else text = t('op_pro_free', plan.pictureLimit());
+  if (l) {
+    if (l.status !== 'active') text += ' ' + t('op_license_revoked', l.key);
+    else if (!plan.validLicense()) text += ' ' + t('op_license_stale', l.key);
+    else text += ' ' + (l.unlimited ? t('op_license_pro', l.key) : t('op_license_slots', l.key, l.pictureSlots));
+  }
+  $('pro-status').textContent = text;
+  $('license-remove').hidden = !l;
+}
+
+async function checkLicense(key) {
+  const res = await fetch(MEMEBOX_CONFIG.SITE_URL + '/api/license', {
+    method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.ok) throw new Error(data.error || t('op_license_offline'));
+  return data.license;
+}
+
+$('license-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const key = $('license-key').value.trim();
+  if (!key) return;
+  let license;
+  try {
+    license = await checkLicense(key);
+  } catch (err) {
+    toast(err instanceof TypeError ? t('op_license_offline') : err.message, true);
+    return;
+  }
+  await chrome.storage.local.set({ license: { ...license, checkedAt: Date.now() } });
+  $('license-key').value = '';
+  toast(license.status === 'active' ? t('op_license_ok') : t('op_license_revoked', license.key), license.status !== 'active');
+});
+
+$('license-remove').addEventListener('click', () => chrome.storage.local.remove('license'));
+$('buy').addEventListener('click', () => {
+  chrome.tabs.create({ url: `${MEMEBOX_CONFIG.SITE_URL}/buy?v=${encodeURIComponent(chrome.runtime.getManifest().version)}` });
+});
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.license) setTimeout(renderPro); // after plan.js has taken the new value
+});
+plan.ready.then(renderPro);
 
 $('open-shortcuts').addEventListener('click', (e) => {
   e.preventDefault();

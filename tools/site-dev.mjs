@@ -65,8 +65,20 @@ function staticFile(urlPath) {
   return null;
 }
 
-export function readDevVars(file = path.join(SITE, '.dev.vars')) {
+// The [vars] section of site/wrangler.toml (simple KEY = "value" lines), like Cloudflare reads it.
+export function readTomlVars(file = path.join(SITE, 'wrangler.toml')) {
   const env = {};
+  let inVars = false;
+  for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
+    if (/^\s*\[/.test(line)) { inVars = /^\s*\[vars\]\s*$/.test(line); continue; }
+    const m = inVars && /^\s*([A-Z0-9_]+)\s*=\s*"([^"]*)"\s*$/.exec(line);
+    if (m) env[m[1]] = m[2];
+  }
+  return env;
+}
+
+export function readDevVars(file = path.join(SITE, '.dev.vars')) {
+  const env = readTomlVars();
   if (!fs.existsSync(file)) return env;
   for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
     const m = /^\s*([A-Z0-9_]+)\s*=\s*"?(.*?)"?\s*$/.exec(line);

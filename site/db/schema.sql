@@ -29,3 +29,32 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   count INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS rate_limits_hour ON rate_limits (hour);
+
+-- License keys (MBX-XXXX-XXXX-XXXX). Made by the admin (owner and gift keys) or when an
+-- order is approved (paid keys). unlimited = full Pro. picture_slots = extra picture memes.
+CREATE TABLE IF NOT EXISTS licenses (
+  key           TEXT PRIMARY KEY,
+  created_at    TEXT NOT NULL,
+  kind          TEXT NOT NULL CHECK (kind IN ('owner', 'gift', 'paid')),
+  unlimited     INTEGER NOT NULL DEFAULT 0,
+  picture_slots INTEGER NOT NULL DEFAULT 0,
+  status        TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'revoked')),
+  note          TEXT NOT NULL DEFAULT '',
+  last_seen     TEXT                              -- day of the last check, no IP or device
+);
+
+-- UPI orders. The buyer pays by UPI, types the transaction ID (UTR), and the admin approves
+-- it after checking the bank app. Unclaimed orders are deleted after 2 days.
+CREATE TABLE IF NOT EXISTS orders (
+  id          TEXT PRIMARY KEY,                   -- MB + 10 letters/digits, also in the UPI note
+  created_at  TEXT NOT NULL,
+  product     TEXT NOT NULL,
+  amount_inr  INTEGER NOT NULL,
+  status      TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'waiting', 'approved', 'rejected')),
+  utr         TEXT UNIQUE,
+  for_key     TEXT NOT NULL DEFAULT '',           -- existing key to add picture slots to
+  license_key TEXT NOT NULL DEFAULT '',
+  claimed_at  TEXT,
+  decided_at  TEXT
+);
+CREATE INDEX IF NOT EXISTS orders_status ON orders (status, created_at);

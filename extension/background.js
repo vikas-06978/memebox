@@ -43,6 +43,23 @@ function openFeedback({ site, rate } = {}) {
   chrome.tabs.create({ url: rate && STORE_URL ? STORE_URL : feedbackUrl(site) });
 }
 
+// ---------- license: check the saved key with the site once a day ----------
+// A key turned off in /admin stops working at the next check. Offline, the last answer is
+// trusted for MemePlan.LICENSE_MAX_AGE_MS. Runs whenever the service worker starts.
+const LICENSE_CHECK_MS = 24 * 3600 * 1000;
+
+async function refreshLicense() {
+  const { license } = await chrome.storage.local.get('license');
+  if (!license || typeof license.key !== 'string' || Date.now() - (Number(license.checkedAt) || 0) < LICENSE_CHECK_MS) return;
+  const res = await fetch(SITE_URL + '/api/license', {
+    method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key: license.key }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.ok && data.ok) await chrome.storage.local.set({ license: { ...data.license, checkedAt: Date.now() } });
+  else if (res.status === 404) await chrome.storage.local.set({ license: { ...license, status: 'revoked', checkedAt: Date.now() } });
+}
+refreshLicense().catch(() => {}); // offline: try again next time
+
 chrome.runtime.setUninstallURL(`${SITE_URL}/uninstall?v=${encodeURIComponent(VERSION)}`).catch(() => {});
 
 // Counts plays. After the 10th, asks once (and never again) in that call tab.
@@ -120,11 +137,19 @@ async function handlePlay(tabId, { frameId, reqId, item }) {
     const { b64, tone } = await audioFor(item);
     const t = TONES[tone];
     const lineVolume = Number.isFinite(Number(item.volume)) ? Math.min(2, Math.max(0, Number(item.volume))) : 1;
+    // The line's meme picture: to the UI (your screen) and to the mic frame (your camera).
+    let picture = null;
+    if (item.pictureId) {
+      const p = await MemeDB.getPicture(String(item.pictureId)).catch(() => null);
+      if (p && /^image\/(webp|png|jpeg|gif)$/.test(p.type)) picture = { b64: toBase64(p.bytes), type: p.type };
+    }
+    if (picture) sendToTab(tabId, { type: 'show-picture', reqId, b64: picture.b64, mime: picture.type }, 0);
     sendToTab(tabId, {
       type: 'hook',
       cmd: {
         type: 'play-audio', reqId, b64, playbackRate: t.playbackRate, gain: t.gain * lineVolume, effect: t.effect || '',
         text: String(item.text || '').slice(0, LIMITS.textChars),
+        ...(picture ? { picture: picture.b64, pictureType: picture.type } : {}),
       },
     }, frameId);
   } catch (err) {

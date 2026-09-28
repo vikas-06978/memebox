@@ -11,6 +11,13 @@ binding = "DB"
 database_name = "memebox-feedback"
 database_id = "PASTE-YOUR-D1-DATABASE-ID-HERE"
 
+# UPI payments for /buy. These are public (they are shown on the page), so they live here.
+# Put your own UPI ID and the name buyers should see, then deploy again.
+# A UPI merchant ID (PhonePe Business, Paytm for Business, BharatPe) also pays into your bank.
+[vars]
+UPI_ID = "memebox@upi"
+UPI_NAME = "MemeBox"
+
 # Secrets are NOT set here. Add them in Cloudflare (never commit them):
 #   npx wrangler pages secret put TURNSTILE_SITE_KEY
 #   npx wrangler pages secret put TURNSTILE_SECRET_KEY

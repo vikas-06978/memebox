@@ -284,7 +284,7 @@
 
   // ---------- playback into the soundboard ----------
 
-  async function play(reqId, starter, label, caption) {
+  async function play(reqId, starter, label, caption, picture) {
     if (!isActive() || !ctx) {
       post({ type: 'played', reqId, ok: false, reason: 'no-call' });
       return;
@@ -298,7 +298,7 @@
       startDuckWatch();
       node.start();
       node.addEventListener('ended', () => playing.delete(node));
-      if (caption) showCamCaption(caption);
+      if (caption || picture) showCamCaption(caption || '', picture);
       console.log(LOG, 'playing into mic:', label, `(${sessions.size} mic stream${sessions.size === 1 ? '' : 's'}, context ${ctx.state})`);
       post({ type: 'played', reqId, ok: true, muted: isMuted() });
     } catch (err) {
@@ -343,7 +343,8 @@
       out.connect(board);
       src.addEventListener('ended', () => cleanup.forEach((n) => n.disconnect()));
       return src;
-    }, String(d.text || '(audio)'), String(d.text || ''));
+    }, String(d.text || '(audio)'), String(d.text || ''),
+    d.picture instanceof ArrayBuffer && /^image\/(webp|png|jpeg|gif)$/.test(d.pictureType) ? { bytes: d.picture, type: d.pictureType } : null);
   }
 
   // Test sound: a short two-tone "ding-dong".
@@ -658,10 +659,34 @@
   const captionedTracks = new WeakSet();
   let camText = '';
   let camTextUntil = 0;
+  let camPicture = null; // ImageBitmap of the playing line's meme picture
 
-  function showCamCaption(text) {
+  function showCamCaption(text, picture) {
     camText = String(text).slice(0, 120);
     camTextUntil = performance.now() + 3000;
+    if (camPicture) { camPicture.close(); camPicture = null; }
+    if (picture) {
+      createImageBitmap(new Blob([picture.bytes], { type: picture.type })).then((bmp) => {
+        camPicture = bmp;
+        console.log(LOG, 'meme picture ready', bmp.width + 'x' + bmp.height);
+      }, () => {});
+    }
+  }
+
+  // The meme picture in the upper part of the frame, above the caption.
+  function drawCamPicture(g, w, h) {
+    const maxW = w * 0.6;
+    const maxH = h * 0.55;
+    const s = Math.min(maxW / camPicture.width, maxH / camPicture.height);
+    const pw = camPicture.width * s;
+    const ph = camPicture.height * s;
+    const x = (w - pw) / 2;
+    const y = h * 0.06;
+    g.save();
+    g.shadowColor = 'rgba(0,0,0,.5)';
+    g.shadowBlur = 12;
+    g.drawImage(camPicture, x, y, pw, ph);
+    g.restore();
   }
 
   function wrapLines(g, text, maxWidth) {
@@ -716,7 +741,10 @@
       const vh = video.videoHeight;
       if (vw && vh && (canvas.width !== vw || canvas.height !== vh)) { canvas.width = vw; canvas.height = vh; }
       if (video.readyState >= 2) g.drawImage(video, 0, 0, canvas.width, canvas.height);
-      if (camText && performance.now() < camTextUntil) drawCamCaption(g, canvas.width, canvas.height);
+      if (performance.now() < camTextUntil) {
+        if (camPicture) drawCamPicture(g, canvas.width, canvas.height);
+        if (camText) drawCamCaption(g, canvas.width, canvas.height);
+      }
     }, 1000 / 30);
 
     function finish() {

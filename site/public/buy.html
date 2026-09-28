@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get MemeBox Pro</title>
+  <meta name="description" content="Unlock MemeBox Pro or more picture memes. Pay with any UPI app.">
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <main class="wrap narrow">
+    <header class="page-head">
+      <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
+      <h1>Get more from MemeBox</h1>
+      <p class="muted">Pay once with any UPI app (GPay, PhonePe, Paytm, BHIM). The money goes straight to the developer.</p>
+    </header>
+
+    <p id="closed" class="error" hidden>Payments aren't open yet. Please check back soon.</p>
+
+    <!-- Step 1: choose -->
+    <section id="choose">
+      <div id="products" class="products"></div>
+      <details class="card topup">
+        <summary>Already have a key? Add pictures to it</summary>
+        <label class="field"><span>Your MemeBox key</span>
+          <input id="for-key" placeholder="MBX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false">
+        </label>
+        <p class="muted small">Leave it empty to get a new key.</p>
+      </details>
+    </section>
+
+    <!-- Step 2: pay -->
+    <section id="pay" class="card" hidden>
+      <h2>Pay <span id="amount"></span> by UPI</h2>
+      <p class="muted" id="what"></p>
+      <div class="pay-grid">
+        <canvas id="qr" width="232" height="232" aria-label="UPI QR code"></canvas>
+        <div>
+          <ol class="pay-steps">
+            <li>Scan the QR code with any UPI app, or on a phone tap <b>Pay with UPI app</b>.</li>
+            <li>Check the amount and pay. Keep the note <b id="note"></b>.</li>
+            <li>Copy the <b>UPI transaction ID</b> (12 digits, also called UTR or reference number) from your UPI app.</li>
+          </ol>
+          <p><a id="upi-link" class="button primary">Pay with UPI app</a></p>
+          <p class="muted small">UPI ID: <code id="upi-id"></code></p>
+        </div>
+      </div>
+      <form id="claim" novalidate>
+        <label class="field"><span>UPI transaction ID (UTR)</span>
+          <input id="utr" inputmode="numeric" maxlength="16" placeholder="12 digits, e.g. 412345678901" autocomplete="off">
+        </label>
+        <p id="error" class="error" role="alert" hidden></p>
+        <button type="submit" class="primary">I've paid</button>
+      </form>
+    </section>
+
+    <!-- Step 3: status -->
+    <section id="status" class="card" hidden>
+      <h2 id="status-title"></h2>
+      <p id="status-text"></p>
+      <p id="key-box" class="keybox" hidden><code id="key"></code> <button type="button" id="copy">Copy</button></p>
+      <p class="muted small">Order <code id="order-id"></code>. Keep this page's address to come back later.</p>
+    </section>
+
+    <section class="card how-pro">
+      <h2>How to use your key</h2>
+      <ol>
+        <li>Open MemeBox <b>Options</b> (the ⚙️ in the 😂 panel).</li>
+        <li>Find <b>MemeBox Pro</b>, paste your key and press <b>Activate</b>.</li>
+      </ol>
+      <p class="muted small">Payments are checked by hand, usually within a few hours. Problems? Write to <a href="mailto:hello@example.com">hello@example.com</a> with your order code.</p>
+    </section>
+    <footer class="foot"><a href="/terms">Terms</a> · <a href="/privacy">Privacy</a></footer>
+  </main>
+  <script src="/assets/vendor/qrcode.js"></script>
+  <script src="/assets/buy.js"></script>
+</body>
+</html>

@@ -42,9 +42,12 @@ Google Meet, Zoom (web client), Microsoft Teams (web) and Discord (web), in Chro
 • Change your own live voice: Chipmunk, Deep, Robot, Echo or Radio. Alt+V switches it on and off.
 
 **Sound effects and clips**
-• Upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor.
+• Upload audio or video files (only the sound is kept), import many files at once, use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor.
 • College, Cricket, Office and Party packs with friendly roasts. Share your own packs as a file.
 • Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
+
+**Picture memes**
+• Give any line a picture (a monkey, a reaction face, anything). It flashes on your screen while the line plays, and on your camera if captions are on.
 
 **Extras**
 • Optional meme captions on your own camera.
@@ -60,7 +63,7 @@ Your microphone, camera and tab audio are only mixed inside your browser. Nothin
 • After installing or updating, reload an open call tab once.
 • Keep it friendly and follow the rules of your class or workplace.
 
-MemeBox is free and open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox
+MemeBox is free and open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox. Optional MemeBox Pro unlocks more picture memes and extras.
 It uses the eSpeak-NG speech synthesizer. Not affiliated with Google, Zoom, Microsoft or Discord.
 
 ## Single purpose
@@ -97,7 +100,7 @@ No. All code is in the package. eSpeak-NG's WebAssembly is bundled and needs `'w
 
 ## Data usage (Privacy practices tab)
 
-- **Does the extension collect or use user data? No.** Leave every data type unticked.
+- **Data types:** tick only **Authentication information**. That's the MemeBox license key a user may type in Options: it is sent to the MemeBox site only to check it (about once a day). Leave every other data type unticked.
   - Microphone, camera and tab audio are processed only in the tab and are never collected or sent.
   - Lines, clips and settings are stored only on the device.
   - The extension opens the feedback page with only the extension version and the call site name (for example `?v=1.0.0&site=meet`), and the uninstall survey with only the version. People may choose to type an answer there. That is covered by the website's privacy policy.

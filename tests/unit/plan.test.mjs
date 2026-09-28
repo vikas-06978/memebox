@@ -15,9 +15,41 @@ test('the shipped config has Pro switched off', () => {
   for (const f of Object.keys(plan.PRO_FEATURES)) assert.equal(plan.can(f), true, f);
 });
 
-test('the Pro features are exactly the five from the plan', () => {
+test('the Pro features: the first five plus bulk import and picture memes (1.1.0)', () => {
   assert.deepEqual(Object.keys(withConfig({}).PRO_FEATURES).sort(),
-    ['allPacks', 'captions', 'partyMode', 'unlimitedClips', 'voiceChanger']);
+    ['allPacks', 'bulkImport', 'captions', 'partyMode', 'pictures', 'unlimitedClips', 'voiceChanger']);
+});
+
+test('picture limit: unlimited while Pro is off; 1 free, plus bought slots, when Pro is on', () => {
+  const now = Date.UTC(2026, 9, 1);
+  assert.equal(withConfig({ PRO_ENABLED: false }).pictureLimit(now), Infinity);
+  const plan = withConfig({ PRO_ENABLED: true });
+  assert.equal(plan.pictureLimit(now), 1);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: false, pictureSlots: 5, checkedAt: now - 1000 });
+  assert.equal(plan.pictureLimit(now), 6);
+  assert.equal(plan.isPro(now), false);
+  assert.equal(plan.can('voiceChanger', now), false);
+});
+
+test('an unlimited license unlocks everything; a turned-off or long-unchecked one does not', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: true, checkedAt: now - 3600000 });
+  assert.equal(plan.isPro(now), true);
+  for (const f of Object.keys(plan.PRO_FEATURES)) assert.equal(plan.can(f, now), true, f);
+  assert.equal(plan.pictureLimit(now), Infinity);
+
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'revoked', unlimited: true, checkedAt: now });
+  assert.equal(plan.isPro(now), false);
+
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: true, checkedAt: now - plan.LICENSE_MAX_AGE_MS - 1 });
+  assert.equal(plan.isPro(now), false, 'not confirmed for over 30 days');
+
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: true, checkedAt: now + 3600000 });
+  assert.equal(plan.isPro(now), false, 'a check time in the future is not trusted');
+
+  plan.setLicense({ status: 'active', unlimited: true });
+  assert.equal(plan.license, null, 'no key, no license');
 });
 
 test('with PRO_ENABLED but no license yet, only Pro features lock', () => {

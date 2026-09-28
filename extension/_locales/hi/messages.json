@@ -748,5 +748,89 @@
   },
   "pp_reload_tab": {
     "message": "यह कॉल टैब MemeBox इंस्टॉल या अपडेट होने से पहले खुला था। इसे रीलोड (F5) करें और फिर से कॉल जॉइन करें।"
+  },
+  "tag_picture": {
+    "message": "इसमें तस्वीर है"
+  },
+  "op_picture": {
+    "message": "तस्वीर (वैकल्पिक)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 तस्वीर चुनें"
+  },
+  "op_picture_remove": {
+    "message": "तस्वीर हटाएँ"
+  },
+  "op_picture_hint": {
+    "message": "लाइन चलते समय आपकी स्क्रीन पर दिखती है, और \"मेरे कैमरे पर कैप्शन\" चालू हो तो आपके कैमरे पर भी। अपनी तस्वीरें इस्तेमाल करें, दूसरों की सिर्फ़ उनकी मर्ज़ी से।"
+  },
+  "op_err_picture": {
+    "message": "यह फ़ाइल ऐसी तस्वीर नहीं है जिसे MemeBox इस्तेमाल कर सके। PNG, JPG, WEBP या GIF आज़माएँ।"
+  },
+  "op_err_picture_big": {
+    "message": "यह तस्वीर बहुत बड़ी है। छोटी तस्वीर आज़माएँ (20 MB तक)।"
+  },
+  "pro_pictures": {
+    "message": "आपने अपनी $1 तस्वीर वाले मीम इस्तेमाल कर लिए। MemeBox Pro या तस्वीर पैक से और पाएँ (Options → MemeBox Pro)।"
+  },
+  "op_bulk": {
+    "message": "📂 कई फ़ाइलें एक साथ"
+  },
+  "op_bulk_hint": {
+    "message": "कई फ़ाइलें एक साथ: हर फ़ाइल एक क्लिप बनती है (1 MB में फ़िट होने तक काटी जाती है), फ़ाइल के नाम से, \"clips\" कैटेगरी में।"
+  },
+  "op_bulk_working": {
+    "message": "$2 में से $1 इंपोर्ट हो रही है…"
+  },
+  "op_bulk_done": {
+    "message": "$1 क्लिप्स जुड़ीं। $2 छोड़ी गईं।"
+  },
+  "op_bulk_skipped": {
+    "message": "छोड़ी गईं: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "अभी Pro बंद है, इसलिए हर फ़ीचर सबके लिए मुफ़्त है।"
+  },
+  "op_pro_active": {
+    "message": "✅ इस ब्राउज़र में MemeBox Pro चालू है।"
+  },
+  "op_pro_free": {
+    "message": "मुफ़्त प्लान: $1 तक तस्वीर वाले मीम, 10 क्लिप्स, General और College पैक।"
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "चालू करें"
+  },
+  "op_buy": {
+    "message": "⭐ Pro या और तस्वीरें खरीदें"
+  },
+  "op_license_remove": {
+    "message": "की हटाएँ"
+  },
+  "op_license_ok": {
+    "message": "की चालू हो गई। मज़े करें!"
+  },
+  "op_license_offline": {
+    "message": "MemeBox साइट से कनेक्ट नहीं हो पाया। इंटरनेट चेक करके फिर कोशिश करें।"
+  },
+  "op_license_revoked": {
+    "message": "की $1 बंद कर दी गई है।"
+  },
+  "op_license_stale": {
+    "message": "की $1 बहुत समय से चेक नहीं हो पाई। इंटरनेट से जुड़ें ताकि MemeBox इसे फिर चेक कर सके।"
+  },
+  "op_license_pro": {
+    "message": "की $1: Pro, असीमित।"
+  },
+  "op_license_slots": {
+    "message": "की $1: $2 अतिरिक्त तस्वीर वाले मीम।"
   }
 }
