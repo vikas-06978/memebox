@@ -4,7 +4,7 @@ MemeBox plays meme lines, clips and sound effects **into your microphone** durin
 
 It works in the browser versions of Google Meet, Zoom (web client), Microsoft Teams and Discord.
 
-Version 1.0.0. See [CHANGELOG.md](CHANGELOG.md) for what's in it, and [STORE.md](STORE.md) for the store listing and publishing checklists.
+Version 1.2.0. See [CHANGELOG.md](CHANGELOG.md) for what's in it, and [STORE.md](STORE.md) for the store listing and publishing checklists.
 
 **Before you publish, fill in these placeholders:**
 - `extension/config.js`: `SITE_URL` (your Cloudflare Pages address) and, after approval, `STORE_URL`.
@@ -129,6 +129,42 @@ Add it in the Cloudflare dashboard: **Workers & Pages → memebox → Settings �
 3. Build, zip and publish the update. Free users keep the free plan. Anyone with a key gets what their key gives.
 
 **Good to know:** the extension is open source (GPL), so a technical person could edit their own copy to unlock features. Most people won't. The license check keeps honest users honest, and your server decides every key.
+## Languages, colors and the try-it demo
+
+**12 languages:** English, Hindi, Bengali, Marathi, Tamil, Telugu, Gujarati, Spanish, Arabic, Portuguese, French and Indonesian.
+- Extension texts: `extension/_locales/<lang>/messages.json`. Chrome picks the language from the browser.
+- Website texts: `site/public/assets/i18n/<lang>.json`, applied by `assets/prefs.js` to every element with `data-t="key"`.
+- The English in the HTML is the fallback, and a test checks it matches `en.json`.
+- To add a text, add the key to every language file. The tests list anything missing.
+- The translations were written by an AI assistant. Before a big launch, ask a native speaker to read the languages that matter most to you.
+- The privacy and terms pages stay in English on purpose (legal text).
+
+**Color themes:** Auto, Light, Dark, Sunny, Neon and Candy.
+- Extension: `extension/themes.css` for the pages, and theme variables in `ui.js` for the panel. The choice is `settings.theme`.
+- Website: the top of `site/public/assets/site.css`, chosen with the 🎨 menu (remembered in the browser).
+
+**Try-it soundboard** on the landing page: `site/public/assets/demo.js`. The voices are real MemeBox voices, made by `npm run demo-sounds` into `site/public/assets/demo/`. The effects are generated live. Emoji bursts are in `fun.js`, and they're off for people who prefer reduced motion.
+
+## SEO: getting found on Google
+
+`npm run seo` (in `tools/seo.mjs`) writes the parts search engines read:
+- **A landing page per language:** `/hi/`, `/es/`, `/ta/` and the rest, with the translated text already in the HTML.
+- **Four pages for common searches:** `/google-meet-soundboard`, `/zoom-soundboard`, `/teams-soundboard` and `/discord-soundboard`.
+- **On every page:**
+  - title and description
+  - canonical link
+  - `hreflang` language links
+  - Open Graph and Twitter preview tags, using `assets/og-card.png` (1200×630, made by `npm run store-images`)
+  - structured data (app, price, FAQ).
+- **`sitemap.xml`** with every page and its language versions. `robots.txt` points to it.
+
+Run `npm run seo` again after changing any landing text, a translation, or `SITE_URL` in `extension/config.js`. A test fails if you forget.
+
+**After deploying, tell the search engines** (10 minutes, free):
+1. **Google Search Console** (search.google.com/search-console): **Add property** → **URL prefix** → your site address. Verify with the **HTML tag** method: put the `<meta name="google-site-verification" ...>` line into the SEO block of `tools/seo.mjs`, then run `npm run seo` and deploy. Then open **Sitemaps** and submit `sitemap.xml`.
+2. **Bing Webmaster Tools** (bing.com/webmasters): import from Google Search Console with one click. This also covers DuckDuckGo and Yahoo.
+3. Once the store listing is live, link to it from the landing page (`id="install"`). Also post the site link where your users are: Reddit (r/chrome_extensions, r/discordapp), student WhatsApp groups, and a short YouTube or Instagram demo. Links from real places are what move a new site up in Google.
+
 ## Build and zip for the store
 
 ```sh

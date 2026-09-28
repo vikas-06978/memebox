@@ -5,7 +5,8 @@ export const RATINGS = [1, 2, 3, 4];
 export const FEATURES = ['soundboard', 'voices', 'clips', 'tab-audio', 'voice-changer', 'captions'];
 export const SITES = ['meet', 'zoom', 'teams', 'discord'];
 export const REASONS = ['didnt-work', 'too-hard', 'not-funny', 'found-another', 'other'];
-export const LANGS = ['en', 'hi'];
+// The site's languages (site/public/assets/i18n/*.json).
+export const LANGS = ['en', 'hi', 'bn', 'mr', 'ta', 'te', 'gu', 'es', 'ar', 'pt', 'fr', 'id'];
 
 export const LIMITS = { wants: 500, message: 2000, email: 254, version: 20, token: 2048, honeypot: 200 };
 

@@ -4,6 +4,39 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-28
+
+### Added
+- **12 languages** in the extension and on the website:
+  - English and Hindi
+  - Bengali, Marathi, Tamil, Telugu and Gujarati
+  - Spanish, Arabic, Portuguese (Brazil), French and Indonesian.
+  - The extension follows Chrome's language. The website picks one from the link (`?lang=`), your last choice or the browser, and has a 🌐 menu.
+  - Arabic is laid out right to left. The meme voices stay Hindi and English.
+- **Color themes:** Auto (follows the computer), Light, Dark, Sunny, Neon and Candy.
+  - In the extension: a 🎨 Colors menu in Options and swatches on the welcome page. The panel, popup, Options and welcome page all follow it.
+  - On the site: a 🎨 menu. The choice is remembered and applied before the page paints.
+- **Try it on the landing page:** a mini soundboard plays real MemeBox voices (made with the bundled eSpeak by `npm run demo-sounds`) and three live effects (air horn, "ba dum tss", sad trombone). It has four tones, a pop-up caption on a mini call, and a counter.
+- **Interactive emoji:**
+  - the landing page's floating emoji burst into more emoji when clicked, and so do the demo pads
+  - in the extension, the 😂 button laughs and emoji burst out whenever a meme plays (only on your screen).
+  - Both are off for people who prefer reduced motion.
+- The site's feedback form stores any of the 12 language codes.
+- **SEO** (`npm run seo`, `tools/seo.mjs`):
+  - a real landing page per language (`/hi/`, `/es/`, …) with the translated text in the HTML, and the right `lang`/`dir`
+  - four pages for common searches (Google Meet, Zoom, Teams and Discord soundboard)
+  - on every page: title, description, canonical, `hreflang` (12 languages + x-default), Open Graph and Twitter cards, and JSON-LD (SoftwareApplication with the free and ₹99 offers, FAQPage, BreadcrumbList)
+  - a sitemap with language alternates, and a 1200×630 social preview image (`og-card.png`).
+  - On landing pages, the 🌐 menu now goes to the real language page. The README explains Google Search Console and Bing.
+
+### Tests
+- Every extension language and every site language has exactly the English keys and placeholders. Names and descriptions fit the store limits in every language. The English in the site HTML matches `en.json`, and every key the scripts use exists.
+- End-to-end:
+  - theme from Options reaches the panel and is remembered, and the welcome swatches work
+  - the popup in Arabic is right to left, and Options works in Spanish
+  - the site's theme and language menus work (Tamil, and Arabic right to left)
+  - the try-it soundboard plays, shows the caption and counts, and the emoji bursts appear.
+
 ### Changed
 - **Fresh look across the site and the extension.**
   - Landing page: a sticky header with an install button, a bolder hero with a framed demo, floating emoji and an "Everyone heard" bubble, "works with" chips, feature cards with icons, numbered steps, a Free vs Pro section, a privacy note, an expandable FAQ and a final call to action.

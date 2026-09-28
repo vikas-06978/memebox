@@ -1,0 +1,863 @@
+{
+  "extName": {
+    "message": "MemeBox: botonera de memes y cambiador de voz para llamadas"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "Botonera de memes y cambiador de voz: pon memes y efectos de sonido en tu micrófono en Google Meet, Zoom, Teams y Discord."
+  },
+  "actionTitle": {
+    "message": "MemeBox: envía el sonido de esta pestaña a tu llamada"
+  },
+  "cmdFav1": {
+    "message": "Reproducir favorito 1"
+  },
+  "cmdFav2": {
+    "message": "Reproducir favorito 2"
+  },
+  "cmdFav3": {
+    "message": "Reproducir favorito 3"
+  },
+  "cmdFav4": {
+    "message": "Reproducir favorito 4"
+  },
+  "cmdFav5": {
+    "message": "Reproducir favorito 5"
+  },
+  "cmdFav6": {
+    "message": "Reproducir favorito 6"
+  },
+  "cmdFav7": {
+    "message": "Reproducir favorito 7"
+  },
+  "cmdFav8": {
+    "message": "Reproducir favorito 8"
+  },
+  "cmdFav9": {
+    "message": "Reproducir favorito 9"
+  },
+  "cmdStopAll": {
+    "message": "Detener todos los memes"
+  },
+  "cmdToggleUi": {
+    "message": "Mostrar / ocultar el botón 😂"
+  },
+  "join_first": {
+    "message": "Primero únete a la llamada y luego pulsa 😂"
+  },
+  "err_reload": {
+    "message": "MemeBox se actualizó. Recarga la pestaña de la llamada."
+  },
+  "err_play": {
+    "message": "No se pudo reproducir: $1"
+  },
+  "muted_nobody": {
+    "message": "Estás silenciado, así que los memes también. Activa el micrófono y vuelve a intentarlo."
+  },
+  "mic_test_caption": {
+    "message": "🔔 Prueba de micrófono"
+  },
+  "no_lines": {
+    "message": "Aún no hay frases. Añade algunas en Opciones."
+  },
+  "slot_empty": {
+    "message": "Todavía no hay nada en Alt+$1. Elige un favorito en Opciones."
+  },
+  "stopped": {
+    "message": "⏹ Detenido"
+  },
+  "ui_hidden": {
+    "message": "MemeBox está oculto. Pulsa Alt+M para mostrarlo."
+  },
+  "ui_shown": {
+    "message": "MemeBox ha vuelto 😂"
+  },
+  "tab_on": {
+    "message": "📺 El sonido de tu otra pestaña está entrando en la llamada"
+  },
+  "tab_off": {
+    "message": "📺 Se detuvo el sonido de la otra pestaña"
+  },
+  "tab_err": {
+    "message": "No se pudo usar el sonido de esa pestaña: $1"
+  },
+  "tab_bar": {
+    "message": "📺 El sonido de otra pestaña está sonando en tu micrófono"
+  },
+  "tab_stop": {
+    "message": "⏹ Detener pestaña"
+  },
+  "st_none": {
+    "message": "Aún no estás en una llamada. Únete y luego pulsa 😂"
+  },
+  "st_suspended": {
+    "message": "Haz clic una vez en la página para activar los memes"
+  },
+  "st_muted": {
+    "message": "Estás silenciado, así que los memes no suenan hasta que actives el micrófono"
+  },
+  "st_live": {
+    "message": "Los memes van a tu micrófono"
+  },
+  "fab_label": {
+    "message": "MemeBox: reproducir un meme al azar"
+  },
+  "fab_tip": {
+    "message": "Clic: meme al azar · mantener o clic derecho: panel · arrastrar para mover"
+  },
+  "list_btn": {
+    "message": "Elige un meme"
+  },
+  "search_ph": {
+    "message": "Buscar frases…"
+  },
+  "btn_random": {
+    "message": "🎲 Al azar"
+  },
+  "btn_mic_test": {
+    "message": "🔔 Probar micro"
+  },
+  "btn_mic_test_tip": {
+    "message": "Reproduce un breve ding-dong en tu micrófono. Pregunta en la llamada si lo oyeron."
+  },
+  "btn_stop_all": {
+    "message": "⏹ Detener todo"
+  },
+  "volume": {
+    "message": "Volumen de los memes"
+  },
+  "monitor_label": {
+    "message": "🎧 Oír los memes yo también"
+  },
+  "monitor_tip": {
+    "message": "La llamada siempre recibe el meme por tu micrófono. Esto solo añade una copia suave en tus altavoces."
+  },
+  "monitor_on": {
+    "message": "🎧 Tú y la llamada oís los memes"
+  },
+  "monitor_off": {
+    "message": "🔇 Ahora solo la llamada oye los memes"
+  },
+  "monitor_on_tip": {
+    "message": "Tú también oyes los memes (clic para dejar de oírlos, la llamada los sigue oyendo)"
+  },
+  "monitor_off_tip": {
+    "message": "No oyes los memes (clic para oírlos también, la llamada los oye igual)"
+  },
+  "duck_label": {
+    "message": "🦆 Bajar al hablar"
+  },
+  "duck_tip": {
+    "message": "Los memes bajan de volumen mientras hablas"
+  },
+  "options": {
+    "message": "Opciones"
+  },
+  "close": {
+    "message": "Cerrar (Esc)"
+  },
+  "panel_foot": {
+    "message": "Clic en una frase para reproducirla · 😂 al azar · Alt+1…9 favoritos · Alt+0 detener · Alt+M ocultar"
+  },
+  "timers_on": {
+    "message": "⏰ Frases programadas activas (con una llamada abierta): $1"
+  },
+  "chip_all": {
+    "message": "Todo"
+  },
+  "chip_star": {
+    "message": "Favoritos"
+  },
+  "chip_recent": {
+    "message": "Recientes"
+  },
+  "cat_general": {
+    "message": "General"
+  },
+  "cat_college": {
+    "message": "Universidad"
+  },
+  "cat_cricket": {
+    "message": "Críquet"
+  },
+  "cat_office": {
+    "message": "Oficina"
+  },
+  "cat_party": {
+    "message": "Fiesta"
+  },
+  "cat_clips": {
+    "message": "Clips"
+  },
+  "cat_mine": {
+    "message": "Mis frases"
+  },
+  "empty_star": {
+    "message": "Aún no hay favoritos. Toca ☆ en una frase."
+  },
+  "empty_recent": {
+    "message": "Todavía no se ha reproducido nada"
+  },
+  "empty_search": {
+    "message": "Ninguna frase coincide."
+  },
+  "tag_clip": {
+    "message": "Clip subido"
+  },
+  "tag_lang": {
+    "message": "Idioma"
+  },
+  "tag_shortcut": {
+    "message": "Atajo"
+  },
+  "play": {
+    "message": "Reproducir"
+  },
+  "star": {
+    "message": "Añadir a favoritos"
+  },
+  "unstar": {
+    "message": "Quitar de favoritos"
+  },
+  "pp_checking": {
+    "message": "Comprobando…"
+  },
+  "pp_send": {
+    "message": "🎙 Enviar el sonido de esta pestaña a mi llamada"
+  },
+  "pp_stop": {
+    "message": "⏹ Dejar de enviar esta pestaña"
+  },
+  "pp_how": {
+    "message": "¿Cómo funciona?"
+  },
+  "pp_how1": {
+    "message": "Únete a tu llamada en otra pestaña (Meet, Zoom web, Teams web o Discord web)."
+  },
+  "pp_how2": {
+    "message": "En esta pestaña, pon el vídeo de YouTube o el reel de Instagram en la parte graciosa."
+  },
+  "pp_how3": {
+    "message": "Pulsa “Enviar el sonido de esta pestaña” y todos en la llamada lo oirán por tu micrófono."
+  },
+  "pp_how4": {
+    "message": "Pulsa ⏹ cuando termines, o usa ⏹ en el panel 😂."
+  },
+  "pp_how_note": {
+    "message": "No se descarga ni se graba nada. El sonido solo se mezcla en directo en tu micrófono."
+  },
+  "pp_settings": {
+    "message": "⚙️ Frases, clips y ajustes"
+  },
+  "pp_no_call": {
+    "message": "Primero únete a una llamada (en otra pestaña), luego vuelve a la pestaña del vídeo y pulsa aquí."
+  },
+  "pp_this_is_call": {
+    "message": "Esta es la pestaña de tu llamada. Abre la pestaña de YouTube / Instagram y pulsa MemeBox allí para enviar su sonido. Usa 😂 en esta página para los memes."
+  },
+  "pp_sending": {
+    "message": "✅ El sonido de esta pestaña está entrando en tu llamada."
+  },
+  "pp_replace": {
+    "message": "Ahora se está enviando otra pestaña. Si envías esta, la sustituirá."
+  },
+  "pp_start_video": {
+    "message": "Pon el vídeo en la parte graciosa y luego:"
+  },
+  "pp_connecting": {
+    "message": "Conectando…"
+  },
+  "pp_join_unmute": {
+    "message": "Primero únete a la llamada y activa el micrófono."
+  },
+  "pp_send_failed": {
+    "message": "No se pudo enviar esta pestaña: $1"
+  },
+  "pp_cant_capture": {
+    "message": "Chrome no permite capturar esta pestaña: $1"
+  },
+  "pp_error": {
+    "message": "Error: $1"
+  },
+  "op_sub": {
+    "message": "Tus frases, clips, packs y modo fiesta. Todo se queda en este navegador."
+  },
+  "op_nav_lines": {
+    "message": "Frases"
+  },
+  "op_nav_clips": {
+    "message": "Clips"
+  },
+  "op_nav_packs": {
+    "message": "Packs"
+  },
+  "op_nav_party": {
+    "message": "Modo fiesta"
+  },
+  "op_lines": {
+    "message": "Frases"
+  },
+  "op_text": {
+    "message": "Texto que se muestra en el subtítulo"
+  },
+  "op_text_ph": {
+    "message": "p. ej. Bhai tu rehne de"
+  },
+  "op_say": {
+    "message": "Pronunciar como (opcional, p. ej. en devanagari para frases en hinglish)"
+  },
+  "op_lang": {
+    "message": "Idioma"
+  },
+  "op_tone": {
+    "message": "Tono"
+  },
+  "op_category": {
+    "message": "Categoría"
+  },
+  "op_shortcut": {
+    "message": "Atajo"
+  },
+  "op_line_volume": {
+    "message": "Volumen de esta frase"
+  },
+  "op_add_line": {
+    "message": "Añadir frase"
+  },
+  "op_save_changes": {
+    "message": "Guardar cambios"
+  },
+  "op_preview": {
+    "message": "▶ Escuchar"
+  },
+  "op_cancel": {
+    "message": "Cancelar"
+  },
+  "op_search": {
+    "message": "Buscar…"
+  },
+  "op_all_categories": {
+    "message": "Todas las categorías"
+  },
+  "op_count": {
+    "message": "$1 de $2 frases"
+  },
+  "op_col_line": {
+    "message": "Frase"
+  },
+  "op_col_about": {
+    "message": "Detalles"
+  },
+  "op_col_actions": {
+    "message": "Acciones"
+  },
+  "op_shortcut_hint": {
+    "message": "Alt+1…3 y Alt+0 funcionan en todas partes. Cambia las teclas o añade Alt+4…9 en"
+  },
+  "op_none": {
+    "message": "Ninguno"
+  },
+  "op_no_lines": {
+    "message": "Aún no hay frases. Añade una arriba o un pack abajo."
+  },
+  "op_preview_tip": {
+    "message": "Escuchar aquí (solo lo oyes tú)"
+  },
+  "op_edit": {
+    "message": "Editar"
+  },
+  "op_delete": {
+    "message": "Eliminar"
+  },
+  "op_err_text": {
+    "message": "Escribe el texto de la frase"
+  },
+  "op_saved": {
+    "message": "Frase guardada"
+  },
+  "op_added": {
+    "message": "Frase añadida"
+  },
+  "op_confirm_delete": {
+    "message": "¿Eliminar “$1”?"
+  },
+  "op_deleted": {
+    "message": "Eliminado"
+  },
+  "op_err_preview": {
+    "message": "No se pudo escuchar: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "No se encontró el clip. Vuelve a añadirlo."
+  },
+  "op_clips": {
+    "message": "Añadir un clip"
+  },
+  "op_clips_hint": {
+    "message": "Usa un archivo de audio o un vídeo (solo se guarda el sonido), un enlace directo o grábate. Luego recórtalo. Un clip guardado ocupa como máximo 1 MB."
+  },
+  "op_choose_file": {
+    "message": "📁 Elegir un archivo"
+  },
+  "op_link_ph": {
+    "message": "https://…/sonido.mp3  (enlace directo .mp3 .mp4 .wav .ogg .webm)"
+  },
+  "op_fetch": {
+    "message": "🔗 Descargar"
+  },
+  "op_record": {
+    "message": "🎙 Grabar (10 s)"
+  },
+  "op_recording": {
+    "message": "⏹ Detener grabación (quedan $1 s)"
+  },
+  "op_my_recording": {
+    "message": "Mi grabación"
+  },
+  "op_video_sites": {
+    "message": "Las páginas de YouTube, Instagram y otros sitios de vídeo nunca se descargan. Reprodúcelas en directo con el botón de la barra → “Enviar el sonido de esta pestaña”."
+  },
+  "op_start": {
+    "message": "Inicio"
+  },
+  "op_end": {
+    "message": "Fin"
+  },
+  "op_preview_sel": {
+    "message": "▶ Escuchar la selección"
+  },
+  "op_stop": {
+    "message": "⏹ Detener"
+  },
+  "op_caption": {
+    "message": "Texto del subtítulo"
+  },
+  "op_tone_speed": {
+    "message": "Tono (solo velocidad)"
+  },
+  "op_save_clip": {
+    "message": "💾 Guardar clip"
+  },
+  "op_selection": {
+    "message": "$1 → $2 ($3 s)"
+  },
+  "op_fit": {
+    "message": "Se guarda a $1 kHz, menos de 1 MB"
+  },
+  "op_too_long": {
+    "message": "Demasiado largo para 1 MB. Déjalo en unos $1 s como máximo."
+  },
+  "op_clip_saved": {
+    "message": "Clip guardado ($1 KB)"
+  },
+  "op_err_type": {
+    "message": "Usa un archivo de audio o vídeo (MP3, WAV, OGG, M4A, MP4, WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "No se encontró sonido en ese archivo"
+  },
+  "op_err_too_big_source": {
+    "message": "Ese archivo es demasiado grande (máx. 50 MB antes de recortar)"
+  },
+  "op_err_url": {
+    "message": "Pega un enlace completo que empiece por https://"
+  },
+  "op_err_video_page": {
+    "message": "Es una página de vídeo, no un archivo. MemeBox nunca descarga de YouTube, Instagram ni otros sitios de vídeo. Ábrela en una pestaña y usa el botón de la barra → “Enviar el sonido de esta pestaña”."
+  },
+  "op_err_not_file": {
+    "message": "El enlace debe terminar en .mp3, .mp4, .wav, .ogg o .webm"
+  },
+  "op_err_blocked": {
+    "message": "$1 no deja que otros sitios usen sus archivos (bloquea CORS). Descarga el archivo y usa “Elegir un archivo”."
+  },
+  "op_err_http": {
+    "message": "El sitio web respondió con el error $1"
+  },
+  "op_err_mic": {
+    "message": "MemeBox necesita tu permiso para usar el micrófono para grabar"
+  },
+  "op_packs": {
+    "message": "Packs"
+  },
+  "op_pack_add": {
+    "message": "Añadir"
+  },
+  "op_pack_reset": {
+    "message": "Restablecer"
+  },
+  "op_pack_remove": {
+    "message": "Quitar"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 frases"
+  },
+  "op_pack_added": {
+    "message": "Pack “$1” añadido"
+  },
+  "op_pack_removed": {
+    "message": "Pack “$1” quitado"
+  },
+  "op_share_packs": {
+    "message": "Compartir packs"
+  },
+  "op_export_all": {
+    "message": "Todas mis frases"
+  },
+  "op_export": {
+    "message": "⬇ Exportar .memepack.json"
+  },
+  "op_import": {
+    "message": "⬆ Importar .memepack.json"
+  },
+  "op_packs_hint": {
+    "message": "Un pack contiene frases y sus clips. Al importar se añaden a tus frases, y las que tienen el mismo id se sustituyen. Los archivos se revisan a fondo."
+  },
+  "op_my_library": {
+    "message": "Mis frases de MemeBox"
+  },
+  "op_exported": {
+    "message": "Se exportaron $1 frases"
+  },
+  "op_export_partial": {
+    "message": "Se exportaron $1 frases (se omitieron clips de versiones antiguas)"
+  },
+  "op_import_failed": {
+    "message": "Error al importar: $1"
+  },
+  "op_import_invalid": {
+    "message": "Ese archivo de pack no es válido. Mira la lista de abajo."
+  },
+  "op_imported": {
+    "message": "Se importaron $1 frases y $2 clips de “$3”"
+  },
+  "op_party": {
+    "message": "Frases programadas / Modo fiesta"
+  },
+  "op_party_switch": {
+    "message": "Reproducir frases programadas automáticamente"
+  },
+  "op_party_hint": {
+    "message": "Desactivado por defecto. Solo funciona con una pestaña de llamada abierta y el micrófono conectado."
+  },
+  "op_line": {
+    "message": "Frase"
+  },
+  "op_when": {
+    "message": "Cuándo"
+  },
+  "op_at_clock": {
+    "message": "A una hora"
+  },
+  "op_every_n": {
+    "message": "Cada N minutos"
+  },
+  "op_time": {
+    "message": "Hora"
+  },
+  "op_minutes": {
+    "message": "Minutos"
+  },
+  "op_add_timer": {
+    "message": "Añadir temporizador"
+  },
+  "op_no_timers": {
+    "message": "Aún no hay temporizadores."
+  },
+  "op_daily_at": {
+    "message": "cada día a las $1"
+  },
+  "op_every": {
+    "message": "cada $1 min"
+  },
+  "op_enabled": {
+    "message": "Activado"
+  },
+  "op_deleted_line": {
+    "message": "(frase eliminada)"
+  },
+  "op_party_on": {
+    "message": "Modo fiesta activado 🎉"
+  },
+  "op_party_off": {
+    "message": "Modo fiesta desactivado"
+  },
+  "op_timer_added": {
+    "message": "Temporizador añadido"
+  },
+  "op_timer_added_off": {
+    "message": "Temporizador añadido. Activa “Reproducir frases programadas automáticamente” para usarlo."
+  },
+  "op_privacy": {
+    "message": "Privacidad"
+  },
+  "op_privacy_text": {
+    "message": "Tu micrófono y el audio de las pestañas solo se mezclan dentro de este navegador. No se graba, guarda ni envía nada. Sin cuentas, servidores ni analíticas."
+  },
+  "cmdToggleVoice": {
+    "message": "Activar/desactivar cambiador de voz"
+  },
+  "tab_volume": {
+    "message": "Volumen del sonido de la pestaña en la llamada"
+  },
+  "voice_label": {
+    "message": "🎤 Mi voz"
+  },
+  "voice_tip": {
+    "message": "Cambia TU voz en directo en la llamada. Alt+V lo activa y desactiva. \"Normal\" devuelve tu voz al instante."
+  },
+  "voice_off": {
+    "message": "Normal (apagado)"
+  },
+  "voice_chipmunk": {
+    "message": "Ardilla"
+  },
+  "voice_deep": {
+    "message": "Grave"
+  },
+  "voice_robot": {
+    "message": "Robot"
+  },
+  "voice_echo": {
+    "message": "Eco"
+  },
+  "voice_radio": {
+    "message": "Radio"
+  },
+  "voice_now_on": {
+    "message": "Tu voz: $1"
+  },
+  "voice_now_off": {
+    "message": "Cambiador de voz apagado, vuelve tu voz normal"
+  },
+  "voice_after_join": {
+    "message": "Guardado. Empieza cuando te unas a la llamada."
+  },
+  "cam_label": {
+    "message": "📷 Subtítulo en mi cámara"
+  },
+  "cam_tip": {
+    "message": "Escribe el texto del meme en el vídeo que los demás ven de ti. Apaga y enciende la cámara para aplicarlo. Tu vista previa puede verse en espejo, pero los demás lo ven bien."
+  },
+  "cam_on": {
+    "message": "Subtítulos en la cámara activados. Apaga y enciende la cámara para aplicarlo."
+  },
+  "cam_off": {
+    "message": "Subtítulos en la cámara desactivados. Apaga y enciende la cámara para aplicarlo."
+  },
+  "pp_volume": {
+    "message": "Volumen en la llamada"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "Guardar como archivo de audio (WAV) para compartirlo donde quieras"
+  },
+  "op_wav_saved": {
+    "message": "Guardado $1"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "Abre WhatsApp con el texto ya escrito. Tú eliges el chat y lo envías."
+  },
+  "op_share_text": {
+    "message": "$1 😂 Hecho con MemeBox: $2"
+  },
+  "feedback": {
+    "message": "Enviar comentarios"
+  },
+  "ask_title": {
+    "message": "¿Te gusta MemeBox?"
+  },
+  "ask_rate": {
+    "message": "⭐ Valóranos"
+  },
+  "ask_feedback": {
+    "message": "Enviar comentarios"
+  },
+  "op_feedback": {
+    "message": "💬 Enviar comentarios"
+  },
+  "pro_only": {
+    "message": "Esta es una función de MemeBox Pro."
+  },
+  "ob_title": {
+    "message": "Bienvenido a MemeBox 😂"
+  },
+  "ob_sub": {
+    "message": "Tres pasos y serás la persona más graciosa de la llamada."
+  },
+  "ob_s1": {
+    "message": "Únete a tu llamada en el navegador"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet, Zoom (web), Microsoft Teams (web) o Discord (web). El botón 😂 aparece en la esquina. Si la llamada ya estaba abierta, recárgala una vez."
+  },
+  "ob_s2": {
+    "message": "Pulsa 😂 para poner un meme"
+  },
+  "ob_s2_text": {
+    "message": "Va a tu micrófono, así que todos en la llamada lo oyen. Ellos no necesitan MemeBox. Si estás silenciado, los memes también."
+  },
+  "ob_s3": {
+    "message": "Clic derecho en 😂 para todo lo demás"
+  },
+  "ob_s3_text": {
+    "message": "Elige cualquier frase, busca, cambia tu voz (Alt+V) o pon favoritos con Alt+1 a Alt+9. Para poner un vídeo de YouTube en la llamada, pulsa el icono de MemeBox en la barra en esa pestaña."
+  },
+  "ob_mic": {
+    "message": "Prueba de micrófono"
+  },
+  "ob_mic_hint": {
+    "message": "Comprueba que tu micrófono funciona. El sonido se queda en esta página. No se graba nada."
+  },
+  "ob_mic_start": {
+    "message": "🎙 Empezar la prueba"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ Detener"
+  },
+  "ob_hear": {
+    "message": "🔊 Escuchar un meme"
+  },
+  "ob_mic_talk": {
+    "message": "Di algo…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ Te oímos. Tu micrófono funciona."
+  },
+  "ob_mic_blocked": {
+    "message": "El micrófono está bloqueado. Pulsa el icono de cámara/micrófono en la barra de direcciones y permítelo."
+  },
+  "ob_mic_none": {
+    "message": "No se encontró ningún micrófono. Conecta uno y vuelve a intentarlo."
+  },
+  "ob_done": {
+    "message": "Todo listo. Tus frases, clips y packs están en Ajustes."
+  },
+  "ob_settings": {
+    "message": "⚙️ Abrir ajustes"
+  },
+  "ob_close": {
+    "message": "¡Vamos!"
+  },
+  "pp_reload_tab": {
+    "message": "Esta pestaña de llamada ya estaba abierta antes de instalar o actualizar MemeBox. Recárgala (F5) y vuelve a unirte a la llamada."
+  },
+  "tag_picture": {
+    "message": "Tiene imagen"
+  },
+  "op_picture": {
+    "message": "Imagen (opcional)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 Elegir imagen"
+  },
+  "op_picture_remove": {
+    "message": "Quitar imagen"
+  },
+  "op_picture_hint": {
+    "message": "Aparece en tu pantalla mientras suena la frase, y en tu cámara si \"Subtítulo en mi cámara\" está activado. Usa tus propias imágenes, o las de otros solo con su permiso."
+  },
+  "op_err_picture": {
+    "message": "Ese archivo no es una imagen que MemeBox pueda usar. Prueba con PNG, JPG, WEBP o GIF."
+  },
+  "op_err_picture_big": {
+    "message": "Esa imagen es demasiado grande. Prueba con una más pequeña (hasta 20 MB)."
+  },
+  "pro_pictures": {
+    "message": "Ya usaste tus $1 meme(s) con imagen. Consigue más con MemeBox Pro o un pack de imágenes (Opciones → MemeBox Pro)."
+  },
+  "op_bulk": {
+    "message": "📂 Importar muchos archivos"
+  },
+  "op_bulk_hint": {
+    "message": "Importar muchos archivos: cada uno se convierte en un clip (recortado a 1 MB) con el nombre de su archivo, en la categoría \"clips\"."
+  },
+  "op_bulk_working": {
+    "message": "Importando $1 de $2…"
+  },
+  "op_bulk_done": {
+    "message": "Se añadieron $1 clips. Se omitieron $2."
+  },
+  "op_bulk_skipped": {
+    "message": "Omitidos: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "Pro está desactivado ahora, así que todas las funciones son gratis para todos."
+  },
+  "op_pro_active": {
+    "message": "✅ MemeBox Pro está activo en este navegador."
+  },
+  "op_pro_free": {
+    "message": "Plan gratis: hasta $1 meme(s) con imagen, 10 clips, los packs General y Universidad."
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "Activar"
+  },
+  "op_buy": {
+    "message": "⭐ Comprar Pro o más imágenes"
+  },
+  "op_license_remove": {
+    "message": "Quitar clave"
+  },
+  "op_license_ok": {
+    "message": "Clave activada. ¡Disfruta!"
+  },
+  "op_license_offline": {
+    "message": "No se pudo conectar con el sitio de MemeBox. Revisa tu internet y vuelve a intentarlo."
+  },
+  "op_license_revoked": {
+    "message": "La clave $1 fue desactivada."
+  },
+  "op_license_stale": {
+    "message": "La clave $1 no se ha podido comprobar en mucho tiempo. Conéctate para que MemeBox la compruebe."
+  },
+  "op_license_pro": {
+    "message": "Clave $1: Pro, ilimitado."
+  },
+  "op_license_slots": {
+    "message": "Clave $1: $2 memes con imagen extra."
+  },
+  "settings_label": {
+    "message": "🎛 Sonido y voz"
+  },
+  "op_theme": {
+    "message": "🎨 Colores"
+  },
+  "theme_auto": {
+    "message": "Automático"
+  },
+  "theme_light": {
+    "message": "Claro"
+  },
+  "theme_dark": {
+    "message": "Oscuro"
+  },
+  "theme_sunny": {
+    "message": "Soleado"
+  },
+  "theme_neon": {
+    "message": "Neón"
+  },
+  "theme_candy": {
+    "message": "Caramelo"
+  },
+  "ob_theme_hint": {
+    "message": "Elige un estilo para MemeBox. Puedes cambiarlo cuando quieras en Ajustes."
+  }
+}

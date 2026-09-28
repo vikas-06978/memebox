@@ -84,6 +84,30 @@ function hearMeme() {
   worker.postMessage({ id: 1, text: line.say || line.text, lang: line.lang, espeak: tone.espeak });
 }
 
+// Color swatches: one tap previews and saves the theme (Settings has the same choice).
+async function pickTheme(theme) {
+  const { settings } = await chrome.storage.local.get('settings');
+  await chrome.storage.local.set({ settings: { ...MEME.defaultSettings(), ...settings, theme } });
+}
+
+function renderSwatches(current) {
+  $('swatches').replaceChildren(...Object.entries(MEME.THEMES).map(([id, x]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'swatch sw-' + id + (id === current ? ' on' : '');
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', String(id === current));
+    b.dataset.theme = id;
+    b.append(Object.assign(document.createElement('span'), { className: 'chipcolor' }), `${x.emoji} ${t('theme_' + id)}`);
+    b.addEventListener('click', () => pickTheme(id));
+    return b;
+  }));
+}
+chrome.storage.local.get('settings').then((r) => renderSwatches((r.settings && r.settings.theme) || 'auto'));
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.settings && changes.settings.newValue) renderSwatches(changes.settings.newValue.theme || 'auto');
+});
+
 $('mic-start').addEventListener('click', startMic);
 $('mic-stop').addEventListener('click', stopMic);
 $('hear').addEventListener('click', hearMeme);

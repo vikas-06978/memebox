@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Welcome to MemeBox</title>
   <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="themes.css">
   <link rel="stylesheet" href="options.css">
+  <script src="lib/theme.js"></script>
   <link rel="stylesheet" href="onboarding.css">
 </head>
 <body>
@@ -71,6 +73,12 @@
       </div>
       <div class="meter" aria-hidden="true"><span id="meter-fill"></span></div>
       <p id="mic-status" class="mic-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card" id="look-card">
+      <h2 data-i18n="op_theme">🎨 Colors</h2>
+      <p class="hint" data-i18n="ob_theme_hint">Pick a look for MemeBox. You can change it any time in Settings.</p>
+      <div class="swatches" id="swatches" role="radiogroup"></div>
     </section>
 
     <section class="card done">

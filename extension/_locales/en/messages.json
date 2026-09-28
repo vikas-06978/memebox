@@ -835,5 +835,29 @@
   },
   "settings_label": {
     "message": "🎛 Sound & voice"
+  },
+  "op_theme": {
+    "message": "🎨 Colors"
+  },
+  "theme_auto": {
+    "message": "Auto"
+  },
+  "theme_light": {
+    "message": "Light"
+  },
+  "theme_dark": {
+    "message": "Dark"
+  },
+  "theme_sunny": {
+    "message": "Sunny"
+  },
+  "theme_neon": {
+    "message": "Neon"
+  },
+  "theme_candy": {
+    "message": "Candy"
+  },
+  "ob_theme_hint": {
+    "message": "Pick a look for MemeBox. You can change it any time in Settings."
   }
 }

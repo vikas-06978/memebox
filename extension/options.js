@@ -837,6 +837,21 @@ $('timer-form').addEventListener('submit', (e) => {
 
 $('feedback').addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-feedback' }).catch(() => {}));
 
+// ---------- colors (theme) ----------
+// Saved in settings.theme. lib/theme.js and the on-call panel follow it right away.
+
+async function saveTheme(theme) {
+  const { settings: current } = await chrome.storage.local.get('settings');
+  await chrome.storage.local.set({ settings: { ...MEME.defaultSettings(), ...current, theme } });
+}
+
+$('theme').replaceChildren(...Object.entries(MEME.THEMES).map(([id, x]) => el('option', { value: id }, `${x.emoji} ${t('theme_' + id)}`)));
+$('theme').addEventListener('change', () => saveTheme($('theme').value));
+chrome.storage.local.get('settings').then((r) => { $('theme').value = (r.settings && r.settings.theme) || 'auto'; });
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.settings && changes.settings.newValue) $('theme').value = changes.settings.newValue.theme || 'auto';
+});
+
 // ---------- MemeBox Pro: license key ----------
 // The key is checked with the MemeBox site. The answer is saved as `license` and read by
 // lib/plan.js everywhere (the service worker checks it again once a day).

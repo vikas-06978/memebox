@@ -44,6 +44,16 @@
     radio:    { emoji: '📻' },
   };
 
+  // Color themes for the panel, popup, Options and welcome page. Same names as the website.
+  const THEMES = {
+    auto:  { emoji: '🌓' },
+    light: { emoji: '☀️' },
+    dark:  { emoji: '🌙' },
+    sunny: { emoji: '🌻' },
+    neon:  { emoji: '🪩' },
+    candy: { emoji: '🍬' },
+  };
+
   const SETTINGS = {
     volume: 1,            // meme volume, 0-2
     monitor: true,        // also play memes quietly on your own speakers (untick in the panel)
@@ -51,6 +61,7 @@
     tabVolume: 1,         // another tab's sound in the call, 0-2
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
+    theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)
     timersEnabled: false, // master switch for timed lines (off by default)
     timers: [],           // { id, lineId, mode: 'clock'|'interval', time: 'HH:MM', minutes, enabled }
   };
@@ -129,7 +140,7 @@
   }
 
   globalThis.MEME = Object.freeze({
-    TONES, VOICES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, THEMES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

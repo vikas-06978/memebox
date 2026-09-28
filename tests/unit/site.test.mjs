@@ -56,7 +56,7 @@ test('invalid posts are rejected with a reason', () => {
   bad({ email: 'not-an-email' }, 'email');
   bad({ version: '1.0' }, 'version');
   bad({ site: 'youtube' }, 'site');
-  bad({ lang: 'fr' }, 'lang');
+  bad({ lang: 'xx' }, 'lang');
   bad({ type: 'spam' }, 'type');
   bad(() => ({ type: 'uninstall' }), 'reason: required');
   bad(() => ({ type: 'uninstall', reason: 'other', rating: 3 }), 'rating: unknown field');

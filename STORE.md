@@ -19,7 +19,7 @@ MemeBox: Meme Soundboard & Voice Changer for Calls
 - Chrome Web Store: **Lifestyle → Just for Fun**. Second choice: **Productivity → Communication**.
 - Edge Add-ons: **Entertainment**.
 
-Language: English. Add Hindi as a second listing language with the Hindi texts from `_locales/hi`.
+Language: English. The package has 12 languages (en, hi, bn, mr, ta, te, gu, es, ar, pt_BR, fr, id). The stores show the translated name and short description from `_locales` automatically. For the full description, add listing languages as you like, starting with Hindi.
 
 ## Full description
 

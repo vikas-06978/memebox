@@ -835,5 +835,29 @@
   },
   "settings_label": {
     "message": "🎛 आवाज़ और सेटिंग"
+  },
+  "op_theme": {
+    "message": "🎨 रंग"
+  },
+  "theme_auto": {
+    "message": "अपने आप"
+  },
+  "theme_light": {
+    "message": "लाइट"
+  },
+  "theme_dark": {
+    "message": "डार्क"
+  },
+  "theme_sunny": {
+    "message": "धूप"
+  },
+  "theme_neon": {
+    "message": "नियॉन"
+  },
+  "theme_candy": {
+    "message": "कैंडी"
+  },
+  "ob_theme_hint": {
+    "message": "MemeBox के लिए एक लुक चुनें। Settings में इसे कभी भी बदल सकते हैं।"
   }
 }

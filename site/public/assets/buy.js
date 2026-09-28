@@ -3,6 +3,7 @@
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
+  const T = (key, ...subs) => (window.MemeSite ? window.MemeSite.t(key, ...subs) : key);
   const params = new URLSearchParams(location.search);
   let orderId = /^MB[A-HJ-NP-Z2-9]{10}$/.test(params.get('order') || '') ? params.get('order') : '';
   let pollTimer = 0;
@@ -17,7 +18,7 @@
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok) throw new Error(data.error || 'Something went wrong. Try again.');
+    if (!res.ok || !data.ok) throw new Error(res.status === 429 ? T('err_too_many') : data.error || T('buy_err_generic'));
     return data;
   }
 
@@ -53,7 +54,7 @@
       const o = await api('POST', { action: 'create', product, ...(forKey ? { forKey } : {}) });
       remember(o.orderId);
       $('amount').textContent = '₹' + o.amount;
-      $('what').textContent = o.productName;
+      $('what').textContent = T('buy_name_' + o.product);
       $('note').textContent = 'MemeBox ' + o.orderId;
       $('upi-id').textContent = o.upiId;
       $('upi-link').href = o.upiUrl;
@@ -79,17 +80,17 @@
     $('key-box').hidden = true;
     clearTimeout(pollTimer);
     if (order.status === 'waiting') {
-      $('status-title').textContent = 'Thanks! Checking your payment ⏳';
-      $('status-text').textContent = `We're checking your ₹${order.amount} payment. Your key appears here once it's confirmed, usually within a few hours. You can close this page and come back to this address.`;
+      $('status-title').textContent = T('buy_waiting_title');
+      $('status-text').textContent = T('buy_waiting_text', order.amount);
       pollTimer = setTimeout(() => refresh(), 20000);
     } else if (order.status === 'approved') {
-      $('status-title').textContent = 'Payment confirmed 🎉';
-      $('status-text').textContent = `${order.productName} is yours. Here is your key:`;
+      $('status-title').textContent = T('buy_ok_title');
+      $('status-text').textContent = T('buy_ok_text');
       $('key').textContent = order.licenseKey;
       $('key-box').hidden = false;
     } else if (order.status === 'rejected') {
-      $('status-title').textContent = "We couldn't find this payment";
-      $('status-text').textContent = 'If you did pay, write to us with your order code and the UPI transaction ID, and we will sort it out.';
+      $('status-title').textContent = T('buy_rejected_title');
+      $('status-text').textContent = T('buy_rejected_text');
     }
   }
 
@@ -110,7 +111,7 @@
   $('claim').addEventListener('submit', async (e) => {
     e.preventDefault();
     const utr = $('utr').value.replace(/\s+/g, '');
-    if (!/^\d{12}$/.test(utr)) { showError('The UPI transaction ID has 12 digits. Find it in your UPI app under this payment.'); return; }
+    if (!/^\d{12}$/.test(utr)) { showError(T('buy_err_utr')); return; }
     showError('');
     const button = e.submitter || $('claim').querySelector('button');
     button.disabled = true;
@@ -125,7 +126,7 @@
   });
 
   $('copy').addEventListener('click', () => {
-    navigator.clipboard.writeText($('key').textContent).then(() => { $('copy').textContent = 'Copied'; }, () => {});
+    navigator.clipboard.writeText($('key').textContent).then(() => { $('copy').textContent = T('buy_copied'); }, () => {});
   });
 
   // Products and whether payments are open come from the site settings.
@@ -136,18 +137,18 @@
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'primary';
-      b.textContent = `Buy for ₹${p.inr}`;
+      b.textContent = T('buy_for', '₹' + p.inr);
       b.dataset.product = id;
       b.addEventListener('click', () => buy(id));
       const card = document.createElement('article');
       card.className = 'card product' + (p.unlimited ? ' best' : '');
       const h = document.createElement('h2');
-      h.textContent = p.unlimited ? 'MemeBox Pro' : `${p.pictureSlots} more pictures`;
+      h.textContent = p.unlimited ? 'MemeBox Pro' : T('buy_more_pics', p.pictureSlots);
       const d = document.createElement('p');
       d.className = 'muted';
       d.textContent = p.unlimited
-        ? 'Unlimited picture memes, voice changer, camera captions, all packs, party mode and bulk import. Pay once, keep it.'
-        : `Add ${p.pictureSlots} more picture memes to MemeBox. Stack as many as you like.`;
+        ? T('buy_pro_desc')
+        : T('buy_pics_desc', p.pictureSlots);
       const price = document.createElement('p');
       price.className = 'price';
       price.textContent = `₹${p.inr}`;
@@ -155,5 +156,5 @@
       box.append(card);
     }
     if (orderId) refresh();
-  }).catch(() => alertBox("Couldn't load. Check your internet and reload."));
+  }).catch(() => alertBox(T('buy_err_load')));
 })();

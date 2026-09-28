@@ -7,51 +7,52 @@
   <meta name="description" content="Unlock MemeBox Pro or more picture memes. Pay with any UPI app.">
   <link rel="icon" href="/assets/icon.png">
   <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/prefs.js"></script>
 </head>
 <body class="page-bg">
   <main class="wrap narrow">
     <header class="page-head">
       <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
-      <h1>Get more from MemeBox</h1>
-      <p class="muted">Pay once with any UPI app (GPay, PhonePe, Paytm, BHIM). The money goes straight to the developer.</p>
+      <h1 data-t="buy_title">Get more from MemeBox</h1>
+      <p class="muted" data-t="buy_intro">Pay once with any UPI app (GPay, PhonePe, Paytm, BHIM). The money goes straight to the developer.</p>
     </header>
 
-    <p id="closed" class="error" hidden>Payments aren't open yet. Please check back soon.</p>
+    <p id="closed" class="error" hidden data-t="buy_closed">Payments aren't open yet. Please check back soon.</p>
 
     <!-- Step 1: choose -->
     <section id="choose">
       <div id="products" class="products"></div>
       <details class="card topup">
-        <summary>Already have a key? Add pictures to it</summary>
-        <label class="field"><span>Your MemeBox key</span>
+        <summary data-t="buy_topup">Already have a key? Add pictures to it</summary>
+        <label class="field"><span data-t="buy_your_key">Your MemeBox key</span>
           <input id="for-key" placeholder="MBX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false">
         </label>
-        <p class="muted small">Leave it empty to get a new key.</p>
+        <p class="muted small" data-t="buy_topup_hint">Leave it empty to get a new key.</p>
       </details>
     </section>
 
     <!-- Step 2: pay -->
     <section id="pay" class="card" hidden>
-      <h2>Pay <span id="amount"></span> by UPI</h2>
+      <h2><span data-t="buy_pay">Pay by UPI</span> <span id="amount"></span></h2>
       <p class="muted" id="what"></p>
       <div class="pay-grid">
         <canvas id="qr" width="232" height="232" aria-label="UPI QR code"></canvas>
         <div>
           <ol class="pay-steps">
-            <li>Scan the QR code with any UPI app, or on a phone tap <b>Pay with UPI app</b>.</li>
-            <li>Check the amount and pay. Keep the note <b id="note"></b>.</li>
-            <li>Copy the <b>UPI transaction ID</b> (12 digits, also called UTR or reference number) from your UPI app.</li>
+            <li data-t="buy_step1">Scan the QR code with any UPI app, or on a phone tap "Pay with UPI app".</li>
+            <li><span data-t="buy_step2">Check the amount and pay. Keep this note:</span> <b id="note"></b></li>
+            <li data-t="buy_step3">Copy the UPI transaction ID (12 digits, also called UTR or reference number) from your UPI app.</li>
           </ol>
-          <p><a id="upi-link" class="button primary">Pay with UPI app</a></p>
-          <p class="muted small">UPI ID: <code id="upi-id"></code></p>
+          <p><a id="upi-link" class="button primary" data-t="buy_app">Pay with UPI app</a></p>
+          <p class="muted small"><span data-t="buy_upi_id">UPI ID:</span> <code id="upi-id"></code></p>
         </div>
       </div>
       <form id="claim" novalidate>
-        <label class="field"><span>UPI transaction ID (UTR)</span>
-          <input id="utr" inputmode="numeric" maxlength="16" placeholder="12 digits, e.g. 412345678901" autocomplete="off">
+        <label class="field"><span data-t="buy_utr">UPI transaction ID (UTR)</span>
+          <input id="utr" inputmode="numeric" maxlength="16" placeholder="412345678901" autocomplete="off">
         </label>
         <p id="error" class="error" role="alert" hidden></p>
-        <button type="submit" class="primary">I've paid</button>
+        <button type="submit" class="primary" data-t="buy_paid">I've paid</button>
       </form>
     </section>
 
@@ -59,19 +60,19 @@
     <section id="status" class="card" hidden>
       <h2 id="status-title"></h2>
       <p id="status-text"></p>
-      <p id="key-box" class="keybox" hidden><code id="key"></code> <button type="button" id="copy">Copy</button></p>
-      <p class="muted small">Order <code id="order-id"></code>. Keep this page's address to come back later.</p>
+      <p id="key-box" class="keybox" hidden><code id="key"></code> <button type="button" id="copy" data-t="buy_copy">Copy</button></p>
+      <p class="muted small"><span data-t="buy_order">Order</span> <code id="order-id"></code>. <span data-t="buy_keep">Keep this page's address to come back later.</span></p>
     </section>
 
     <section class="card how-pro">
-      <h2>How to use your key</h2>
+      <h2 data-t="buy_how">How to use your key</h2>
       <ol>
-        <li>Open MemeBox <b>Options</b> (the ⚙️ in the 😂 panel).</li>
-        <li>Find <b>MemeBox Pro</b>, paste your key and press <b>Activate</b>.</li>
+        <li data-t="buy_how1">Open MemeBox Options (the ⚙️ in the 😂 panel).</li>
+        <li data-t="buy_how2">Find "MemeBox Pro", paste your key and press Activate.</li>
       </ol>
-      <p class="muted small">Payments are checked by hand, usually within a few hours. Problems? Write to <a href="mailto:hello@example.com">hello@example.com</a> with your order code.</p>
+      <p class="muted small"><span data-t="buy_help">Payments are checked by hand, usually within a few hours. Problems? Write with your order code to</span> <a href="mailto:hello@example.com">hello@example.com</a></p>
     </section>
-    <footer class="foot"><a href="/terms">Terms</a> · <a href="/privacy">Privacy</a></footer>
+    <footer class="foot"><a href="/terms" data-t="foot_terms">Terms</a> · <a href="/privacy" data-t="foot_privacy">Privacy</a> <div class="prefs" data-prefs></div></footer>
   </main>
   <script src="/assets/vendor/qrcode.js"></script>
   <script src="/assets/buy.js"></script>

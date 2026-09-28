@@ -114,5 +114,25 @@ await promo.setViewportSize({ width: 440, height: 280 });
 await promo.setContent(PROMO);
 await promo.screenshot({ path: shot('promo-440x280.png') });
 
+// Social preview card 1200x630 (WhatsApp, X, Facebook, LinkedIn, Discord link previews).
+const demo = 'data:image/png;base64,' + fs.readFileSync(shot('screenshot-1-call.png')).toString('base64');
+const og = await context.newPage();
+await og.setViewportSize({ width: 1200, height: 630 });
+await og.setContent(`<!doctype html><html><head><style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body { background: linear-gradient(135deg, #fff4bf, #ffd43b 55%, #ff922b); font-family: system-ui, "Segoe UI", sans-serif; color: #1c1b20;
+    display: grid; grid-template-columns: 1fr 1.05fr; align-items: center; gap: 36px; padding: 0 56px; box-sizing: border-box; }
+  .brand { display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 34px; margin-bottom: 22px; }
+  h1 { font-size: 58px; line-height: 1.05; margin: 0 0 18px; letter-spacing: -.02em; }
+  p { font-size: 25px; margin: 0; color: #3d3a2f; font-weight: 600; }
+  .shot { width: 100%; border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.3); transform: rotate(-2deg); }
+</style></head><body>
+  <div><div class="brand"><img src="${icon}" width="64" height="64" alt="">MemeBox</div>
+    <h1>Meme sounds &amp; voice changer for your calls</h1>
+    <p>Google Meet · Zoom · Teams · Discord. Free.</p></div>
+  <img class="shot" src="${demo}" alt="">
+</body></html>`);
+await og.screenshot({ path: path.join(ROOT, 'site', 'public', 'assets', 'og-card.png') });
+
 await context.close();
 for (const f of fs.readdirSync(OUT).filter((x) => x.endsWith('.png'))) console.log('store/' + f);

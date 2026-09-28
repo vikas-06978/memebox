@@ -15,7 +15,7 @@ const FUNCTIONS = path.join(SITE, 'functions');
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.txt': 'text/plain; charset=utf-8',
-  '.xml': 'application/xml', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon',
+  '.xml': 'application/xml', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.wav': 'audio/wav',
 };
 
 // /api/feedback -> functions/api/feedback.js, /admin -> functions/admin/index.js

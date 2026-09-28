@@ -47,7 +47,7 @@ export async function onRequest({ request, env }) {
     if (!limit.allowed) return json({ ok: false, error: 'Too many orders from here. Try again in an hour.' }, 429, { 'Retry-After': '3600' });
     const o = await createOrder(env.DB, { product: body.product, forKey });
     return json({
-      ok: true, orderId: o.id, amount: o.amount, productName: o.product.name,
+      ok: true, orderId: o.id, amount: o.amount, product: body.product, productName: o.product.name,
       upiId: env.UPI_ID, payee: env.UPI_NAME || 'MemeBox',
       upiUrl: upiLink({ upiId: env.UPI_ID, payee: env.UPI_NAME || 'MemeBox', amount: o.amount, orderId: o.id }),
     });

@@ -17,7 +17,10 @@
         if (m !== key) n.setAttribute(attr, m);
       }
     }
-    document.documentElement.lang = chrome.i18n.getUILanguage().startsWith('hi') ? 'hi' : 'en';
+    // The language MemeBox is shown in (e.g. "pt_BR" -> "pt-BR") and its direction (Arabic: rtl).
+    const locale = chrome.i18n.getMessage('@@ui_locale') || 'en';
+    document.documentElement.lang = locale.replace('_', '-');
+    document.documentElement.dir = chrome.i18n.getMessage('@@bidi_dir') || 'ltr';
   }
   globalThis.MemeI18n = { t, apply };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => apply(), { once: true });

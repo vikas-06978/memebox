@@ -103,8 +103,12 @@ test('every site page is mobile-ready, titled and uses only local scripts and st
 test('sitemap lists the public pages that exist, and robots.txt points to it', () => {
   const sitemap = fs.readFileSync(path.join(PUBLIC, 'sitemap.xml'), 'utf8');
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
-  assert.deepEqual(locs, ['/', '/buy', '/feedback', '/privacy', '/terms']);
-  for (const l of locs) assert.ok(pages.includes(l === '/' ? 'index.html' : l.slice(1) + '.html'), l);
+  assert.ok(locs.length >= 20, 'home, 11 languages, 4 platform pages, buy, feedback, privacy, terms');
+  // Every address in the sitemap is a real file (seo.test checks the full list).
+  for (const l of locs) {
+    const file = l === '/' ? 'index.html' : l.endsWith('/') ? l.slice(1) + 'index.html' : l.slice(1) + '.html';
+    assert.ok(fs.existsSync(path.join(PUBLIC, file)), l);
+  }
   const robots = fs.readFileSync(path.join(PUBLIC, 'robots.txt'), 'utf8');
   assert.match(robots, /^Sitemap: https:\/\/.+\/sitemap\.xml$/m);
   assert.match(robots, /^Disallow: \/admin$/m);

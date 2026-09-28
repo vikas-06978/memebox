@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MemeBox Settings</title>
   <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="themes.css">
   <link rel="stylesheet" href="options.css">
+  <script src="lib/theme.js"></script>
 </head>
 <body>
   <header class="top">
@@ -14,6 +16,7 @@
       <h1>MemeBox</h1>
       <p class="sub" data-i18n="op_sub">Your lines, clips, packs and party mode. Everything stays in this browser.</p>
     </div>
+    <label class="theme-pick"><span data-i18n="op_theme">🎨 Colors</span> <select id="theme"></select></label>
     <button type="button" id="feedback" class="feedback-btn" data-i18n="op_feedback">💬 Send feedback</button>
   </header>
   <nav class="tabs" aria-label="Sections">
