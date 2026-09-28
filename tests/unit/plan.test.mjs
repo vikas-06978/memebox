@@ -1,4 +1,4 @@
-// Step 7: Pro is prepared but switched off. Everyone gets everything while PRO_ENABLED is false.
+// Pro is switched on in the shipped config. Without PRO_ENABLED, everyone gets everything.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -7,12 +7,12 @@ import { EXT, loadScript, readJson } from './helpers.mjs';
 
 const withConfig = (config) => loadScript('lib/plan.js', { MEMEBOX_CONFIG: config }).MemePlan;
 
-test('the shipped config has Pro switched off', () => {
+test('the shipped config has Pro switched on: without a key, Pro features are locked', () => {
   const { MEMEBOX_CONFIG } = loadScript('config.js');
-  assert.equal(MEMEBOX_CONFIG.PRO_ENABLED, false);
+  assert.equal(MEMEBOX_CONFIG.PRO_ENABLED, true);
   const plan = loadScript(['config.js', 'lib/plan.js']).MemePlan;
-  assert.equal(plan.isPro(), true);
-  for (const f of Object.keys(plan.PRO_FEATURES)) assert.equal(plan.can(f), true, f);
+  assert.equal(plan.isPro(), false);
+  for (const f of Object.keys(plan.PRO_FEATURES)) assert.equal(plan.can(f), false, f);
 });
 
 test('the Pro features: the first five plus bulk import and picture memes (1.1.0)', () => {

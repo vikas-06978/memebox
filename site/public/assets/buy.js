@@ -56,7 +56,6 @@
       $('amount').textContent = '₹' + o.amount;
       $('what').textContent = T('buy_name_' + o.product);
       $('note').textContent = 'MemeBox ' + o.orderId;
-      $('upi-id').textContent = o.upiId;
       $('upi-link').href = o.upiUrl;
       drawQr(o.upiUrl);
       $('choose').hidden = true;

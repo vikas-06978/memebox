@@ -8,5 +8,5 @@ globalThis.MEMEBOX_CONFIG = Object.freeze({
   // Pro features are prepared but switched off: everyone gets everything for free.
   // Don't set this to true before the license check in lib/plan.js exists, or every
   // Pro feature locks for everyone.
-  PRO_ENABLED: false,
+  PRO_ENABLED: true,
 });

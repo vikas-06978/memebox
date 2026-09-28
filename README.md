@@ -9,7 +9,7 @@ Version 1.2.0. See [CHANGELOG.md](CHANGELOG.md) for what's in it, and [STORE.md]
 **Before you publish, fill in these placeholders:**
 - `extension/config.js`: `SITE_URL` (your Cloudflare Pages address) and, after approval, `STORE_URL`.
 - `site/public/index.html`: the install button (`id="install"`) points to GitHub releases until the store address exists.
-- `site/public/privacy.html`, `terms.html`, `index.html` and `PRIVACY.md`: the contact email `hello@example.com`.
+- The contact email is `memebox.help@gmail.com` (in `site/public/privacy.html`, `terms.html`, `buy.html`, `index.html` and `PRIVACY.md`). If you change it, run `npm run seo` afterwards.
 - `site/public/sitemap.xml` and `robots.txt`: the site address, if it isn't `memebox.pages.dev`.
 - `site/public/assets/demo.png`: a screenshot for now. Swap in a short demo GIF when you have one.
 

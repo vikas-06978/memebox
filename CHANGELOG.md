@@ -13,6 +13,9 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 - On phones the website's language and colors menus were hidden. They now sit in the top bar.
 - The Settings page header wraps cleanly in longer languages.
 
+### Changed
+- The contact email on the site and in the privacy policy is now memebox.help@gmail.com.
+
 ## [1.2.1] - 2026-09-28
 
 ### Fixed

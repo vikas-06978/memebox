@@ -93,4 +93,4 @@ If this policy changes, the new version will be published at the same address, w
 
 ## Contact
 
-Questions, or want a feedback message deleted? Email hello@example.com or use the feedback page.
+Questions, or want a feedback message deleted? Email memebox.help@gmail.com or use the feedback page.

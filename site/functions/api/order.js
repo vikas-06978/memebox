@@ -1,5 +1,5 @@
 // /api/order: UPI orders from the /buy page.
-//   POST { action: 'create', product, forKey? } -> { orderId, amount, upiUrl, upiId, payee }
+//   POST { action: 'create', product, forKey? } -> { orderId, amount, upiUrl, payee }
 //   POST { action: 'claim', orderId, utr }       -> the buyer paid, waiting for the admin
 //   GET  ?id=MB...                               -> { status, product, amount, licenseKey (when approved) }
 import { json, methodNotAllowed } from '../../src/http.js';
@@ -48,7 +48,7 @@ export async function onRequest({ request, env }) {
     const o = await createOrder(env.DB, { product: body.product, forKey });
     return json({
       ok: true, orderId: o.id, amount: o.amount, product: body.product, productName: o.product.name,
-      upiId: env.UPI_ID, payee: env.UPI_NAME || 'MemeBox',
+      payee: env.UPI_NAME || 'MemeBox',
       upiUrl: upiLink({ upiId: env.UPI_ID, payee: env.UPI_NAME || 'MemeBox', amount: o.amount, orderId: o.id }),
     });
   }
