@@ -30,7 +30,10 @@ Google Meet, Zoom (web client), Microsoft Teams (web) and Discord (web).
 • A big meme-style caption appears on your screen for 3 seconds, so you know what everyone just heard.
 • Keyboard shortcuts Alt+1 … Alt+9 for your favourite lines. They're ignored while you're typing.
 • Add your own lines, or upload short sound clips (MP3/WAV/OGG, up to 1 MB).
-• Play a meme straight from a video tab (YouTube, Instagram and more): click the toolbar icon and "Send this tab's sound", with nothing downloaded. You can also save direct MP3 links, for example from myinstants.com.
+• Play a meme straight from a video tab (YouTube, Instagram and more): click the toolbar icon and "Send this tab's sound". It has its own volume, you keep hearing it, and nothing is downloaded. You can also turn direct MP3/MP4 links into clips.
+• Live voice changer for your own voice: Chipmunk, Deep, Robot, Echo and Radio. Alt+V switches it on and off.
+• Optional meme captions on your own camera, so everyone sees the joke too.
+• Save any meme as a WAV file, or share its text on WhatsApp (you choose the chat).
 • Optional timed lines: "Chai break!" every day at 11:00, or a line every N minutes while a call is open. Off by default.
 • Import and export everything as a JSON file.
 • A status dot shows green when memes go into your mic, and grey when you haven't joined a call yet.
@@ -63,13 +66,12 @@ Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG 
 **tabCapture**
 Used only when the user opens the toolbar popup on a tab (for example a YouTube video) and clicks "Send this tab's sound into my call". The extension creates a tab-capture stream ID for that tab (chrome.tabCapture.getMediaStreamId, with the user's call tab as consumer). The call tab mixes that audio live into the outgoing microphone. Nothing is recorded, saved, downloaded or transmitted by the extension. Capture stops when the user presses Stop or closes either tab.
 
-**Optional host permissions (https://\*/\*, http://\*/\*)**
-Not granted at install. When the user adds a meme from a direct audio-file link (MP3/OGG/WAV) in Options, the extension requests access for that one website only (chrome.permissions.request), so it can fetch the file when the user plays it. The request uses no cookies. Nothing is sent to that site except the normal file request.
-
 **Host permissions / content scripts: https://meet.google.com/\*, https://app.zoom.us/wc/\*, https://teams.microsoft.com/\*, https://teams.live.com/\*, https://discord.com/\***
 On these video-call websites only, the extension:
 (1) wraps navigator.mediaDevices.getUserMedia so the microphone track the site receives is a mix of the real microphone plus the meme audio the user chooses to play, and
-(2) shows the floating 😂 button, panel and captions.
+(2) shows the floating 😂 button, panel and captions, and
+(3) only if the user switches them on, applies the live voice changer to the user's own microphone and draws meme captions on the user's own camera picture (canvas.captureStream).
+The AudioWorklet file for the voice changer (voice-worklet.js, lib/pitch-shift.js) is the only web-accessible resource, and only on these five sites.
 Microphone audio is processed only locally with the Web Audio API. It is never recorded, stored or transmitted by the extension. The extension doesn't run on any other site.
 
 **Remote code**

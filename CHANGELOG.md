@@ -4,6 +4,40 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added – Step 5: tab audio and voice changer (0.5.0)
+- **Tab audio to the mic:**
+  - The tab you send stays audible for you. Capturing a tab silences it, so a local copy is played back.
+  - The tab sound has its own volume (0–200%). It can be set in the toolbar popup and in the 😂 panel, and both share one setting.
+- **Live voice changer** for your own voice: Chipmunk and Deep, plus Robot, Echo and Radio.
+  - Chipmunk and Deep use an AudioWorklet pitch shifter (`voice-worklet.js` + `lib/pitch-shift.js`). If a page blocks the worklet, the same maths runs on the main thread as a fallback.
+  - It sits between the real mic and the mixer. Auto-duck still reads your raw voice.
+  - **Alt+V** switches between Off and your last voice. **Off** reconnects the plain mic instantly.
+  - It always starts Off on a new call page.
+  - It is kept when the call re-opens the mic.
+- **Captions on my camera** (optional, off by default):
+  - Path: camera → canvas (frame + meme text) → `canvas.captureStream(30)`.
+  - Only your own video is changed.
+  - It applies when the camera starts.
+  - The canvas track mirrors the real camera: label, settings, `enabled`, `stop` and clones.
+- **Share (manual):**
+  - **💾 WAV** saves a line as it sounds in the call, with its tone and line volume.
+  - **WhatsApp** opens `https://wa.me/?text=…` with the caption and the site link.
+  - WhatsApp is never automated.
+- `web_accessible_resources` has only the worklet files, and only for the 5 call sites. There are no new permissions.
+
+### Fixed
+- The panel's 🦆 Auto-duck switch had no effect. The bridge dropped `duck` commands.
+- PRIVACY.md still described the removed optional link permission.
+
+### Tests
+- Unit tests for the pitch shifter: passthrough, 200→320 Hz and 300→216 Hz, level, clamping, and counter wrap. Manifest tests for the worklet resources and load order.
+- End-to-end tests:
+  - Alt+V raises the sent voice's pitch through the AudioWorklet and restores it.
+  - Deep works through the fallback; Robot, Echo and Radio keep the voice flowing, with memes on top.
+  - Camera captions are off by default; when on, the camera goes through a canvas that ends when stopped.
+  - The popup's tab volume is saved.
+  - WAV download and the WhatsApp link work.
+
 ### Added – Step 4: lines, clips, files, packs (0.4.0)
 - Rewritten Options page, in English and Hindi. Each line has text, "pronounce as", language, tone, category, favourite slot (1–9), per-line volume (0–200%) and ⭐. It also has search and a category filter.
 - Clips from:

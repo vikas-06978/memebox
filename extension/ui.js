@@ -7,7 +7,7 @@
   if (window !== window.top || globalThis.__memeboxUi || !globalThis.MemeBridge) return;
   globalThis.__memeboxUi = true;
 
-  const { TONES, sanitizeLine } = globalThis.MEME;
+  const { TONES, VOICES, sanitizeLine } = globalThis.MEME;
   const bridge = globalThis.MemeBridge;
   const HOST = location.hostname;
   const SITE = /meet\.google/.test(HOST) ? 'meet' : /zoom/.test(HOST) ? 'zoom' : /teams/.test(HOST) ? 'teams' : /discord/.test(HOST) ? 'discord' : '';
@@ -31,6 +31,7 @@
     lastRandomId: null,
     nowPlayingId: null,     // highlighted in the list for 3 s
     tabAudio: false,        // another tab's sound is going into the mic
+    voice: 'off',           // live voice changer – always starts Off on a new page
     query: '',
     filter: 'all',          // 'all' | 'star' | 'recent' | <category>
   };
@@ -201,11 +202,32 @@
     if (f) bridge.toRuntime({ type: 'to-frame', frameId: f.id, inner: { type: 'hook', cmd } });
   }
 
-  // Meme volume, "hear it myself" monitor and auto-duck.
+  // Meme volume, "hear it myself" monitor, auto-duck, tab-sound volume and the voice.
   function sendAudioSettings() {
     sendToHook({ type: 'volume', value: state.settings.volume });
     sendToHook({ type: 'monitor', value: state.settings.monitor === true });
     sendToHook({ type: 'duck', value: state.settings.autoDuck !== false });
+    sendToHook({ type: 'tab-audio-volume', value: state.settings.tabVolume });
+    sendToHook({ type: 'voice', value: state.voice }); // no-op in the hook if unchanged
+  }
+
+  function setVoice(fx) {
+    if (!Object.prototype.hasOwnProperty.call(VOICES, fx)) fx = 'off';
+    state.voice = fx;
+    if (fx !== 'off' && state.settings.voiceLast !== fx) {
+      state.settings = { ...state.settings, voiceLast: fx };
+      saveSetting('voiceLast', fx);
+    }
+    sendToHook({ type: 'voice', value: fx });
+    renderVoice();
+    if (!activeFrame()) toast(t('voice_after_join'));
+    else toast(fx === 'off' ? t('voice_now_off') : t('voice_now_on', VOICES[fx].emoji + ' ' + t('voice_' + fx)));
+  }
+
+  function toggleVoice() {
+    const last = Object.prototype.hasOwnProperty.call(VOICES, state.settings.voiceLast) && state.settings.voiceLast !== 'off'
+      ? state.settings.voiceLast : 'chipmunk';
+    setVoice(state.voice === 'off' ? last : 'off');
   }
 
   function toggleStar(line) {
@@ -253,6 +275,7 @@
     if (fav) playFavourite(Number(fav[1]));
     else if (command === 'stop-all') { stopAll(); toast(t('stopped')); }
     else if (command === 'toggle-ui') setHidden(!state.hidden);
+    else if (command === 'toggle-voice') toggleVoice();
   }
 
   // ---------- keyboard ----------
@@ -277,7 +300,7 @@
     return isEditable(el);
   }
 
-  const KEY_COMMANDS = { Digit0: 'stop-all', KeyM: 'toggle-ui' };
+  const KEY_COMMANDS = { Digit0: 'stop-all', KeyM: 'toggle-ui', KeyV: 'toggle-voice' };
   for (let i = 1; i <= 9; i++) KEY_COMMANDS['Digit' + i] = 'fav-' + i;
 
   window.addEventListener('keydown', (e) => {
@@ -373,7 +396,11 @@
     .btn.small { flex: none; padding: 4px 10px; font-size: 12px; }
     .btn:hover { filter: brightness(.96); }
     .tabbar { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; background: #e8f0fe; color: #174ea6; }
-    .tabbar span { flex: 1; }
+    .tabbar { flex-wrap: wrap; }
+    .tabbar > span { flex: 1; }
+    .row.full { flex-basis: 100%; }
+    .voice { flex: 1; padding: 4px 6px; border: 1px solid #dadce0; border-radius: 8px; font: inherit; color: inherit; background: transparent; }
+    .voice.on { border-color: #f59f00; background: rgba(255, 212, 59, .25); font-weight: 600; }
     .vol { flex: 1; accent-color: #f59f00; }
     .checks { display: flex; flex-wrap: wrap; gap: 4px 14px; }
     .check { display: flex; align-items: center; gap: 6px; cursor: pointer; color: inherit; }
@@ -417,6 +444,8 @@
       .status { background: #2d2e31; }
       .icon:hover, .tag { background: #3c4043; }
       .search { background: #202124; border-color: #5f6368; }
+      .voice { border-color: #5f6368; }
+      .voice option { background: #202124; }
       .chip { border-color: #5f6368; }
       .chip.on { background: #ffd43b; border-color: #ffd43b; color: #202124; }
       .list { border-color: #3c4043; }
@@ -458,9 +487,17 @@
   vol.setAttribute('aria-label', t('volume'));
   const volVal = el('span', { className: 'volval' });
   const tabStopBtn = el('button', { className: 'btn stop small', type: 'button' }, t('tab_stop'));
-  const tabBar = el('div', { className: 'tabbar', hidden: true }, el('span', {}, t('tab_bar')), tabStopBtn);
+  const tabVol = el('input', { className: 'vol', type: 'range', min: 0, max: 200, step: 5, title: t('tab_volume') });
+  tabVol.setAttribute('aria-label', t('tab_volume'));
+  const tabBar = el('div', { className: 'tabbar', hidden: true },
+    el('span', {}, t('tab_bar')), tabStopBtn,
+    el('div', { className: 'row full' }, el('span', { title: t('tab_volume') }, '🔉'), tabVol));
+  const voiceSel = el('select', { className: 'voice', title: t('voice_tip') },
+    ...Object.entries(VOICES).map(([id, v]) => el('option', { value: id }, `${v.emoji} ${t('voice_' + id)}`)));
+  voiceSel.setAttribute('aria-label', t('voice_label'));
   const monitorBox = el('input', { type: 'checkbox' });
   const duckBox = el('input', { type: 'checkbox' });
+  const camBox = el('input', { type: 'checkbox' });
   const list = el('ul', { className: 'list' });
   const optionsBtn = el('button', { className: 'icon', type: 'button', title: t('options') }, '⚙️');
   const closeBtn = el('button', { className: 'icon', type: 'button', title: t('close') }, '✕');
@@ -473,9 +510,12 @@
     chips,
     el('div', { className: 'row' }, randomBtn, beepBtn, stopBtn),
     el('div', { className: 'row' }, el('span', { title: t('volume') }, '🔊'), vol, volVal),
+    el('label', { className: 'row', title: t('voice_tip') }, el('span', {}, t('voice_label')), voiceSel,
+      el('span', { className: 'foot' }, 'Alt+V')),
     el('div', { className: 'checks' },
       el('label', { className: 'check', title: t('monitor_tip') }, monitorBox, t('monitor_label')),
-      el('label', { className: 'check', title: t('duck_tip') }, duckBox, t('duck_label'))),
+      el('label', { className: 'check', title: t('duck_tip') }, duckBox, t('duck_label')),
+      el('label', { className: 'check', title: t('cam_tip') }, camBox, t('cam_label'))),
     list,
     el('div', { className: 'foot' }, t('panel_foot')),
     timerNote,
@@ -493,6 +533,12 @@
     renderChips();
     renderList();
     renderVolume();
+    renderVoice();
+  }
+
+  function renderVoice() {
+    voiceSel.value = state.voice;
+    voiceSel.classList.toggle('on', state.voice !== 'off');
   }
 
   function renderStatus() {
@@ -533,6 +579,10 @@
     const on = state.settings.monitor === true;
     monitorBox.checked = on;
     duckBox.checked = state.settings.autoDuck !== false;
+    camBox.checked = state.settings.camCaptions === true;
+    if (!shadow.activeElement || shadow.activeElement !== tabVol) {
+      tabVol.value = Math.round((Number(state.settings.tabVolume ?? 1) || 0) * 100);
+    }
     monBtn.textContent = on ? '🎧' : '🔇';
     monBtn.classList.toggle('off', !on);
     monBtn.title = on ? t('monitor_on_tip') : t('monitor_off_tip');
@@ -730,6 +780,20 @@
     state.settings = { ...state.settings, autoDuck: duckBox.checked };
     sendAudioSettings();
     saveSetting('autoDuck', duckBox.checked);
+  });
+  voiceSel.addEventListener('change', () => setVoice(voiceSel.value));
+  // The bridge in every frame reads this setting; it applies the next time the camera starts.
+  camBox.addEventListener('change', () => {
+    state.settings = { ...state.settings, camCaptions: camBox.checked };
+    saveSetting('camCaptions', camBox.checked);
+    toast(camBox.checked ? t('cam_on') : t('cam_off'));
+  });
+  let tabVolTimer = 0;
+  tabVol.addEventListener('input', () => {
+    state.settings = { ...state.settings, tabVolume: Number(tabVol.value) / 100 };
+    sendToHook({ type: 'tab-audio-volume', value: state.settings.tabVolume });
+    clearTimeout(tabVolTimer);
+    tabVolTimer = setTimeout(() => saveSetting('tabVolume', state.settings.tabVolume), 300);
   });
 
   // Click outside the panel closes it. Our shadow root is closed, so from `window` every

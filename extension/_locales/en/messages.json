@@ -595,5 +595,77 @@
   },
   "op_privacy_text": {
     "message": "Your microphone and tab audio are only mixed inside this browser. Nothing is recorded, saved or sent anywhere. No accounts, servers or analytics."
+  },
+  "cmdToggleVoice": {
+    "message": "Voice changer on/off"
+  },
+  "tab_volume": {
+    "message": "Volume of the tab sound in the call"
+  },
+  "voice_label": {
+    "message": "🎤 My voice"
+  },
+  "voice_tip": {
+    "message": "Changes YOUR live voice in the call. Alt+V switches it on and off. \"Off\" gives your plain voice back instantly."
+  },
+  "voice_off": {
+    "message": "Off (normal)"
+  },
+  "voice_chipmunk": {
+    "message": "Chipmunk"
+  },
+  "voice_deep": {
+    "message": "Deep"
+  },
+  "voice_robot": {
+    "message": "Robot"
+  },
+  "voice_echo": {
+    "message": "Echo"
+  },
+  "voice_radio": {
+    "message": "Radio"
+  },
+  "voice_now_on": {
+    "message": "Your voice: $1"
+  },
+  "voice_now_off": {
+    "message": "Voice changer off – your normal voice"
+  },
+  "voice_after_join": {
+    "message": "Saved – it starts when you join the call"
+  },
+  "cam_label": {
+    "message": "📷 Caption on my camera"
+  },
+  "cam_tip": {
+    "message": "Draws the meme text on the video others see from you. Turn your camera off and on to apply. Your own preview may show it mirrored – others see it the right way."
+  },
+  "cam_on": {
+    "message": "Camera captions on – turn your camera off and on"
+  },
+  "cam_off": {
+    "message": "Camera captions off – turn your camera off and on"
+  },
+  "pp_volume": {
+    "message": "Volume in the call"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "Save as an audio file (WAV) to share anywhere"
+  },
+  "op_wav_saved": {
+    "message": "Saved $1"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "Opens WhatsApp with the text filled in – you choose the chat and press send"
+  },
+  "op_share_text": {
+    "message": "$1 😂 – made with MemeBox: $2"
   }
 }

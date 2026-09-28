@@ -10,7 +10,8 @@
 
   const HOOK = 'memebox-hook-9c1e';
   const BRIDGE = 'memebox-bridge-9c1e';
-  const HOOK_COMMANDS = new Set(['query-status', 'beep', 'stop', 'volume', 'monitor', 'resume', 'tab-audio-start', 'tab-audio-stop']);
+  const HOOK_COMMANDS = new Set(['query-status', 'beep', 'stop', 'volume', 'duck', 'monitor', 'resume',
+    'tab-audio-start', 'tab-audio-stop', 'tab-audio-volume']);
 
   function toRuntime(msg) {
     try {
@@ -63,6 +64,9 @@
           playbackRate: num(cmd.playbackRate, 1), gain: num(cmd.gain, 1), effect: String(cmd.effect || ''),
           text: String(cmd.text || '').slice(0, 300),
         }, [bytes]);
+      } else if (cmd.type === 'voice') {
+        // The hook (page world) can't look up extension URLs itself.
+        toHook({ type: 'voice', value: String(cmd.value), url: chrome.runtime.getURL('voice-worklet.js') });
       } else if (HOOK_COMMANDS.has(cmd.type)) {
         toHook({ type: cmd.type, reqId: cmd.reqId, value: cmd.value });
       }
@@ -70,6 +74,16 @@
       MemeBridge.onUiMessage(msg);
     }
   });
+
+  // Camera captions must be known before the call asks for the camera, and in every
+  // frame (the camera may be opened by an iframe), so each bridge passes the setting on.
+  try {
+    const sendCam = (settings) => toHook({ type: 'cam-captions', value: !!(settings && settings.camCaptions === true) });
+    chrome.storage.local.get('settings').then((r) => sendCam(r.settings)).catch(() => {});
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.settings) sendCam(changes.settings.newValue);
+    });
+  } catch { /* orphaned */ }
 
   globalThis.MemeBridge = { toRuntime, onUiMessage: null };
 })();

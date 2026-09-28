@@ -22,6 +22,9 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 button.danger { background: var(--danger-bg); color: var(--danger); border-color: transparent; }
 button:disabled { opacity: .55; cursor: default; }
 button.link { border: 0; padding: 0; color: var(--focus); font-weight: 500; }
+.vol-row { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.vol-row input { flex: 1; accent-color: #f59f00; }
+.vol-row output { width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
 details { color: var(--muted); }
 summary { cursor: pointer; }
 ol { margin: 6px 0; padding-left: 18px; }

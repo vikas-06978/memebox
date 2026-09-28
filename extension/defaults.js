@@ -34,10 +34,23 @@
     { id: 'd-en-6', lang: 'en', tone: 'chipmunk', fav: 9, text: 'Task failed successfully' },
   ].map((l) => ({ kind: 'tts', category: 'general', volume: 1, ...l }));
 
+  // Live voice changer for YOUR voice (applied in mic-hook.js).
+  const VOICES = {
+    off:      { emoji: '🎙️' },
+    chipmunk: { emoji: '🐿️' },
+    deep:     { emoji: '🐻' },
+    robot:    { emoji: '🤖' },
+    echo:     { emoji: '🏔️' },
+    radio:    { emoji: '📻' },
+  };
+
   const SETTINGS = {
     volume: 1,            // meme volume, 0–2
     monitor: true,        // also play memes quietly on your own speakers (untick in the panel)
     autoDuck: true,       // lower meme volume while you are talking
+    tabVolume: 1,         // another tab's sound in the call, 0–2
+    voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
+    camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
     timersEnabled: false, // master switch for timed lines (off by default)
     timers: [],           // { id, lineId, mode: 'clock'|'interval', time: 'HH:MM', minutes, enabled }
   };
@@ -110,7 +123,7 @@
   }
 
   globalThis.MEME = Object.freeze({
-    TONES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

@@ -15,6 +15,8 @@
 
   <button type="button" id="send" class="primary" hidden data-i18n="pp_send">🎙 Send this tab's sound to my call</button>
   <button type="button" id="stop" class="danger" hidden data-i18n="pp_stop">⏹ Stop sending this tab</button>
+  <label id="vol-row" class="vol-row" hidden><span data-i18n="pp_volume">Volume in the call</span>
+    <input type="range" id="vol" min="0" max="200" step="5" value="100"><output id="vol-out">100%</output></label>
 
   <details id="how">
     <summary data-i18n="pp_how">How does this work?</summary>
@@ -29,6 +31,7 @@
 
   <footer><button type="button" id="options" class="link" data-i18n="pp_settings">⚙️ Lines, clips &amp; settings</button></footer>
   <script src="lib/i18n-page.js"></script>
+  <script src="defaults.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

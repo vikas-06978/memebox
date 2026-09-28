@@ -69,11 +69,26 @@ test('meme audio never goes to speaker-only APIs in the call page scripts', () =
     const src = fs.readFileSync(path.join(EXT, f), 'utf8');
     assert.doesNotMatch(src, /speechSynthesis|new Audio\(|createElement\(['"]audio/, `${f} uses no speaker-only audio`);
   }
-  // In mic-hook, ctx.destination is only used by the optional monitor.
+  // In mic-hook, ctx.destination is only used by the optional monitor, and to keep a
+  // captured tab audible for you (capturing a tab silences it) – never for meme audio.
   const hook = fs.readFileSync(path.join(EXT, 'mic-hook.js'), 'utf8');
   const uses = hook.split('\n').filter((l) => /ctx\.destination/.test(l) && !l.trim().startsWith('//'));
-  assert.equal(uses.length, 1, 'exactly one ctx.destination use');
-  assert.match(uses[0], /monitor/);
+  assert.equal(uses.length, 2, 'exactly two ctx.destination uses');
+  assert.ok(uses.some((l) => /monitor/.test(l)), 'monitor');
+  assert.ok(uses.some((l) => /hear.*tabHear/.test(l)), 'captured tab kept audible');
+});
+
+test('the voice worklet is the only page-visible file, and only on the call sites', () => {
+  assert.equal(m.web_accessible_resources.length, 1);
+  const war = m.web_accessible_resources[0];
+  assert.deepEqual([...war.resources].sort(), ['lib/pitch-shift.js', 'voice-worklet.js']);
+  for (const p of war.matches) assert.ok(CALL_SITES.some((s) => new URL(s.replace('*', '')).origin === new URL(p.replace('*', '')).origin), p);
+  for (const f of war.resources) assert.ok(fs.existsSync(path.join(EXT, f)), `${f} exists`);
+});
+
+test('the pitch shifter loads in the MAIN world before mic-hook (fallback path)', () => {
+  const hook = m.content_scripts.find((c) => c.js.includes('mic-hook.js'));
+  assert.deepEqual(hook.js, ['lib/pitch-shift.js', 'mic-hook.js']);
 });
 
 test('page <-> extension messages use unique, checked sources', () => {

@@ -18,6 +18,7 @@ async function refresh() {
   info = await chrome.runtime.sendMessage({ type: 'popup-info', tabId: tab && tab.id });
   $('send').hidden = true;
   $('stop').hidden = true;
+  $('vol-row').hidden = true;
 
   if (!info || info.callTabId == null) {
     show(t('pp_no_call'), 'warn');
@@ -31,11 +32,31 @@ async function refresh() {
   if (info.sendingThisTab) {
     show(t('pp_sending'), 'ok');
     $('stop').hidden = false;
+    $('vol-row').hidden = false;
     return;
   }
   show(info.sendingOther ? t('pp_replace') : t('pp_start_video'), '');
   $('send').hidden = false;
+  $('vol-row').hidden = false;
 }
+
+// Volume of the tab's sound in the call (shared with the slider in the 😂 panel).
+async function loadVolume() {
+  const { settings } = await chrome.storage.local.get('settings');
+  const v = settings && Number.isFinite(Number(settings.tabVolume)) ? Number(settings.tabVolume) : 1;
+  $('vol').value = String(Math.round(v * 100));
+  $('vol-out').value = $('vol').value + '%';
+}
+
+let volTimer = 0;
+$('vol').addEventListener('input', () => {
+  $('vol-out').value = $('vol').value + '%';
+  clearTimeout(volTimer);
+  volTimer = setTimeout(async () => {
+    const { settings } = await chrome.storage.local.get('settings');
+    await chrome.storage.local.set({ settings: { ...MEME.defaultSettings(), ...(settings || {}), tabVolume: Number($('vol').value) / 100 } });
+  }, 120);
+});
 
 $('send').addEventListener('click', async () => {
   $('send').disabled = true;
@@ -64,4 +85,5 @@ $('stop').addEventListener('click', async () => {
 
 $('options').addEventListener('click', () => { chrome.runtime.openOptionsPage(); window.close(); });
 
+loadVolume().catch(() => {});
 refresh().catch((err) => show(t('pp_error', err.message), 'err'));

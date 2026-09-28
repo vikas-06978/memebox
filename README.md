@@ -61,6 +61,29 @@ It uploads the zip as the **memebox-extension** build artifact.
 5. Press F12 → Console and filter for `[MemeBox]`. You should see `hook installed`, `mic intercepted` and `playing into mic: (test beep)`.
 6. Mute in Meet and press 🔔 again. The phone hears nothing.
 
+## Step 5 – test by hand (tab audio and voice changer)
+
+Use the same laptop and muted phone as in Step 1. Reload the extension, then reload the Meet tab.
+
+**Tab audio**
+1. In another tab, play a YouTube video.
+2. Click the MemeBox toolbar icon → **Send this tab's sound to my call**. The phone hears the video, and you still hear it on the laptop.
+3. Move **Volume in the call** in the popup, or the 🔉 slider in the 😂 panel. The phone gets louder or quieter; your own copy doesn't change.
+4. Click **⏹ Stop** (in the popup or the panel). The phone goes quiet.
+
+**Voice changer**
+1. Talk, then press **Alt+V**. The phone hears you as a chipmunk.
+2. Press **Alt+V** again, and your normal voice is back straight away.
+3. In the panel, try **🎤 My voice**: Deep, Robot, Echo and Radio. Memes still play on top.
+
+**Captions on my camera**
+1. In the panel, tick **📷 Caption on my camera**, then turn your camera off and on in Meet.
+2. Play a meme. The phone shows the meme text on your video for 3 seconds. Your own preview may show it mirrored.
+
+**Sharing**
+1. In Options, click **💾 WAV** on a line. A .wav file is saved.
+2. Click **WhatsApp** on a line. WhatsApp opens with the text filled in; you choose the chat.
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

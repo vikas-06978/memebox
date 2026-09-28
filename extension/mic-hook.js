@@ -25,12 +25,15 @@
   const enabledDesc = Object.getOwnPropertyDescriptor(trackProto, 'enabled');
   const origStop = trackProto.stop;
   const origClone = trackProto.clone;
+  const Shifter = window.MemePitchShifter; // lib/pitch-shift.js (voice changer fallback)
 
   let ctx = null;   // one AudioContext per frame, shared by all sessions
   let board = null; // the soundboard GainNode (meme volume)
   let volume = 1;
   let monitor = null;     // optional quiet copy to your own speakers (off by default)
   let monitorOn = false;
+  let voiceFx = 'off';      // live voice changer on YOUR voice
+  let camCaptions = false;  // draw meme text onto your own camera (set from settings by the bridge)
   const sessions = new Set();
   const mixedTracks = new WeakSet(); // tracks we produced (and their clones)
   const playing = new Set();
@@ -78,6 +81,9 @@
       case 'resume': if (ctx && ctx.state !== 'running') ctx.resume().then(announce, () => {}); break;
       case 'tab-audio-start': startTabAudio(d.value); break;
       case 'tab-audio-stop': stopTabAudio(); break;
+      case 'tab-audio-volume': setTabVolume(d.value); break;
+      case 'voice': setVoice(String(d.value), d.url); break;
+      case 'cam-captions': camCaptions = d.value === true; break;
     }
   });
 
@@ -141,6 +147,7 @@
   function closeSession(s) {
     if (s.closed) return;
     s.closed = true;
+    if (s.chain) s.chain.stop();
     try { s.src.disconnect(); } catch {}
     try { s.mic.disconnect(); } catch {}
     try { board.disconnect(s.dest); } catch {}
@@ -158,13 +165,13 @@
     const src = ctx.createMediaStreamSource(new MediaStream([realAudio]));
     const mic = ctx.createGain();
     const dest = ctx.createMediaStreamDestination();
-    src.connect(mic).connect(dest);
+    src.connect(mic).connect(dest); // the voice changer, when on, sits between src and mic
     board.connect(dest);
     const meter = ctx.createAnalyser(); // for auto-duck (reads the real voice level)
     meter.fftSize = 1024;
     src.connect(meter);
 
-    const s = { realAudio, src, mic, dest, meter, tracks: new Set(), closed: false };
+    const s = { realAudio, src, mic, dest, meter, tracks: new Set(), closed: false, chain: null, fx: 'off' };
     const out = dest.stream.getAudioTracks()[0];
     wrapTrack(out, s);
     mixedTracks.add(out);
@@ -182,6 +189,7 @@
     });
 
     console.log(LOG, 'mic intercepted, track', out.id, `(real mic: "${realAudio.label}" ${realAudio.id})`);
+    if (voiceFx !== 'off') setVoice(voiceFx); // the call asked for the mic again: keep the voice
     announce();
     return new MediaStream([out, ...realStream.getVideoTracks()]);
   }
@@ -191,17 +199,28 @@
   function makeGetUserMedia(original) {
     const wrapped = function getUserMedia(constraints) {
       const p = original.call(this, constraints);
-      if (!constraints || !constraints.audio) return p;
+      const audio = !!(constraints && constraints.audio);
+      const video = !!(constraints && constraints.video) && camCaptions;
+      if (!audio && !video) return p;
       return p.then((stream) => {
+        let out = stream;
         // Already mixed (a site wrapper around ours called us): never mix twice.
-        if (stream.getAudioTracks().some((t) => mixedTracks.has(t))) return stream;
-        try {
-          return mix(stream);
-        } catch (err) {
-          // Never break the call: hand back the plain real microphone.
-          console.warn(LOG, 'could not mix microphone, using the plain mic', err);
-          return stream;
+        if (audio && !stream.getAudioTracks().some((t) => mixedTracks.has(t))) {
+          try {
+            out = mix(stream);
+          } catch (err) {
+            // Never break the call: hand back the plain real microphone.
+            console.warn(LOG, 'could not mix microphone, using the plain mic', err);
+          }
         }
+        if (video) {
+          try {
+            out = withCaptionVideo(out);
+          } catch (err) {
+            console.warn(LOG, 'could not add camera captions, using the plain camera', err);
+          }
+        }
+        return out;
       });
     };
     wrappers.add(wrapped);
@@ -265,7 +284,7 @@
 
   // ---------- playback into the soundboard ----------
 
-  async function play(reqId, starter, label) {
+  async function play(reqId, starter, label, caption) {
     if (!isActive() || !ctx) {
       post({ type: 'played', reqId, ok: false, reason: 'no-call' });
       return;
@@ -279,6 +298,7 @@
       startDuckWatch();
       node.start();
       node.addEventListener('ended', () => playing.delete(node));
+      if (caption) showCamCaption(caption);
       console.log(LOG, 'playing into mic:', label, `(${sessions.size} mic stream${sessions.size === 1 ? '' : 's'}, context ${ctx.state})`);
       post({ type: 'played', reqId, ok: true, muted: isMuted() });
     } catch (err) {
@@ -323,7 +343,7 @@
       out.connect(board);
       src.addEventListener('ended', () => cleanup.forEach((n) => n.disconnect()));
       return src;
-    }, String(d.text || '(audio)'));
+    }, String(d.text || '(audio)'), String(d.text || ''));
   }
 
   // Test sound: a short two-tone "ding-dong".
@@ -420,9 +440,16 @@
   // ---------- another tab's sound (YouTube, Instagram…) into the mic ----------
   // The popup gets a tabCapture stream id for the video tab, with this call tab as the
   // consumer. We open it with the ORIGINAL getUserMedia (it's not a mic, so no mixing)
-  // and feed it into the soundboard like any meme.
+  // and feed it into the soundboard like any meme. Capturing a tab silences it, so a
+  // copy also goes to your speakers (`hear`) – the video keeps playing out loud for you.
 
-  let tabAudio = null; // { stream, src, gain }
+  let tabAudio = null; // { stream, src, gain, hear }
+  let tabVolume = 1;
+
+  function setTabVolume(v) {
+    tabVolume = clamp(v, 0, 2, 1);
+    if (tabAudio) tabAudio.gain.gain.setTargetAtTime(tabVolume, ctx.currentTime, 0.02);
+  }
 
   async function startTabAudio(streamId) {
     stopTabAudio(false);
@@ -438,8 +465,11 @@
       ensureCtx();
       const src = ctx.createMediaStreamSource(stream);
       const gain = ctx.createGain();
+      gain.gain.value = tabVolume;
       src.connect(gain).connect(board);
-      const t = { stream, src, gain };
+      const hear = ctx.createGain(); // not the call: your own speakers, at the video's own level
+      src.connect(hear).connect(ctx.destination); // tabHear
+      const t = { stream, src, gain, hear };
       tabAudio = t;
       startDuckWatch();
       for (const track of stream.getAudioTracks()) {
@@ -454,9 +484,9 @@
 
   function stopTabAudio(notify = true) {
     if (!tabAudio) return;
-    const { stream, src, gain } = tabAudio;
+    const { stream, src, gain, hear } = tabAudio;
     tabAudio = null;
-    try { src.disconnect(); gain.disconnect(); } catch {}
+    try { src.disconnect(); gain.disconnect(); hear.disconnect(); } catch {}
     for (const track of stream.getTracks()) origStop.call(track);
     console.log(LOG, "stopped the other tab's sound");
     if (notify) post({ type: 'tab-audio', on: false });
@@ -476,6 +506,272 @@
       monitor.disconnect();
       monitor = null;
     }
+  }
+
+  // ---------- live voice changer: YOUR voice, between the real mic and the mixer ----------
+  // real mic -> src -> [chain] -> mic gain -> destination. "off" connects src straight
+  // to the mic gain again, so the plain voice comes back instantly. Auto-duck keeps
+  // reading the raw voice (the meter hangs off src, before any effect).
+
+  const VOICES = new Set(['off', 'chipmunk', 'deep', 'robot', 'echo', 'radio']);
+  const PITCH = { chipmunk: 1.6, deep: 0.72 };
+  let workletUrl = '';
+  let workletLoad = null; // Promise<boolean>: the AudioWorklet module loaded
+  let workletOk = false;
+
+  function loadWorklet() {
+    if (!workletLoad) {
+      workletLoad = (ctx.audioWorklet && workletUrl
+        ? ctx.audioWorklet.addModule(workletUrl)
+        : Promise.reject(new Error('AudioWorklet not available')))
+        .then(() => { workletOk = true; return true; }, (err) => {
+          console.warn(LOG, 'voice worklet could not load, using the fallback pitch shifter', err);
+          return false;
+        });
+    }
+    return workletLoad;
+  }
+
+  function pitchNode(ratio) {
+    if (workletOk) {
+      return new AudioWorkletNode(ctx, 'memebox-pitch', {
+        numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1],
+        channelCount: 1, channelCountMode: 'explicit', parameterData: { ratio },
+      });
+    }
+    // Fallback when the page blocks the worklet: same maths on the main thread.
+    if (!Shifter || !ctx.createScriptProcessor) throw new Error('No pitch shifter available');
+    const sp = ctx.createScriptProcessor(1024, 1, 1);
+    const shifter = new Shifter(ctx.sampleRate);
+    shifter.ratio = ratio;
+    sp.onaudioprocess = (e) => shifter.process(e.inputBuffer.getChannelData(0), e.outputBuffer.getChannelData(0));
+    return sp;
+  }
+
+  // Builds the effect for `fx`: { input, output, stop() }.
+  function buildChain(fx) {
+    const nodes = [];
+    const oscs = [];
+    const add = (n) => { nodes.push(n); return n; };
+    const input = add(ctx.createGain());
+    const output = add(ctx.createGain());
+
+    if (PITCH[fx]) {
+      input.connect(add(pitchNode(PITCH[fx]))).connect(output);
+    } else if (fx === 'robot') {
+      // Ring modulator + a little dry voice (same idea as the Robot tone for memes).
+      const ring = add(ctx.createGain());
+      ring.gain.value = 0;
+      const osc = add(ctx.createOscillator());
+      osc.frequency.value = 50;
+      osc.connect(ring.gain);
+      osc.start();
+      oscs.push(osc);
+      const dry = add(ctx.createGain());
+      dry.gain.value = 0.3;
+      input.connect(ring).connect(output);
+      input.connect(dry).connect(output);
+      output.gain.value = 1.4;
+    } else if (fx === 'echo') {
+      const delay = add(ctx.createDelay(1));
+      delay.delayTime.value = 0.22;
+      const feedback = add(ctx.createGain());
+      feedback.gain.value = 0.42;
+      const wet = add(ctx.createGain());
+      wet.gain.value = 0.55;
+      input.connect(output);
+      input.connect(delay);
+      delay.connect(feedback).connect(delay);
+      delay.connect(wet).connect(output);
+    } else if (fx === 'radio') {
+      // Narrow band + a bit of drive = old walkie-talkie / radio.
+      const hp = add(ctx.createBiquadFilter());
+      hp.type = 'highpass'; hp.frequency.value = 500;
+      const lp = add(ctx.createBiquadFilter());
+      lp.type = 'lowpass'; lp.frequency.value = 3000;
+      const drive = add(ctx.createWaveShaper());
+      const curve = new Float32Array(1024);
+      for (let i = 0; i < curve.length; i++) curve[i] = Math.tanh(3 * ((i / (curve.length - 1)) * 2 - 1)) * 0.8;
+      drive.curve = curve;
+      input.connect(hp).connect(lp).connect(drive).connect(output);
+      output.gain.value = 1.3;
+    } else {
+      input.connect(output);
+    }
+
+    return {
+      input, output,
+      stop() {
+        for (const o of oscs) { try { o.stop(); } catch {} }
+        for (const n of nodes) {
+          if (n.onaudioprocess) n.onaudioprocess = null;
+          try { n.disconnect(); } catch {}
+        }
+      },
+    };
+  }
+
+  function wireVoice(s) {
+    if (s.closed || s.fx === voiceFx) return;
+    const next = voiceFx === 'off' ? null : buildChain(voiceFx);
+    try { s.src.disconnect(s.mic); } catch {}
+    if (s.chain) {
+      try { s.src.disconnect(s.chain.input); } catch {}
+      s.chain.stop();
+    }
+    s.chain = next;
+    s.fx = voiceFx;
+    if (next) {
+      s.src.connect(next.input);
+      next.output.connect(s.mic);
+    } else {
+      s.src.connect(s.mic);
+    }
+  }
+
+  async function setVoice(fx, url) {
+    if (!VOICES.has(fx)) fx = 'off';
+    if (url && !workletUrl) workletUrl = String(url);
+    voiceFx = fx;
+    if (PITCH[fx] && ctx) await loadWorklet();
+    if (voiceFx !== fx) return; // switched again while the worklet was loading
+    let changed = false;
+    for (const s of sessions) {
+      if (s.fx === fx) continue;
+      try {
+        wireVoice(s);
+        changed = true;
+      } catch (err) {
+        // Never break the call: plain voice.
+        console.warn(LOG, 'voice changer failed, using the plain voice', err);
+        voiceFx = 'off';
+        wireVoice(s);
+      }
+    }
+    if (changed) console.log(LOG, 'voice changer:', voiceFx);
+  }
+
+  // ---------- meme captions on YOUR OWN camera (optional) ----------
+  // camera -> hidden <video> -> canvas (frame + meme text) -> canvas.captureStream(30).
+  // Only the video you send is changed; nobody else's.
+
+  const captionedTracks = new WeakSet();
+  let camText = '';
+  let camTextUntil = 0;
+
+  function showCamCaption(text) {
+    camText = String(text).slice(0, 120);
+    camTextUntil = performance.now() + 3000;
+  }
+
+  function wrapLines(g, text, maxWidth) {
+    const words = text.split(/\s+/);
+    const out = [];
+    let line = '';
+    for (const w of words) {
+      const tryLine = line ? line + ' ' + w : w;
+      if (line && g.measureText(tryLine).width > maxWidth) { out.push(line); line = w; } else line = tryLine;
+    }
+    if (line) out.push(line);
+    return out.slice(0, 3);
+  }
+
+  function drawCamCaption(g, w, h) {
+    const size = Math.max(18, Math.round(h / 10));
+    g.save();
+    g.font = `900 ${size}px Impact, "Arial Black", "Nirmala UI", sans-serif`;
+    g.textAlign = 'center';
+    g.textBaseline = 'bottom';
+    g.lineJoin = 'round';
+    g.lineWidth = Math.max(3, size / 7);
+    g.strokeStyle = '#000';
+    g.fillStyle = '#fff';
+    const lines = wrapLines(g, camText.toUpperCase(), w * 0.92);
+    let y = h - size * 0.4 - (lines.length - 1) * size * 1.05;
+    for (const l of lines) {
+      g.strokeText(l, w / 2, y);
+      g.fillText(l, w / 2, y);
+      y += size * 1.05;
+    }
+    g.restore();
+  }
+
+  function captionVideo(real) {
+    const video = document.createElement('video');
+    video.muted = true;
+    video.playsInline = true;
+    video.srcObject = new MediaStream([real]);
+    video.play().catch(() => {});
+    const st = real.getSettings();
+    const canvas = document.createElement('canvas');
+    canvas.width = st.width || 640;
+    canvas.height = st.height || 480;
+    const g = canvas.getContext('2d', { alpha: false });
+    const out = canvas.captureStream(30).getVideoTracks()[0];
+    const s = { tracks: new Set() };
+
+    const timer = setInterval(() => {
+      if (real.readyState !== 'live') { finish(); return; }
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+      if (vw && vh && (canvas.width !== vw || canvas.height !== vh)) { canvas.width = vw; canvas.height = vh; }
+      if (video.readyState >= 2) g.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (camText && performance.now() < camTextUntil) drawCamCaption(g, canvas.width, canvas.height);
+    }, 1000 / 30);
+
+    function finish() {
+      clearInterval(timer);
+      video.srcObject = null;
+      if (real.readyState === 'live') origStop.call(real);
+      for (const t of s.tracks) {
+        if (t.readyState === 'live') { origStop.call(t); t.dispatchEvent(new Event('ended')); }
+      }
+      s.tracks.clear();
+    }
+    real.addEventListener('ended', finish);
+
+    // Same idea as the mic: the canvas track stands in for the real camera.
+    const wrap = (t) => {
+      s.tracks.add(t);
+      captionedTracks.add(t);
+      Object.defineProperties(t, {
+        enabled: {
+          configurable: true,
+          get() { return enabledDesc.get.call(t); },
+          set(v) {
+            enabledDesc.set.call(t, v);
+            let any = false;
+            for (const x of s.tracks) if (enabledDesc.get.call(x)) any = true;
+            if (real.readyState === 'live') real.enabled = any;
+          },
+        },
+        label: { configurable: true, get: () => real.label },
+      });
+      t.stop = function stop() {
+        origStop.call(t);
+        s.tracks.delete(t);
+        if (!s.tracks.size) finish();
+      };
+      t.clone = function clone() {
+        const c = origClone.call(t);
+        wrap(c);
+        return c;
+      };
+      t.getSettings = () => ({ ...real.getSettings() });
+      t.getCapabilities = () => (real.getCapabilities ? real.getCapabilities() : {});
+      t.getConstraints = () => real.getConstraints();
+      t.applyConstraints = (c) => real.applyConstraints(c);
+    };
+    wrap(out);
+    enabledDesc.set.call(out, real.enabled);
+    console.log(LOG, 'camera captions on for', real.label);
+    return out;
+  }
+
+  function withCaptionVideo(stream) {
+    const videos = stream.getVideoTracks();
+    if (!videos.length || videos.some((t) => captionedTracks.has(t))) return stream;
+    return new MediaStream([...stream.getAudioTracks(), ...videos.map(captionVideo)]);
   }
 
   window.addEventListener('pagehide', () => post({ type: 'status', active: false, muted: false, ctxState: 'closed' }));

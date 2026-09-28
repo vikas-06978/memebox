@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "__MSG_extShortName__",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "__MSG_extDesc__",
   "default_locale": "en",
   "minimum_chrome_version": "116",
@@ -42,6 +42,7 @@
         "https://discord.com/*"
       ],
       "js": [
+        "lib/pitch-shift.js",
         "mic-hook.js"
       ],
       "world": "MAIN",
@@ -110,8 +111,26 @@
     },
     "toggle-ui": {
       "description": "__MSG_cmdToggleUi__"
+    },
+    "toggle-voice": {
+      "description": "__MSG_cmdToggleVoice__"
     }
   },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "voice-worklet.js",
+        "lib/pitch-shift.js"
+      ],
+      "matches": [
+        "https://meet.google.com/*",
+        "https://app.zoom.us/*",
+        "https://teams.microsoft.com/*",
+        "https://teams.live.com/*",
+        "https://discord.com/*"
+      ]
+    }
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   }

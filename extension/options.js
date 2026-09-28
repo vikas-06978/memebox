@@ -121,10 +121,9 @@ function stopPreview() {
   previewSrc = null;
 }
 
-// Plays an AudioBuffer here with a tone's speed/gain (+ robot effect), optionally a slice.
-function playBuffer(buffer, toneId, volume = 1, from = 0, dur) {
-  const c = audioCtx();
-  stopPreview();
+// A tone's speed/gain (+ robot effect) for `buffer` in context `c`, ending at c.destination.
+// Returns the (not yet started) source. Same sound as mic-hook.js plays into the call.
+function toneGraph(c, buffer, toneId, volume = 1) {
   const tone = TONES[toneId] || TONES.normal;
   const src = c.createBufferSource();
   src.buffer = buffer;
@@ -142,13 +141,54 @@ function playBuffer(buffer, toneId, volume = 1, from = 0, dur) {
     dry.gain.value = 0.35;
     src.connect(ring).connect(gain);
     src.connect(dry).connect(gain);
-    src.onended = () => osc.stop();
+    src.addEventListener('ended', () => osc.stop());
   } else {
     src.connect(gain);
   }
   gain.connect(c.destination);
+  return src;
+}
+
+// Plays an AudioBuffer here with a tone, optionally a slice.
+function playBuffer(buffer, toneId, volume = 1, from = 0, dur) {
+  stopPreview();
+  const src = toneGraph(audioCtx(), buffer, toneId, volume);
   src.start(0, from, dur);
   previewSrc = src;
+}
+
+// ---------- share: save as a WAV file / share the text on WhatsApp (both manual) ----------
+
+function fileSlug(text) {
+  return String(text).toLowerCase().replace(/[^a-z0-9ऀ-ॿ]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'meme';
+}
+
+// The line exactly as it sounds in the call (tone + line volume), as a mono 16-bit WAV.
+async function lineWav(line) {
+  const buffer = await audioCtx().decodeAudioData(await lineBytes(line));
+  const tone = TONES[line.tone] || TONES.normal;
+  const rate = buffer.sampleRate;
+  const frames = Math.max(1, Math.ceil((buffer.duration / tone.playbackRate) * rate));
+  const off = new OfflineAudioContext(1, frames, rate);
+  toneGraph(off, buffer, line.tone, line.volume ?? 1).start();
+  const rendered = await off.startRendering();
+  return Trim.floatToWav16(rendered.getChannelData(0), rate);
+}
+
+async function saveWav(line) {
+  try {
+    const name = fileSlug(line.text) + '.wav';
+    download(name, new Blob([await lineWav(line)], { type: 'audio/wav' }));
+    toast(t('op_wav_saved', name));
+  } catch (err) {
+    toast(t('op_err_preview', err.message), true);
+  }
+}
+
+// Opens WhatsApp's own share page with the text filled in – you pick the chat and press send.
+function shareWhatsApp(line) {
+  const text = t('op_share_text', line.text, MEMEBOX_CONFIG.SITE_URL);
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
 }
 
 async function preview(line) {
@@ -211,6 +251,10 @@ function renderLines() {
     edit.addEventListener('click', () => startEdit(line));
     const del = el('button', { type: 'button', className: 'small danger' }, t('op_delete'));
     del.addEventListener('click', () => removeLine(line));
+    const wav = el('button', { type: 'button', className: 'small', title: t('op_save_wav_tip') }, t('op_save_wav'));
+    wav.addEventListener('click', () => saveWav(line));
+    const wa = el('button', { type: 'button', className: 'small', title: t('op_share_wa_tip') }, t('op_share_wa'));
+    wa.addEventListener('click', () => shareWhatsApp(line));
     const vol = Math.round((line.volume ?? 1) * 100);
     const about = el('td', { className: 'about' },
       el('span', { className: 'tag' }, line.kind === 'clip' ? '🎵 ' + t('tag_clip') : line.lang),
@@ -223,7 +267,7 @@ function renderLines() {
       about,
       el('td', {}, line.fav ? el('span', { className: 'tag' }, 'Alt+' + line.fav) : ''),
       el('td', {}, star),
-      el('td', { className: 'right' }, edit, ' ', del)));
+      el('td', { className: 'right' }, wav, ' ', wa, ' ', edit, ' ', del)));
   }
 }
 

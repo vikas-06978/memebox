@@ -31,6 +31,15 @@ export const FAKE_CALL = `<!doctype html><html><head><title>fake call</title></h
     const ac = new RealAudioContext(); await ac.resume();
     const an = ac.createAnalyser(); an.fftSize = 2048;
     ac.createMediaStreamSource(stream).connect(an);
+    // Pitch of what the call would send: the loudest bin between 80 Hz and 1.5 kHz.
+    const fan = ac.createAnalyser(); fan.fftSize = 16384; fan.smoothingTimeConstant = 0;
+    ac.createMediaStreamSource(stream).connect(fan);
+    window.dominantHz = () => {
+      const bins = new Float32Array(fan.frequencyBinCount); fan.getFloatFrequencyData(bins);
+      const hz = ac.sampleRate / fan.fftSize; let best = -Infinity, at = 0;
+      for (let i = Math.floor(80 / hz); i < 1500 / hz; i++) if (bins[i] > best) { best = bins[i]; at = i; }
+      return Math.round(at * hz);
+    };
     const buf = new Float32Array(2048);
     setInterval(() => { an.getFloatTimeDomainData(buf); for (const v of buf) window.peak = Math.max(window.peak, Math.abs(v)); }, 20);
   };

@@ -39,16 +39,25 @@ Meme lines are turned into speech by eSpeak-NG. This engine is bundled inside th
 
 If you open a video in another tab (for example YouTube or Instagram) and click **Send this tab's sound into my call** in the MemeBox toolbar popup, MemeBox mixes that one tab's sound live into your call microphone. This happens only for the tab you chose, only after that click, and only until you press Stop or close the tab. The sound isn't recorded, saved or uploaded by MemeBox, and nothing is downloaded.
 
-## Memes from links
+## Voice changer and camera captions
 
-If you add a meme from a link (an MP3, OGG or WAV address), Chrome first asks your permission for that website. MemeBox then fetches the file from that address each time you play the line, without cookies. Like any web request, that website can see your IP address. MemeBox contacts no other website, and the audio isn't stored.
+The **voice changer** (Chipmunk, Deep, Robot, Echo, Radio) changes your live microphone sound inside your browser tab before the call website receives it. It is always off when a call page opens, and "Off" gives your plain voice back at once. Nothing is recorded or uploaded.
+
+**Captions on my camera** is off by default. When you switch it on, MemeBox draws the meme text onto your own camera picture inside your browser tab, and the call website sends that picture instead of the plain one. Only your own video is changed. MemeBox never saves, records or uploads your camera picture.
+
+## Sharing
+
+**Save as WAV** saves a meme's sound as a file on your computer. **WhatsApp** opens WhatsApp's own share page (wa.me) with the meme text filled in. You choose the chat and press send yourself. MemeBox never sends messages for you and never controls WhatsApp.
+
+## Clips from links
+
+If you add a clip from a direct file link (.mp3, .mp4, .wav, .ogg or .webm), MemeBox fetches that file once, without cookies, when you click Fetch. You then trim it and save it on your device. Like any web request, that website can see your IP address. MemeBox contacts no other website.
 
 ## Permissions
 
 - **storage** – saves your lines and settings on your device.
 - **offscreen** – runs the bundled speech engine in a hidden extension page.
 - **tabCapture** – sends the sound of a tab you pick into your call, only after you click the button in the toolbar popup.
-- **Optional access to other websites** – asked for one website at a time, only when you add a meme from a link on that site.
 - **Access to meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com** – needed to show the 😂 button on those call pages and to mix meme audio into the microphone there. MemeBox doesn't run on any other website.
 
 ## Children
