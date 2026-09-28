@@ -22,6 +22,18 @@ const test = base.extend({
       });
       const headers = {};
       res.headers.forEach((v, k) => { headers[k] = v; });
+      // Playwright doesn't route the request a redirect leads to, so it would reach the real,
+      // live site. Redirect from the page instead: that new request is routed here again.
+      // (Only the cookies are kept: the site's own headers include a CSP that would block this.)
+      if (res.status >= 300 && res.status < 400 && headers.location) {
+        const to = new URL(headers.location, r.url()).href;
+        const cookie = headers['set-cookie'];
+        await route.fulfill({
+          status: 200, headers: { 'content-type': 'text/html', ...(cookie ? { 'set-cookie': cookie } : {}) },
+          body: `<meta http-equiv="refresh" content="0;url=${to.replace(/"/g, '&quot;')}">`,
+        });
+        return;
+      }
       await route.fulfill({ status: res.status, headers, body: Buffer.from(await res.arrayBuffer()) });
     });
     site.adminCookie = async () => ({ name: 'memebox_admin', value: await makeSession(ADMIN_KEY), url: 'https://memebox.pages.dev/admin' });
@@ -65,6 +77,23 @@ test('import many audio files at once: each good file becomes a clip, the rest a
   for (const l of added) expect(l).toMatchObject({ kind: 'clip', category: 'clips' });
   const clips = await page.evaluate(async () => (await MemeDB.listClips()).map((c) => ({ type: c.type, size: c.bytes.byteLength })));
   expect(clips.filter((c) => c.type === 'audio/wav')).toHaveLength(3);
+});
+
+test.describe('free plan (no key)', () => {
+  test.use({ pro: false });
+  test('bulk import and the voice changer say they are Pro features', async ({ context, extensionId, callPage }) => {
+    const page = await openOptions(context, extensionId);
+    const before = (await page.store('lines')).lines.length;
+    await page.setInputFiles('#bulk-files', [{ name: 'air-horn.wav', mimeType: 'audio/wav', buffer: wav(1, 440) }]);
+    await expect(page.locator('#toast')).toHaveText('This is a MemeBox Pro feature.');
+    expect((await page.store('lines')).lines.length).toBe(before);
+
+    await callPage.bringToFront();
+    await callPage.mouse.click(700, 300);
+    await callPage.keyboard.press('Alt+KeyV');
+    await callPage.waitForTimeout(1000);
+    expect(callPage.logs.some((l) => l.includes('voice changer: chipmunk'))).toBe(false);
+  });
 });
 
 test('picture meme: add a picture to a line; playing it shows the picture on my camera', async ({ context, extensionId, callPage }) => {

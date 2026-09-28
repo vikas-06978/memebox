@@ -67,6 +67,9 @@ export const FAKE_CALL = `<!doctype html><html><head><title>fake call</title></h
 export const test = base.extend({
   // Extra Chromium flags for a test file, e.g. test.use({ extraArgs: ['--lang=hi'] }).
   extraArgs: [[], { option: true }],
+  // Pro is switched on in config.js, so tests start with a saved unlimited key (checked just now,
+  // so the background doesn't ask the site about it). test.use({ pro: false }) for the free plan.
+  pro: [true, { option: true }],
   context: async ({ extraArgs }, use) => {
     const context = await chromium.launchPersistentContext('', {
       channel: 'chromium',
@@ -85,9 +88,14 @@ export const test = base.extend({
     await use(context);
     await context.close();
   },
-  extensionId: async ({ context }, use) => {
+  extensionId: async ({ context, pro }, use) => {
     let [sw] = context.serviceWorkers();
     if (!sw) sw = await context.waitForEvent('serviceworker');
+    if (pro) {
+      await sw.evaluate(() => chrome.storage.local.set({
+        license: { key: 'MBX-TEST-TEST-TEST', status: 'active', unlimited: true, pictureSlots: 0, checkedAt: Date.now() },
+      }));
+    }
     // A fresh install opens the welcome page. Wait until it's there, so tests that wait for
     // a *new* page never catch it by mistake. Leave it open: closing an extension page right
     // before a test opens another one can hand the new page a dying extension process

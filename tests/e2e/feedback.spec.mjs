@@ -7,12 +7,10 @@ test('Options → Send feedback opens the feedback page with only the version', 
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/options.html`);
   const version = await page.evaluate(() => chrome.runtime.getManifest().version);
-  // Tabs opened by chrome.tabs.create aren't routed by Playwright, so check the request itself.
-  const [req] = await Promise.all([
-    context.waitForEvent('request', (r) => r.url().startsWith('https://memebox.pages.dev/')),
-    page.locator('#feedback').click(),
-  ]);
-  expect(req.url()).toBe(`https://memebox.pages.dev/feedback?v=${version}`);
+  // Tabs opened by chrome.tabs.create aren't routed by Playwright (and the page's own request
+  // isn't reported), so check the address the new tab goes to.
+  const [tab] = await Promise.all([context.waitForEvent('page'), page.locator('#feedback').click()]);
+  await expect.poll(() => tab.url()).toBe(`https://memebox.pages.dev/feedback?v=${version}`);
 });
 
 test('after the 10th meme it asks once, and never again', async ({ context, callPage }) => {
