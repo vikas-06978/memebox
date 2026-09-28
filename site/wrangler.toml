@@ -1,0 +1,19 @@
+# Cloudflare Pages project for the MemeBox site. Run wrangler commands from this folder (site/).
+# Static files: public/   API (Pages Functions): functions/   Shared code: src/
+name = "memebox"
+pages_build_output_dir = "public"
+compatibility_date = "2026-09-01"
+
+# Feedback database. Create it with:  npx wrangler d1 create memebox-feedback
+# then paste the database_id it prints below.
+[[d1_databases]]
+binding = "DB"
+database_name = "memebox-feedback"
+database_id = "PASTE-YOUR-D1-DATABASE-ID-HERE"
+
+# Secrets are NOT set here. Add them in Cloudflare (never commit them):
+#   npx wrangler pages secret put TURNSTILE_SITE_KEY
+#   npx wrangler pages secret put TURNSTILE_SECRET_KEY
+#   npx wrangler pages secret put ADMIN_KEY
+#   npx wrangler pages secret put RATE_SALT   (optional, a long random string)
+# For local runs, put the same names in site/.dev.vars (git-ignored).

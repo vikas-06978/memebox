@@ -667,5 +667,20 @@
   },
   "op_share_text": {
     "message": "$1 😂 MemeBox से बनाया: $2"
+  },
+  "feedback": {
+    "message": "फ़ीडबैक भेजें"
+  },
+  "ask_title": {
+    "message": "MemeBox मज़ेदार लग रहा है?"
+  },
+  "ask_rate": {
+    "message": "⭐ रेटिंग दें"
+  },
+  "ask_feedback": {
+    "message": "फ़ीडबैक भेजें"
+  },
+  "op_feedback": {
+    "message": "💬 फ़ीडबैक भेजें"
   }
 }

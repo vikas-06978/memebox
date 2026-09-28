@@ -703,6 +703,8 @@ $('timer-form').addEventListener('submit', (e) => {
   toast(settings.timersEnabled ? t('op_timer_added') : t('op_timer_added_off'));
 });
 
+$('feedback').addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-feedback' }).catch(() => {}));
+
 $('open-shortcuts').addEventListener('click', (e) => {
   e.preventDefault();
   chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });

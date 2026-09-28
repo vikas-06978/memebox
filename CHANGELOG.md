@@ -4,6 +4,48 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added in Step 6: feedback system (0.6.0)
+- **Site layout:** static pages in `site/public`, Pages Functions in `site/functions`, shared code in `site/src`, D1 schema in `site/db/schema.sql`, and `site/wrangler.toml`.
+- **/feedback page:**
+  - rating with 😞 😐 🙂 😍, "What did you use?" (Soundboard, Voices, Clips, Tab audio, Voice changer, Captions), "What should we add?", a message and an optional email.
+  - English and Hindi.
+  - It takes only `v` and `site` from the link, and drops them if they look wrong.
+- **/uninstall page:** one question, "Why did you remove it?", stored in the same table with `type = 'uninstall'`.
+- **POST /api/feedback:**
+  - strict validation: unknown fields rejected, types and lengths checked, JSON only, 16 KB maximum
+  - invisible Cloudflare Turnstile plus a honeypot
+  - at most 5 answers per IP per hour. Only SHA-256(salt | hour | IP) is stored, and it is deleted after the hour.
+  - No raw IP or user agent is ever stored.
+- **/admin:**
+  - sign in with `ADMIN_KEY` (a Cloudflare secret) for an 8-hour HMAC-signed session cookie (HttpOnly, Secure, SameSite=Strict)
+  - sign-in tries are rate limited
+  - shows totals per rating, features used, uninstall reasons, top requests and the latest 50 messages
+  - **Download CSV**, with spreadsheet formulas neutralised
+  - every admin response has `X-Robots-Tag: noindex`, a strict CSP and no scripts.
+- **Site security headers** (`_headers`): CSP allowing only the site itself and Turnstile, nosniff and a referrer policy. `robots.txt` keeps /admin, /api and /uninstall out of search.
+- **Extension:**
+  - 💬 Feedback in the panel and **💬 Send feedback** in Options open the feedback page with `?v=<version>&site=<meet|zoom|teams|discord>` only
+  - after the 10th meme, a small "Enjoying MemeBox?" card appears once and never again
+  - `chrome.runtime.setUninstallURL(SITE_URL + "/uninstall?v=<version>")`
+  - `STORE_URL` in `config.js` for "Rate us" (the feedback page until it's filled in).
+- **Local run:** `npm run site:dev` runs the real functions with a node:sqlite stand-in for D1 (`tools/d1-sqlite.mjs`). The README has the Cloudflare deploy steps.
+- **Privacy:** PRIVACY.md and a simple `/privacy` page explain exactly what the forms store.
+- Node 22.13 or newer is needed (for node:sqlite in tests). CI now uses Node 24.
+
+### Tests
+- **Unit tests** (17):
+  - validation: good posts, more than 15 bad ones, and the honeypot
+  - the rate limit: 5 per hour, per IP, the next hour, old rows deleted, and no raw IP stored
+  - the admin session: expiry, tampering, the wrong key, and brute-force limits
+  - CSV escaping
+  - the real Functions against SQLite, checking stored fields, no IP or user agent, and 405/413/415/400/403/429/503
+  - admin sign-in, cookie flags, dashboard escaping, CSV, sign-out, and noindex on every response.
+- **Browser tests** of the real pages with their CSP:
+  - feedback, the Hindi page, client checks, and dropping odd link parameters
+  - the uninstall survey
+  - admin sign-in, dashboard, CSV download and sign-out.
+- **Extension tests:** Options opens the feedback link, and the ask appears once after the 10th play.
+
 ### Added in Step 5: tab audio and voice changer (0.5.0)
 - **Tab audio to the mic:**
   - The tab you send stays audible for you. Capturing a tab silences it, so a local copy is played back.

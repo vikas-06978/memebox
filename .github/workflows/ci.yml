@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -28,7 +28,7 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: End-to-end tests (extension on a fake call page)
+      - name: End-to-end tests (extension on a fake call page, feedback site)
         run: npm run test:e2e
 
       - name: Build extension

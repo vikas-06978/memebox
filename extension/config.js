@@ -3,6 +3,8 @@
 globalThis.MEMEBOX_CONFIG = Object.freeze({
   // Where the landing / feedback / privacy pages live (no trailing slash).
   SITE_URL: 'https://memebox.pages.dev',
+  // The Chrome Web Store page, once published ("Rate us" opens it). Empty = the feedback page.
+  STORE_URL: '',
   // Pro features are prepared but switched off: everyone gets everything for free.
   PRO_ENABLED: false,
 });

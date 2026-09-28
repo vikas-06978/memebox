@@ -667,5 +667,20 @@
   },
   "op_share_text": {
     "message": "$1 😂 Made with MemeBox: $2"
+  },
+  "feedback": {
+    "message": "Send feedback"
+  },
+  "ask_title": {
+    "message": "Enjoying MemeBox?"
+  },
+  "ask_rate": {
+    "message": "⭐ Rate us"
+  },
+  "ask_feedback": {
+    "message": "Send feedback"
+  },
+  "op_feedback": {
+    "message": "💬 Send feedback"
   }
 }

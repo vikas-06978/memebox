@@ -24,6 +24,36 @@ chrome.runtime.onInstalled.addListener(async () => {
   await chrome.storage.local.set(patch);
 });
 
+// ---------- feedback ----------
+// The feedback page gets only the version and the call site. The uninstall survey only the version.
+const { SITE_URL, STORE_URL } = globalThis.MEMEBOX_CONFIG;
+const VERSION = chrome.runtime.getManifest().version;
+const FEEDBACK_SITES = ['meet', 'zoom', 'teams', 'discord'];
+const ASK_AFTER_PLAYS = 10;
+
+function feedbackUrl(site) {
+  const u = new URL(SITE_URL + '/feedback');
+  u.searchParams.set('v', VERSION);
+  if (FEEDBACK_SITES.includes(site)) u.searchParams.set('site', site);
+  return u.href;
+}
+
+function openFeedback({ site, rate } = {}) {
+  chrome.tabs.create({ url: rate && STORE_URL ? STORE_URL : feedbackUrl(site) });
+}
+
+chrome.runtime.setUninstallURL(`${SITE_URL}/uninstall?v=${encodeURIComponent(VERSION)}`).catch(() => {});
+
+// Counts plays. After the 10th, asks once (and never again) in that call tab.
+async function countPlay(tabId) {
+  const { stats } = await chrome.storage.local.get('stats');
+  const s = stats && typeof stats === 'object' ? stats : {};
+  const plays = (Number(s.plays) || 0) + 1;
+  const ask = plays >= ASK_AFTER_PLAYS && !s.askedFeedback;
+  await chrome.storage.local.set({ stats: { ...s, plays, ...(ask ? { askedFeedback: true } : {}) } });
+  if (ask) sendToTab(tabId, { type: 'ask-feedback' }, 0);
+}
+
 function sendToTab(tabId, msg, frameId) {
   const opts = frameId == null ? {} : { frameId };
   chrome.tabs.sendMessage(tabId, msg, opts).catch(() => {});
@@ -186,6 +216,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     chrome.runtime.openOptionsPage();
     return;
   }
+  if (msg.type === 'open-feedback') {
+    openFeedback({ site: String(msg.site || ''), rate: msg.rate === true });
+    return;
+  }
   if (!sender.tab) {
     // The toolbar popup (an extension page).
     if (/^popup-/.test(msg.type)) {
@@ -243,12 +277,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (Number.isInteger(msg.frameId)) handlePlay(tabId, msg);
       break;
 
-    // A meme was played from the panel (used for the one-time "enjoying MemeBox?" ask).
+    // A meme was played (used for the one-time "Enjoying MemeBox?" ask).
     case 'played-one':
-      chrome.storage.local.get('stats').then(({ stats }) => {
-        const s = stats && typeof stats === 'object' ? stats : {};
-        return chrome.storage.local.set({ stats: { ...s, plays: (Number(s.plays) || 0) + 1 } });
-      }).catch(() => {});
+      countPlay(tabId).catch(() => {});
       break;
 
     // A call started: load the speech engine in advance.

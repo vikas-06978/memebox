@@ -5,7 +5,7 @@ dist/
 *.crx
 *.pem
 
-# Cloudflare / secrets – never commit these
+# Cloudflare and secrets: never commit these
 .wrangler/
 .dev.vars
 .env*

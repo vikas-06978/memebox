@@ -53,6 +53,19 @@ The **voice changer** (Chipmunk, Deep, Robot, Echo, Radio) changes your live mic
 
 If you add a clip from a direct file link (.mp3, .mp4, .wav, .ogg or .webm), MemeBox fetches that file once, without cookies, when you click Fetch. You then trim it and save it on your device. Like any web request, that website can see your IP address. MemeBox contacts no other website.
 
+## Feedback form and uninstall survey
+
+MemeBox has a **Feedback** button, and after your 10th meme it asks once if you'd like to rate it. Both open our feedback page. The link carries only the MemeBox version and which call site you were on (for example `?v=1.0.0&site=meet`). It carries nothing about you.
+
+When you uninstall MemeBox, the browser opens a one-question page asking why. Answering is optional.
+
+If you send either form, we store only:
+- what you picked or typed (rating, features used, your ideas, your message, and your email only if you type one),
+- the MemeBox version, the call site from the link, and the page language,
+- the date and time.
+
+We don't store your IP address or browser details. To stop spam, the site counts messages per hour using a one-way hash of your IP address, and deletes that count after the hour. The form also uses Cloudflare Turnstile, a privacy-friendly spam check. The answers are stored in a Cloudflare D1 database that only the developer can read. To have your message deleted, write to us with the text you sent.
+
 ## Permissions
 
 - **storage**: saves your lines and settings on your device.

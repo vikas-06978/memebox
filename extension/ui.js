@@ -177,7 +177,7 @@
   }
 
   function playRandom() {
-    // In the panel, Random respects the current filter/search; the 😂 click uses everything.
+    // In the panel, Random respects the current filter/search, while the 😂 click uses everything.
     const base = panelOpen ? visibleLines() : state.lines;
     const pool = base.length > 1 ? base.filter((l) => l.id !== state.lastRandomId) : base;
     if (!pool.length) { toast(t('no_lines')); return; }
@@ -265,6 +265,8 @@
       else if (was) toast(t('tab_off'));
     } else if (msg.type === 'command' && typeof msg.command === 'string') {
       runCommand(msg.command);
+    } else if (msg.type === 'ask-feedback') {
+      showAsk();
     }
   };
 
@@ -422,6 +424,11 @@
     .empty { padding: 12px 4px; color: #5f6368; }
     .foot { color: #5f6368; font-size: 11px; }
 
+    .ask { position: fixed; width: 260px; padding: 12px; border-radius: 14px; background: #fff; color: #202124;
+      box-shadow: 0 8px 28px rgba(0,0,0,.35); font: 13px/1.35 system-ui, -apple-system, "Segoe UI", "Nirmala UI", sans-serif;
+      display: grid; gap: 8px; }
+    .ask b { font-size: 14px; padding-right: 22px; }
+    .ask .x { position: absolute; top: 6px; right: 6px; }
     .toast { position: fixed; max-width: 280px; padding: 8px 12px; border-radius: 10px; background: #202124; color: #fff;
       font: 13px/1.35 system-ui, -apple-system, "Segoe UI", "Nirmala UI", sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,.3);
       opacity: 0; transform: translateY(4px); transition: opacity .15s, transform .15s; pointer-events: none; }
@@ -440,7 +447,7 @@
       100% { opacity: 0; transform: translateX(-50%) scale(1); }
     }
     @media (prefers-color-scheme: dark) {
-      .panel { background: #202124; color: #e8eaed; }
+      .panel, .ask { background: #202124; color: #e8eaed; }
       .status { background: #2d2e31; }
       .icon:hover, .tag { background: #3c4043; }
       .search { background: #202124; border-color: #5f6368; }
@@ -500,10 +507,12 @@
   const camBox = el('input', { type: 'checkbox' });
   const list = el('ul', { className: 'list' });
   const optionsBtn = el('button', { className: 'icon', type: 'button', title: t('options') }, '⚙️');
+  const feedbackBtn = el('button', { className: 'icon', type: 'button', title: t('feedback') }, '💬');
+  feedbackBtn.setAttribute('aria-label', t('feedback'));
   const closeBtn = el('button', { className: 'icon', type: 'button', title: t('close') }, '✕');
   const timerNote = el('div', { className: 'foot' });
   const panel = el('div', { className: 'panel' },
-    el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), optionsBtn, closeBtn),
+    el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), feedbackBtn, optionsBtn, closeBtn),
     el('div', { className: 'status' }, statusDot, statusText),
     tabBar,
     search,
@@ -524,7 +533,16 @@
   panel.setAttribute('aria-label', 'MemeBox');
 
   const toastEl = el('div', { className: 'toast', role: 'status' });
-  shadow.append(style, fab, monBtn, listBtn, panel, toastEl);
+
+  // One-time "Enjoying MemeBox?" card (the service worker decides when, after 10 plays).
+  const askRate = el('button', { className: 'btn', type: 'button' }, t('ask_rate'));
+  const askSend = el('button', { className: 'btn test', type: 'button' }, t('ask_feedback'));
+  const askClose = el('button', { className: 'icon x', type: 'button', title: t('close') }, '✕');
+  const ask = el('div', { className: 'ask', hidden: true, role: 'dialog' },
+    el('b', {}, t('ask_title')), el('div', { className: 'row' }, askRate, askSend), askClose);
+  ask.setAttribute('aria-label', t('ask_title'));
+
+  shadow.append(style, fab, monBtn, listBtn, panel, ask, toastEl);
 
   // ---------- rendering ----------
 
@@ -743,6 +761,26 @@
   listBtn.addEventListener('pointerdown', () => sendToHook({ type: 'resume' }));
   listBtn.addEventListener('click', () => { if (panelOpen) closePanel(); else openPanel(); });
   optionsBtn.addEventListener('click', () => { if (!bridge.toRuntime({ type: 'open-options' })) orphaned(); });
+
+  function openFeedback(rate) {
+    if (!bridge.toRuntime({ type: 'open-feedback', site: SITE, rate })) orphaned();
+  }
+  feedbackBtn.addEventListener('click', () => openFeedback(false));
+
+  let askTimer = 0;
+  function showAsk() {
+    if (state.hidden) return;
+    const r = fab.getBoundingClientRect();
+    ask.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 268)) + 'px';
+    ask.style.top = '';
+    ask.style.bottom = window.innerHeight - r.top + 10 + 'px';
+    ask.hidden = false;
+    clearTimeout(askTimer);
+    askTimer = setTimeout(() => { ask.hidden = true; }, 30000);
+  }
+  askRate.addEventListener('click', () => { ask.hidden = true; openFeedback(true); });
+  askSend.addEventListener('click', () => { ask.hidden = true; openFeedback(false); });
+  askClose.addEventListener('click', () => { ask.hidden = true; });
   randomBtn.addEventListener('click', playRandom);
   stopBtn.addEventListener('click', stopAll);
   beepBtn.addEventListener('click', playBeep);
