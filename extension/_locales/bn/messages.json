@@ -1,0 +1,880 @@
+{
+  "extName": {
+    "message": "MemeBox: কলের জন্য মিম সাউন্ডবোর্ড ও ভয়েস চেঞ্জার"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "মিম সাউন্ডবোর্ড ও ভয়েস চেঞ্জার: Google Meet, Zoom, Teams, Discord-এ আপনার মাইকে মিম আর সাউন্ড এফেক্ট বাজান।"
+  },
+  "actionTitle": {
+    "message": "MemeBox: এই ট্যাবের আওয়াজ আপনার কলে পাঠান"
+  },
+  "cmdFav1": {
+    "message": "প্রিয় ১ বাজান"
+  },
+  "cmdFav2": {
+    "message": "প্রিয় ২ বাজান"
+  },
+  "cmdFav3": {
+    "message": "প্রিয় ৩ বাজান"
+  },
+  "cmdFav4": {
+    "message": "প্রিয় ৪ বাজান"
+  },
+  "cmdFav5": {
+    "message": "প্রিয় ৫ বাজান"
+  },
+  "cmdFav6": {
+    "message": "প্রিয় ৬ বাজান"
+  },
+  "cmdFav7": {
+    "message": "প্রিয় ৭ বাজান"
+  },
+  "cmdFav8": {
+    "message": "প্রিয় ৮ বাজান"
+  },
+  "cmdFav9": {
+    "message": "প্রিয় ৯ বাজান"
+  },
+  "cmdStopAll": {
+    "message": "সব মিম থামান"
+  },
+  "cmdToggleUi": {
+    "message": "😂 বোতাম দেখান / লুকান"
+  },
+  "join_first": {
+    "message": "আগে কলে যোগ দিন, তারপর 😂 চাপুন"
+  },
+  "err_reload": {
+    "message": "MemeBox আপডেট হয়েছে। কলের ট্যাবটি রিলোড করুন।"
+  },
+  "err_play": {
+    "message": "বাজানো গেল না: $1"
+  },
+  "muted_nobody": {
+    "message": "আপনি মিউট আছেন, তাই মিমও শোনা যাবে না। আনমিউট করে আবার চেষ্টা করুন।"
+  },
+  "mic_test_caption": {
+    "message": "🔔 মাইক পরীক্ষা"
+  },
+  "no_lines": {
+    "message": "এখনও কোনো লাইন নেই। Options-এ কিছু যোগ করুন।"
+  },
+  "slot_empty": {
+    "message": "Alt+$1-এ এখনও কিছু নেই। Options-এ একটি প্রিয় স্লট বেছে নিন।"
+  },
+  "stopped": {
+    "message": "⏹ থামানো হয়েছে"
+  },
+  "ui_hidden": {
+    "message": "MemeBox লুকানো আছে। আবার দেখাতে Alt+M চাপুন।"
+  },
+  "ui_shown": {
+    "message": "MemeBox ফিরে এসেছে 😂"
+  },
+  "tab_on": {
+    "message": "📺 আপনার অন্য ট্যাবের আওয়াজ কলে যাচ্ছে"
+  },
+  "tab_off": {
+    "message": "📺 অন্য ট্যাবের আওয়াজ বন্ধ হয়েছে"
+  },
+  "tab_err": {
+    "message": "ওই ট্যাবের আওয়াজ ব্যবহার করা গেল না: $1"
+  },
+  "tab_bar": {
+    "message": "📺 অন্য একটি ট্যাবের আওয়াজ আপনার মাইকে বাজছে"
+  },
+  "tab_stop": {
+    "message": "⏹ ট্যাব থামান"
+  },
+  "st_none": {
+    "message": "আপনি এখনও কোনো কলে যোগ দেননি। কলে যোগ দিয়ে তারপর 😂 চাপুন"
+  },
+  "st_suspended": {
+    "message": "মিম চালু করতে পেজে যেকোনো জায়গায় একবার ক্লিক করুন"
+  },
+  "st_muted": {
+    "message": "আপনি মিউট আছেন, তাই আনমিউট না করা পর্যন্ত মিম চুপ থাকবে"
+  },
+  "st_live": {
+    "message": "মিম আপনার মাইকে যাচ্ছে"
+  },
+  "fab_label": {
+    "message": "MemeBox: এলোমেলো একটি মিম বাজান"
+  },
+  "fab_tip": {
+    "message": "ক্লিক: এলোমেলো মিম · চেপে ধরুন বা রাইট-ক্লিক: প্যানেল · টেনে সরান"
+  },
+  "list_btn": {
+    "message": "বাজানোর জন্য একটি মিম বেছে নিন"
+  },
+  "search_ph": {
+    "message": "লাইন খুঁজুন…"
+  },
+  "btn_random": {
+    "message": "🎲 এলোমেলো"
+  },
+  "btn_mic_test": {
+    "message": "🔔 মাইক পরীক্ষা"
+  },
+  "btn_mic_test_tip": {
+    "message": "আপনার মাইকে একটি ছোট ডিং-ডং বাজায়। কলে কাউকে জিজ্ঞেস করুন শুনতে পেয়েছে কিনা।"
+  },
+  "btn_stop_all": {
+    "message": "⏹ সব থামান"
+  },
+  "volume": {
+    "message": "মিমের ভলিউম"
+  },
+  "monitor_label": {
+    "message": "🎧 আমিও মিম শুনব"
+  },
+  "monitor_tip": {
+    "message": "কল সবসময় আপনার মাইক দিয়ে মিম পায়। এটি শুধু আপনার স্পিকারে একটি আস্তে কপি যোগ করে।"
+  },
+  "monitor_on": {
+    "message": "🎧 আপনি আর কল দুজনেই মিম শুনছেন"
+  },
+  "monitor_off": {
+    "message": "🔇 এখন শুধু কল মিম শুনছে"
+  },
+  "monitor_on_tip": {
+    "message": "আপনিও মিম শুনছেন (শোনা বন্ধ করতে ক্লিক করুন, কল তবুও শুনবে)"
+  },
+  "monitor_off_tip": {
+    "message": "আপনি মিম শুনছেন না (আপনিও শুনতে ক্লিক করুন, কল সব অবস্থায় শোনে)"
+  },
+  "duck_label": {
+    "message": "🦆 কথা বললে আস্তে"
+  },
+  "duck_tip": {
+    "message": "আপনি কথা বলার সময় মিম আস্তে হয়ে যায়"
+  },
+  "options": {
+    "message": "Options"
+  },
+  "close": {
+    "message": "বন্ধ করুন (Esc)"
+  },
+  "panel_foot": {
+    "message": "বাজাতে একটি লাইনে ক্লিক করুন · 😂 এলোমেলো · Alt+1…9 প্রিয় · Alt+0 থামান · Alt+M লুকান"
+  },
+  "timers_on": {
+    "message": "⏰ সময় ধরা লাইন চালু আছে (কল খোলা থাকার সময়): $1"
+  },
+  "chip_all": {
+    "message": "সব"
+  },
+  "chip_star": {
+    "message": "প্রিয়"
+  },
+  "chip_recent": {
+    "message": "সাম্প্রতিক"
+  },
+  "cat_general": {
+    "message": "সাধারণ"
+  },
+  "cat_college": {
+    "message": "কলেজ"
+  },
+  "cat_cricket": {
+    "message": "ক্রিকেট"
+  },
+  "cat_office": {
+    "message": "অফিস"
+  },
+  "cat_party": {
+    "message": "পার্টি"
+  },
+  "cat_clips": {
+    "message": "ক্লিপ"
+  },
+  "cat_mine": {
+    "message": "আমার লাইন"
+  },
+  "empty_star": {
+    "message": "এখনও কোনো প্রিয় নেই। কোনো লাইনে ☆ চাপুন।"
+  },
+  "empty_recent": {
+    "message": "এখনও কিছু বাজানো হয়নি"
+  },
+  "empty_search": {
+    "message": "কোনো লাইন মেলেনি।"
+  },
+  "tag_clip": {
+    "message": "আপলোড করা ক্লিপ"
+  },
+  "tag_lang": {
+    "message": "ভাষা"
+  },
+  "tag_shortcut": {
+    "message": "শর্টকাট"
+  },
+  "play": {
+    "message": "বাজান"
+  },
+  "star": {
+    "message": "প্রিয়তে যোগ করুন"
+  },
+  "unstar": {
+    "message": "প্রিয় থেকে সরান"
+  },
+  "pp_checking": {
+    "message": "দেখা হচ্ছে…"
+  },
+  "pp_send": {
+    "message": "🎙 এই ট্যাবের আওয়াজ আমার কলে পাঠান"
+  },
+  "pp_stop": {
+    "message": "⏹ এই ট্যাব পাঠানো বন্ধ করুন"
+  },
+  "pp_how": {
+    "message": "এটা কীভাবে কাজ করে?"
+  },
+  "pp_how1": {
+    "message": "অন্য একটি ট্যাবে কলে যোগ দিন (Meet, Zoom ওয়েব, Teams ওয়েব বা Discord ওয়েব)।"
+  },
+  "pp_how2": {
+    "message": "এই ট্যাবে মজার মুহূর্তে YouTube ভিডিও বা Instagram রিল চালু করুন।"
+  },
+  "pp_how3": {
+    "message": "“এই ট্যাবের আওয়াজ পাঠান” চাপুন, কলের সবাই আপনার মাইক দিয়ে শুনবে।"
+  },
+  "pp_how4": {
+    "message": "শেষ হলে ⏹ চাপুন, অথবা 😂 প্যানেলে ⏹ ব্যবহার করুন।"
+  },
+  "pp_how_note": {
+    "message": "কিছুই ডাউনলোড বা রেকর্ড হয় না। আওয়াজ শুধু সরাসরি আপনার মাইকে মেশানো হয়।"
+  },
+  "pp_settings": {
+    "message": "⚙️ লাইন, ক্লিপ ও সেটিংস"
+  },
+  "pp_no_call": {
+    "message": "আগে (অন্য ট্যাবে) কলে যোগ দিন, তারপর ভিডিওর ট্যাবে ফিরে এসে এখানে ক্লিক করুন।"
+  },
+  "pp_this_is_call": {
+    "message": "এটা আপনার কলের ট্যাব। আওয়াজ পাঠাতে YouTube / Instagram ট্যাব খুলে সেখানে MemeBox-এ ক্লিক করুন। মিমের জন্য এই পেজে 😂 ব্যবহার করুন।"
+  },
+  "pp_sending": {
+    "message": "✅ এই ট্যাবের আওয়াজ আপনার কলে যাচ্ছে।"
+  },
+  "pp_replace": {
+    "message": "এখন অন্য একটি ট্যাব পাঠানো হচ্ছে। এটি পাঠালে সেটির জায়গা নেবে।"
+  },
+  "pp_start_video": {
+    "message": "মজার অংশে ভিডিও চালু করুন, তারপর:"
+  },
+  "pp_connecting": {
+    "message": "যুক্ত হচ্ছে…"
+  },
+  "pp_join_unmute": {
+    "message": "আগে কলে যোগ দিন আর আনমিউট করুন।"
+  },
+  "pp_send_failed": {
+    "message": "এই ট্যাব পাঠানো গেল না: $1"
+  },
+  "pp_cant_capture": {
+    "message": "Chrome এই ট্যাব ক্যাপচার করতে দিচ্ছে না: $1"
+  },
+  "pp_error": {
+    "message": "ত্রুটি: $1"
+  },
+  "op_sub": {
+    "message": "আপনার লাইন, ক্লিপ, প্যাক আর পার্টি মোড। সব কিছু এই ব্রাউজারেই থাকে।"
+  },
+  "op_nav_lines": {
+    "message": "লাইন"
+  },
+  "op_nav_clips": {
+    "message": "ক্লিপ"
+  },
+  "op_nav_packs": {
+    "message": "প্যাক"
+  },
+  "op_nav_party": {
+    "message": "পার্টি মোড"
+  },
+  "op_lines": {
+    "message": "লাইন"
+  },
+  "op_text": {
+    "message": "ক্যাপশনে যে লেখা দেখাবে"
+  },
+  "op_text_ph": {
+    "message": "যেমন Bhai tu rehne de"
+  },
+  "op_say": {
+    "message": "এভাবে উচ্চারণ করুন (ঐচ্ছিক, যেমন হিংলিশ লাইনের জন্য দেবনাগরী)"
+  },
+  "op_lang": {
+    "message": "ভাষা"
+  },
+  "op_tone": {
+    "message": "টোন"
+  },
+  "op_category": {
+    "message": "বিভাগ"
+  },
+  "op_shortcut": {
+    "message": "শর্টকাট"
+  },
+  "op_line_volume": {
+    "message": "এই লাইনের ভলিউম"
+  },
+  "op_add_line": {
+    "message": "লাইন যোগ করুন"
+  },
+  "op_save_changes": {
+    "message": "পরিবর্তন সেভ করুন"
+  },
+  "op_preview": {
+    "message": "▶ শুনুন"
+  },
+  "op_cancel": {
+    "message": "বাতিল"
+  },
+  "op_search": {
+    "message": "খুঁজুন…"
+  },
+  "op_all_categories": {
+    "message": "সব বিভাগ"
+  },
+  "op_count": {
+    "message": "$2টির মধ্যে $1টি লাইন"
+  },
+  "op_col_line": {
+    "message": "লাইন"
+  },
+  "op_col_about": {
+    "message": "বিবরণ"
+  },
+  "op_col_actions": {
+    "message": "কাজ"
+  },
+  "op_shortcut_hint": {
+    "message": "Alt+1…3 আর Alt+0 সব জায়গায় কাজ করে। কী বদলাতে বা Alt+4…9 যোগ করতে যান"
+  },
+  "op_none": {
+    "message": "কিছু না"
+  },
+  "op_no_lines": {
+    "message": "এখনও কোনো লাইন নেই। উপরে একটি যোগ করুন, বা নিচে একটি প্যাক যোগ করুন।"
+  },
+  "op_preview_tip": {
+    "message": "এখানে শুনুন (শুধু আপনি শুনবেন)"
+  },
+  "op_edit": {
+    "message": "এডিট"
+  },
+  "op_delete": {
+    "message": "মুছুন"
+  },
+  "op_err_text": {
+    "message": "লাইনের লেখাটি টাইপ করুন"
+  },
+  "op_saved": {
+    "message": "লাইন সেভ হয়েছে"
+  },
+  "op_added": {
+    "message": "লাইন যোগ হয়েছে"
+  },
+  "op_confirm_delete": {
+    "message": "“$1” মুছবেন?"
+  },
+  "op_deleted": {
+    "message": "মুছে ফেলা হয়েছে"
+  },
+  "op_err_preview": {
+    "message": "শোনা গেল না: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "ক্লিপ পাওয়া যায়নি। আবার যোগ করুন।"
+  },
+  "op_clips": {
+    "message": "একটি ক্লিপ যোগ করুন"
+  },
+  "op_clips_hint": {
+    "message": "একটি অডিও ফাইল বা ভিডিও (শুধু আওয়াজ রাখা হয়), সরাসরি ফাইল লিংক ব্যবহার করুন, বা নিজে রেকর্ড করুন। তারপর কাটুন। সেভ করা ক্লিপ সর্বোচ্চ ১ MB।"
+  },
+  "op_choose_file": {
+    "message": "📁 একটি ফাইল বেছে নিন"
+  },
+  "op_link_ph": {
+    "message": "https://…/sound.mp3  (সরাসরি .mp3 .mp4 .wav .ogg .webm লিংক)"
+  },
+  "op_fetch": {
+    "message": "🔗 আনুন"
+  },
+  "op_record": {
+    "message": "🎙 রেকর্ড (১০ সে.)"
+  },
+  "op_recording": {
+    "message": "⏹ রেকর্ডিং থামান ($1 সে. বাকি)"
+  },
+  "op_my_recording": {
+    "message": "আমার রেকর্ডিং"
+  },
+  "op_video_sites": {
+    "message": "YouTube, Instagram আর অন্য ভিডিও পেজ কখনও ডাউনলোড হয় না। টুলবার বোতাম → “এই ট্যাবের আওয়াজ পাঠান” দিয়ে সরাসরি বাজান।"
+  },
+  "op_start": {
+    "message": "শুরু"
+  },
+  "op_end": {
+    "message": "শেষ"
+  },
+  "op_preview_sel": {
+    "message": "▶ বাছাই করা অংশ শুনুন"
+  },
+  "op_stop": {
+    "message": "⏹ থামান"
+  },
+  "op_caption": {
+    "message": "ক্যাপশনের লেখা"
+  },
+  "op_tone_speed": {
+    "message": "টোন (শুধু গতি)"
+  },
+  "op_save_clip": {
+    "message": "💾 ক্লিপ সেভ করুন"
+  },
+  "op_selection": {
+    "message": "$1 → $2 ($3 সে.)"
+  },
+  "op_fit": {
+    "message": "$1 kHz-এ সেভ হবে, ১ MB-এর কম"
+  },
+  "op_too_long": {
+    "message": "১ MB-এর জন্য খুব লম্বা। প্রায় $1 সে.-এর কম রাখুন।"
+  },
+  "op_clip_saved": {
+    "message": "ক্লিপ সেভ হয়েছে ($1 KB)"
+  },
+  "op_err_type": {
+    "message": "একটি অডিও বা ভিডিও ফাইল ব্যবহার করুন (MP3, WAV, OGG, M4A, MP4, WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "ওই ফাইলে কোনো আওয়াজ পাওয়া যায়নি"
+  },
+  "op_err_too_big_source": {
+    "message": "ফাইলটি খুব বড় (কাটার আগে সর্বোচ্চ ৫০ MB)"
+  },
+  "op_err_url": {
+    "message": "https:// দিয়ে শুরু হওয়া পুরো লিংক পেস্ট করুন"
+  },
+  "op_err_video_page": {
+    "message": "এটা একটি ভিডিও পেজ, ফাইল নয়। MemeBox কখনও YouTube, Instagram বা অন্য ভিডিও সাইট থেকে ডাউনলোড করে না। এটি একটি ট্যাবে খুলে টুলবার বোতাম → “এই ট্যাবের আওয়াজ পাঠান” ব্যবহার করুন।"
+  },
+  "op_err_not_file": {
+    "message": "লিংকের শেষে .mp3, .mp4, .wav, .ogg বা .webm থাকতে হবে"
+  },
+  "op_err_blocked": {
+    "message": "$1 অন্য সাইটকে তার ফাইল ব্যবহার করতে দেয় না (CORS আটকায়)। ফাইলটি ডাউনলোড করে “একটি ফাইল বেছে নিন” ব্যবহার করুন।"
+  },
+  "op_err_http": {
+    "message": "ওয়েবসাইট $1 ত্রুটি দিয়েছে"
+  },
+  "op_err_mic": {
+    "message": "রেকর্ড করতে মাইক ব্যবহারের জন্য MemeBox-এর আপনার অনুমতি লাগবে"
+  },
+  "op_packs": {
+    "message": "প্যাক"
+  },
+  "op_pack_add": {
+    "message": "যোগ করুন"
+  },
+  "op_pack_reset": {
+    "message": "রিসেট"
+  },
+  "op_pack_remove": {
+    "message": "সরান"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 লাইন"
+  },
+  "op_pack_added": {
+    "message": "“$1” প্যাক যোগ হয়েছে"
+  },
+  "op_pack_removed": {
+    "message": "“$1” প্যাক সরানো হয়েছে"
+  },
+  "op_share_packs": {
+    "message": "প্যাক শেয়ার করুন"
+  },
+  "op_export_all": {
+    "message": "আমার সব লাইন"
+  },
+  "op_export": {
+    "message": "⬇ .memepack.json এক্সপোর্ট"
+  },
+  "op_import": {
+    "message": "⬆ .memepack.json ইমপোর্ট"
+  },
+  "op_packs_hint": {
+    "message": "একটি প্যাকে লাইন আর তাদের ক্লিপ থাকে। ইমপোর্ট করলে আপনার লাইনে যোগ হয়, আর একই id-র লাইন বদলে যায়। ফাইল কড়াভাবে যাচাই করা হয়।"
+  },
+  "op_my_library": {
+    "message": "আমার MemeBox লাইন"
+  },
+  "op_exported": {
+    "message": "$1টি লাইন এক্সপোর্ট হয়েছে"
+  },
+  "op_export_partial": {
+    "message": "$1টি লাইন এক্সপোর্ট হয়েছে (পুরনো সংস্করণের ক্লিপ বাদ দেওয়া হয়েছে)"
+  },
+  "op_import_failed": {
+    "message": "ইমপোর্ট ব্যর্থ: $1"
+  },
+  "op_import_invalid": {
+    "message": "এই প্যাক ফাইলটি সঠিক নয়। নিচের তালিকা দেখুন।"
+  },
+  "op_imported": {
+    "message": "“$3” থেকে $1টি লাইন আর $2টি ক্লিপ ইমপোর্ট হয়েছে"
+  },
+  "op_party": {
+    "message": "সময় ধরা লাইন / পার্টি মোড"
+  },
+  "op_party_switch": {
+    "message": "সময় ধরা লাইন নিজে থেকে বাজান"
+  },
+  "op_party_hint": {
+    "message": "শুরুতে বন্ধ থাকে। শুধু কলের ট্যাব খোলা আর মাইক যুক্ত থাকলেই চলে।"
+  },
+  "op_line": {
+    "message": "লাইন"
+  },
+  "op_when": {
+    "message": "কখন"
+  },
+  "op_at_clock": {
+    "message": "নির্দিষ্ট সময়ে"
+  },
+  "op_every_n": {
+    "message": "প্রতি N মিনিটে"
+  },
+  "op_time": {
+    "message": "সময়"
+  },
+  "op_minutes": {
+    "message": "মিনিট"
+  },
+  "op_add_timer": {
+    "message": "টাইমার যোগ করুন"
+  },
+  "op_no_timers": {
+    "message": "এখনও কোনো টাইমার নেই।"
+  },
+  "op_daily_at": {
+    "message": "প্রতিদিন $1-এ"
+  },
+  "op_every": {
+    "message": "প্রতি $1 মিনিটে"
+  },
+  "op_enabled": {
+    "message": "চালু"
+  },
+  "op_deleted_line": {
+    "message": "(মুছে ফেলা লাইন)"
+  },
+  "op_party_on": {
+    "message": "পার্টি মোড চালু 🎉"
+  },
+  "op_party_off": {
+    "message": "পার্টি মোড বন্ধ"
+  },
+  "op_timer_added": {
+    "message": "টাইমার যোগ হয়েছে"
+  },
+  "op_timer_added_off": {
+    "message": "টাইমার যোগ হয়েছে। ব্যবহার করতে “সময় ধরা লাইন নিজে থেকে বাজান” চালু করুন।"
+  },
+  "op_privacy": {
+    "message": "প্রাইভেসি"
+  },
+  "op_privacy_text": {
+    "message": "আপনার মাইক আর ট্যাবের আওয়াজ শুধু এই ব্রাউজারের ভেতরে মেশানো হয়। কিছুই রেকর্ড, সেভ বা কোথাও পাঠানো হয় না। কোনো অ্যাকাউন্ট, সার্ভার বা অ্যানালিটিক্স নেই।"
+  },
+  "cmdToggleVoice": {
+    "message": "ভয়েস চেঞ্জার চালু/বন্ধ"
+  },
+  "tab_volume": {
+    "message": "কলে ট্যাবের আওয়াজের ভলিউম"
+  },
+  "voice_label": {
+    "message": "🎤 আমার গলা"
+  },
+  "voice_tip": {
+    "message": "কলে আপনার নিজের লাইভ গলা বদলায়। Alt+V দিয়ে চালু/বন্ধ করুন। \"স্বাভাবিক\" সঙ্গে সঙ্গে আপনার আসল গলা ফিরিয়ে দেয়।"
+  },
+  "voice_off": {
+    "message": "স্বাভাবিক (বন্ধ)"
+  },
+  "voice_chipmunk": {
+    "message": "কাঠবিড়ালি"
+  },
+  "voice_deep": {
+    "message": "ভারী"
+  },
+  "voice_robot": {
+    "message": "রোবট"
+  },
+  "voice_echo": {
+    "message": "প্রতিধ্বনি"
+  },
+  "voice_radio": {
+    "message": "রেডিও"
+  },
+  "voice_now_on": {
+    "message": "আপনার গলা: $1"
+  },
+  "voice_now_off": {
+    "message": "ভয়েস চেঞ্জার বন্ধ, আপনার আসল গলা ফিরে এসেছে"
+  },
+  "voice_after_join": {
+    "message": "সেভ হয়েছে। কলে যোগ দিলেই শুরু হবে।"
+  },
+  "cam_label": {
+    "message": "📷 আমার ক্যামেরায় ক্যাপশন"
+  },
+  "cam_tip": {
+    "message": "অন্যরা আপনার যে ভিডিও দেখে, তাতে মিমের লেখা বসায়। চালু করতে ক্যামেরা বন্ধ করে আবার চালু করুন। আপনার নিজের প্রিভিউতে উল্টো দেখাতে পারে, কিন্তু অন্যরা ঠিকভাবে দেখে।"
+  },
+  "cam_on": {
+    "message": "ক্যামেরায় ক্যাপশন চালু। চালু করতে ক্যামেরা বন্ধ করে আবার চালু করুন।"
+  },
+  "cam_off": {
+    "message": "ক্যামেরায় ক্যাপশন বন্ধ। কার্যকর করতে ক্যামেরা বন্ধ করে আবার চালু করুন।"
+  },
+  "pp_volume": {
+    "message": "কলে ভলিউম"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "যেকোনো জায়গায় শেয়ার করতে অডিও ফাইল (WAV) হিসেবে সেভ করুন"
+  },
+  "op_wav_saved": {
+    "message": "$1 সেভ হয়েছে"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "লেখা ভরে WhatsApp খোলে। চ্যাট আপনি বাছবেন আর পাঠাবেন।"
+  },
+  "op_share_text": {
+    "message": "$1 😂 MemeBox দিয়ে বানানো: $2"
+  },
+  "feedback": {
+    "message": "মতামত পাঠান"
+  },
+  "ask_title": {
+    "message": "MemeBox ভালো লাগছে?"
+  },
+  "ask_rate": {
+    "message": "⭐ রেটিং দিন"
+  },
+  "ask_feedback": {
+    "message": "মতামত পাঠান"
+  },
+  "op_feedback": {
+    "message": "💬 মতামত পাঠান"
+  },
+  "pro_only": {
+    "message": "এটি MemeBox Pro-এর ফিচার।"
+  },
+  "ob_title": {
+    "message": "MemeBox-এ স্বাগতম 😂"
+  },
+  "ob_sub": {
+    "message": "তিনটি ধাপ, আর আপনি কলের সবচেয়ে মজার মানুষ।"
+  },
+  "ob_s1": {
+    "message": "ব্রাউজারে আপনার কলে যোগ দিন"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet, Zoom (ওয়েব), Microsoft Teams (ওয়েব) বা Discord (ওয়েব)। কোণে 😂 বোতাম দেখাবে। কল আগে থেকেই খোলা থাকলে একবার রিলোড করুন।"
+  },
+  "ob_s2": {
+    "message": "মিম বাজাতে 😂 চাপুন"
+  },
+  "ob_s2_text": {
+    "message": "এটি আপনার মাইকে যায়, তাই কলের সবাই শোনে। তাদের MemeBox লাগে না। আপনি মিউট থাকলে মিমও চুপ থাকে।"
+  },
+  "ob_s3": {
+    "message": "বাকি সবকিছুর জন্য 😂-এ রাইট-ক্লিক করুন"
+  },
+  "ob_s3_text": {
+    "message": "যেকোনো লাইন বাছুন, খুঁজুন, গলা বদলান (Alt+V), বা Alt+1 থেকে Alt+9 দিয়ে প্রিয় বাজান। কলে YouTube ভিডিও বাজাতে, ওই ট্যাবে টুলবারের MemeBox আইকনে ক্লিক করুন।"
+  },
+  "ob_mic": {
+    "message": "মাইক পরীক্ষা"
+  },
+  "ob_mic_hint": {
+    "message": "আপনার মাইক কাজ করছে কিনা দেখুন। আওয়াজ এই পেজেই থাকে। কিছু রেকর্ড হয় না।"
+  },
+  "ob_mic_start": {
+    "message": "🎙 মাইক পরীক্ষা শুরু করুন"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ থামান"
+  },
+  "ob_hear": {
+    "message": "🔊 একটি মিম শুনুন"
+  },
+  "ob_mic_talk": {
+    "message": "কিছু বলুন…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ আপনার গলা শোনা যাচ্ছে। মাইক ঠিক আছে।"
+  },
+  "ob_mic_blocked": {
+    "message": "মাইক ব্লক করা আছে। অ্যাড্রেস বারে ক্যামেরা/মাইক আইকনে ক্লিক করে অনুমতি দিন।"
+  },
+  "ob_mic_none": {
+    "message": "কোনো মাইক পাওয়া যায়নি। একটি লাগিয়ে আবার চেষ্টা করুন।"
+  },
+  "ob_done": {
+    "message": "আপনি তৈরি। আপনার লাইন, ক্লিপ আর প্যাক Settings-এ আছে।"
+  },
+  "ob_settings": {
+    "message": "⚙️ সেটিংস খুলুন"
+  },
+  "ob_close": {
+    "message": "চলুন শুরু করি!"
+  },
+  "pp_reload_tab": {
+    "message": "MemeBox ইনস্টল বা আপডেটের আগে থেকেই এই কলের ট্যাব খোলা ছিল। এটি রিলোড (F5) করে আবার কলে যোগ দিন।"
+  },
+  "tag_picture": {
+    "message": "ছবি আছে"
+  },
+  "op_picture": {
+    "message": "ছবি (ঐচ্ছিক)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 ছবি বেছে নিন"
+  },
+  "op_picture_remove": {
+    "message": "ছবি সরান"
+  },
+  "op_picture_hint": {
+    "message": "লাইন বাজার সময় আপনার স্ক্রিনে দেখায়, আর \"আমার ক্যামেরায় ক্যাপশন\" চালু থাকলে ক্যামেরাতেও। নিজের ছবি ব্যবহার করুন, অন্যের ছবি শুধু তাদের অনুমতি নিয়ে।"
+  },
+  "op_err_picture": {
+    "message": "এই ফাইলটি এমন ছবি নয় যা MemeBox ব্যবহার করতে পারে। PNG, JPG, WEBP বা GIF দিয়ে চেষ্টা করুন।"
+  },
+  "op_err_picture_big": {
+    "message": "ছবিটি খুব বড়। ছোট একটি দিয়ে চেষ্টা করুন (২০ MB পর্যন্ত)।"
+  },
+  "pro_pictures": {
+    "message": "আপনি আপনার $1টি ছবির মিম ব্যবহার করে ফেলেছেন। MemeBox Pro বা ছবির প্যাক দিয়ে আরও পান (Options → MemeBox Pro)।"
+  },
+  "op_bulk": {
+    "message": "📂 একসাথে অনেক ফাইল"
+  },
+  "op_bulk_hint": {
+    "message": "একসাথে অনেক ফাইল: প্রতিটি ফাইল একটি ক্লিপ হয় (১ MB-তে ধরতে কাটা হয়), ফাইলের নামে, \"clips\" বিভাগে।"
+  },
+  "op_bulk_working": {
+    "message": "$2টির মধ্যে $1টি ইমপোর্ট হচ্ছে…"
+  },
+  "op_bulk_done": {
+    "message": "$1টি ক্লিপ যোগ হয়েছে। $2টি বাদ গেছে।"
+  },
+  "op_bulk_skipped": {
+    "message": "বাদ গেছে: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "এখন Pro বন্ধ আছে, তাই সবার জন্য সব ফিচার ফ্রি।"
+  },
+  "op_pro_active": {
+    "message": "✅ এই ব্রাউজারে MemeBox Pro চালু আছে।"
+  },
+  "op_pro_free": {
+    "message": "ফ্রি প্ল্যান: $1টি পর্যন্ত ছবির মিম, ১০টি ক্লিপ, সাধারণ আর কলেজ প্যাক।"
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "চালু করুন"
+  },
+  "op_buy": {
+    "message": "⭐ Pro বা আরও ছবি কিনুন"
+  },
+  "op_license_remove": {
+    "message": "কী সরান"
+  },
+  "op_license_ok": {
+    "message": "কী চালু হয়েছে। মজা করুন!"
+  },
+  "op_license_offline": {
+    "message": "MemeBox সাইটে পৌঁছানো গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।"
+  },
+  "op_license_revoked": {
+    "message": "কী $1 বন্ধ করে দেওয়া হয়েছে।"
+  },
+  "op_license_stale": {
+    "message": "কী $1 অনেক দিন যাচাই করা যায়নি। MemeBox যাতে আবার যাচাই করতে পারে, অনলাইনে আসুন।"
+  },
+  "op_license_pro": {
+    "message": "কী $1: Pro, সীমাহীন।"
+  },
+  "op_license_slots": {
+    "message": "কী $1: $2টি অতিরিক্ত ছবির মিম।"
+  },
+  "settings_label": {
+    "message": "🎛 আওয়াজ ও গলা"
+  },
+  "op_theme": {
+    "message": "🎨 রং"
+  },
+  "theme_auto": {
+    "message": "অটো"
+  },
+  "theme_light": {
+    "message": "লাইট"
+  },
+  "theme_dark": {
+    "message": "ডার্ক"
+  },
+  "theme_sunny": {
+    "message": "রোদেলা"
+  },
+  "theme_neon": {
+    "message": "নিয়ন"
+  },
+  "theme_candy": {
+    "message": "ক্যান্ডি"
+  },
+  "ob_theme_hint": {
+    "message": "MemeBox-এর জন্য একটি লুক বাছুন। Settings-এ যেকোনো সময় বদলাতে পারবেন।"
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "bn",
+    "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 ভাষা"
+  },
+  "lang_auto": {
+    "message": "অটো (Chrome-এর মতো)"
+  },
+  "lang_reload": {
+    "message": "ভাষা বদলেছে। MemeBox এতে দেখতে এই কলের ট্যাব রিলোড করুন।"
+  }
+}

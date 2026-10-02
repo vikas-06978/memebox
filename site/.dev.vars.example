@@ -1,0 +1,10 @@
+# Copy to site/.dev.vars for local runs (npm run site:dev). site/.dev.vars is git-ignored.
+# These Turnstile keys are Cloudflare's public TEST keys: the check always passes.
+# Real keys go into Cloudflare with "npx wrangler pages secret put ...", never into git.
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+ADMIN_KEY=change-me-to-a-long-random-string
+RATE_SALT=another-long-random-string
+# A made-up UPI ID for trying /buy locally. Put your real one in Cloudflare, not here.
+UPI_ID=memebox@upi
+UPI_NAME=MemeBox

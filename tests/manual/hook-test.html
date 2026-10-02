@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>MemeBox hook self-test</title>
+<!--
+  Manual self-test for mic-hook.js and tts-worker.js (no extension needed):
+    npx http-server . -p 8765     (or: python -m http.server 8765)  from the project root
+    open http://localhost:8765/tests/manual/hook-test.html and click "Run".
+  A fake microphone (a quiet 200 Hz tone) stands in for the real one.
+-->
+<script>
+  // Fake mic, installed BEFORE mic-hook.js wraps getUserMedia.
+  MediaDevices.prototype.getUserMedia = async function (c) {
+    const ac = new AudioContext();
+    const o = ac.createOscillator(); o.frequency.value = 200;
+    const g = ac.createGain(); g.gain.value = 0.05;
+    const d = ac.createMediaStreamDestination();
+    o.connect(g).connect(d); o.start();
+    const t = d.stream.getAudioTracks()[0];
+    Object.defineProperty(t, 'label', { value: 'Fake Mic' });
+    t.getSettings = () => ({ deviceId: 'fake-device', groupId: 'g' });
+    return new MediaStream([t]);
+  };
+</script>
+<script src="../../extension/mic-hook.js"></script>
+<button id="run">Run</button>
+<pre id="out"></pre>
+<script type="module">
+  const out = document.getElementById('out');
+  const log = (...a) => { out.textContent += a.join(' ') + '\n'; console.log('[selftest]', ...a); };
+  const status = [];
+  const played = [];
+  addEventListener('message', (e) => {
+    if (e.data && e.data.source === 'memebox-hook-9c1e') {
+      if (e.data.type === 'status') status.push(e.data);
+      if (e.data.type === 'played') played.push(e.data);
+    }
+  });
+  const send = (m, t) => postMessage({ ...m, source: 'memebox-bridge-9c1e' }, '*', t || []);
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function level(track, ms) {
+    const ac = new AudioContext();
+    await ac.resume();
+    const an = ac.createAnalyser(); an.fftSize = 2048;
+    ac.createMediaStreamSource(new MediaStream([track])).connect(an);
+    const buf = new Float32Array(an.fftSize);
+    let peak = 0;
+    const end = performance.now() + ms;
+    while (performance.now() < end) {
+      an.getFloatTimeDomainData(buf);
+      for (const v of buf) peak = Math.max(peak, Math.abs(v));
+      await sleep(20);
+    }
+    ac.close();
+    return peak;
+  }
+
+  async function tts(text, lang, espeak) {
+    const w = new Worker('../../extension/tts-worker.js', { type: 'module' });
+    return new Promise((res, rej) => {
+      w.onmessage = (e) => (e.data.ok ? res(e.data.wav) : rej(new Error(e.data.error)));
+      w.onerror = (e) => rej(new Error('worker error: ' + e.message));
+      w.postMessage({ id: 1, text, lang, espeak });
+    });
+  }
+
+  document.getElementById('run').onclick = async () => {
+    try {
+      send({ type: 'play-audio', reqId: 0, bytes: new ArrayBuffer(8) });
+      await sleep(100);
+      log('before call, play ->', JSON.stringify(played.at(-1)));
+
+      const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const t = s.getAudioTracks()[0];
+      await sleep(200);
+      log('status', JSON.stringify(status.at(-1)));
+      log('label', t.label, 'deviceId', t.getSettings().deviceId);
+      log('mic only peak', (await level(t, 400)).toFixed(3));
+
+      const t0 = performance.now();
+      const wav = await tts('भाई तू रहने दे', 'hi', { rate: 175, pitch: 50, range: 50, volume: 100 });
+      log('tts hi bytes', wav.byteLength, 'ms', Math.round(performance.now() - t0));
+      const wav2 = await tts('Emotional damage!', 'en', { rate: 225, pitch: 78, range: 95, volume: 125 });
+      log('tts en bytes', wav2.byteLength);
+
+      const lvl = level(t, 1200);
+      send({ type: 'play-audio', reqId: 1, bytes: wav, playbackRate: 1, gain: 1, effect: 'robot' }, [wav]);
+      log('mic+meme peak', (await lvl).toFixed(3), 'played', JSON.stringify(played.at(-1)));
+
+      t.enabled = false;
+      await sleep(100);
+      log('muted status', JSON.stringify(status.at(-1)));
+      send({ type: 'play-audio', reqId: 2, bytes: wav2 }, [wav2]);
+      log('muted peak', (await level(t, 800)).toFixed(3), 'played', JSON.stringify(played.at(-1)));
+      t.enabled = true;
+
+      const s2 = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: 'other' } });
+      t.stop();
+      await sleep(100);
+      log('after switch+stop old: status', JSON.stringify(status.at(-1)));
+      const c = s2.getAudioTracks()[0].clone();
+      s2.getAudioTracks()[0].stop();
+      await sleep(100);
+      log('clone alive:', c.readyState, JSON.stringify(status.at(-1)));
+      c.stop();
+      await sleep(100);
+      log('all stopped:', JSON.stringify(status.at(-1)));
+      log('DONE');
+    } catch (err) {
+      log('FAIL', err.stack || err);
+    }
+  };
+</script>

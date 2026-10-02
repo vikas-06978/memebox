@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Send feedback: MemeBox</title>
+  <meta name="description" content="Tell us what you think of MemeBox, the meme soundboard and voice changer for calls.">
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/prefs.js"></script>
+</head>
+<body class="page-bg">
+  <main class="wrap narrow">
+    <header class="page-head">
+      <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
+      <h1 data-t="fb_title">How is MemeBox for you?</h1>
+      <p class="muted" data-t="fb_intro">Takes one minute. We read every message.</p>
+    </header>
+
+    <form id="form" class="card" novalidate>
+      <fieldset class="faces">
+        <legend data-t="fb_rating">Your rating</legend>
+        <label><input type="radio" name="rating" value="1" required><span aria-hidden="true">😞</span><span class="sr" data-t="fb_r1">Bad</span></label>
+        <label><input type="radio" name="rating" value="2"><span aria-hidden="true">😐</span><span class="sr" data-t="fb_r2">Okay</span></label>
+        <label><input type="radio" name="rating" value="3"><span aria-hidden="true">🙂</span><span class="sr" data-t="fb_r3">Good</span></label>
+        <label><input type="radio" name="rating" value="4"><span aria-hidden="true">😍</span><span class="sr" data-t="fb_r4">Love it</span></label>
+      </fieldset>
+
+      <fieldset class="checks">
+        <legend data-t="fb_used">What did you use?</legend>
+        <label><input type="checkbox" name="used" value="soundboard"> <span data-t="fb_u_soundboard">Soundboard</span></label>
+        <label><input type="checkbox" name="used" value="voices"> <span data-t="fb_u_voices">Voices</span></label>
+        <label><input type="checkbox" name="used" value="clips"> <span data-t="fb_u_clips">Clips</span></label>
+        <label><input type="checkbox" name="used" value="tab-audio"> <span data-t="fb_u_tab">Tab audio</span></label>
+        <label><input type="checkbox" name="used" value="voice-changer"> <span data-t="fb_u_voice">Voice changer</span></label>
+        <label><input type="checkbox" name="used" value="captions"> <span data-t="fb_u_captions">Captions</span></label>
+      </fieldset>
+
+      <label class="field"><span data-t="fb_wants">What should we add?</span>
+        <input name="wants" maxlength="500" autocomplete="off">
+      </label>
+      <label class="field"><span data-t="fb_message">Your message</span>
+        <textarea name="message" rows="5" maxlength="2000"></textarea>
+      </label>
+      <label class="field"><span data-t="fb_email">Email (optional, only if you want a reply)</span>
+        <input name="email" type="email" maxlength="254" autocomplete="email">
+      </label>
+
+      <!-- Honeypot: people never see or fill this. -->
+      <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+
+      <div id="turnstile"></div>
+      <p id="error" class="error" role="alert" hidden></p>
+      <button type="submit" class="primary" data-t="fb_send">Send feedback</button>
+      <p class="muted small" data-t="fb_privacy">We store only what you type here, plus the MemeBox version. No tracking.</p>
+    </form>
+
+    <section id="thanks" class="card thanks" hidden>
+      <h2 data-t="fb_thanks">Thank you! 🙏</h2>
+      <p data-t="fb_thanks_text">Your feedback was sent. You can close this tab.</p>
+    </section>
+
+    <footer class="foot"><a href="/privacy" data-t="privacy">Privacy</a> <div class="prefs" data-prefs></div></footer>
+  </main>
+  <script src="/assets/form.js"></script>
+</body>
+</html>

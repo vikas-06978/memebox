@@ -1,0 +1,880 @@
+{
+  "extName": {
+    "message": "MemeBox: कॉल के लिए मीम साउंडबोर्ड और वॉइस चेंजर"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "कॉल के लिए मीम साउंडबोर्ड और वॉइस चेंजर: Google Meet, Zoom, Teams, Discord पर अपने माइक में मीम साउंड और साउंड इफ़ेक्ट चलाएँ।"
+  },
+  "actionTitle": {
+    "message": "MemeBox: इस टैब की आवाज़ अपनी कॉल में भेजें"
+  },
+  "cmdFav1": {
+    "message": "पसंदीदा 1 चलाएँ"
+  },
+  "cmdFav2": {
+    "message": "पसंदीदा 2 चलाएँ"
+  },
+  "cmdFav3": {
+    "message": "पसंदीदा 3 चलाएँ"
+  },
+  "cmdFav4": {
+    "message": "पसंदीदा 4 चलाएँ"
+  },
+  "cmdFav5": {
+    "message": "पसंदीदा 5 चलाएँ"
+  },
+  "cmdFav6": {
+    "message": "पसंदीदा 6 चलाएँ"
+  },
+  "cmdFav7": {
+    "message": "पसंदीदा 7 चलाएँ"
+  },
+  "cmdFav8": {
+    "message": "पसंदीदा 8 चलाएँ"
+  },
+  "cmdFav9": {
+    "message": "पसंदीदा 9 चलाएँ"
+  },
+  "cmdStopAll": {
+    "message": "सारे मीम रोकें"
+  },
+  "cmdToggleUi": {
+    "message": "😂 बटन दिखाएँ / छिपाएँ"
+  },
+  "join_first": {
+    "message": "पहले कॉल जॉइन करें, फिर 😂 दबाएँ"
+  },
+  "err_reload": {
+    "message": "MemeBox अपडेट हुआ है, कॉल वाला टैब रीलोड करें"
+  },
+  "err_play": {
+    "message": "नहीं चल पाया: $1"
+  },
+  "muted_nobody": {
+    "message": "आप म्यूट हैं, मीम भी नहीं सुनाई देंगे। अनम्यूट करके फिर से चलाएँ।"
+  },
+  "mic_test_caption": {
+    "message": "🔔 माइक टेस्ट"
+  },
+  "no_lines": {
+    "message": "अभी कोई लाइन नहीं है, Options में जोड़ें"
+  },
+  "slot_empty": {
+    "message": "Alt+$1 पर अभी कुछ नहीं, Options में पसंदीदा स्लॉट चुनें"
+  },
+  "stopped": {
+    "message": "⏹ रोक दिया"
+  },
+  "ui_hidden": {
+    "message": "MemeBox छिप गया, वापस दिखाने के लिए Alt+M दबाएँ"
+  },
+  "ui_shown": {
+    "message": "MemeBox वापस आ गया 😂"
+  },
+  "tab_on": {
+    "message": "📺 आपके दूसरे टैब की आवाज़ कॉल में जा रही है"
+  },
+  "tab_off": {
+    "message": "📺 दूसरे टैब की आवाज़ रोक दी"
+  },
+  "tab_err": {
+    "message": "उस टैब की आवाज़ इस्तेमाल नहीं हो पाई: $1"
+  },
+  "tab_bar": {
+    "message": "📺 दूसरे टैब की आवाज़ आपके माइक में चल रही है"
+  },
+  "tab_stop": {
+    "message": "⏹ टैब रोकें"
+  },
+  "st_none": {
+    "message": "अभी कोई कॉल नहीं, कॉल जॉइन करें, फिर 😂 दबाएँ"
+  },
+  "st_suspended": {
+    "message": "मीम चालू करने के लिए पेज पर कहीं भी एक बार क्लिक करें"
+  },
+  "st_muted": {
+    "message": "आप म्यूट हैं, अनम्यूट करने तक मीम नहीं सुनाई देंगे"
+  },
+  "st_live": {
+    "message": "मीम आपके माइक में जा रहे हैं"
+  },
+  "fab_label": {
+    "message": "MemeBox: कोई भी मीम चलाएँ"
+  },
+  "fab_tip": {
+    "message": "क्लिक: कोई भी मीम · दबाए रखें या राइट-क्लिक: पैनल · खींचकर हिलाएँ"
+  },
+  "list_btn": {
+    "message": "चलाने के लिए मीम चुनें"
+  },
+  "search_ph": {
+    "message": "लाइनें खोजें…"
+  },
+  "btn_random": {
+    "message": "🎲 कोई भी"
+  },
+  "btn_mic_test": {
+    "message": "🔔 माइक टेस्ट"
+  },
+  "btn_mic_test_tip": {
+    "message": "आपके माइक में छोटी सी डिंग-डॉन्ग बजती है, कॉल में किसी से पूछें कि सुनाई दी या नहीं"
+  },
+  "btn_stop_all": {
+    "message": "⏹ सब रोकें"
+  },
+  "volume": {
+    "message": "मीम की आवाज़"
+  },
+  "monitor_label": {
+    "message": "🎧 मीम खुद भी सुनें"
+  },
+  "monitor_tip": {
+    "message": "कॉल को मीम हमेशा आपके माइक से मिलता है। यह सिर्फ़ आपके स्पीकर पर धीमी कॉपी जोड़ता है।"
+  },
+  "monitor_on": {
+    "message": "🎧 आप और कॉल दोनों मीम सुनेंगे"
+  },
+  "monitor_off": {
+    "message": "🔇 अब सिर्फ़ कॉल मीम सुनेगी"
+  },
+  "monitor_on_tip": {
+    "message": "आप भी मीम सुन रहे हैं (बंद करने के लिए क्लिक करें, कॉल फिर भी सुनेगी)"
+  },
+  "monitor_off_tip": {
+    "message": "आप मीम नहीं सुन रहे (सुनने के लिए क्लिक करें, कॉल तो सुनेगी ही)"
+  },
+  "duck_label": {
+    "message": "🦆 ऑटो-डक"
+  },
+  "duck_tip": {
+    "message": "जब आप बोलते हैं तो मीम धीमे हो जाते हैं"
+  },
+  "options": {
+    "message": "सेटिंग्स"
+  },
+  "close": {
+    "message": "बंद करें (Esc)"
+  },
+  "panel_foot": {
+    "message": "लाइन पर क्लिक = चलाएँ · 😂 कोई भी · Alt+1…9 पसंदीदा · Alt+0 रोकें · Alt+M छिपाएँ"
+  },
+  "timers_on": {
+    "message": "⏰ टाइम वाली लाइनें चालू हैं (कॉल खुली रहने तक): $1"
+  },
+  "chip_all": {
+    "message": "सभी"
+  },
+  "chip_star": {
+    "message": "पसंदीदा"
+  },
+  "chip_recent": {
+    "message": "हाल के"
+  },
+  "cat_general": {
+    "message": "आम"
+  },
+  "cat_college": {
+    "message": "कॉलेज"
+  },
+  "cat_cricket": {
+    "message": "क्रिकेट"
+  },
+  "cat_office": {
+    "message": "ऑफ़िस"
+  },
+  "cat_party": {
+    "message": "पार्टी"
+  },
+  "cat_clips": {
+    "message": "क्लिप्स"
+  },
+  "cat_mine": {
+    "message": "मेरी लाइनें"
+  },
+  "empty_star": {
+    "message": "अभी कोई पसंदीदा नहीं, किसी लाइन पर ☆ दबाएँ"
+  },
+  "empty_recent": {
+    "message": "अभी तक कुछ नहीं चलाया"
+  },
+  "empty_search": {
+    "message": "कोई लाइन नहीं मिली।"
+  },
+  "tag_clip": {
+    "message": "अपलोड की गई क्लिप"
+  },
+  "tag_lang": {
+    "message": "भाषा"
+  },
+  "tag_shortcut": {
+    "message": "शॉर्टकट"
+  },
+  "play": {
+    "message": "चलाएँ"
+  },
+  "star": {
+    "message": "पसंदीदा में जोड़ें"
+  },
+  "unstar": {
+    "message": "पसंदीदा से हटाएँ"
+  },
+  "pp_checking": {
+    "message": "जाँच हो रही है…"
+  },
+  "pp_send": {
+    "message": "🎙 इस टैब की आवाज़ मेरी कॉल में भेजें"
+  },
+  "pp_stop": {
+    "message": "⏹ इस टैब को भेजना बंद करें"
+  },
+  "pp_how": {
+    "message": "यह कैसे काम करता है?"
+  },
+  "pp_how1": {
+    "message": "दूसरे टैब में अपनी कॉल जॉइन करें (Meet, Zoom वेब, Teams वेब या Discord वेब)।"
+  },
+  "pp_how2": {
+    "message": "इस टैब में YouTube वीडियो या Instagram रील मज़ेदार हिस्से से चलाएँ।"
+  },
+  "pp_how3": {
+    "message": "“इस टैब की आवाज़ भेजें” दबाएँ, कॉल में सब इसे आपके माइक से सुनेंगे।"
+  },
+  "pp_how4": {
+    "message": "हो जाने पर ⏹ दबाएँ, या 😂 पैनल में ⏹ इस्तेमाल करें।"
+  },
+  "pp_how_note": {
+    "message": "कुछ भी डाउनलोड या रिकॉर्ड नहीं होता, आवाज़ सिर्फ़ लाइव आपके माइक में मिलाई जाती है।"
+  },
+  "pp_settings": {
+    "message": "⚙️ लाइनें, क्लिप्स और सेटिंग्स"
+  },
+  "pp_no_call": {
+    "message": "पहले (दूसरे टैब में) कॉल जॉइन करें, फिर वीडियो वाले टैब पर आकर यहाँ क्लिक करें।"
+  },
+  "pp_this_is_call": {
+    "message": "यह आपका कॉल टैब है। उसकी आवाज़ भेजने के लिए YouTube / Instagram वाला टैब खोलें और वहाँ MemeBox पर क्लिक करें। मीम के लिए इस पेज पर 😂 इस्तेमाल करें।"
+  },
+  "pp_sending": {
+    "message": "✅ इस टैब की आवाज़ आपकी कॉल में जा रही है।"
+  },
+  "pp_replace": {
+    "message": "अभी दूसरा टैब भेजा जा रहा है। इसे भेजने पर वह बदल जाएगा।"
+  },
+  "pp_start_video": {
+    "message": "वीडियो को मज़ेदार हिस्से से चलाएँ, फिर:"
+  },
+  "pp_connecting": {
+    "message": "जोड़ रहे हैं…"
+  },
+  "pp_join_unmute": {
+    "message": "पहले कॉल जॉइन करें और अनम्यूट करें।"
+  },
+  "pp_send_failed": {
+    "message": "यह टैब नहीं भेजा जा सका: $1"
+  },
+  "pp_cant_capture": {
+    "message": "Chrome इस टैब की आवाज़ लेने नहीं दे रहा: $1"
+  },
+  "pp_error": {
+    "message": "गड़बड़ी: $1"
+  },
+  "op_sub": {
+    "message": "आपकी लाइनें, क्लिप्स, पैक और पार्टी मोड। सब कुछ इसी ब्राउज़र में रहता है।"
+  },
+  "op_nav_lines": {
+    "message": "लाइनें"
+  },
+  "op_nav_clips": {
+    "message": "क्लिप्स"
+  },
+  "op_nav_packs": {
+    "message": "पैक"
+  },
+  "op_nav_party": {
+    "message": "पार्टी मोड"
+  },
+  "op_lines": {
+    "message": "लाइनें"
+  },
+  "op_text": {
+    "message": "कैप्शन में दिखने वाला टेक्स्ट"
+  },
+  "op_text_ph": {
+    "message": "जैसे: भाई तू रहने दे"
+  },
+  "op_say": {
+    "message": "ऐसे बोलें (वैकल्पिक, जैसे Hinglish लाइनों के लिए देवनागरी)"
+  },
+  "op_lang": {
+    "message": "भाषा"
+  },
+  "op_tone": {
+    "message": "टोन"
+  },
+  "op_category": {
+    "message": "कैटेगरी"
+  },
+  "op_shortcut": {
+    "message": "शॉर्टकट"
+  },
+  "op_line_volume": {
+    "message": "इस लाइन की आवाज़"
+  },
+  "op_add_line": {
+    "message": "लाइन जोड़ें"
+  },
+  "op_save_changes": {
+    "message": "बदलाव सेव करें"
+  },
+  "op_preview": {
+    "message": "▶ सुनें"
+  },
+  "op_cancel": {
+    "message": "रद्द करें"
+  },
+  "op_search": {
+    "message": "खोजें…"
+  },
+  "op_all_categories": {
+    "message": "सभी कैटेगरी"
+  },
+  "op_count": {
+    "message": "$2 में से $1 लाइनें"
+  },
+  "op_col_line": {
+    "message": "लाइन"
+  },
+  "op_col_about": {
+    "message": "जानकारी"
+  },
+  "op_col_actions": {
+    "message": "विकल्प"
+  },
+  "op_shortcut_hint": {
+    "message": "Alt+1…3 और Alt+0 हर जगह चलते हैं। की बदलने या Alt+4…9 जोड़ने के लिए यहाँ जाएँ:"
+  },
+  "op_none": {
+    "message": "कोई नहीं"
+  },
+  "op_no_lines": {
+    "message": "अभी कोई लाइन नहीं। ऊपर जोड़ें, या नीचे से कोई पैक जोड़ें।"
+  },
+  "op_preview_tip": {
+    "message": "यहीं सुनें (सिर्फ़ आपको सुनाई देगा)"
+  },
+  "op_edit": {
+    "message": "बदलें"
+  },
+  "op_delete": {
+    "message": "हटाएँ"
+  },
+  "op_err_text": {
+    "message": "कृपया लाइन का टेक्स्ट लिखें"
+  },
+  "op_saved": {
+    "message": "लाइन सेव हो गई"
+  },
+  "op_added": {
+    "message": "लाइन जुड़ गई"
+  },
+  "op_confirm_delete": {
+    "message": "“$1” हटाएँ?"
+  },
+  "op_deleted": {
+    "message": "हटा दिया"
+  },
+  "op_err_preview": {
+    "message": "सुनाई नहीं दिया: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "क्लिप नहीं मिली, दोबारा जोड़ें"
+  },
+  "op_clips": {
+    "message": "क्लिप जोड़ें"
+  },
+  "op_clips_hint": {
+    "message": "ऑडियो फ़ाइल या वीडियो (सिर्फ़ उसकी आवाज़ रखी जाती है), सीधा फ़ाइल लिंक, या अपनी रिकॉर्डिंग इस्तेमाल करें। फिर काटें, सेव की गई क्लिप ज़्यादा से ज़्यादा 1 MB की होती है।"
+  },
+  "op_choose_file": {
+    "message": "📁 फ़ाइल चुनें"
+  },
+  "op_link_ph": {
+    "message": "https://…/sound.mp3  (सीधा .mp3 .mp4 .wav .ogg .webm लिंक)"
+  },
+  "op_fetch": {
+    "message": "🔗 लाएँ"
+  },
+  "op_record": {
+    "message": "🎙 रिकॉर्ड करें (10 सेकंड)"
+  },
+  "op_recording": {
+    "message": "⏹ रिकॉर्डिंग रोकें ($1 सेकंड बाकी)"
+  },
+  "op_my_recording": {
+    "message": "मेरी रिकॉर्डिंग"
+  },
+  "op_video_sites": {
+    "message": "YouTube, Instagram और दूसरी वीडियो साइटें कभी डाउनलोड नहीं होतीं, उन्हें टूलबार बटन → “इस टैब की आवाज़ भेजें” से लाइव चलाएँ।"
+  },
+  "op_start": {
+    "message": "शुरू"
+  },
+  "op_end": {
+    "message": "अंत"
+  },
+  "op_preview_sel": {
+    "message": "▶ चुना हुआ हिस्सा सुनें"
+  },
+  "op_stop": {
+    "message": "⏹ रोकें"
+  },
+  "op_caption": {
+    "message": "कैप्शन टेक्स्ट"
+  },
+  "op_tone_speed": {
+    "message": "टोन (सिर्फ़ स्पीड)"
+  },
+  "op_save_clip": {
+    "message": "💾 क्लिप सेव करें"
+  },
+  "op_selection": {
+    "message": "$1 → $2 ($3 सेकंड)"
+  },
+  "op_fit": {
+    "message": "$1 kHz पर, 1 MB से कम में सेव होगी"
+  },
+  "op_too_long": {
+    "message": "1 MB के लिए बहुत लंबी, लगभग $1 सेकंड से कम रखें"
+  },
+  "op_clip_saved": {
+    "message": "क्लिप सेव हो गई ($1 KB)"
+  },
+  "op_err_type": {
+    "message": "ऑडियो या वीडियो फ़ाइल चुनें (MP3, WAV, OGG, M4A, MP4, WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "उस फ़ाइल में कोई आवाज़ नहीं मिली"
+  },
+  "op_err_too_big_source": {
+    "message": "फ़ाइल बहुत बड़ी है (काटने से पहले ज़्यादा से ज़्यादा 50 MB)"
+  },
+  "op_err_url": {
+    "message": "https:// से शुरू होने वाला पूरा लिंक डालें"
+  },
+  "op_err_video_page": {
+    "message": "यह वीडियो पेज है, फ़ाइल नहीं, MemeBox कभी YouTube, Instagram या दूसरी वीडियो साइट से डाउनलोड नहीं करता। इसे टैब में खोलें और टूलबार बटन → “इस टैब की आवाज़ भेजें” इस्तेमाल करें।"
+  },
+  "op_err_not_file": {
+    "message": "लिंक .mp3, .mp4, .wav, .ogg या .webm पर खत्म होना चाहिए"
+  },
+  "op_err_blocked": {
+    "message": "$1 दूसरी साइटों को अपनी फ़ाइलें इस्तेमाल नहीं करने देता (CORS ब्लॉक)। फ़ाइल डाउनलोड करें और “फ़ाइल चुनें” इस्तेमाल करें।"
+  },
+  "op_err_http": {
+    "message": "वेबसाइट ने गड़बड़ी $1 बताई"
+  },
+  "op_err_mic": {
+    "message": "रिकॉर्डिंग के लिए MemeBox को माइक की अनुमति चाहिए"
+  },
+  "op_packs": {
+    "message": "पैक"
+  },
+  "op_pack_add": {
+    "message": "जोड़ें"
+  },
+  "op_pack_reset": {
+    "message": "रीसेट"
+  },
+  "op_pack_remove": {
+    "message": "हटाएँ"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 लाइनें"
+  },
+  "op_pack_added": {
+    "message": "“$1” पैक जुड़ गया"
+  },
+  "op_pack_removed": {
+    "message": "“$1” पैक हट गया"
+  },
+  "op_share_packs": {
+    "message": "पैक शेयर करें"
+  },
+  "op_export_all": {
+    "message": "मेरी सभी लाइनें"
+  },
+  "op_export": {
+    "message": "⬇ .memepack.json एक्सपोर्ट करें"
+  },
+  "op_import": {
+    "message": "⬆ .memepack.json इंपोर्ट करें"
+  },
+  "op_packs_hint": {
+    "message": "पैक में लाइनें और उनकी क्लिप्स होती हैं। इंपोर्ट करने पर आपकी लाइनों में जुड़ती हैं, और एक ही id वाली लाइनें बदल जाती हैं। फ़ाइलें सख़्ती से जाँची जाती हैं।"
+  },
+  "op_my_library": {
+    "message": "मेरी MemeBox लाइनें"
+  },
+  "op_exported": {
+    "message": "$1 लाइनें एक्सपोर्ट हुईं"
+  },
+  "op_export_partial": {
+    "message": "$1 लाइनें एक्सपोर्ट हुईं (पुराने वर्ज़न की क्लिप्स छोड़ दी गईं)"
+  },
+  "op_import_failed": {
+    "message": "इंपोर्ट नहीं हुआ: $1"
+  },
+  "op_import_invalid": {
+    "message": "यह पैक फ़ाइल सही नहीं है, नीचे दी गई सूची देखें"
+  },
+  "op_imported": {
+    "message": "“$3” से $1 लाइनें और $2 क्लिप्स इंपोर्ट हुईं"
+  },
+  "op_party": {
+    "message": "टाइम वाली लाइनें / पार्टी मोड"
+  },
+  "op_party_switch": {
+    "message": "टाइम वाली लाइनें अपने आप चलाएँ"
+  },
+  "op_party_hint": {
+    "message": "शुरू में बंद। टाइमर तभी चलते हैं जब कॉल वाला टैब खुला हो और माइक जुड़ा हो।"
+  },
+  "op_line": {
+    "message": "लाइन"
+  },
+  "op_when": {
+    "message": "कब"
+  },
+  "op_at_clock": {
+    "message": "घड़ी के समय पर"
+  },
+  "op_every_n": {
+    "message": "हर N मिनट में"
+  },
+  "op_time": {
+    "message": "समय"
+  },
+  "op_minutes": {
+    "message": "मिनट"
+  },
+  "op_add_timer": {
+    "message": "टाइमर जोड़ें"
+  },
+  "op_no_timers": {
+    "message": "अभी कोई टाइमर नहीं।"
+  },
+  "op_daily_at": {
+    "message": "रोज़ $1 बजे"
+  },
+  "op_every": {
+    "message": "हर $1 मिनट"
+  },
+  "op_enabled": {
+    "message": "चालू"
+  },
+  "op_deleted_line": {
+    "message": "(हटाई गई लाइन)"
+  },
+  "op_party_on": {
+    "message": "पार्टी मोड चालू 🎉"
+  },
+  "op_party_off": {
+    "message": "पार्टी मोड बंद"
+  },
+  "op_timer_added": {
+    "message": "टाइमर जुड़ गया"
+  },
+  "op_timer_added_off": {
+    "message": "टाइमर जुड़ गया, इसे चलाने के लिए “टाइम वाली लाइनें अपने आप चलाएँ” चालू करें"
+  },
+  "op_privacy": {
+    "message": "प्राइवेसी"
+  },
+  "op_privacy_text": {
+    "message": "आपके माइक और टैब की आवाज़ सिर्फ़ इसी ब्राउज़र में मिलाई जाती है। कुछ भी रिकॉर्ड, सेव या कहीं भेजा नहीं जाता। कोई अकाउंट, सर्वर या एनालिटिक्स नहीं।"
+  },
+  "cmdToggleVoice": {
+    "message": "वॉइस चेंजर चालू/बंद"
+  },
+  "tab_volume": {
+    "message": "कॉल में टैब की आवाज़ का वॉल्यूम"
+  },
+  "voice_label": {
+    "message": "🎤 मेरी आवाज़"
+  },
+  "voice_tip": {
+    "message": "कॉल में आपकी अपनी लाइव आवाज़ बदलता है। Alt+V से चालू/बंद करें। \"बंद\" से आपकी असली आवाज़ तुरंत वापस आ जाती है।"
+  },
+  "voice_off": {
+    "message": "बंद (नॉर्मल)"
+  },
+  "voice_chipmunk": {
+    "message": "चिपमंक"
+  },
+  "voice_deep": {
+    "message": "भारी"
+  },
+  "voice_robot": {
+    "message": "रोबोट"
+  },
+  "voice_echo": {
+    "message": "गूँज"
+  },
+  "voice_radio": {
+    "message": "रेडियो"
+  },
+  "voice_now_on": {
+    "message": "आपकी आवाज़: $1"
+  },
+  "voice_now_off": {
+    "message": "वॉइस चेंजर बंद, आपकी असली आवाज़"
+  },
+  "voice_after_join": {
+    "message": "सेव हो गया, कॉल जॉइन करते ही शुरू होगा"
+  },
+  "cam_label": {
+    "message": "📷 मेरे कैमरे पर कैप्शन"
+  },
+  "cam_tip": {
+    "message": "दूसरों को दिखने वाले आपके वीडियो पर मीम का टेक्स्ट लिखता है। लागू करने के लिए कैमरा बंद करके फिर चालू करें। आपके अपने प्रीव्यू में यह उल्टा दिख सकता है, दूसरों को सीधा दिखेगा।"
+  },
+  "cam_on": {
+    "message": "कैमरा कैप्शन चालू, कैमरा बंद करके फिर चालू करें"
+  },
+  "cam_off": {
+    "message": "कैमरा कैप्शन बंद, कैमरा बंद करके फिर चालू करें"
+  },
+  "pp_volume": {
+    "message": "कॉल में वॉल्यूम"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "ऑडियो फ़ाइल (WAV) के रूप में सेव करें, कहीं भी शेयर करें"
+  },
+  "op_wav_saved": {
+    "message": "$1 सेव हो गई"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "टेक्स्ट भरकर WhatsApp खोलता है, चैट आप चुनें और भेजें आप दबाएँ"
+  },
+  "op_share_text": {
+    "message": "$1 😂 MemeBox से बनाया: $2"
+  },
+  "feedback": {
+    "message": "फ़ीडबैक भेजें"
+  },
+  "ask_title": {
+    "message": "MemeBox मज़ेदार लग रहा है?"
+  },
+  "ask_rate": {
+    "message": "⭐ रेटिंग दें"
+  },
+  "ask_feedback": {
+    "message": "फ़ीडबैक भेजें"
+  },
+  "op_feedback": {
+    "message": "💬 फ़ीडबैक भेजें"
+  },
+  "pro_only": {
+    "message": "यह MemeBox Pro फ़ीचर है।"
+  },
+  "ob_title": {
+    "message": "MemeBox में आपका स्वागत है 😂"
+  },
+  "ob_sub": {
+    "message": "तीन स्टेप, और कॉल में सबसे मज़ेदार आप।"
+  },
+  "ob_s1": {
+    "message": "ब्राउज़र में अपनी कॉल जॉइन करें"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet, Zoom (वेब), Microsoft Teams (वेब) या Discord (वेब)। कोने में 😂 बटन दिखेगा। अगर कॉल पहले से खुली थी, तो उसे एक बार रीलोड करें।"
+  },
+  "ob_s2": {
+    "message": "मीम चलाने के लिए 😂 दबाएँ"
+  },
+  "ob_s2_text": {
+    "message": "यह आपके माइक में जाता है, इसलिए कॉल में सब सुनते हैं। उन्हें MemeBox की ज़रूरत नहीं। आप म्यूट हैं तो मीम भी चुप रहते हैं।"
+  },
+  "ob_s3": {
+    "message": "बाकी सब के लिए 😂 पर राइट-क्लिक करें"
+  },
+  "ob_s3_text": {
+    "message": "कोई भी लाइन चुनें, खोजें, अपनी आवाज़ बदलें (Alt+V), या Alt+1 से Alt+9 से पसंदीदा चलाएँ। YouTube वीडियो कॉल में चलाने के लिए उस टैब पर टूलबार में MemeBox आइकन दबाएँ।"
+  },
+  "ob_mic": {
+    "message": "माइक टेस्ट"
+  },
+  "ob_mic_hint": {
+    "message": "देखें कि आपका माइक काम कर रहा है। आवाज़ इसी पेज पर रहती है। कुछ भी रिकॉर्ड नहीं होता।"
+  },
+  "ob_mic_start": {
+    "message": "🎙 माइक टेस्ट शुरू करें"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ रोकें"
+  },
+  "ob_hear": {
+    "message": "🔊 एक मीम सुनें"
+  },
+  "ob_mic_talk": {
+    "message": "कुछ बोलिए…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ आपकी आवाज़ आ रही है। माइक ठीक है।"
+  },
+  "ob_mic_blocked": {
+    "message": "माइक ब्लॉक है। एड्रेस बार में कैमरा/माइक आइकन दबाकर अनुमति दें।"
+  },
+  "ob_mic_none": {
+    "message": "कोई माइक नहीं मिला। माइक लगाकर फिर कोशिश करें।"
+  },
+  "ob_done": {
+    "message": "आप तैयार हैं। आपकी लाइनें, क्लिप्स और पैक Settings में हैं।"
+  },
+  "ob_settings": {
+    "message": "⚙️ Settings खोलें"
+  },
+  "ob_close": {
+    "message": "चलो शुरू करें!"
+  },
+  "pp_reload_tab": {
+    "message": "यह कॉल टैब MemeBox इंस्टॉल या अपडेट होने से पहले खुला था। इसे रीलोड (F5) करें और फिर से कॉल जॉइन करें।"
+  },
+  "tag_picture": {
+    "message": "इसमें तस्वीर है"
+  },
+  "op_picture": {
+    "message": "तस्वीर (वैकल्पिक)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 तस्वीर चुनें"
+  },
+  "op_picture_remove": {
+    "message": "तस्वीर हटाएँ"
+  },
+  "op_picture_hint": {
+    "message": "लाइन चलते समय आपकी स्क्रीन पर दिखती है, और \"मेरे कैमरे पर कैप्शन\" चालू हो तो आपके कैमरे पर भी। अपनी तस्वीरें इस्तेमाल करें, दूसरों की सिर्फ़ उनकी मर्ज़ी से।"
+  },
+  "op_err_picture": {
+    "message": "यह फ़ाइल ऐसी तस्वीर नहीं है जिसे MemeBox इस्तेमाल कर सके। PNG, JPG, WEBP या GIF आज़माएँ।"
+  },
+  "op_err_picture_big": {
+    "message": "यह तस्वीर बहुत बड़ी है। छोटी तस्वीर आज़माएँ (20 MB तक)।"
+  },
+  "pro_pictures": {
+    "message": "आपने अपनी $1 तस्वीर वाले मीम इस्तेमाल कर लिए। MemeBox Pro या तस्वीर पैक से और पाएँ (Options → MemeBox Pro)।"
+  },
+  "op_bulk": {
+    "message": "📂 कई फ़ाइलें एक साथ"
+  },
+  "op_bulk_hint": {
+    "message": "कई फ़ाइलें एक साथ: हर फ़ाइल एक क्लिप बनती है (1 MB में फ़िट होने तक काटी जाती है), फ़ाइल के नाम से, \"clips\" कैटेगरी में।"
+  },
+  "op_bulk_working": {
+    "message": "$2 में से $1 इंपोर्ट हो रही है…"
+  },
+  "op_bulk_done": {
+    "message": "$1 क्लिप्स जुड़ीं। $2 छोड़ी गईं।"
+  },
+  "op_bulk_skipped": {
+    "message": "छोड़ी गईं: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "अभी Pro बंद है, इसलिए हर फ़ीचर सबके लिए मुफ़्त है।"
+  },
+  "op_pro_active": {
+    "message": "✅ इस ब्राउज़र में MemeBox Pro चालू है।"
+  },
+  "op_pro_free": {
+    "message": "मुफ़्त प्लान: $1 तक तस्वीर वाले मीम, 10 क्लिप्स, General और College पैक।"
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "चालू करें"
+  },
+  "op_buy": {
+    "message": "⭐ Pro या और तस्वीरें खरीदें"
+  },
+  "op_license_remove": {
+    "message": "की हटाएँ"
+  },
+  "op_license_ok": {
+    "message": "की चालू हो गई। मज़े करें!"
+  },
+  "op_license_offline": {
+    "message": "MemeBox साइट से कनेक्ट नहीं हो पाया। इंटरनेट चेक करके फिर कोशिश करें।"
+  },
+  "op_license_revoked": {
+    "message": "की $1 बंद कर दी गई है।"
+  },
+  "op_license_stale": {
+    "message": "की $1 बहुत समय से चेक नहीं हो पाई। इंटरनेट से जुड़ें ताकि MemeBox इसे फिर चेक कर सके।"
+  },
+  "op_license_pro": {
+    "message": "की $1: Pro, असीमित।"
+  },
+  "op_license_slots": {
+    "message": "की $1: $2 अतिरिक्त तस्वीर वाले मीम।"
+  },
+  "settings_label": {
+    "message": "🎛 आवाज़ और सेटिंग"
+  },
+  "op_theme": {
+    "message": "🎨 रंग"
+  },
+  "theme_auto": {
+    "message": "अपने आप"
+  },
+  "theme_light": {
+    "message": "लाइट"
+  },
+  "theme_dark": {
+    "message": "डार्क"
+  },
+  "theme_sunny": {
+    "message": "धूप"
+  },
+  "theme_neon": {
+    "message": "नियॉन"
+  },
+  "theme_candy": {
+    "message": "कैंडी"
+  },
+  "ob_theme_hint": {
+    "message": "MemeBox के लिए एक लुक चुनें। Settings में इसे कभी भी बदल सकते हैं।"
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "hi",
+    "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 भाषा"
+  },
+  "lang_auto": {
+    "message": "अपने आप (Chrome जैसी)"
+  },
+  "lang_reload": {
+    "message": "भाषा बदल गई। MemeBox को इसमें देखने के लिए यह कॉल टैब रीलोड करें।"
+  }
+}

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemeBox Settings</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="options.css">
+  <script src="lib/theme.js"></script>
+</head>
+<body>
+  <header class="top">
+    <img src="icons/icon48.png" alt="" width="40" height="40">
+    <div>
+      <h1>MemeBox</h1>
+      <p class="sub" data-i18n="op_sub">Your lines, clips, packs and party mode. Everything stays in this browser.</p>
+    </div>
+    <label class="theme-pick"><span data-i18n="op_language">🌐 Language</span> <select id="ui-lang"></select></label>
+    <label class="theme-pick"><span data-i18n="op_theme">🎨 Colors</span> <select id="theme"></select></label>
+    <button type="button" id="feedback" class="feedback-btn" data-i18n="op_feedback">💬 Send feedback</button>
+  </header>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#lines-card" data-i18n="op_nav_lines">Lines</a>
+    <a href="#clips-card" data-i18n="op_nav_clips">Clips</a>
+    <a href="#packs-card" data-i18n="op_nav_packs">Packs</a>
+    <a href="#party-card" data-i18n="op_nav_party">Party mode</a>
+    <a href="#pro-card" data-i18n="op_nav_pro">Pro</a>
+  </nav>
+
+  <main>
+    <!-- ============ LINES ============ -->
+    <section class="card" id="lines-card">
+      <h2 data-i18n="op_lines">Lines</h2>
+      <form id="line-form" class="grid-form" autocomplete="off">
+        <input type="hidden" id="line-id">
+        <label class="wide"><span data-i18n="op_text">Text shown in the caption</span>
+          <input id="line-text" maxlength="300" required data-i18n-placeholder="op_text_ph" placeholder="e.g. Bhai tu rehne de">
+        </label>
+        <label class="wide"><span data-i18n="op_say">Pronounce as (optional, e.g. Devanagari for Hinglish lines)</span>
+          <input id="line-say" maxlength="300" placeholder="भाई तू रहने दे" lang="hi">
+        </label>
+        <label><span data-i18n="op_lang">Language</span>
+          <select id="line-lang"><option value="hi">हिन्दी (hi)</option><option value="en">English (en)</option></select>
+        </label>
+        <label><span data-i18n="op_tone">Tone</span> <select id="line-tone" class="tone-select"></select></label>
+        <label><span data-i18n="op_category">Category</span>
+          <input id="line-cat" maxlength="30" list="cat-list" value="mine">
+        </label>
+        <label><span data-i18n="op_shortcut">Shortcut</span> <select id="line-fav" class="fav-select"></select></label>
+        <label class="span2"><span data-i18n="op_line_volume">Volume of this line</span>
+          <span class="range"><input id="line-vol" type="range" min="0" max="200" step="10" value="100"><output id="line-vol-out">100%</output></span>
+        </label>
+        <div class="wide picture-field">
+          <span class="label" data-i18n="op_picture">Picture (optional)</span>
+          <div class="picture-row">
+            <img id="line-pic-preview" alt="" hidden>
+            <label class="button"><span data-i18n="op_picture_choose">🖼 Choose picture</span>
+              <input type="file" id="line-pic" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label>
+            <button type="button" id="line-pic-remove" class="small" hidden data-i18n="op_picture_remove">Remove picture</button>
+          </div>
+          <span class="hint" data-i18n="op_picture_hint">Flashes on your screen while the line plays, and on your camera if "Caption on my camera" is on.</span>
+        </div>
+        <div class="actions wide">
+          <button type="submit" class="primary" id="line-submit" data-i18n="op_add_line">Add line</button>
+          <button type="button" id="line-preview" data-i18n="op_preview">▶ Preview</button>
+          <button type="button" id="line-cancel" hidden data-i18n="op_cancel">Cancel</button>
+        </div>
+      </form>
+      <datalist id="cat-list"></datalist>
+
+      <div class="toolbar">
+        <input type="search" id="lines-search" data-i18n-placeholder="op_search" placeholder="Search…">
+        <select id="lines-filter" aria-label="Category"></select>
+        <span class="hint" id="lines-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="lines">
+          <thead><tr><th></th><th data-i18n="op_col_line">Line</th><th data-i18n="op_col_about">About</th><th data-i18n="op_shortcut">Shortcut</th><th></th><th class="right" data-i18n="op_col_actions">Actions</th></tr></thead>
+          <tbody id="lines-body"></tbody>
+        </table>
+      </div>
+      <p class="hint"><span data-i18n="op_shortcut_hint">Alt+1…3 and Alt+0 work everywhere. Change keys or add Alt+4…9 at</span>
+        <a href="#" id="open-shortcuts">chrome://extensions/shortcuts</a>.</p>
+    </section>
+
+    <!-- ============ CLIPS ============ -->
+    <section class="card" id="clips-card">
+      <h2 data-i18n="op_clips">Add a clip</h2>
+      <p class="hint" data-i18n="op_clips_hint">Use an audio file or a video (only its sound is kept), a direct file link, or record yourself. Then trim it. A saved clip can be up to 1 MB.</p>
+      <div class="sources">
+        <label class="button primary"><span data-i18n="op_choose_file">📁 Choose a file</span>
+          <input type="file" id="clip-file" accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.mp4,.webm,audio/*,video/mp4,video/webm" hidden>
+        </label>
+        <form id="link-form" class="linkrow" autocomplete="off">
+          <input id="link-url" type="url" data-i18n-placeholder="op_link_ph" placeholder="https://…/sound.mp3  (direct .mp3 .mp4 .wav .ogg .webm link)">
+          <button type="submit" data-i18n="op_fetch">🔗 Fetch</button>
+        </form>
+        <button type="button" id="rec-btn" data-i18n="op_record">🎙 Record (10 s)</button>
+        <label class="button"><span data-i18n="op_bulk">📂 Import many files</span>
+          <input type="file" id="bulk-files" multiple accept=".mp3,.wav,.ogg,.oga,.m4a,.aac,.mp4,.webm,audio/*,video/mp4,video/webm" hidden>
+        </label>
+      </div>
+      <p class="hint" data-i18n="op_bulk_hint">Import many files: each one becomes a clip (cut to fit 1 MB) named after its file, in the "clips" category.</p>
+      <p id="bulk-status" class="hint" role="status" aria-live="polite"></p>
+      <p class="hint" data-i18n="op_video_sites">YouTube, Instagram and other video pages are never downloaded. Play them live with the toolbar button → “Send this tab's sound”.</p>
+
+      <div id="trimmer" class="trimmer" hidden>
+        <div class="wave-wrap"><canvas id="wave" height="120" aria-label="Waveform"></canvas></div>
+        <div class="trim-row">
+          <label><span data-i18n="op_start">Start</span> <input type="range" id="trim-start" min="0" max="1000" value="0"></label>
+          <label><span data-i18n="op_end">End</span> <input type="range" id="trim-end" min="0" max="1000" value="1000"></label>
+        </div>
+        <p class="trim-info"><span id="trim-label"></span> <span class="hint" id="trim-fit"></span></p>
+        <div class="actions">
+          <button type="button" id="trim-play" data-i18n="op_preview_sel">▶ Preview selection</button>
+          <button type="button" id="trim-stop" data-i18n="op_stop">⏹ Stop</button>
+        </div>
+        <form id="clip-form" class="grid-form" autocomplete="off">
+          <label class="wide"><span data-i18n="op_caption">Caption text</span>
+            <input id="clip-name" maxlength="300" required>
+          </label>
+          <label><span data-i18n="op_tone_speed">Tone (speed only)</span> <select id="clip-tone" class="tone-select"></select></label>
+          <label><span data-i18n="op_category">Category</span> <input id="clip-cat" maxlength="30" list="cat-list" value="clips"></label>
+          <label><span data-i18n="op_shortcut">Shortcut</span> <select id="clip-fav" class="fav-select"></select></label>
+          <div class="actions wide"><button type="submit" class="primary" data-i18n="op_save_clip">💾 Save clip</button>
+            <button type="button" id="trim-cancel" data-i18n="op_cancel">Cancel</button></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ PACKS ============ -->
+    <section class="card" id="packs-card">
+      <h2 data-i18n="op_packs">Packs</h2>
+      <ul id="builtin-packs" class="packs"></ul>
+      <h3 data-i18n="op_share_packs">Share packs</h3>
+      <div class="actions">
+        <select id="export-which" aria-label="Which lines"></select>
+        <button type="button" id="export" data-i18n="op_export">⬇ Export .memepack.json</button>
+        <label class="button"><span data-i18n="op_import">⬆ Import .memepack.json</span>
+          <input type="file" id="import" accept=".json,.memepack.json,application/json" hidden></label>
+      </div>
+      <ul id="import-errors" class="errors" hidden></ul>
+      <p class="hint" data-i18n="op_packs_hint">A pack holds lines and their clips. Importing adds to your lines, and lines with the same id are replaced. Files are checked strictly.</p>
+    </section>
+
+    <!-- ============ PARTY MODE ============ -->
+    <section class="card" id="party-card">
+      <h2 data-i18n="op_party">Timed lines / Party mode</h2>
+      <label class="switch"><input type="checkbox" id="timers-enabled"> <span data-i18n="op_party_switch">Play timed lines automatically</span></label>
+      <p class="hint" data-i18n="op_party_hint">Off by default. Timers only fire while a call tab is open and your mic is connected.</p>
+      <form id="timer-form" class="grid-form" autocomplete="off">
+        <label class="wide"><span data-i18n="op_line">Line</span> <select id="timer-line" required></select></label>
+        <label><span data-i18n="op_when">When</span>
+          <select id="timer-mode"><option value="clock" data-i18n="op_at_clock">At a clock time</option><option value="interval" data-i18n="op_every_n">Every N minutes</option></select>
+        </label>
+        <label id="timer-time-wrap"><span data-i18n="op_time">Time</span> <input type="time" id="timer-time" value="11:00"></label>
+        <label id="timer-min-wrap" hidden><span data-i18n="op_minutes">Minutes</span> <input type="number" id="timer-min" min="1" max="240" value="15"></label>
+        <div class="actions wide"><button type="submit" class="primary" data-i18n="op_add_timer">Add timer</button></div>
+      </form>
+      <ul id="timers-list" class="timers"></ul>
+    </section>
+
+    <!-- ============ PRO ============ -->
+    <section class="card" id="pro-card">
+      <h2 data-i18n="op_pro">MemeBox Pro</h2>
+      <p id="pro-status"></p>
+      <form id="license-form" class="linkrow" autocomplete="off">
+        <input id="license-key" data-i18n-placeholder="op_license_ph" placeholder="MBX-XXXX-XXXX-XXXX" spellcheck="false" aria-label="License key">
+        <button type="submit" class="primary" data-i18n="op_activate">Activate</button>
+      </form>
+      <div class="actions">
+        <button type="button" id="buy" data-i18n="op_buy">⭐ Buy Pro or more pictures</button>
+        <button type="button" id="license-remove" class="small" hidden data-i18n="op_license_remove">Remove key</button>
+      </div>
+    </section>
+
+    <section class="card privacy">
+      <h2 data-i18n="op_privacy">Privacy</h2>
+      <p data-i18n="op_privacy_text">Your microphone and tab audio are only mixed inside this browser. Nothing is recorded, saved or sent anywhere. No accounts, servers or analytics.</p>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="config.js"></script>
+  <script src="lib/plan.js"></script>
+  <script src="lib/i18n-page.js"></script>
+  <script src="defaults.js"></script>
+  <script src="packs.js"></script>
+  <script src="db.js"></script>
+  <script src="lib/trim.js"></script>
+  <script src="lib/pack.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

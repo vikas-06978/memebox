@@ -1,0 +1,36 @@
+/* MemeBox onboarding page (on top of options.css). */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.step svg { display: block; width: 100%; height: auto; max-height: 170px; margin-bottom: 10px; }
+.step h2 { font-size: 17px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
+.step p { margin: 0; color: var(--muted); }
+.num { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: var(--on-brand); font-size: 14px; flex: none; }
+
+.win { fill: var(--field); stroke: var(--line); stroke-width: 2; }
+.bar { fill: color-mix(in srgb, var(--muted) 18%, transparent); }
+.dot1 { fill: #f28b82; } .dot2 { fill: #fdd663; } .dot3 { fill: #81c995; }
+.tile1 { fill: #3b5bdb; } .tile2 { fill: #0ca678; }
+.head { fill: rgba(255, 255, 255, .85); }
+.step:nth-child(2) .head { fill: #9aa0a6; }
+.fab { fill: var(--accent); stroke: #5c3d00; stroke-width: 1.5; }
+.ctl { fill: color-mix(in srgb, var(--muted) 25%, transparent); }
+.chip { fill: var(--text); }
+.rows rect { fill: color-mix(in srgb, var(--accent) 22%, transparent); }
+.wave { fill: none; stroke: #1c7ed6; stroke-width: 5; stroke-linecap: round; }
+
+.meter { height: 14px; border-radius: 7px; background: color-mix(in srgb, var(--muted) 18%, transparent); overflow: hidden; margin-top: 12px; }
+.meter span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #40c057, #fab005); transition: width .08s linear; }
+.mic-status { min-height: 1.5em; margin: 8px 0 0; font-weight: 600; }
+.mic-status.ok { color: var(--ok); }
+.mic-status.err { color: var(--danger); }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.swatch { gap: 10px; padding: 10px 16px; border-radius: 999px; font-size: 14px; }
+.swatch.on { outline: 3px solid var(--focus); outline-offset: 2px; }
+.chipcolor { width: 22px; height: 22px; border-radius: 50%; display: inline-block; border: 1px solid rgba(0, 0, 0, .15); }
+.sw-auto .chipcolor { background: linear-gradient(135deg, #ffffff 50%, #1f1f24 50%); }
+.sw-light .chipcolor { background: linear-gradient(135deg, #ffffff, #ffd43b); }
+.sw-dark .chipcolor { background: linear-gradient(135deg, #1f1f24, #ffa94d); }
+.sw-sunny .chipcolor { background: linear-gradient(135deg, #fff3bf, #ff922b); }
+.sw-neon .chipcolor { background: linear-gradient(135deg, #f72585, #7209b7); }
+.sw-candy .chipcolor { background: linear-gradient(135deg, #ffdeeb, #f06595); }
+.done { text-align: center; }
+.done .actions { justify-content: center; }

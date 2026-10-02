@@ -1,0 +1,880 @@
+{
+  "extName": {
+    "message": "MemeBox: Soundboard Meme & Pengubah Suara untuk Panggilan"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "Soundboard meme & pengubah suara: putar meme dan efek suara ke mikrofon Anda di Google Meet, Zoom, Teams, Discord."
+  },
+  "actionTitle": {
+    "message": "MemeBox: kirim suara tab ini ke panggilan Anda"
+  },
+  "cmdFav1": {
+    "message": "Putar favorit 1"
+  },
+  "cmdFav2": {
+    "message": "Putar favorit 2"
+  },
+  "cmdFav3": {
+    "message": "Putar favorit 3"
+  },
+  "cmdFav4": {
+    "message": "Putar favorit 4"
+  },
+  "cmdFav5": {
+    "message": "Putar favorit 5"
+  },
+  "cmdFav6": {
+    "message": "Putar favorit 6"
+  },
+  "cmdFav7": {
+    "message": "Putar favorit 7"
+  },
+  "cmdFav8": {
+    "message": "Putar favorit 8"
+  },
+  "cmdFav9": {
+    "message": "Putar favorit 9"
+  },
+  "cmdStopAll": {
+    "message": "Hentikan semua meme"
+  },
+  "cmdToggleUi": {
+    "message": "Tampilkan / sembunyikan tombol 😂"
+  },
+  "join_first": {
+    "message": "Gabung ke panggilan dulu, lalu tekan 😂"
+  },
+  "err_reload": {
+    "message": "MemeBox sudah diperbarui. Muat ulang tab panggilan."
+  },
+  "err_play": {
+    "message": "Tidak bisa memutar: $1"
+  },
+  "muted_nobody": {
+    "message": "Mikrofon Anda dibisukan, jadi meme juga tidak terdengar. Nyalakan dan coba lagi."
+  },
+  "mic_test_caption": {
+    "message": "🔔 Tes mikrofon"
+  },
+  "no_lines": {
+    "message": "Belum ada kalimat. Tambahkan di Opsi."
+  },
+  "slot_empty": {
+    "message": "Belum ada apa pun di Alt+$1. Pilih slot favorit di Opsi."
+  },
+  "stopped": {
+    "message": "⏹ Dihentikan"
+  },
+  "ui_hidden": {
+    "message": "MemeBox disembunyikan. Tekan Alt+M untuk menampilkannya lagi."
+  },
+  "ui_shown": {
+    "message": "MemeBox kembali 😂"
+  },
+  "tab_on": {
+    "message": "📺 Suara tab Anda yang lain masuk ke panggilan"
+  },
+  "tab_off": {
+    "message": "📺 Suara tab lain dihentikan"
+  },
+  "tab_err": {
+    "message": "Tidak bisa memakai suara tab itu: $1"
+  },
+  "tab_bar": {
+    "message": "📺 Suara tab lain sedang diputar ke mikrofon Anda"
+  },
+  "tab_stop": {
+    "message": "⏹ Hentikan tab"
+  },
+  "st_none": {
+    "message": "Anda belum bergabung ke panggilan. Gabung dulu, lalu tekan 😂"
+  },
+  "st_suspended": {
+    "message": "Klik sekali di mana saja pada halaman untuk menyalakan meme"
+  },
+  "st_muted": {
+    "message": "Mikrofon Anda dibisukan, jadi meme diam sampai Anda menyalakannya"
+  },
+  "st_live": {
+    "message": "Meme masuk ke mikrofon Anda"
+  },
+  "fab_label": {
+    "message": "MemeBox: putar meme acak"
+  },
+  "fab_tip": {
+    "message": "Klik: meme acak · tahan atau klik kanan: panel · seret untuk memindahkan"
+  },
+  "list_btn": {
+    "message": "Pilih meme untuk diputar"
+  },
+  "search_ph": {
+    "message": "Cari kalimat…"
+  },
+  "btn_random": {
+    "message": "🎲 Acak"
+  },
+  "btn_mic_test": {
+    "message": "🔔 Tes mik"
+  },
+  "btn_mic_test_tip": {
+    "message": "Memutar bunyi ding-dong singkat ke mikrofon Anda. Tanyakan apakah orang di panggilan mendengarnya."
+  },
+  "btn_stop_all": {
+    "message": "⏹ Hentikan semua"
+  },
+  "volume": {
+    "message": "Volume meme"
+  },
+  "monitor_label": {
+    "message": "🎧 Saya ikut mendengar meme"
+  },
+  "monitor_tip": {
+    "message": "Panggilan selalu menerima meme lewat mikrofon Anda. Ini hanya menambah salinan pelan di speaker Anda."
+  },
+  "monitor_on": {
+    "message": "🎧 Anda dan panggilan sama-sama mendengar meme"
+  },
+  "monitor_off": {
+    "message": "🔇 Sekarang hanya panggilan yang mendengar meme"
+  },
+  "monitor_on_tip": {
+    "message": "Anda juga mendengar meme (klik agar tidak mendengar, panggilan tetap mendengar)"
+  },
+  "monitor_off_tip": {
+    "message": "Anda tidak mendengar meme (klik untuk ikut mendengar, panggilan tetap mendengar)"
+  },
+  "duck_label": {
+    "message": "🦆 Pelankan saat bicara"
+  },
+  "duck_tip": {
+    "message": "Meme menjadi lebih pelan saat Anda berbicara"
+  },
+  "options": {
+    "message": "Opsi"
+  },
+  "close": {
+    "message": "Tutup (Esc)"
+  },
+  "panel_foot": {
+    "message": "Klik kalimat untuk memutar · 😂 acak · Alt+1…9 favorit · Alt+0 hentikan · Alt+M sembunyikan"
+  },
+  "timers_on": {
+    "message": "⏰ Kalimat terjadwal aktif (saat panggilan terbuka): $1"
+  },
+  "chip_all": {
+    "message": "Semua"
+  },
+  "chip_star": {
+    "message": "Favorit"
+  },
+  "chip_recent": {
+    "message": "Terbaru"
+  },
+  "cat_general": {
+    "message": "Umum"
+  },
+  "cat_college": {
+    "message": "Kampus"
+  },
+  "cat_cricket": {
+    "message": "Kriket"
+  },
+  "cat_office": {
+    "message": "Kantor"
+  },
+  "cat_party": {
+    "message": "Pesta"
+  },
+  "cat_clips": {
+    "message": "Klip"
+  },
+  "cat_mine": {
+    "message": "Kalimat saya"
+  },
+  "empty_star": {
+    "message": "Belum ada favorit. Ketuk ☆ pada kalimat."
+  },
+  "empty_recent": {
+    "message": "Belum ada yang diputar"
+  },
+  "empty_search": {
+    "message": "Tidak ada kalimat yang cocok."
+  },
+  "tag_clip": {
+    "message": "Klip unggahan"
+  },
+  "tag_lang": {
+    "message": "Bahasa"
+  },
+  "tag_shortcut": {
+    "message": "Pintasan"
+  },
+  "play": {
+    "message": "Putar"
+  },
+  "star": {
+    "message": "Tambahkan ke favorit"
+  },
+  "unstar": {
+    "message": "Hapus dari favorit"
+  },
+  "pp_checking": {
+    "message": "Memeriksa…"
+  },
+  "pp_send": {
+    "message": "🎙 Kirim suara tab ini ke panggilan saya"
+  },
+  "pp_stop": {
+    "message": "⏹ Berhenti mengirim tab ini"
+  },
+  "pp_how": {
+    "message": "Bagaimana cara kerjanya?"
+  },
+  "pp_how1": {
+    "message": "Gabung ke panggilan Anda di tab lain (Meet, Zoom web, Teams web, atau Discord web)."
+  },
+  "pp_how2": {
+    "message": "Di tab ini, mulai video YouTube atau reel Instagram di bagian yang lucu."
+  },
+  "pp_how3": {
+    "message": "Klik “Kirim suara tab ini” dan semua orang di panggilan mendengarnya lewat mikrofon Anda."
+  },
+  "pp_how4": {
+    "message": "Klik ⏹ setelah selesai, atau pakai ⏹ di panel 😂."
+  },
+  "pp_how_note": {
+    "message": "Tidak ada yang diunduh atau direkam. Suara hanya dicampur langsung ke mikrofon Anda."
+  },
+  "pp_settings": {
+    "message": "⚙️ Kalimat, klip & pengaturan"
+  },
+  "pp_no_call": {
+    "message": "Gabung ke panggilan dulu (di tab lain), lalu kembali ke tab video dan klik di sini."
+  },
+  "pp_this_is_call": {
+    "message": "Ini tab panggilan Anda. Buka tab YouTube / Instagram dan klik MemeBox di sana untuk mengirim suaranya. Gunakan 😂 di halaman ini untuk meme."
+  },
+  "pp_sending": {
+    "message": "✅ Suara tab ini sedang masuk ke panggilan Anda."
+  },
+  "pp_replace": {
+    "message": "Tab lain sedang dikirim. Mengirim tab ini akan menggantinya."
+  },
+  "pp_start_video": {
+    "message": "Mulai video di bagian yang lucu, lalu:"
+  },
+  "pp_connecting": {
+    "message": "Menghubungkan…"
+  },
+  "pp_join_unmute": {
+    "message": "Gabung ke panggilan dan nyalakan mikrofon dulu."
+  },
+  "pp_send_failed": {
+    "message": "Tidak bisa mengirim tab ini: $1"
+  },
+  "pp_cant_capture": {
+    "message": "Chrome tidak mengizinkan tab ini direkam: $1"
+  },
+  "pp_error": {
+    "message": "Kesalahan: $1"
+  },
+  "op_sub": {
+    "message": "Kalimat, klip, paket, dan mode pesta Anda. Semuanya tetap di browser ini."
+  },
+  "op_nav_lines": {
+    "message": "Kalimat"
+  },
+  "op_nav_clips": {
+    "message": "Klip"
+  },
+  "op_nav_packs": {
+    "message": "Paket"
+  },
+  "op_nav_party": {
+    "message": "Mode pesta"
+  },
+  "op_lines": {
+    "message": "Kalimat"
+  },
+  "op_text": {
+    "message": "Teks yang tampil di keterangan"
+  },
+  "op_text_ph": {
+    "message": "mis. Bhai tu rehne de"
+  },
+  "op_say": {
+    "message": "Ucapkan sebagai (opsional, mis. aksara Dewanagari untuk kalimat Hinglish)"
+  },
+  "op_lang": {
+    "message": "Bahasa"
+  },
+  "op_tone": {
+    "message": "Nada"
+  },
+  "op_category": {
+    "message": "Kategori"
+  },
+  "op_shortcut": {
+    "message": "Pintasan"
+  },
+  "op_line_volume": {
+    "message": "Volume kalimat ini"
+  },
+  "op_add_line": {
+    "message": "Tambah kalimat"
+  },
+  "op_save_changes": {
+    "message": "Simpan perubahan"
+  },
+  "op_preview": {
+    "message": "▶ Dengarkan"
+  },
+  "op_cancel": {
+    "message": "Batal"
+  },
+  "op_search": {
+    "message": "Cari…"
+  },
+  "op_all_categories": {
+    "message": "Semua kategori"
+  },
+  "op_count": {
+    "message": "$1 dari $2 kalimat"
+  },
+  "op_col_line": {
+    "message": "Kalimat"
+  },
+  "op_col_about": {
+    "message": "Detail"
+  },
+  "op_col_actions": {
+    "message": "Aksi"
+  },
+  "op_shortcut_hint": {
+    "message": "Alt+1…3 dan Alt+0 berfungsi di mana saja. Ubah tombol atau tambahkan Alt+4…9 di"
+  },
+  "op_none": {
+    "message": "Tidak ada"
+  },
+  "op_no_lines": {
+    "message": "Belum ada kalimat. Tambahkan di atas, atau tambahkan paket di bawah."
+  },
+  "op_preview_tip": {
+    "message": "Dengarkan di sini (hanya Anda yang mendengar)"
+  },
+  "op_edit": {
+    "message": "Ubah"
+  },
+  "op_delete": {
+    "message": "Hapus"
+  },
+  "op_err_text": {
+    "message": "Ketik teks kalimatnya"
+  },
+  "op_saved": {
+    "message": "Kalimat disimpan"
+  },
+  "op_added": {
+    "message": "Kalimat ditambahkan"
+  },
+  "op_confirm_delete": {
+    "message": "Hapus “$1”?"
+  },
+  "op_deleted": {
+    "message": "Dihapus"
+  },
+  "op_err_preview": {
+    "message": "Gagal memutar: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "Klip tidak ditemukan. Tambahkan lagi."
+  },
+  "op_clips": {
+    "message": "Tambah klip"
+  },
+  "op_clips_hint": {
+    "message": "Gunakan file audio atau video (hanya suaranya yang disimpan), tautan file langsung, atau rekam sendiri. Lalu potong. Klip yang disimpan maksimal 1 MB."
+  },
+  "op_choose_file": {
+    "message": "📁 Pilih file"
+  },
+  "op_link_ph": {
+    "message": "https://…/suara.mp3  (tautan langsung .mp3 .mp4 .wav .ogg .webm)"
+  },
+  "op_fetch": {
+    "message": "🔗 Ambil"
+  },
+  "op_record": {
+    "message": "🎙 Rekam (10 dtk)"
+  },
+  "op_recording": {
+    "message": "⏹ Hentikan rekaman (sisa $1 dtk)"
+  },
+  "op_my_recording": {
+    "message": "Rekaman saya"
+  },
+  "op_video_sites": {
+    "message": "Halaman YouTube, Instagram, dan situs video lain tidak pernah diunduh. Putar langsung dengan tombol di toolbar → “Kirim suara tab ini”."
+  },
+  "op_start": {
+    "message": "Awal"
+  },
+  "op_end": {
+    "message": "Akhir"
+  },
+  "op_preview_sel": {
+    "message": "▶ Dengarkan pilihan"
+  },
+  "op_stop": {
+    "message": "⏹ Hentikan"
+  },
+  "op_caption": {
+    "message": "Teks keterangan"
+  },
+  "op_tone_speed": {
+    "message": "Nada (hanya kecepatan)"
+  },
+  "op_save_clip": {
+    "message": "💾 Simpan klip"
+  },
+  "op_selection": {
+    "message": "$1 → $2 ($3 dtk)"
+  },
+  "op_fit": {
+    "message": "Disimpan pada $1 kHz, di bawah 1 MB"
+  },
+  "op_too_long": {
+    "message": "Terlalu panjang untuk 1 MB. Buat di bawah sekitar $1 dtk."
+  },
+  "op_clip_saved": {
+    "message": "Klip disimpan ($1 KB)"
+  },
+  "op_err_type": {
+    "message": "Gunakan file audio atau video (MP3, WAV, OGG, M4A, MP4, WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "Tidak ada suara di file itu"
+  },
+  "op_err_too_big_source": {
+    "message": "File itu terlalu besar (maks 50 MB sebelum dipotong)"
+  },
+  "op_err_url": {
+    "message": "Tempel tautan lengkap yang diawali https://"
+  },
+  "op_err_video_page": {
+    "message": "Itu halaman video, bukan file. MemeBox tidak pernah mengunduh dari YouTube, Instagram, atau situs video lain. Buka di tab dan pakai tombol toolbar → “Kirim suara tab ini”."
+  },
+  "op_err_not_file": {
+    "message": "Tautan harus berakhiran .mp3, .mp4, .wav, .ogg, atau .webm"
+  },
+  "op_err_blocked": {
+    "message": "$1 tidak mengizinkan situs lain memakai filenya (memblokir CORS). Unduh filenya dan pakai “Pilih file”."
+  },
+  "op_err_http": {
+    "message": "Situs web menjawab dengan kesalahan $1"
+  },
+  "op_err_mic": {
+    "message": "MemeBox perlu izin Anda untuk memakai mikrofon saat merekam"
+  },
+  "op_packs": {
+    "message": "Paket"
+  },
+  "op_pack_add": {
+    "message": "Tambah"
+  },
+  "op_pack_reset": {
+    "message": "Atur ulang"
+  },
+  "op_pack_remove": {
+    "message": "Hapus"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 kalimat"
+  },
+  "op_pack_added": {
+    "message": "Paket “$1” ditambahkan"
+  },
+  "op_pack_removed": {
+    "message": "Paket “$1” dihapus"
+  },
+  "op_share_packs": {
+    "message": "Bagikan paket"
+  },
+  "op_export_all": {
+    "message": "Semua kalimat saya"
+  },
+  "op_export": {
+    "message": "⬇ Ekspor .memepack.json"
+  },
+  "op_import": {
+    "message": "⬆ Impor .memepack.json"
+  },
+  "op_packs_hint": {
+    "message": "Paket berisi kalimat beserta klipnya. Mengimpor akan menambah kalimat Anda, dan kalimat dengan id yang sama diganti. File diperiksa dengan ketat."
+  },
+  "op_my_library": {
+    "message": "Kalimat MemeBox saya"
+  },
+  "op_exported": {
+    "message": "$1 kalimat diekspor"
+  },
+  "op_export_partial": {
+    "message": "$1 kalimat diekspor (klip dari versi lama dilewati)"
+  },
+  "op_import_failed": {
+    "message": "Impor gagal: $1"
+  },
+  "op_import_invalid": {
+    "message": "File paket itu tidak valid. Lihat daftar di bawah."
+  },
+  "op_imported": {
+    "message": "$1 kalimat dan $2 klip diimpor dari “$3”"
+  },
+  "op_party": {
+    "message": "Kalimat terjadwal / Mode pesta"
+  },
+  "op_party_switch": {
+    "message": "Putar kalimat terjadwal secara otomatis"
+  },
+  "op_party_hint": {
+    "message": "Mati secara bawaan. Hanya berjalan saat tab panggilan terbuka dan mikrofon terhubung."
+  },
+  "op_line": {
+    "message": "Kalimat"
+  },
+  "op_when": {
+    "message": "Kapan"
+  },
+  "op_at_clock": {
+    "message": "Pada jam tertentu"
+  },
+  "op_every_n": {
+    "message": "Setiap N menit"
+  },
+  "op_time": {
+    "message": "Waktu"
+  },
+  "op_minutes": {
+    "message": "Menit"
+  },
+  "op_add_timer": {
+    "message": "Tambah timer"
+  },
+  "op_no_timers": {
+    "message": "Belum ada timer."
+  },
+  "op_daily_at": {
+    "message": "setiap hari pukul $1"
+  },
+  "op_every": {
+    "message": "setiap $1 mnt"
+  },
+  "op_enabled": {
+    "message": "Aktif"
+  },
+  "op_deleted_line": {
+    "message": "(kalimat dihapus)"
+  },
+  "op_party_on": {
+    "message": "Mode pesta aktif 🎉"
+  },
+  "op_party_off": {
+    "message": "Mode pesta mati"
+  },
+  "op_timer_added": {
+    "message": "Timer ditambahkan"
+  },
+  "op_timer_added_off": {
+    "message": "Timer ditambahkan. Nyalakan “Putar kalimat terjadwal secara otomatis” untuk memakainya."
+  },
+  "op_privacy": {
+    "message": "Privasi"
+  },
+  "op_privacy_text": {
+    "message": "Mikrofon dan audio tab Anda hanya dicampur di dalam browser ini. Tidak ada yang direkam, disimpan, atau dikirim. Tanpa akun, server, atau analitik."
+  },
+  "cmdToggleVoice": {
+    "message": "Pengubah suara nyala/mati"
+  },
+  "tab_volume": {
+    "message": "Volume suara tab di panggilan"
+  },
+  "voice_label": {
+    "message": "🎤 Suara saya"
+  },
+  "voice_tip": {
+    "message": "Mengubah suara ANDA secara langsung di panggilan. Alt+V untuk menyalakan dan mematikan. \"Normal\" langsung mengembalikan suara asli Anda."
+  },
+  "voice_off": {
+    "message": "Normal (mati)"
+  },
+  "voice_chipmunk": {
+    "message": "Tupai"
+  },
+  "voice_deep": {
+    "message": "Berat"
+  },
+  "voice_robot": {
+    "message": "Robot"
+  },
+  "voice_echo": {
+    "message": "Gema"
+  },
+  "voice_radio": {
+    "message": "Radio"
+  },
+  "voice_now_on": {
+    "message": "Suara Anda: $1"
+  },
+  "voice_now_off": {
+    "message": "Pengubah suara mati, suara normal Anda kembali"
+  },
+  "voice_after_join": {
+    "message": "Disimpan. Dimulai saat Anda bergabung ke panggilan."
+  },
+  "cam_label": {
+    "message": "📷 Keterangan di kamera saya"
+  },
+  "cam_tip": {
+    "message": "Menulis teks meme di video yang dilihat orang lain dari Anda. Matikan lalu nyalakan kamera untuk menerapkannya. Pratinjau Anda mungkin terlihat terbalik, tapi orang lain melihatnya dengan benar."
+  },
+  "cam_on": {
+    "message": "Keterangan di kamera aktif. Matikan lalu nyalakan kamera untuk menerapkannya."
+  },
+  "cam_off": {
+    "message": "Keterangan di kamera mati. Matikan lalu nyalakan kamera untuk menerapkannya."
+  },
+  "pp_volume": {
+    "message": "Volume di panggilan"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "Simpan sebagai file audio (WAV) untuk dibagikan di mana saja"
+  },
+  "op_wav_saved": {
+    "message": "$1 disimpan"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "Membuka WhatsApp dengan teks yang sudah terisi. Anda yang memilih chat dan menekan kirim."
+  },
+  "op_share_text": {
+    "message": "$1 😂 Dibuat dengan MemeBox: $2"
+  },
+  "feedback": {
+    "message": "Kirim masukan"
+  },
+  "ask_title": {
+    "message": "Suka MemeBox?"
+  },
+  "ask_rate": {
+    "message": "⭐ Beri nilai"
+  },
+  "ask_feedback": {
+    "message": "Kirim masukan"
+  },
+  "op_feedback": {
+    "message": "💬 Kirim masukan"
+  },
+  "pro_only": {
+    "message": "Ini adalah fitur MemeBox Pro."
+  },
+  "ob_title": {
+    "message": "Selamat datang di MemeBox 😂"
+  },
+  "ob_sub": {
+    "message": "Tiga langkah dan Anda jadi orang paling lucu di panggilan."
+  },
+  "ob_s1": {
+    "message": "Gabung ke panggilan di browser"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet, Zoom (web), Microsoft Teams (web), atau Discord (web). Tombol 😂 muncul di sudut. Kalau panggilan sudah terbuka, muat ulang sekali."
+  },
+  "ob_s2": {
+    "message": "Klik 😂 untuk memutar meme"
+  },
+  "ob_s2_text": {
+    "message": "Meme masuk ke mikrofon Anda, jadi semua orang di panggilan mendengarnya. Mereka tidak perlu MemeBox. Saat Anda dibisukan, meme juga diam."
+  },
+  "ob_s3": {
+    "message": "Klik kanan 😂 untuk yang lainnya"
+  },
+  "ob_s3_text": {
+    "message": "Pilih kalimat apa saja, cari, ubah suara Anda (Alt+V), atau putar favorit dengan Alt+1 sampai Alt+9. Untuk memutar video YouTube ke panggilan, klik ikon MemeBox di toolbar pada tab itu."
+  },
+  "ob_mic": {
+    "message": "Tes mikrofon"
+  },
+  "ob_mic_hint": {
+    "message": "Periksa apakah mikrofon Anda berfungsi. Suara tetap di halaman ini. Tidak ada yang direkam."
+  },
+  "ob_mic_start": {
+    "message": "🎙 Mulai tes mikrofon"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ Hentikan"
+  },
+  "ob_hear": {
+    "message": "🔊 Dengar sebuah meme"
+  },
+  "ob_mic_talk": {
+    "message": "Ucapkan sesuatu…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ Suara Anda terdengar. Mikrofon berfungsi."
+  },
+  "ob_mic_blocked": {
+    "message": "Mikrofon diblokir. Klik ikon kamera/mikrofon di bilah alamat dan izinkan."
+  },
+  "ob_mic_none": {
+    "message": "Mikrofon tidak ditemukan. Pasang satu dan coba lagi."
+  },
+  "ob_done": {
+    "message": "Siap. Kalimat, klip, dan paket Anda ada di Pengaturan."
+  },
+  "ob_settings": {
+    "message": "⚙️ Buka pengaturan"
+  },
+  "ob_close": {
+    "message": "Ayo mulai!"
+  },
+  "pp_reload_tab": {
+    "message": "Tab panggilan ini sudah terbuka sebelum MemeBox dipasang atau diperbarui. Muat ulang (F5), lalu gabung ke panggilan lagi."
+  },
+  "tag_picture": {
+    "message": "Ada gambar"
+  },
+  "op_picture": {
+    "message": "Gambar (opsional)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 Pilih gambar"
+  },
+  "op_picture_remove": {
+    "message": "Hapus gambar"
+  },
+  "op_picture_hint": {
+    "message": "Muncul di layar Anda saat kalimat diputar, dan di kamera Anda jika \"Keterangan di kamera saya\" aktif. Pakai gambar Anda sendiri, atau milik orang lain hanya dengan izin mereka."
+  },
+  "op_err_picture": {
+    "message": "File itu bukan gambar yang bisa dipakai MemeBox. Coba PNG, JPG, WEBP, atau GIF."
+  },
+  "op_err_picture_big": {
+    "message": "Gambar itu terlalu besar. Coba yang lebih kecil (hingga 20 MB)."
+  },
+  "pro_pictures": {
+    "message": "Anda sudah memakai $1 meme bergambar. Dapatkan lebih banyak dengan MemeBox Pro atau paket gambar (Opsi → MemeBox Pro)."
+  },
+  "op_bulk": {
+    "message": "📂 Impor banyak file"
+  },
+  "op_bulk_hint": {
+    "message": "Impor banyak file: tiap file menjadi klip (dipotong agar muat 1 MB) dengan nama filenya, di kategori \"clips\"."
+  },
+  "op_bulk_working": {
+    "message": "Mengimpor $1 dari $2…"
+  },
+  "op_bulk_done": {
+    "message": "$1 klip ditambahkan. $2 dilewati."
+  },
+  "op_bulk_skipped": {
+    "message": "Dilewati: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "Pro sedang dimatikan, jadi semua fitur gratis untuk semua orang."
+  },
+  "op_pro_active": {
+    "message": "✅ MemeBox Pro aktif di browser ini."
+  },
+  "op_pro_free": {
+    "message": "Paket gratis: hingga $1 meme bergambar, 10 klip, paket Umum dan Kampus."
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "Aktifkan"
+  },
+  "op_buy": {
+    "message": "⭐ Beli Pro atau lebih banyak gambar"
+  },
+  "op_license_remove": {
+    "message": "Hapus kunci"
+  },
+  "op_license_ok": {
+    "message": "Kunci aktif. Selamat bersenang-senang!"
+  },
+  "op_license_offline": {
+    "message": "Tidak bisa menghubungi situs MemeBox. Periksa internet Anda dan coba lagi."
+  },
+  "op_license_revoked": {
+    "message": "Kunci $1 sudah dimatikan."
+  },
+  "op_license_stale": {
+    "message": "Kunci $1 sudah lama tidak bisa diperiksa. Sambungkan ke internet agar MemeBox bisa memeriksanya lagi."
+  },
+  "op_license_pro": {
+    "message": "Kunci $1: Pro, tanpa batas."
+  },
+  "op_license_slots": {
+    "message": "Kunci $1: $2 meme bergambar tambahan."
+  },
+  "settings_label": {
+    "message": "🎛 Suara & nada"
+  },
+  "op_theme": {
+    "message": "🎨 Warna"
+  },
+  "theme_auto": {
+    "message": "Otomatis"
+  },
+  "theme_light": {
+    "message": "Terang"
+  },
+  "theme_dark": {
+    "message": "Gelap"
+  },
+  "theme_sunny": {
+    "message": "Cerah"
+  },
+  "theme_neon": {
+    "message": "Neon"
+  },
+  "theme_candy": {
+    "message": "Permen"
+  },
+  "ob_theme_hint": {
+    "message": "Pilih tampilan untuk MemeBox. Anda bisa menggantinya kapan saja di Pengaturan."
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "id",
+    "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 Bahasa"
+  },
+  "lang_auto": {
+    "message": "Otomatis (seperti Chrome)"
+  },
+  "lang_reload": {
+    "message": "Bahasa diganti. Muat ulang tab panggilan ini untuk melihat MemeBox dalam bahasa itu."
+  }
+}

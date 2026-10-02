@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>MemeBox was removed</title>
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/prefs.js"></script>
+</head>
+<body class="page-bg">
+  <main class="wrap narrow">
+    <header class="page-head">
+      <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
+      <h1 data-t="un_title">MemeBox was removed</h1>
+      <p class="muted" data-t="un_intro">Sorry to see you go. One quick question helps us make it better.</p>
+    </header>
+
+    <form id="form" class="card" data-type="uninstall" novalidate>
+      <fieldset class="checks column">
+        <legend data-t="un_why">Why did you remove it?</legend>
+        <label><input type="radio" name="reason" value="didnt-work" required> <span data-t="un_r_work">It didn't work on my call</span></label>
+        <label><input type="radio" name="reason" value="too-hard"> <span data-t="un_r_hard">Too hard to use</span></label>
+        <label><input type="radio" name="reason" value="not-funny"> <span data-t="un_r_funny">Not funny</span></label>
+        <label><input type="radio" name="reason" value="found-another"> <span data-t="un_r_another">I found another one</span></label>
+        <label><input type="radio" name="reason" value="other"> <span data-t="un_r_other">Other</span></label>
+      </fieldset>
+      <label class="field"><span data-t="un_more">Anything else? (optional)</span>
+        <textarea name="message" rows="3" maxlength="1000"></textarea>
+      </label>
+
+      <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+
+      <div id="turnstile"></div>
+      <p id="error" class="error" role="alert" hidden></p>
+      <button type="submit" class="primary" data-t="un_send">Send</button>
+    </form>
+
+    <section id="thanks" class="card thanks" hidden>
+      <h2 data-t="fb_thanks">Thank you! 🙏</h2>
+      <p data-t="un_thanks_text">That really helps. You can close this tab.</p>
+    </section>
+
+    <footer class="foot"><a href="/privacy" data-t="privacy">Privacy</a> <div class="prefs" data-prefs></div></footer>
+  </main>
+  <script src="/assets/form.js"></script>
+</body>
+</html>

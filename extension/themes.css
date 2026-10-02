@@ -1,0 +1,45 @@
+/* MemeBox color themes for extension pages (Options, popup, welcome). lib/theme.js sets
+   <html data-theme>. "auto" (or no attribute) follows the computer's light/dark setting.
+   The on-call panel has the same themes in ui.js. The website has them in site.css. */
+:root, :root[data-theme="light"] {
+  --bg: #f6f7f9; --card: #ffffff; --text: #1c1b20; --muted: #5f6368; --line: #e3e5e8; --field: #ffffff;
+  --brand: #ffd43b; --brand-2: #ffa94d; --on-brand: #1c1b20; --accent: #ffd43b; --accent-strong: #f59f00;
+  --focus: #1a73e8; --danger: #c5221f; --danger-bg: #fdecea; --ok: #2b8a3e;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]), :root[data-theme="auto"] {
+    --bg: #141417; --card: #1f1f24; --text: #ecebf0; --muted: #a3a4ad; --line: #34343c; --field: #18181c;
+    --brand: #ffd43b; --brand-2: #ffa94d; --on-brand: #1c1b20; --accent: #ffd43b; --accent-strong: #ffa94d;
+    --focus: #74a9ff; --danger: #f28b82; --danger-bg: #3b1f1d; --ok: #8ce99a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141417; --card: #1f1f24; --text: #ecebf0; --muted: #a3a4ad; --line: #34343c; --field: #18181c;
+  --brand: #ffd43b; --brand-2: #ffa94d; --on-brand: #1c1b20; --accent: #ffd43b; --accent-strong: #ffa94d;
+  --focus: #74a9ff; --danger: #f28b82; --danger-bg: #3b1f1d; --ok: #8ce99a;
+  color-scheme: dark;
+}
+:root[data-theme="sunny"] {
+  --bg: #fff8d6; --card: #fffdf0; --text: #3d2c00; --muted: #7a6320; --line: #f3dd8a; --field: #fffef7;
+  --brand: #ffd43b; --brand-2: #ff922b; --on-brand: #3d2c00; --accent: #ffd43b; --accent-strong: #e67700;
+  --focus: #1864ab; --danger: #c92a2a; --danger-bg: #ffe3e3; --ok: #2b8a3e;
+  color-scheme: light;
+}
+:root[data-theme="neon"] {
+  --bg: #100b24; --card: #1a1238; --text: #f3eaff; --muted: #b8a6e6; --line: #3b2d6e; --field: #130d2c;
+  --brand: #f72585; --brand-2: #7209b7; --on-brand: #ffffff; --accent: #f72585; --accent-strong: #4cc9f0;
+  --focus: #4cc9f0; --danger: #ff8fab; --danger-bg: #3a1030; --ok: #80ffdb;
+  color-scheme: dark;
+}
+:root[data-theme="candy"] {
+  --bg: #fff0f6; --card: #ffffff; --text: #3b1030; --muted: #8c4a73; --line: #fcc2d7; --field: #fffafd;
+  --brand: #faa2c1; --brand-2: #f06595; --on-brand: #3b1030; --accent: #faa2c1; --accent-strong: #d6336c;
+  --focus: #7048e8; --danger: #c2255c; --danger-bg: #ffdeeb; --ok: #2b8a3e;
+  color-scheme: light;
+}
+:root {
+  --wave-bg: color-mix(in srgb, var(--muted) 12%, var(--card));
+  --sel: color-mix(in srgb, var(--brand) 35%, transparent);
+}

@@ -1,0 +1,24 @@
+# Cloudflare Pages project for the MemeBox site. Run wrangler commands from this folder (site/).
+# Static files: public/   API (Pages Functions): functions/   Shared code: src/
+name = "memebox"
+pages_build_output_dir = "public"
+compatibility_date = "2026-09-01"
+
+# Feedback database. Create it with:  npx wrangler d1 create memebox-feedback
+# then paste the database_id it prints below.
+[[d1_databases]]
+binding = "DB"
+database_name = "memebox-feedback"
+database_id = "77518261-7425-4352-838d-f0d474ca67ec"
+
+# Settings are NOT kept in this file. Add them in the Cloudflare dashboard:
+# Workers & Pages → memebox → Settings → Variables and secrets → Add (type: Secret).
+# (Or: npx wrangler pages secret put NAME). Values in this file would overwrite the dashboard.
+#   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY   the feedback form's spam check
+#   ADMIN_KEY                                   your /admin password
+#   RATE_SALT                                   optional, a long random string
+#   UPI_ID                                      your UPI ID for /buy, e.g. yourname@okaxis
+#   UPI_NAME                                    optional, the name buyers see (default MemeBox)
+# Until UPI_ID is set, /buy says "Payments aren't open yet". Until the Turnstile keys and
+# ADMIN_KEY are set, the feedback form and /admin say they aren't set up yet.
+# For local runs, put the same names in site/.dev.vars (git-ignored).

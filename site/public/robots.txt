@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin
+Disallow: /api/
+Disallow: /uninstall
+
+Sitemap: https://memebox.pages.dev/sitemap.xml

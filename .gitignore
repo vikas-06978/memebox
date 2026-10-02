@@ -1,0 +1,20 @@
+# dependencies & build output
+node_modules/
+dist/
+*.zip
+*.crx
+*.pem
+
+# Cloudflare and secrets: never commit these
+.wrangler/
+.dev.vars
+.env*
+
+# test output
+test-results/
+playwright-report/
+tests/.tmp/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,880 @@
+{
+  "extName": {
+    "message": "MemeBox: لوحة أصوات الميمز ومغيّر الصوت للمكالمات"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "لوحة أصوات ميمز ومغيّر صوت: شغّل الميمز والمؤثرات الصوتية في الميكروفون على Google Meet وZoom وTeams وDiscord."
+  },
+  "actionTitle": {
+    "message": "MemeBox: أرسل صوت هذا التبويب إلى مكالمتك"
+  },
+  "cmdFav1": {
+    "message": "تشغيل المفضل 1"
+  },
+  "cmdFav2": {
+    "message": "تشغيل المفضل 2"
+  },
+  "cmdFav3": {
+    "message": "تشغيل المفضل 3"
+  },
+  "cmdFav4": {
+    "message": "تشغيل المفضل 4"
+  },
+  "cmdFav5": {
+    "message": "تشغيل المفضل 5"
+  },
+  "cmdFav6": {
+    "message": "تشغيل المفضل 6"
+  },
+  "cmdFav7": {
+    "message": "تشغيل المفضل 7"
+  },
+  "cmdFav8": {
+    "message": "تشغيل المفضل 8"
+  },
+  "cmdFav9": {
+    "message": "تشغيل المفضل 9"
+  },
+  "cmdStopAll": {
+    "message": "إيقاف كل الميمز"
+  },
+  "cmdToggleUi": {
+    "message": "إظهار / إخفاء زر 😂"
+  },
+  "join_first": {
+    "message": "انضم إلى المكالمة أولاً، ثم اضغط 😂"
+  },
+  "err_reload": {
+    "message": "تم تحديث MemeBox. أعد تحميل تبويب المكالمة."
+  },
+  "err_play": {
+    "message": "تعذّر التشغيل: $1"
+  },
+  "muted_nobody": {
+    "message": "الميكروفون مكتوم، لذا الميمز صامتة أيضاً. ألغِ الكتم وحاول مرة أخرى."
+  },
+  "mic_test_caption": {
+    "message": "🔔 اختبار الميكروفون"
+  },
+  "no_lines": {
+    "message": "لا توجد عبارات بعد. أضف بعضها من الخيارات."
+  },
+  "slot_empty": {
+    "message": "لا شيء على Alt+$1 بعد. اختر مكاناً للمفضلة من الخيارات."
+  },
+  "stopped": {
+    "message": "⏹ تم الإيقاف"
+  },
+  "ui_hidden": {
+    "message": "MemeBox مخفي. اضغط Alt+M لإظهاره مرة أخرى."
+  },
+  "ui_shown": {
+    "message": "عاد MemeBox 😂"
+  },
+  "tab_on": {
+    "message": "📺 صوت تبويبك الآخر يدخل إلى المكالمة"
+  },
+  "tab_off": {
+    "message": "📺 تم إيقاف صوت التبويب الآخر"
+  },
+  "tab_err": {
+    "message": "تعذّر استخدام صوت ذلك التبويب: $1"
+  },
+  "tab_bar": {
+    "message": "📺 صوت تبويب آخر يعمل في الميكروفون"
+  },
+  "tab_stop": {
+    "message": "⏹ إيقاف التبويب"
+  },
+  "st_none": {
+    "message": "لم تنضم إلى مكالمة بعد. انضم إليها، ثم اضغط 😂"
+  },
+  "st_suspended": {
+    "message": "انقر مرة واحدة في أي مكان في الصفحة لتفعيل الميمز"
+  },
+  "st_muted": {
+    "message": "الميكروفون مكتوم، لذا تبقى الميمز صامتة حتى تلغي الكتم"
+  },
+  "st_live": {
+    "message": "الميمز تدخل إلى الميكروفون"
+  },
+  "fab_label": {
+    "message": "MemeBox: تشغيل ميم عشوائي"
+  },
+  "fab_tip": {
+    "message": "نقرة: ميم عشوائي · ضغط مطوّل أو نقر يمين: اللوحة · اسحب للتحريك"
+  },
+  "list_btn": {
+    "message": "اختر ميماً لتشغيله"
+  },
+  "search_ph": {
+    "message": "ابحث في العبارات…"
+  },
+  "btn_random": {
+    "message": "🎲 عشوائي"
+  },
+  "btn_mic_test": {
+    "message": "🔔 اختبار المايك"
+  },
+  "btn_mic_test_tip": {
+    "message": "يشغّل رنة قصيرة في الميكروفون. اسأل أحداً في المكالمة إن سمعها."
+  },
+  "btn_stop_all": {
+    "message": "⏹ إيقاف الكل"
+  },
+  "volume": {
+    "message": "صوت الميمز"
+  },
+  "monitor_label": {
+    "message": "🎧 أسمع الميمز أنا أيضاً"
+  },
+  "monitor_tip": {
+    "message": "المكالمة تتلقى الميم دائماً عبر الميكروفون. هذا يضيف فقط نسخة هادئة في سماعاتك."
+  },
+  "monitor_on": {
+    "message": "🎧 أنت والمكالمة تسمعون الميمز"
+  },
+  "monitor_off": {
+    "message": "🔇 المكالمة وحدها تسمع الميمز الآن"
+  },
+  "monitor_on_tip": {
+    "message": "أنت تسمع الميمز أيضاً (انقر لإيقاف سماعها، والمكالمة تظل تسمعها)"
+  },
+  "monitor_off_tip": {
+    "message": "أنت لا تسمع الميمز (انقر لتسمعها أيضاً، والمكالمة تسمعها في كل الأحوال)"
+  },
+  "duck_label": {
+    "message": "🦆 خفض تلقائي"
+  },
+  "duck_tip": {
+    "message": "ينخفض صوت الميمز أثناء كلامك"
+  },
+  "options": {
+    "message": "الخيارات"
+  },
+  "close": {
+    "message": "إغلاق (Esc)"
+  },
+  "panel_foot": {
+    "message": "انقر عبارة لتشغيلها · 😂 عشوائي · Alt+1…9 المفضلة · Alt+0 إيقاف · Alt+M إخفاء"
+  },
+  "timers_on": {
+    "message": "⏰ العبارات المجدولة مفعّلة (أثناء المكالمة): $1"
+  },
+  "chip_all": {
+    "message": "الكل"
+  },
+  "chip_star": {
+    "message": "المفضلة"
+  },
+  "chip_recent": {
+    "message": "الأخيرة"
+  },
+  "cat_general": {
+    "message": "عام"
+  },
+  "cat_college": {
+    "message": "الجامعة"
+  },
+  "cat_cricket": {
+    "message": "كريكيت"
+  },
+  "cat_office": {
+    "message": "المكتب"
+  },
+  "cat_party": {
+    "message": "حفلة"
+  },
+  "cat_clips": {
+    "message": "مقاطع"
+  },
+  "cat_mine": {
+    "message": "عباراتي"
+  },
+  "empty_star": {
+    "message": "لا مفضلة بعد. اضغط ☆ على عبارة."
+  },
+  "empty_recent": {
+    "message": "لم يُشغَّل شيء بعد"
+  },
+  "empty_search": {
+    "message": "لا توجد عبارة مطابقة."
+  },
+  "tag_clip": {
+    "message": "مقطع مرفوع"
+  },
+  "tag_lang": {
+    "message": "اللغة"
+  },
+  "tag_shortcut": {
+    "message": "اختصار"
+  },
+  "play": {
+    "message": "تشغيل"
+  },
+  "star": {
+    "message": "أضف إلى المفضلة"
+  },
+  "unstar": {
+    "message": "أزل من المفضلة"
+  },
+  "pp_checking": {
+    "message": "جارٍ التحقق…"
+  },
+  "pp_send": {
+    "message": "🎙 أرسل صوت هذا التبويب إلى مكالمتي"
+  },
+  "pp_stop": {
+    "message": "⏹ أوقف إرسال هذا التبويب"
+  },
+  "pp_how": {
+    "message": "كيف يعمل؟"
+  },
+  "pp_how1": {
+    "message": "انضم إلى مكالمتك في تبويب آخر (Meet أو Zoom على الويب أو Teams على الويب أو Discord على الويب)."
+  },
+  "pp_how2": {
+    "message": "في هذا التبويب، شغّل فيديو YouTube أو ريل Instagram عند اللحظة المضحكة."
+  },
+  "pp_how3": {
+    "message": "انقر “أرسل صوت هذا التبويب” وسيسمعه الجميع في المكالمة عبر الميكروفون."
+  },
+  "pp_how4": {
+    "message": "انقر ⏹ عند الانتهاء، أو استخدم ⏹ في لوحة 😂."
+  },
+  "pp_how_note": {
+    "message": "لا يتم تنزيل أو تسجيل أي شيء. الصوت يُمزج مباشرة في الميكروفون فقط."
+  },
+  "pp_settings": {
+    "message": "⚙️ العبارات والمقاطع والإعدادات"
+  },
+  "pp_no_call": {
+    "message": "انضم إلى مكالمة أولاً (في تبويب آخر)، ثم عد إلى تبويب الفيديو وانقر هنا."
+  },
+  "pp_this_is_call": {
+    "message": "هذا تبويب مكالمتك. افتح تبويب YouTube / Instagram وانقر MemeBox هناك لإرسال صوته. استخدم 😂 في هذه الصفحة للميمز."
+  },
+  "pp_sending": {
+    "message": "✅ صوت هذا التبويب يدخل إلى مكالمتك."
+  },
+  "pp_replace": {
+    "message": "يتم إرسال تبويب آخر الآن. إرسال هذا التبويب سيحلّ محله."
+  },
+  "pp_start_video": {
+    "message": "شغّل الفيديو عند الجزء المضحك، ثم:"
+  },
+  "pp_connecting": {
+    "message": "جارٍ الاتصال…"
+  },
+  "pp_join_unmute": {
+    "message": "انضم إلى المكالمة وألغِ كتم الميكروفون أولاً."
+  },
+  "pp_send_failed": {
+    "message": "تعذّر إرسال هذا التبويب: $1"
+  },
+  "pp_cant_capture": {
+    "message": "لا يسمح Chrome بالتقاط هذا التبويب: $1"
+  },
+  "pp_error": {
+    "message": "خطأ: $1"
+  },
+  "op_sub": {
+    "message": "عباراتك ومقاطعك وحزمك ووضع الحفلة. كل شيء يبقى في هذا المتصفح."
+  },
+  "op_nav_lines": {
+    "message": "العبارات"
+  },
+  "op_nav_clips": {
+    "message": "المقاطع"
+  },
+  "op_nav_packs": {
+    "message": "الحزم"
+  },
+  "op_nav_party": {
+    "message": "وضع الحفلة"
+  },
+  "op_lines": {
+    "message": "العبارات"
+  },
+  "op_text": {
+    "message": "النص الظاهر في التعليق"
+  },
+  "op_text_ph": {
+    "message": "مثلاً Bhai tu rehne de"
+  },
+  "op_say": {
+    "message": "انطقها هكذا (اختياري، مثلاً بالديفاناغاري لعبارات الهنغليزية)"
+  },
+  "op_lang": {
+    "message": "اللغة"
+  },
+  "op_tone": {
+    "message": "النبرة"
+  },
+  "op_category": {
+    "message": "الفئة"
+  },
+  "op_shortcut": {
+    "message": "اختصار"
+  },
+  "op_line_volume": {
+    "message": "صوت هذه العبارة"
+  },
+  "op_add_line": {
+    "message": "أضف العبارة"
+  },
+  "op_save_changes": {
+    "message": "احفظ التغييرات"
+  },
+  "op_preview": {
+    "message": "▶ استماع"
+  },
+  "op_cancel": {
+    "message": "إلغاء"
+  },
+  "op_search": {
+    "message": "بحث…"
+  },
+  "op_all_categories": {
+    "message": "كل الفئات"
+  },
+  "op_count": {
+    "message": "$1 من $2 عبارة"
+  },
+  "op_col_line": {
+    "message": "العبارة"
+  },
+  "op_col_about": {
+    "message": "التفاصيل"
+  },
+  "op_col_actions": {
+    "message": "الإجراءات"
+  },
+  "op_shortcut_hint": {
+    "message": "يعمل Alt+1…3 وAlt+0 في كل مكان. غيّر المفاتيح أو أضف Alt+4…9 من"
+  },
+  "op_none": {
+    "message": "لا شيء"
+  },
+  "op_no_lines": {
+    "message": "لا توجد عبارات بعد. أضف واحدة في الأعلى، أو أضف حزمة في الأسفل."
+  },
+  "op_preview_tip": {
+    "message": "استمع هنا (أنت فقط تسمع)"
+  },
+  "op_edit": {
+    "message": "تعديل"
+  },
+  "op_delete": {
+    "message": "حذف"
+  },
+  "op_err_text": {
+    "message": "اكتب نص العبارة"
+  },
+  "op_saved": {
+    "message": "تم حفظ العبارة"
+  },
+  "op_added": {
+    "message": "تمت إضافة العبارة"
+  },
+  "op_confirm_delete": {
+    "message": "حذف “$1”؟"
+  },
+  "op_deleted": {
+    "message": "تم الحذف"
+  },
+  "op_err_preview": {
+    "message": "تعذّر الاستماع: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "لم يُعثر على المقطع. أضفه مرة أخرى."
+  },
+  "op_clips": {
+    "message": "أضف مقطعاً"
+  },
+  "op_clips_hint": {
+    "message": "استخدم ملفاً صوتياً أو فيديو (يُحفظ الصوت فقط)، أو رابط ملف مباشر، أو سجّل صوتك. ثم قصّه. حجم المقطع المحفوظ 1 ميغابايت كحد أقصى."
+  },
+  "op_choose_file": {
+    "message": "📁 اختر ملفاً"
+  },
+  "op_link_ph": {
+    "message": "https://…/sound.mp3  (رابط مباشر ‎.mp3 ‎.mp4 ‎.wav ‎.ogg ‎.webm)"
+  },
+  "op_fetch": {
+    "message": "🔗 جلب"
+  },
+  "op_record": {
+    "message": "🎙 تسجيل (10 ث)"
+  },
+  "op_recording": {
+    "message": "⏹ أوقف التسجيل (متبقٍ $1 ث)"
+  },
+  "op_my_recording": {
+    "message": "تسجيلي"
+  },
+  "op_video_sites": {
+    "message": "صفحات YouTube وInstagram ومواقع الفيديو الأخرى لا تُنزَّل أبداً. شغّلها مباشرة بزر شريط الأدوات ← “أرسل صوت هذا التبويب”."
+  },
+  "op_start": {
+    "message": "البداية"
+  },
+  "op_end": {
+    "message": "النهاية"
+  },
+  "op_preview_sel": {
+    "message": "▶ استمع إلى التحديد"
+  },
+  "op_stop": {
+    "message": "⏹ إيقاف"
+  },
+  "op_caption": {
+    "message": "نص التعليق"
+  },
+  "op_tone_speed": {
+    "message": "النبرة (السرعة فقط)"
+  },
+  "op_save_clip": {
+    "message": "💾 احفظ المقطع"
+  },
+  "op_selection": {
+    "message": "$1 ← $2 ($3 ث)"
+  },
+  "op_fit": {
+    "message": "يُحفظ بتردد $1 كيلوهرتز، أقل من 1 ميغابايت"
+  },
+  "op_too_long": {
+    "message": "طويل جداً على 1 ميغابايت. اجعله أقل من نحو $1 ث."
+  },
+  "op_clip_saved": {
+    "message": "تم حفظ المقطع ($1 كيلوبايت)"
+  },
+  "op_err_type": {
+    "message": "استخدم ملفاً صوتياً أو فيديو (MP3 أو WAV أو OGG أو M4A أو MP4 أو WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "لم يُعثر على أي صوت في ذلك الملف"
+  },
+  "op_err_too_big_source": {
+    "message": "الملف كبير جداً (50 ميغابايت كحد أقصى قبل القص)"
+  },
+  "op_err_url": {
+    "message": "الصق رابطاً كاملاً يبدأ بـ https://"
+  },
+  "op_err_video_page": {
+    "message": "هذه صفحة فيديو وليست ملفاً. لا ينزّل MemeBox أبداً من YouTube أو Instagram أو مواقع الفيديو الأخرى. افتحها في تبويب واستخدم زر شريط الأدوات ← “أرسل صوت هذا التبويب”."
+  },
+  "op_err_not_file": {
+    "message": "يجب أن ينتهي الرابط بـ ‎.mp3 أو ‎.mp4 أو ‎.wav أو ‎.ogg أو ‎.webm"
+  },
+  "op_err_blocked": {
+    "message": "$1 لا يسمح للمواقع الأخرى باستخدام ملفاته (يحظر CORS). نزّل الملف واستخدم “اختر ملفاً”."
+  },
+  "op_err_http": {
+    "message": "ردّ الموقع بالخطأ $1"
+  },
+  "op_err_mic": {
+    "message": "يحتاج MemeBox إلى إذنك لاستخدام الميكروفون للتسجيل"
+  },
+  "op_packs": {
+    "message": "الحزم"
+  },
+  "op_pack_add": {
+    "message": "إضافة"
+  },
+  "op_pack_reset": {
+    "message": "إعادة ضبط"
+  },
+  "op_pack_remove": {
+    "message": "إزالة"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 عبارة"
+  },
+  "op_pack_added": {
+    "message": "تمت إضافة حزمة “$1”"
+  },
+  "op_pack_removed": {
+    "message": "تمت إزالة حزمة “$1”"
+  },
+  "op_share_packs": {
+    "message": "مشاركة الحزم"
+  },
+  "op_export_all": {
+    "message": "كل عباراتي"
+  },
+  "op_export": {
+    "message": "⬇ تصدير ‎.memepack.json"
+  },
+  "op_import": {
+    "message": "⬆ استيراد ‎.memepack.json"
+  },
+  "op_packs_hint": {
+    "message": "تحتوي الحزمة على عبارات ومقاطعها. الاستيراد يضيف إلى عباراتك، والعبارات ذات المعرّف نفسه تُستبدل. تُفحص الملفات بدقة."
+  },
+  "op_my_library": {
+    "message": "عباراتي في MemeBox"
+  },
+  "op_exported": {
+    "message": "تم تصدير $1 عبارة"
+  },
+  "op_export_partial": {
+    "message": "تم تصدير $1 عبارة (تم تخطي مقاطع من إصدارات قديمة)"
+  },
+  "op_import_failed": {
+    "message": "فشل الاستيراد: $1"
+  },
+  "op_import_invalid": {
+    "message": "ملف الحزمة هذا غير صالح. راجع القائمة أدناه."
+  },
+  "op_imported": {
+    "message": "تم استيراد $1 عبارة و$2 مقطع من “$3”"
+  },
+  "op_party": {
+    "message": "العبارات المجدولة / وضع الحفلة"
+  },
+  "op_party_switch": {
+    "message": "شغّل العبارات المجدولة تلقائياً"
+  },
+  "op_party_hint": {
+    "message": "متوقف افتراضياً. لا يعمل إلا مع تبويب مكالمة مفتوح وميكروفون متصل."
+  },
+  "op_line": {
+    "message": "العبارة"
+  },
+  "op_when": {
+    "message": "متى"
+  },
+  "op_at_clock": {
+    "message": "في ساعة محددة"
+  },
+  "op_every_n": {
+    "message": "كل N دقيقة"
+  },
+  "op_time": {
+    "message": "الوقت"
+  },
+  "op_minutes": {
+    "message": "الدقائق"
+  },
+  "op_add_timer": {
+    "message": "أضف مؤقتاً"
+  },
+  "op_no_timers": {
+    "message": "لا توجد مؤقتات بعد."
+  },
+  "op_daily_at": {
+    "message": "كل يوم الساعة $1"
+  },
+  "op_every": {
+    "message": "كل $1 دقيقة"
+  },
+  "op_enabled": {
+    "message": "مفعّل"
+  },
+  "op_deleted_line": {
+    "message": "(عبارة محذوفة)"
+  },
+  "op_party_on": {
+    "message": "وضع الحفلة مفعّل 🎉"
+  },
+  "op_party_off": {
+    "message": "وضع الحفلة متوقف"
+  },
+  "op_timer_added": {
+    "message": "تمت إضافة المؤقت"
+  },
+  "op_timer_added_off": {
+    "message": "تمت إضافة المؤقت. فعّل “شغّل العبارات المجدولة تلقائياً” لاستخدامه."
+  },
+  "op_privacy": {
+    "message": "الخصوصية"
+  },
+  "op_privacy_text": {
+    "message": "يُمزج الميكروفون وصوت التبويبات داخل هذا المتصفح فقط. لا يُسجَّل أو يُحفظ أو يُرسَل أي شيء. لا حسابات ولا خوادم ولا تحليلات."
+  },
+  "cmdToggleVoice": {
+    "message": "تشغيل/إيقاف مغيّر الصوت"
+  },
+  "tab_volume": {
+    "message": "صوت التبويب في المكالمة"
+  },
+  "voice_label": {
+    "message": "🎤 صوتي"
+  },
+  "voice_tip": {
+    "message": "يغيّر صوتك أنت مباشرة في المكالمة. Alt+V يشغّله ويوقفه. \"عادي\" يعيد صوتك الطبيعي فوراً."
+  },
+  "voice_off": {
+    "message": "عادي (متوقف)"
+  },
+  "voice_chipmunk": {
+    "message": "سنجاب"
+  },
+  "voice_deep": {
+    "message": "عميق"
+  },
+  "voice_robot": {
+    "message": "روبوت"
+  },
+  "voice_echo": {
+    "message": "صدى"
+  },
+  "voice_radio": {
+    "message": "راديو"
+  },
+  "voice_now_on": {
+    "message": "صوتك: $1"
+  },
+  "voice_now_off": {
+    "message": "مغيّر الصوت متوقف، عاد صوتك الطبيعي"
+  },
+  "voice_after_join": {
+    "message": "تم الحفظ. يبدأ عند انضمامك إلى المكالمة."
+  },
+  "cam_label": {
+    "message": "📷 تعليق على كاميرتي"
+  },
+  "cam_tip": {
+    "message": "يكتب نص الميم على الفيديو الذي يراه الآخرون منك. أطفئ الكاميرا وشغّلها لتطبيقه. قد تظهر معاينتك معكوسة، لكن الآخرين يرونه بشكل صحيح."
+  },
+  "cam_on": {
+    "message": "التعليقات على الكاميرا مفعّلة. أطفئ الكاميرا وشغّلها لتطبيقها."
+  },
+  "cam_off": {
+    "message": "التعليقات على الكاميرا متوقفة. أطفئ الكاميرا وشغّلها لتطبيق ذلك."
+  },
+  "pp_volume": {
+    "message": "الصوت في المكالمة"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "احفظ كملف صوتي (WAV) لمشاركته في أي مكان"
+  },
+  "op_wav_saved": {
+    "message": "تم حفظ $1"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "يفتح WhatsApp مع النص جاهزاً. أنت تختار المحادثة وتضغط إرسال."
+  },
+  "op_share_text": {
+    "message": "$1 😂 صُنع باستخدام MemeBox: $2"
+  },
+  "feedback": {
+    "message": "أرسل رأيك"
+  },
+  "ask_title": {
+    "message": "هل يعجبك MemeBox؟"
+  },
+  "ask_rate": {
+    "message": "⭐ قيّمنا"
+  },
+  "ask_feedback": {
+    "message": "أرسل رأيك"
+  },
+  "op_feedback": {
+    "message": "💬 أرسل رأيك"
+  },
+  "pro_only": {
+    "message": "هذه ميزة في MemeBox Pro."
+  },
+  "ob_title": {
+    "message": "مرحباً بك في MemeBox 😂"
+  },
+  "ob_sub": {
+    "message": "ثلاث خطوات وتصبح أظرف شخص في المكالمة."
+  },
+  "ob_s1": {
+    "message": "انضم إلى مكالمتك في المتصفح"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet أو Zoom (ويب) أو Microsoft Teams (ويب) أو Discord (ويب). يظهر زر 😂 في الزاوية. إذا كانت المكالمة مفتوحة مسبقاً، أعد تحميلها مرة واحدة."
+  },
+  "ob_s2": {
+    "message": "انقر 😂 لتشغيل ميم"
+  },
+  "ob_s2_text": {
+    "message": "يدخل إلى الميكروفون، فيسمعه الجميع في المكالمة. لا يحتاجون إلى MemeBox. عندما تكون مكتوماً، تكون الميمز صامتة أيضاً."
+  },
+  "ob_s3": {
+    "message": "انقر يميناً على 😂 لكل شيء آخر"
+  },
+  "ob_s3_text": {
+    "message": "اختر أي عبارة، أو ابحث، أو غيّر صوتك (Alt+V)، أو شغّل المفضلة بـ Alt+1 إلى Alt+9. لتشغيل فيديو YouTube في المكالمة، انقر أيقونة MemeBox في شريط الأدوات على ذلك التبويب."
+  },
+  "ob_mic": {
+    "message": "اختبار الميكروفون"
+  },
+  "ob_mic_hint": {
+    "message": "تأكد من أن الميكروفون يعمل. يبقى الصوت في هذه الصفحة. لا يُسجَّل شيء."
+  },
+  "ob_mic_start": {
+    "message": "🎙 ابدأ اختبار الميكروفون"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ إيقاف"
+  },
+  "ob_hear": {
+    "message": "🔊 استمع إلى ميم"
+  },
+  "ob_mic_talk": {
+    "message": "قل شيئاً…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ نسمعك. الميكروفون يعمل."
+  },
+  "ob_mic_blocked": {
+    "message": "الميكروفون محظور. انقر أيقونة الكاميرا/الميكروفون في شريط العنوان واسمح به."
+  },
+  "ob_mic_none": {
+    "message": "لم يُعثر على ميكروفون. وصّل واحداً وحاول مرة أخرى."
+  },
+  "ob_done": {
+    "message": "كل شيء جاهز. عباراتك ومقاطعك وحزمك في الإعدادات."
+  },
+  "ob_settings": {
+    "message": "⚙️ افتح الإعدادات"
+  },
+  "ob_close": {
+    "message": "هيا بنا!"
+  },
+  "pp_reload_tab": {
+    "message": "كان تبويب المكالمة هذا مفتوحاً قبل تثبيت MemeBox أو تحديثه. أعد تحميله (F5)، ثم انضم إلى المكالمة مرة أخرى."
+  },
+  "tag_picture": {
+    "message": "فيه صورة"
+  },
+  "op_picture": {
+    "message": "صورة (اختياري)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 اختر صورة"
+  },
+  "op_picture_remove": {
+    "message": "أزل الصورة"
+  },
+  "op_picture_hint": {
+    "message": "تظهر على شاشتك أثناء تشغيل العبارة، وعلى كاميرتك إذا كان \"تعليق على كاميرتي\" مفعّلاً. استخدم صورك الخاصة، أو صور الآخرين بإذنهم فقط."
+  },
+  "op_err_picture": {
+    "message": "هذا الملف ليس صورة يستطيع MemeBox استخدامها. جرّب PNG أو JPG أو WEBP أو GIF."
+  },
+  "op_err_picture_big": {
+    "message": "الصورة كبيرة جداً. جرّب صورة أصغر (حتى 20 ميغابايت)."
+  },
+  "pro_pictures": {
+    "message": "استخدمت ميمز الصور المتاحة لك ($1). احصل على المزيد مع MemeBox Pro أو حزمة صور (الخيارات ← MemeBox Pro)."
+  },
+  "op_bulk": {
+    "message": "📂 استيراد ملفات كثيرة"
+  },
+  "op_bulk_hint": {
+    "message": "استيراد ملفات كثيرة: كل ملف يصبح مقطعاً (مقصوصاً ليناسب 1 ميغابايت) باسم ملفه، في فئة \"clips\"."
+  },
+  "op_bulk_working": {
+    "message": "جارٍ استيراد $1 من $2…"
+  },
+  "op_bulk_done": {
+    "message": "تمت إضافة $1 مقطع. تم تخطي $2."
+  },
+  "op_bulk_skipped": {
+    "message": "تم التخطي: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "ميزة Pro متوقفة الآن، لذا كل الميزات مجانية للجميع."
+  },
+  "op_pro_active": {
+    "message": "✅ MemeBox Pro مفعّل في هذا المتصفح."
+  },
+  "op_pro_free": {
+    "message": "الخطة المجانية: حتى $1 ميم بصورة، و10 مقاطع، وحزمتا عام والجامعة."
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "تفعيل"
+  },
+  "op_buy": {
+    "message": "⭐ اشترِ Pro أو صوراً أكثر"
+  },
+  "op_license_remove": {
+    "message": "أزل المفتاح"
+  },
+  "op_license_ok": {
+    "message": "تم تفعيل المفتاح. استمتع!"
+  },
+  "op_license_offline": {
+    "message": "تعذّر الوصول إلى موقع MemeBox. تحقق من الإنترنت وحاول مرة أخرى."
+  },
+  "op_license_revoked": {
+    "message": "تم إيقاف المفتاح $1."
+  },
+  "op_license_stale": {
+    "message": "تعذّر التحقق من المفتاح $1 منذ وقت طويل. اتصل بالإنترنت ليتحقق منه MemeBox مرة أخرى."
+  },
+  "op_license_pro": {
+    "message": "المفتاح $1: Pro، بلا حدود."
+  },
+  "op_license_slots": {
+    "message": "المفتاح $1: $2 ميم إضافي بصورة."
+  },
+  "settings_label": {
+    "message": "🎛 الصوت والنبرة"
+  },
+  "op_theme": {
+    "message": "🎨 الألوان"
+  },
+  "theme_auto": {
+    "message": "تلقائي"
+  },
+  "theme_light": {
+    "message": "فاتح"
+  },
+  "theme_dark": {
+    "message": "داكن"
+  },
+  "theme_sunny": {
+    "message": "مشمس"
+  },
+  "theme_neon": {
+    "message": "نيون"
+  },
+  "theme_candy": {
+    "message": "حلوى"
+  },
+  "ob_theme_hint": {
+    "message": "اختر مظهراً لـ MemeBox. يمكنك تغييره في أي وقت من الإعدادات."
+  },
+  "text_dir": {
+    "message": "rtl",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "ar",
+    "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 اللغة"
+  },
+  "lang_auto": {
+    "message": "تلقائي (مثل Chrome)"
+  },
+  "lang_reload": {
+    "message": "تم تغيير اللغة. أعد تحميل تبويب المكالمة لترى MemeBox بها."
+  }
+}
