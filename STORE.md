@@ -32,32 +32,31 @@ MemeBox is a meme soundboard and voice changer for your calls. Click the floatin
 **Where it works**
 In Chrome or Edge, on the web versions of Google Meet, Zoom, Microsoft Teams and Discord.
 
-**Soundboard**
+**Free features**
 • One click plays a random meme. Right-click the button for the full panel: search, categories, favourites, recently played, Random and Stop all.
 • Hindi, Hinglish and English meme lines, spoken by a voice engine that runs on your own computer.
 • Six tones: Normal, Chipmunk, Villain, Robot, Slow-mo and Excited.
 • A big meme caption appears on your screen for 3 seconds.
 • Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They're ignored while you type.
 • Auto-duck lowers the meme sounds while you're talking.
-
-**Voice changer**
-• Change your own live voice: Chipmunk, Deep, Robot, Echo or Radio. Alt+V switches it on and off.
-
-**Sound effects and clips**
-• Upload audio or video files (only the sound is kept), import many files at once, use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor.
-• College, Cricket, Office and Party packs with friendly roasts. Share your own packs as a file.
+• Your own sound effects: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
+• The College pack of friendly roasts. Share your own packs as a file.
 • Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
-
-**Picture memes**
-• Give any line a picture (a monkey, a reaction face, anything). It flashes on your screen while the line plays, and on your camera if captions are on.
-
-**Extras**
-• Optional meme captions on your own camera.
+• One picture meme: give a line a picture (a monkey, a reaction face, anything) and it flashes on your screen while the line plays.
 • Save any meme as a WAV file, or share its text on WhatsApp (you pick the chat).
-• Party mode: a line at a set time or every few minutes. Off by default.
+
+**MemeBox Pro (optional, paid)**
+Pro is a one-time purchase on the MemeBox website, paid by UPI. You get a license key and paste it into MemeBox Options. Pro unlocks:
+• Live voice changer for your own voice: Chipmunk, Deep, Robot, Echo or Radio. Alt+V switches it on and off.
+• Meme captions and pictures on your own camera.
+• Unlimited saved clips, and importing many audio files at once.
+• The Cricket, Office and Party packs.
+• Party mode: a line at a set time or every few minutes.
+• Unlimited picture memes. Extra picture memes can also be bought on their own, without Pro.
+Everything in the free list keeps working without paying.
 
 **Private by design**
-Your microphone, camera and tab audio are only mixed inside your browser. Nothing is recorded, saved or uploaded. No accounts, no ads, no analytics.
+Your microphone, camera and tab audio are only mixed inside your browser. They are never recorded, saved or uploaded. No accounts, no ads, no analytics. If you enter a Pro license key, only that key is sent to the MemeBox website to check it, about once a day.
 
 **Good to know**
 • Memes are silent while you're muted in the call. That's on purpose.
@@ -65,8 +64,7 @@ Your microphone, camera and tab audio are only mixed inside your browser. Nothin
 • After installing or updating, reload an open call tab once.
 • Keep it friendly and follow the rules of your class or workplace.
 
-MemeBox is free and open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox. Optional MemeBox Pro unlocks more picture memes and extras.
-It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.
+MemeBox is open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox. It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.
 
 ## Single purpose
 
@@ -99,6 +97,19 @@ No. All code is in the package. eSpeak-NG's WebAssembly is bundled and needs `'w
 
 **Content Security Policy**
 `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'`. This allows only the bundled WebAssembly speech engine.
+
+## Test instructions (Test instructions tab)
+
+Reviewers need to try the Pro features, so give them a working key. Make a Pro key in `/admin` on the site (it's free to make there), and keep it active until the review is done.
+
+- **Username:** leave empty (MemeBox has no accounts).
+- **Password:** leave empty.
+- **Additional instructions:**
+
+> 1. Open a Google Meet call in the browser (meet.new works with any Google account). The 😂 button appears in the bottom corner. Click it to play a meme through your microphone. Right-click it for the full panel.
+> 2. Free features work without a key. To test MemeBox Pro (voice changer, camera captions, extra packs, party mode, unlimited clips and pictures): open Options (⚙️ in the panel, or right-click the toolbar icon → Options), go to "MemeBox Pro", paste the key MBX-XXXX-XXXX-XXXX and press Activate.
+> 3. Tab audio: open a YouTube video in another tab, click the MemeBox toolbar icon there and press "Send this tab's sound to my call".
+> 4. Pro is sold on https://memebox.pages.dev/buy as a one-time UPI payment. The key is checked with https://memebox.pages.dev/api/license. No other network requests are made.
 
 ## Data usage (Privacy practices tab)
 
@@ -136,10 +147,11 @@ The call scene is a mock-up with coloured tiles and first names only. No real pe
 3. Open the Chrome Web Store Developer Dashboard (https://chrome.google.com/webstore/devconsole). Pay the one-time registration fee if you haven't, and verify your contact email.
 4. **Add new item** → upload the zip.
 5. **Store listing** tab: paste the description, pick the category, upload the icon, the 4 screenshots and the promo tile. Add the homepage and support URLs.
-6. **Privacy practices** tab: paste the single purpose and each permission justification from this file. Answer "No" to remote code, leave every data type unticked, tick the three certifications, and paste the privacy policy URL.
-7. **Distribution:** Payments: **Contains in-app purchases** while `PRO_ENABLED` is `true` in `extension/config.js` (MemeBox Pro is sold on the site and unlocked with a license key). Pick "Free of charge" only if Pro is switched off. Visibility: Public, all regions (or the ones you want).
-8. **Submit for review.** Reviews usually take a few days. Permissions like tabCapture and host permissions can take longer.
-9. After approval, copy the store address into `extension/config.js` as `STORE_URL` and into the landing page's install button (`site/public/index.html`, `id="install"`). Release a small update with those.
+6. **Test instructions** tab: paste the steps and the Pro key from "Test instructions" above.
+7. **Privacy practices** tab: paste the single purpose and each permission justification from this file. Answer "No" to remote code, tick only **Authentication information** under data types (see "Data usage"), tick the three certifications, and paste the privacy policy URL.
+8. **Distribution:** Payments: **Contains in-app purchases** while `PRO_ENABLED` is `true` in `extension/config.js` (MemeBox Pro is sold on the site and unlocked with a license key). Pick "Free of charge" only if Pro is switched off. Visibility: Public, all regions (or the ones you want).
+9. **Submit for review.** Reviews usually take a few days. Permissions like tabCapture and host permissions can take longer.
+10. After approval, copy the store address into `extension/config.js` as `STORE_URL` and into the landing page's install button (`site/public/index.html`, `id="install"`). Release a small update with those.
 
 ## Publishing checklist: Microsoft Edge Add-ons
 
@@ -149,7 +161,7 @@ The call scene is a mock-up with coloured tiles and first names only. No real pe
 4. **Availability:** Public, all markets. If Pro is on, say in the listing and the tester note that the extension offers optional in-app purchases.
 5. **Properties:** category Entertainment, privacy policy URL, website URL, support URL. Say that the extension doesn't need an account.
 6. **Store listings:** English (and Hindi if you like). Paste the description and short description, and upload the logo `store/icon-300.png` (300×300), the screenshots and the promo tile.
-7. **Submit.** Add a note for testers: "Join a Google Meet call in the browser, click the 😂 button in the corner. Everyone in the call hears the meme through your microphone."
+7. **Submit.** In the notes for testers, paste the steps and the Pro key from "Test instructions" above.
 8. After approval, you can add the Edge address to the landing page next to the Chrome one.
 
 ## GPL note

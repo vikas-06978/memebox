@@ -5,8 +5,8 @@ globalThis.MEMEBOX_CONFIG = Object.freeze({
   SITE_URL: 'https://memebox.pages.dev',
   // The Chrome Web Store page, once published ("Rate us" opens it). Empty = the feedback page.
   STORE_URL: '',
-  // Pro features are prepared but switched off: everyone gets everything for free.
-  // Don't set this to true before the license check in lib/plan.js exists, or every
-  // Pro feature locks for everyone.
+  // Pro is on: the features in lib/plan.js PRO_FEATURES need a license key from the site.
+  // false = every feature is free for everyone. While true, the store listing must say
+  // which features are paid and declare in-app purchases (STORE.md).
   PRO_ENABLED: true,
 });
