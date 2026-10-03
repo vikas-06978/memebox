@@ -128,8 +128,10 @@
     navigator.clipboard.writeText($('key').textContent).then(() => { $('copy').textContent = T('buy_copied'); }, () => {});
   });
 
-  // Products and whether payments are open come from the site settings.
-  fetch('/api/config').then((r) => r.json()).then((c) => {
+  // Products and whether payments are open come from the site settings. Wait for the
+  // translations too, or the cards show raw keys like "buy_for" when the config wins the race.
+  const translations = window.MemeSite ? window.MemeSite.ready.catch(() => {}) : Promise.resolve();
+  Promise.all([fetch('/api/config').then((r) => r.json()), translations]).then(([c]) => {
     if (!c.payments) { $('closed').hidden = false; $('choose').hidden = true; return; }
     const box = $('products');
     for (const [id, p] of Object.entries(c.products || {})) {

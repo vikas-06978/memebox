@@ -1,0 +1,1 @@
+MemeBox is a soundboard for browser video calls. It plays meme lines, sound effects and the user's own clips into the user's outgoing microphone on supported call websites. The voice changer, tab audio and camera captions are part of the same purpose: changing what the user sends into their own call.

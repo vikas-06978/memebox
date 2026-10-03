@@ -18,7 +18,7 @@ Version 1.2.0. See [CHANGELOG.md](CHANGELOG.md) for what's in it, and [STORE.md]
 | Path | What it is |
 |---|---|
 | `extension/` | Chrome extension (Manifest V3, plain JavaScript). Load this folder unpacked. |
-| `extension/config.js` | `SITE_URL` (fill in after deploying the site) and `PRO_ENABLED = false` |
+| `extension/config.js` | `SITE_URL` (fill in after deploying the site) and `PRO_ENABLED` (`true`: the Pro features need a license key) |
 | `extension/config.js` | Also `STORE_URL`, the store page "Rate us" opens (fill in after publishing) |
 | `site/public/` | Static website for Cloudflare Pages (landing, feedback, uninstall survey, privacy) |
 | `site/functions/` | Cloudflare Pages Functions, the site's small API (feedback, admin) |

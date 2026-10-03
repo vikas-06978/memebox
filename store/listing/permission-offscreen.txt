@@ -1,0 +1,1 @@
+Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG text-to-speech engine, compiled to WebAssembly, in a Web Worker. It turns meme text into audio. A service worker can't run it, and running it in the call page would slow the call down.

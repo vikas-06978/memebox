@@ -1,0 +1,6 @@
+Only the 5 call websites MemeBox works on: meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com. There the extension:
+1. Wraps getUserMedia so the microphone the site receives is the real microphone mixed with the meme audio the user plays.
+2. Shows the floating 😂 button, panel and captions.
+3. Only if the user turns them on: applies the voice changer to the user's own microphone and draws meme captions on the user's own camera.
+4. In the popup, checks whether the current tab is one of these sites, to say "reload this tab" after install or update.
+Audio and video are processed only locally with Web Audio and Canvas. They are never recorded, stored or sent anywhere. No other sites are accessed.
