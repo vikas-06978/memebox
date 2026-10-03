@@ -137,7 +137,7 @@ The call scene is a mock-up with coloured tiles and first names only. No real pe
 4. **Add new item** → upload the zip.
 5. **Store listing** tab: paste the description, pick the category, upload the icon, the 4 screenshots and the promo tile. Add the homepage and support URLs.
 6. **Privacy practices** tab: paste the single purpose and each permission justification from this file. Answer "No" to remote code, leave every data type unticked, tick the three certifications, and paste the privacy policy URL.
-7. **Distribution:** Public, all regions (or the ones you want). Free.
+7. **Distribution:** Payments: **Contains in-app purchases** while `PRO_ENABLED` is `true` in `extension/config.js` (MemeBox Pro is sold on the site and unlocked with a license key). Pick "Free of charge" only if Pro is switched off. Visibility: Public, all regions (or the ones you want).
 8. **Submit for review.** Reviews usually take a few days. Permissions like tabCapture and host permissions can take longer.
 9. After approval, copy the store address into `extension/config.js` as `STORE_URL` and into the landing page's install button (`site/public/index.html`, `id="install"`). Release a small update with those.
 
@@ -146,7 +146,7 @@ The call scene is a mock-up with coloured tiles and first names only. No real pe
 1. The same zip works in Edge. No changes needed.
 2. Open Partner Center (https://partner.microsoft.com/dashboard/microsoftedge) and register as an Edge developer. It's free.
 3. **Create new extension** → upload the zip.
-4. **Availability:** Public, all markets.
+4. **Availability:** Public, all markets. If Pro is on, say in the listing and the tester note that the extension offers optional in-app purchases.
 5. **Properties:** category Entertainment, privacy policy URL, website URL, support URL. Say that the extension doesn't need an account.
 6. **Store listings:** English (and Hindi if you like). Paste the description and short description, and upload the logo `store/icon-300.png` (300×300), the screenshots and the promo tile.
 7. **Submit.** Add a note for testers: "Join a Google Meet call in the browser, click the 😂 button in the corner. Everyone in the call hears the meme through your microphone."
