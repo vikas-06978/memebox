@@ -23,12 +23,14 @@ Language: English. The package has 12 languages (en, hi, bn, mr, ta, te, gu, es,
 
 ## Full description
 
+(The store field is plain text. Copy from the raw file, not the rendered page, and leave out the `**` marks. Each call service is named once, in a sentence: a repeated list of platform names was rejected as keyword spam, "Yellow Argon".)
+
 Make every video call a little more fun. 😂
 
 MemeBox is a meme soundboard and voice changer for your calls. Click the floating 😂 button and meme sounds, funny lines and sound effects play **through your microphone**, so everyone in the call hears them. The other people don't need to install anything.
 
-**Works in the browser on Google Meet, Zoom, Teams, Discord**
-Google Meet, Zoom (web client), Microsoft Teams (web) and Discord (web), in Chrome and Edge.
+**Where it works**
+In Chrome or Edge, on the web versions of Google Meet, Zoom, Microsoft Teams and Discord.
 
 **Soundboard**
 • One click plays a random meme. Right-click the button for the full panel: search, categories, favourites, recently played, Random and Stop all.
@@ -59,12 +61,12 @@ Your microphone, camera and tab audio are only mixed inside your browser. Nothin
 
 **Good to know**
 • Memes are silent while you're muted in the call. That's on purpose.
-• The Zoom and Teams desktop apps aren't supported. Use the browser versions.
+• Desktop call apps aren't supported. Join your call in the browser instead.
 • After installing or updating, reload an open call tab once.
 • Keep it friendly and follow the rules of your class or workplace.
 
 MemeBox is free and open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox. Optional MemeBox Pro unlocks more picture memes and extras.
-It uses the eSpeak-NG speech synthesizer. Not affiliated with Google, Zoom, Microsoft or Discord.
+It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.
 
 ## Single purpose
 

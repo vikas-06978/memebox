@@ -19,10 +19,15 @@ test('the short description in STORE.md is the manifest description and fits 132
   assert.equal(manifest.description, '__MSG_extDesc__');
 });
 
-test('the full description has the search keywords', () => {
+test('the full description has the search keywords without keyword stuffing', () => {
   const full = store.split('## Full description')[1].split('\n## ')[0].toLowerCase();
-  for (const k of ['soundboard', 'meme sounds', 'voice changer', 'sound effects', 'google meet, zoom, teams, discord']) {
+  for (const k of ['soundboard', 'meme sounds', 'voice changer', 'sound effects', 'google meet, zoom, microsoft teams and discord']) {
     assert.ok(full.includes(k), `missing keyword "${k}"`);
+  }
+  // Chrome Web Store "Yellow Argon": repeating platform names is excessive keywords.
+  for (const name of ['google', 'zoom', 'teams', 'microsoft', 'discord']) {
+    const n = full.split(name).length - 1;
+    assert.equal(n, 1, `"${name}" appears ${n} times in the full description`);
   }
 });
 
