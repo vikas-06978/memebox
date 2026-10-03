@@ -1,0 +1,40 @@
+Make every video call a little more fun. 😂
+
+MemeBox is a meme soundboard and voice changer for your calls. Click the floating 😂 button and meme sounds, funny lines and sound effects play through your microphone, so everyone in the call hears them. The other people don't need to install anything.
+
+Where it works
+In Chrome or Edge, on the web versions of Google Meet, Zoom, Microsoft Teams and Discord.
+
+Free features
+• One click plays a random meme. Right-click the button for the full panel: search, categories, favourites, recently played, Random and Stop all.
+• Hindi, Hinglish and English meme lines, spoken by a voice engine that runs on your own computer.
+• Six tones: Normal, Chipmunk, Villain, Robot, Slow-mo and Excited.
+• A big meme caption appears on your screen for 3 seconds.
+• Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They're ignored while you type.
+• Auto-duck lowers the meme sounds while you're talking.
+• Your own sound effects: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
+• The College pack of friendly roasts. Share your own packs as a file.
+• Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
+• One picture meme: give a line a picture (a monkey, a reaction face, anything) and it flashes on your screen while the line plays.
+• Save any meme as a WAV file, or share its text on WhatsApp (you pick the chat).
+
+MemeBox Pro (optional, paid)
+Pro is a one-time purchase on the MemeBox website, paid by UPI. You get a license key and paste it into MemeBox Options. Pro unlocks:
+• Live voice changer for your own voice: Chipmunk, Deep, Robot, Echo or Radio. Alt+V switches it on and off.
+• Meme captions and pictures on your own camera.
+• Unlimited saved clips, and importing many audio files at once.
+• The Cricket, Office and Party packs.
+• Party mode: a line at a set time or every few minutes.
+• Unlimited picture memes. Extra picture memes can also be bought on their own, without Pro.
+Everything in the free list keeps working without paying.
+
+Private by design
+Your microphone, camera and tab audio are only mixed inside your browser. They are never recorded, saved or uploaded. No accounts, no ads, no analytics. If you enter a Pro license key, only that key is sent to the MemeBox website to check it, about once a day.
+
+Good to know
+• Memes are silent while you're muted in the call. That's on purpose.
+• Desktop call apps aren't supported. Join your call in the browser instead.
+• After installing or updating, reload an open call tab once.
+• Keep it friendly and follow the rules of your class or workplace.
+
+MemeBox is open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox. It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.

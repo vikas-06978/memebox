@@ -31,6 +31,25 @@ test('the full description has the search keywords without keyword stuffing', ()
   }
 });
 
+test('the paste-ready files in store/listing match STORE.md and fit the dashboard limits', () => {
+  const file = (n) => read(`store/listing/${n}`).trim();
+  const section = (h) => store.split(h)[1].split('\n## ')[0];
+  const full = section('## Full description').replace(/^\s*\(The store field[^\n]*\n/, '').replace(/\*\*/g, '').trim();
+  assert.equal(file('description.txt'), full);
+  assert.ok(full.length <= 16000);
+  assert.equal(file('single-purpose.txt'), section('## Single purpose').trim());
+  const just = section('## Permission justifications');
+  for (const [p, f] of [['storage', 'storage'], ['offscreen', 'offscreen'], ['tabCapture', 'tabcapture']]) {
+    assert.equal(file(`permission-${f}.txt`), just.split(`**${p}**\n`)[1].split('\n\n')[0].trim(), p);
+  }
+  assert.ok(just.includes(file('permission-host.txt')), 'host justification');
+  for (const f of ['single-purpose', 'permission-storage', 'permission-offscreen', 'permission-tabcapture', 'permission-host']) {
+    assert.ok(file(`${f}.txt`).length <= 1000, `${f} is over 1,000 characters`);
+  }
+  const steps = section('## Test instructions').split('\n').filter((l) => l.startsWith('> ')).map((l) => l.slice(2)).join('\n');
+  assert.equal(file('test-instructions.txt'), steps.trim());
+});
+
 test('permissions are exactly storage, offscreen, tabCapture and the 5 call sites', () => {
   assert.deepEqual([...manifest.permissions].sort(), ['offscreen', 'storage', 'tabCapture']);
   assert.deepEqual([...manifest.host_permissions].sort(), [...CALL_SITES].sort());

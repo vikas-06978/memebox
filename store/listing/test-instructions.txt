@@ -1,0 +1,4 @@
+1. Open a Google Meet call in the browser (meet.new works with any Google account). The 😂 button appears in the bottom corner. Click it to play a meme through your microphone. Right-click it for the full panel.
+2. Free features work without a key. To test MemeBox Pro (voice changer, camera captions, extra packs, party mode, unlimited clips and pictures): open Options (⚙️ in the panel, or right-click the toolbar icon → Options), go to "MemeBox Pro", paste the key MBX-XXXX-XXXX-XXXX and press Activate.
+3. Tab audio: open a YouTube video in another tab, click the MemeBox toolbar icon there and press "Send this tab's sound to my call".
+4. Pro is sold on https://memebox.pages.dev/buy as a one-time UPI payment. The key is checked with https://memebox.pages.dev/api/license. Apart from audio links the user adds themselves, MemeBox makes no other network requests.

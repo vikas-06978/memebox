@@ -1,0 +1,1 @@
+Saves the user's lines, favourite shortcuts, volumes and settings, the button position, and the play count for a one-time feedback question. Stored on the device with chrome.storage.local. Uploaded clips are kept in the extension's IndexedDB. Nothing is synced or sent anywhere.

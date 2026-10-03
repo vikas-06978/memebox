@@ -82,15 +82,12 @@ Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG 
 Used only when the user opens the toolbar popup on a tab (for example a YouTube video) and clicks "Send this tab's sound to my call". The extension gets a stream ID for that tab (chrome.tabCapture.getMediaStreamId, with the user's call tab as the consumer). The call tab mixes that audio live into the outgoing microphone and plays it back to the user. Nothing is recorded, saved, downloaded or transmitted. It stops when the user presses Stop or closes either tab.
 
 **Host permissions: https://meet.google.com/\*, https://app.zoom.us/wc/\*, https://teams.microsoft.com/\*, https://teams.live.com/\*, https://discord.com/\***
-Only these five call websites. There the extension:
-1. wraps navigator.mediaDevices.getUserMedia, so the microphone track the site receives is the real microphone mixed with the meme audio the user plays
-2. shows the floating 😂 button, panel and captions
-3. only if the user switches them on, applies the voice changer to the user's own microphone and draws meme captions on the user's own camera picture
-4. in the popup, reads whether the current tab is one of these sites, so it can say "reload this tab" when the tab was open before MemeBox was installed or updated.
-
-Audio and video are processed only locally with the Web Audio and Canvas APIs. They are never recorded, stored or transmitted. The only web-accessible files are the voice changer's AudioWorklet (voice-worklet.js, lib/pitch-shift.js), and only on these five sites.
-
-No permission is needed for the MemeBox website. The feedback, welcome and uninstall pages are opened as normal tabs, which needs no permission.
+Only the 5 call websites MemeBox works on: meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com. There the extension:
+1. Wraps getUserMedia so the microphone the site receives is the real microphone mixed with the meme audio the user plays.
+2. Shows the floating 😂 button, panel and captions.
+3. Only if the user turns them on: applies the voice changer to the user's own microphone and draws meme captions on the user's own camera.
+4. In the popup, checks whether the current tab is one of these sites, to say "reload this tab" after install or update.
+Audio and video are processed only locally with Web Audio and Canvas. They are never recorded, stored or sent anywhere. No other sites are accessed.
 
 **Remote code**
 No. All code is in the package. eSpeak-NG's WebAssembly is bundled and needs `'wasm-unsafe-eval'` in the extension-page CSP. Nothing is downloaded or evaluated at runtime.
@@ -109,7 +106,7 @@ Reviewers need to try the Pro features, so give them a working key. Make a Pro k
 > 1. Open a Google Meet call in the browser (meet.new works with any Google account). The 😂 button appears in the bottom corner. Click it to play a meme through your microphone. Right-click it for the full panel.
 > 2. Free features work without a key. To test MemeBox Pro (voice changer, camera captions, extra packs, party mode, unlimited clips and pictures): open Options (⚙️ in the panel, or right-click the toolbar icon → Options), go to "MemeBox Pro", paste the key MBX-XXXX-XXXX-XXXX and press Activate.
 > 3. Tab audio: open a YouTube video in another tab, click the MemeBox toolbar icon there and press "Send this tab's sound to my call".
-> 4. Pro is sold on https://memebox.pages.dev/buy as a one-time UPI payment. The key is checked with https://memebox.pages.dev/api/license. No other network requests are made.
+> 4. Pro is sold on https://memebox.pages.dev/buy as a one-time UPI payment. The key is checked with https://memebox.pages.dev/api/license. Apart from audio links the user adds themselves, MemeBox makes no other network requests.
 
 ## Data usage (Privacy practices tab)
 
