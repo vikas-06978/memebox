@@ -1362,5 +1362,20 @@
   },
   "fx_hd_amt": {
     "message": "HD enhance strength"
+  },
+  "st_title": {
+    "message": "Start here"
+  },
+  "st_1": {
+    "message": "1. Join your call in the browser and unmute your mic."
+  },
+  "st_2": {
+    "message": "2. Tap any meme: everyone in the call hears it."
+  },
+  "st_3": {
+    "message": "3. Want lights, a lamp or an animal on your camera? Open Lights below."
+  },
+  "st_ok": {
+    "message": "Got it"
   }
 }

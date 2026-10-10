@@ -1362,5 +1362,20 @@
   },
   "fx_hd_amt": {
     "message": "Intensidad de la mejora HD"
+  },
+  "st_title": {
+    "message": "Empieza aquí"
+  },
+  "st_1": {
+    "message": "1. Entra a tu llamada en el navegador y activa tu micro."
+  },
+  "st_2": {
+    "message": "2. Toca cualquier meme: todos en la llamada lo oyen."
+  },
+  "st_3": {
+    "message": "3. ¿Luces, lámpara o un animal en tu cámara? Abre Luces abajo."
+  },
+  "st_ok": {
+    "message": "Entendido"
   }
 }

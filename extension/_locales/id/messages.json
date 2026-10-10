@@ -1362,5 +1362,20 @@
   },
   "fx_hd_amt": {
     "message": "Kekuatan peningkatan HD"
+  },
+  "st_title": {
+    "message": "Mulai di sini"
+  },
+  "st_1": {
+    "message": "1. Masuk ke panggilan di browser dan aktifkan mikrofon."
+  },
+  "st_2": {
+    "message": "2. Ketuk meme mana saja: semua orang di panggilan mendengarnya."
+  },
+  "st_3": {
+    "message": "3. Mau lampu, lampu gantung, atau hewan di kamera? Buka Lampu di bawah."
+  },
+  "st_ok": {
+    "message": "Mengerti"
   }
 }
