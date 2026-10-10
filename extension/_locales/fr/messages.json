@@ -1377,5 +1377,11 @@
   },
   "st_ok": {
     "message": "Compris"
+  },
+  "fx_angle": {
+    "message": "Angle de la lumière (de la lampe vers vous)"
+  },
+  "fx_angle_auto": {
+    "message": "Auto"
   }
 }

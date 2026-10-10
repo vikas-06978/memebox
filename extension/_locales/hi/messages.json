@@ -1377,5 +1377,11 @@
   },
   "st_ok": {
     "message": "समझ गया"
+  },
+  "fx_angle": {
+    "message": "रोशनी का कोण (लैंप से आप पर)"
+  },
+  "fx_angle_auto": {
+    "message": "ऑटो"
   }
 }

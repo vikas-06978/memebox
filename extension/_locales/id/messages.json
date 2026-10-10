@@ -1377,5 +1377,11 @@
   },
   "st_ok": {
     "message": "Mengerti"
+  },
+  "fx_angle": {
+    "message": "Sudut cahaya (dari lampu ke Anda)"
+  },
+  "fx_angle_auto": {
+    "message": "Otomatis"
   }
 }

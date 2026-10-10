@@ -1377,5 +1377,11 @@
   },
   "st_ok": {
     "message": "فهمت"
+  },
+  "fx_angle": {
+    "message": "زاوية الضوء (من المصباح إليك)"
+  },
+  "fx_angle_auto": {
+    "message": "تلقائي"
   }
 }

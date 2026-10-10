@@ -1377,5 +1377,11 @@
   },
   "st_ok": {
     "message": "Got it"
+  },
+  "fx_angle": {
+    "message": "Light angle (from the lamp onto you)"
+  },
+  "fx_angle_auto": {
+    "message": "Auto"
   }
 }

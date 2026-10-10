@@ -1377,5 +1377,11 @@
   },
   "st_ok": {
     "message": "Entendi"
+  },
+  "fx_angle": {
+    "message": "Ângulo da luz (do abajur em você)"
+  },
+  "fx_angle_auto": {
+    "message": "Auto"
   }
 }

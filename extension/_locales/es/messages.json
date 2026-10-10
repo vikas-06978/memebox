@@ -1377,5 +1377,11 @@
   },
   "st_ok": {
     "message": "Entendido"
+  },
+  "fx_angle": {
+    "message": "Ángulo de la luz (de la lámpara a ti)"
+  },
+  "fx_angle_auto": {
+    "message": "Auto"
   }
 }

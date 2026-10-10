@@ -42,6 +42,7 @@
     armed: false,       // the camera is prepared in the next call (set once Lights has been used)
     lamp: true,         // the hanging lamp
     lampPos: 'center',  // center | left | right (so it does not cover your face)
+    lightAngle: 'auto', // the light's angle onto you: auto (aimed at you), or 90 / 60 / 45 / 30 degrees
     lampX: null,        // where the lamp hangs, 0..1 across the picture (null = the Left / Centre / Right choice)
     lampHang: 0,        // how much lower it hangs, as a share of the picture height (0..0.4)
     lampSize: 1,        // 0.6..1.6
@@ -74,6 +75,7 @@
       armed: c.armed === true,
       lamp: c.lamp !== false,
       lampPos: ['center', 'left', 'right'].includes(c.lampPos) ? c.lampPos : 'center',
+      lightAngle: [90, 60, 45, 30].includes(Number(c.lightAngle)) ? Number(c.lightAngle) : 'auto',
       lampX: Number.isFinite(Number(c.lampX)) && c.lampX !== null ? clamp(Number(c.lampX), 0.06, 0.94) : null,
       lampHang: Number.isFinite(Number(c.lampHang)) ? clamp(Number(c.lampHang), 0, 0.4) : 0,
       lampSize: Number.isFinite(Number(c.lampSize)) ? clamp(Number(c.lampSize), 0.6, 1.6) : 1,
@@ -1075,6 +1077,8 @@ void main(){
     // About 15 times a second a 64x36 copy of YOUR camera picture is looked at (it never leaves the page and is not
     // stored): skin colour gives your face position, the difference between two frames gives how much you move.
     // That is enough to know: left / right, standing up, moving a lot, and out of the picture. No model, no download.
+    // Skin, but not a bright orange or yellow wall: skin is paler (less saturated) and has some blue in it.
+    const skinPx = (r, g2, b, Y, cb, cr) => Y > 35 && cb > 77 && cb < 127 && cr > 135 && cr < 173 && r > g2 && g2 > b * 0.8 && b > r * 0.38 && (r - b) < r * 0.62;
     const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, waveAt: -1e9, live: false });
 
     function trackFrame(src, now) {
@@ -1094,7 +1098,7 @@ void main(){
           luma[p] = Y;
           const cb = 128 - 0.168736 * r - 0.331264 * g2 + 0.5 * b, cr = 128 + 0.5 * r - 0.418688 * g2 - 0.081312 * b;
           const x = p % 64, y = (p / 64) | 0;
-          if (Y > 35 && cb > 77 && cb < 127 && cr > 135 && cr < 173 && r > g2 && g2 > b * 0.8) { sk++; sx += x; sy += y; }
+          if (skinPx(r, g2, b, Y, cb, cr)) { sk++; sx += x; sy += y; }
           if (T.prev && Math.abs(Y - T.prev[p]) > 22) { mv++; mx += x; }
         }
         T.prev = luma;
@@ -1109,7 +1113,7 @@ void main(){
             if (Math.abs(d) > 1.2) { const nd = Math.sign(d); if (dir && nd !== dir) turns++; dir = nd; last = q.x; }
             lo = Math.min(lo, q.x); hi = Math.max(hi, q.x);
           }
-          if (turns >= 3 && hi - lo > 4) { T.waveAt = now; T.mh = []; }
+          if (turns >= 4 && hi - lo > 5) { T.waveAt = now; T.mh = []; }
         }
         // refine: look again only near the first centre, so a wooden shelf far away does not pull it
         let cx = sk ? sx / sk : 32, cy = sk ? sy / sk : 18;
@@ -1120,7 +1124,7 @@ void main(){
             if (Math.abs(x - cx) > 16 || Math.abs(y - cy) > 12) continue;
             const r = d[i], g2 = d[i + 1], b = d[i + 2], Y = 0.299 * r + 0.587 * g2 + 0.114 * b;
             const cb = 128 - 0.168736 * r - 0.331264 * g2 + 0.5 * b, cr = 128 + 0.5 * r - 0.418688 * g2 - 0.081312 * b;
-            if (Y > 35 && cb > 77 && cb < 127 && cr > 135 && cr < 173 && r > g2 && g2 > b * 0.8) { s2++; x2 += x; y2 += y; }
+            if (skinPx(r, g2, b, Y, cb, cr)) { s2++; x2 += x; y2 += y; }
           }
           if (s2 > 8) { cx = x2 / s2; cy = y2 / s2; sk = s2; }
         }
@@ -1169,7 +1173,7 @@ void main(){
       robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
     };
 
-    const ACT_LEN = { dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
+    const ACT_LEN = { miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
     const pulse = (u, a, b) => smooth((u - a) / Math.max(1e-3, (b - a))) * (1 - smooth((u - b) / Math.max(1e-3, (1 - b))));
     const bump = (u) => Math.sin(Math.PI * clamp(u)); // 0 -> 1 -> 0
 
@@ -1181,6 +1185,10 @@ void main(){
       switch (act) {
         // ---------- shared ----------
         case 'wave': p.armR = 2.2 + 0.5 * Math.sin(t * 9); p.ex = 'happy'; p.mouth = 0.5; p.lookX = 0; break;
+        case 'miss': // eager for you to come back: big wet eyes, reaching out, hopping to see over the edge, looking around
+          p.ex = 'miss'; p.armL = 1.9 + 0.7 * Math.sin(t * 5); p.armR = 1.9 - 0.7 * Math.sin(t * 5); p.hop = Math.abs(Math.sin(t * 3.1)) * 11; p.head = 0.1 * Math.sin(t * 2.2); p.lookX = Math.sin(t * 1.6); p.mouth = 0; break;
+        case 'greet': // you are back: wide eyes, a jump, then a happy bounce
+          p.ex = u < 0.3 ? 'wow' : 'happy'; p.armL = p.armR = 2.7 + 0.25 * Math.sin(t * 10); bounce(7.5, 18); p.mouth = u < 0.3 ? 0.5 : 0.8; break;
         case 'walk': p.armL = 0.45 + 0.5 * Math.sin(tt * 13); p.armR = 0.45 - 0.5 * Math.sin(tt * 13); p.hop = 1.5 * Math.abs(Math.sin(tt * 13)); break;
         case 'listen': p.head = 0.09 * Math.sin(t * 3.4); p.ear = 0.7; p.armL = p.armR = 0.3; p.lookX = 0; p.sy = 1.015; break;   // all ears, nodding
         case 'reply': p.mouth = 0.55 * Math.abs(Math.sin(t * 9)); p.head = 0.08 * Math.sin(t * 4.5); p.armR = 0.9 + 0.5 * Math.sin(t * 6); p.ex = 'happy'; p.lookX = 0; break;
@@ -1277,15 +1285,20 @@ void main(){
       if (!follow) { T.mode = 'peek'; T.tx = T.home = corner; }
       else {
         if (tr.exitAt > T.sawExit) { T.sawExit = tr.exitAt; T.mode = 'search'; T.patrol = -1; T.patrolAt = 0; say('?', 2400); }
-        if (tr.enterAt > T.sawEnter) { T.sawEnter = tr.enterAt; T.mode = 'welcome'; T.until = now + 3400; say('❤', 2800); }
+        if (tr.enterAt > T.sawEnter) { T.sawEnter = tr.enterAt; T.mode = 'welcome'; T.until = now + 3600; say('❤', 3000); }
         if (tr.riseAt > T.sawRise) { T.sawRise = tr.riseAt; if (T.mode !== 'search' && T.mode !== 'party') { T.mode = 'out'; T.until = now + 5200; say('!', 1800); } }
-        if (tr.waveAt > T.sawWave) { T.sawWave = tr.waveAt; say('👋', 2400); }
+        if (tr.waveAt > T.sawWave) { T.sawWave = tr.waveAt; say('👋', 2400); } // it only waves when YOU wave
         const beside = clamp(tr.x < 0.5 ? tr.x + 0.3 : tr.x - 0.3, 0.12, 0.88);
         if (T.mode === 'search') {
           const P = [0.5, 0.17, 0.83, 0.5, 0.3, 0.7];
-          if (now >= T.patrolAt) { T.patrol = (T.patrol + 1) % P.length; T.patrolAt = now + 2600 + Math.random() * 1200; say(Math.random() < 0.55 ? '?' : '…', 1900); }
+          if (now >= T.patrolAt) { T.patrol = (T.patrol + 1) % P.length; T.patrolAt = now + 1800 + Math.random() * 900; say(['?', '🥺', '?', '💔'][Math.floor(Math.random() * 4)], 1700); }
           T.tx = P[Math.max(0, T.patrol)];
-          if (cfg.awayDance && tr.away > 4.5) { T.mode = 'party'; say('♪', 4200); }
+          if (tr.away > 3.2) { T.mode = 'miss'; say('🥺', 2200); }
+          if (tr.present) T.mode = 'welcome';
+        } else if (T.mode === 'miss') { // it wants you back: it waits in the middle, reaches out, looks around
+          T.tx = 0.5;
+          if (now > T.bubbleUntil - 150) say(['🥺', '💔', '?', '🥺'][Math.floor(Math.random() * 4)], 2200);
+          if (cfg.awayDance && tr.away > 11) { T.mode = 'party'; say('♪', 4200); }
           if (tr.present) T.mode = 'welcome';
         } else if (T.mode === 'party') {
           T.tx = 0.5; if (now > (T.bubbleUntil - 200)) say('♪', 4200);
@@ -1303,10 +1316,10 @@ void main(){
           if (now >= T.crossAt && tr.present) { const cL = (S * 0.6) / w; T.mode = 'cross'; T.tx = T.home < 0.5 ? 1 - cL : cL; }
         }
       }
-      const standing = T.mode === 'search' || T.mode === 'party' || T.mode === 'welcome' || T.mode === 'out' || (T.mode === 'return' && Math.abs(T.x - T.home) > 0.03);
+      const standing = T.mode === 'search' || T.mode === 'miss' || T.mode === 'party' || T.mode === 'welcome' || T.mode === 'out' || (T.mode === 'return' && Math.abs(T.x - T.home) > 0.03);
       T.s += ((standing ? 1 : 0) - T.s) * Math.min(1, dt * 4.5);
       const wantMove = Math.abs(T.tx - T.x) > 0.012 && (T.s > 0.7 || T.mode === 'cross' || (T.s < 0.05 && T.mode === 'peek'));
-      const speed = T.mode === 'cross' ? 0.1 : T.mode === 'party' ? 0.5 : 0.34;
+      const speed = T.mode === 'cross' ? 0.1 : T.mode === 'party' ? 0.5 : T.mode === 'welcome' ? 0.7 : 0.42;
       T.moving = wantMove;
       if (wantMove) { const d = T.tx - T.x; T.dir = Math.sign(d) || 1; T.x += Math.sign(d) * Math.min(Math.abs(d), speed * dt); T.ph += dt * (T.mode === 'cross' ? 6 : 13); }
       else if (!follow) T.x += (corner - T.x) * Math.min(1, dt * 6);
@@ -1324,8 +1337,9 @@ void main(){
       if (follow && st) {
         // where it is decides first: searching, partying, welcoming you back, coming out when you stand up
         if (st.mode === 'search') { begin(st.moving ? 'walk' : 'search', 30); return A; }
+        if (st.mode === 'miss') { begin(st.moving ? 'walk' : 'miss', 30); return A; }
         if (st.mode === 'party') { begin('dance', 30); return A; }
-        if (st.mode === 'welcome') { begin(st.moving ? 'walk' : 'wave', 30); return A; }
+        if (st.mode === 'welcome') { begin(st.moving ? 'walk' : 'greet', 30); return A; }
         if (st.moving && (st.s > 0.5)) { begin('walk', 30); return A; }
         if (st.mode === 'out' && A.name !== 'cheer' && A.name !== 'dance' && now - (R.cOutAt || 0) > 9000) { R.cOutAt = now; begin('cheer', 2.2); return A; }
         // "hi": you wave, it waves back
@@ -1402,6 +1416,7 @@ void main(){
         if (ex === 'wow') lift = Math.max(0, Math.sin(clamp(since * 3.2, 0, Math.PI))) * 16;
       }
       if (ex === 'sad') bob = 6 + Math.sin(t * 1.1);
+      if (ex === 'miss') bob = -Math.abs(Math.sin(t * 3.1)) * 3;
       if (ex === 'wary' && !act) tilt = Math.sin(t * 1.3) * 0.04;
       // it follows you: it leans the way you move and looks at you
       const follow = cfg.follow && tr && tr.live;
@@ -1585,23 +1600,28 @@ void main(){
         if (kind === 'owl') ell(g, cx, ey, 12, 12, '#fffdf5');
         if (isFrog) ell(g, cx, ey, 11, 11, '#ffffff');
         if (isRobot) { // LED eyes: they change shape with the feeling
-          const c = ex === 'sad' ? '#7aa8ff' : ex === 'wary' ? '#ffb347' : ex === 'wow' ? '#ffffff' : '#5de1ff';
+          const c = ex === 'sad' || ex === 'miss' ? '#7aa8ff' : ex === 'wary' ? '#ffb347' : ex === 'wow' ? '#ffffff' : '#5de1ff';
           if (blink) rrect(g, cx - 8, ey - 1.5, 16, 3, 1.5, c);
           else if (ex === 'happy') { g.strokeStyle = c; g.lineWidth = 4; g.beginPath(); g.arc(cx, ey + 4, 7, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
-          else rrect(g, cx - 8 + look, ey - (ex === 'wow' ? 10 : ex === 'wary' ? 3 : 7), 16, ex === 'wow' ? 20 : ex === 'wary' ? 6 : 14, 5, c);
+          else rrect(g, cx - 8 + look, ey - (ex === 'wow' || ex === 'miss' ? 10 : ex === 'wary' ? 3 : 7), 16, ex === 'wow' || ex === 'miss' ? 20 : ex === 'wary' ? 6 : 14, 5, c);
           continue;
         }
         if (blink) { g.strokeStyle = eyeInk; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 5, ey); g.lineTo(cx + 5, ey); g.stroke(); continue; }
         if (ex === 'happy') { g.strokeStyle = eyeInk; g.lineWidth = 3; g.beginPath(); g.arc(cx, ey + 2, 5.5, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); continue; }
-        const r = ex === 'wow' ? 8 : kind === 'owl' || isFrog ? 6.5 : 5.5;
+        const r = ex === 'wow' ? 8 : ex === 'miss' ? 8.6 : kind === 'owl' || isFrog ? 6.5 : 5.5;
         if (kind !== 'panda' && kind !== 'owl' && !isFrog) ell(g, cx, ey, r + 1.5, r + 2, '#ffffff');
         ell(g, cx + look, ey, kind === 'panda' ? r - 1 : r - 1.2, kind === 'panda' ? r - 1 : r, kind === 'panda' ? '#fff' : dark);
         ell(g, cx + look, ey, r * 0.62, r * 0.62, dark);
         ell(g, cx + look + 1.6, ey - 2, 1.8, 1.8, '#fff'); // sparkle in the eye
         if (ex === 'wary') { g.fillStyle = P.fur; g.fillRect(cx - 11, ey - 12, 22, 11); g.strokeStyle = dark; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - 9, ey - 1); g.lineTo(cx + 9, ey - 1); g.stroke(); }
+        if (ex === 'miss') { // big shiny eyes and worried brows: "where are you? come back"
+          ell(g, cx + look - 2, ey - 3, 2.6, 2.6, '#fff'); ell(g, cx + look + 2.5, ey + 2.5, 1.5, 1.5, 'rgba(255,255,255,0.85)');
+          g.strokeStyle = dark; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - s * 10, ey - 15); g.lineTo(cx + s * 8, ey - 10 - 2 * Math.sin(t * 5)); g.stroke();
+        }
         if (ex === 'sad') { g.strokeStyle = dark; g.lineWidth = 2.4; g.beginPath(); g.moveTo(cx - s * 9, ey - 11); g.lineTo(cx + s * 7, ey - 7); g.stroke(); }
       }
       if (ex === 'sad' && !isRobot) { const k = (t * 0.7) % 1; ell(g, -ed - 2, (isFrog ? -74 : -56) + k * 16, 2.6, 3.8, 'rgba(110,180,255,' + (0.9 - k * 0.7) + ')'); }
+      if (ex === 'miss' && !isRobot) for (const s of [-1, 1]) { const k = ((t * 0.55) + (s > 0 ? 0.5 : 0)) % 1; ell(g, s * ed + s * 2, (isFrog ? -74 : -56) + k * 14, 2.4, 3.4, 'rgba(120,190,255,' + (0.95 - k * 0.8) + ')'); } // tears welling up
       if (ex === 'awk') { const k = (t * 0.9) % 1; ell(g, 32, -82 + k * 10, 3.4, 5, 'rgba(120,190,255,' + (0.95 - k * 0.5) + ')'); }
 
       // nose and mouth (an open mouth shows teeth and the tongue)
@@ -1627,7 +1647,7 @@ void main(){
       } else if (isFrog) {
         g.lineWidth = 2.6; g.beginPath();
         if (open > 0.2) { g.ellipse(0, -46, 8 + 6 * open, 3 + 6 * open, 0, 0, TAU); g.fillStyle = '#4a1620'; g.fill(); }
-        else if (ex === 'sad') g.arc(0, -36, 18, Math.PI * 1.15, Math.PI * 1.85);
+        else if (ex === 'sad' || ex === 'miss') g.arc(0, -36, 18, Math.PI * 1.15, Math.PI * 1.85);
         else if (ex === 'wow') g.ellipse(0, -44, 6, 8, 0, 0, TAU);
         else if (ex === 'wary') { g.moveTo(-14, -45); g.lineTo(14, -45); }
         else g.arc(0, -52, 20, 0.12 * Math.PI, 0.88 * Math.PI);
@@ -1646,6 +1666,8 @@ void main(){
           if (kind === 'dog' || kind === 'cat' || kind === 'lion') ell(g, 0, my + 7, 4.5, 4, '#ff7a8f');
         } else if (ex === 'wow') {
           ell(g, 0, my + 4, 4, 6, dark);
+        } else if (ex === 'miss') { // a small wobbly mouth
+          g.beginPath(); g.moveTo(-6, my + 8); g.quadraticCurveTo(-3, my + 3 + Math.sin(t * 14) * 1.2, 0, my + 6); g.quadraticCurveTo(3, my + 9 - Math.sin(t * 14) * 1.2, 6, my + 5); g.stroke();
         } else if (ex === 'sad') {
           g.beginPath(); g.arc(0, my + 9, 7, Math.PI * 1.2, Math.PI * 1.8); g.stroke();
         } else if (ex === 'wary') {
@@ -1792,7 +1814,8 @@ void main(){
         const I = cfg.intensity * e.dim * (1 + 0.45 * pulseK) * (0.78 + 0.22 * clamp(darkRaw * 2)); // a little softer in a bright room, full strength in a dark one
         const base = cfg.lampX != null ? cfg.lampX : cfg.lampPos === 'left' ? 0.22 : cfg.lampPos === 'right' ? 0.78 : 0.5;
         const lsz = cfg.lampSize || 1, hang = h * (cfg.lampHang || 0);
-        const lampPos = { cx: follow ? clamp(w * (0.5 + (fx - 0.5) * 1.3), w * 0.03, w * 0.97) : w * base }; // follows you all the way to the edges
+        const offs = cfg.lampX != null ? cfg.lampX - 0.5 : cfg.lampPos === 'left' ? -0.28 : cfg.lampPos === 'right' ? 0.28 : 0; // with Follow me, Left / Right means beside YOU
+        const lampPos = { cx: follow ? clamp(w * (0.5 + (fx - 0.5) * 1.3 + offs), w * 0.03, w * 0.97) : w * base }; // follows you all the way to the edges
         const ls = lampState(cfg, h, now, e, audio);
         if (party) { ls.angle += 0.2 * Math.sin(t * 2.7); ls.dy += h * 0.012 * Math.sin(t * 5.4); }
         const focus = e.focus * ls.focusRamp;
@@ -1822,14 +1845,23 @@ void main(){
         if (cfg.lamp && fixture !== 'lamp') {
           fixtureLight(g, w, h, fixture, { cx: lampPos.cx, bx, by: bulbY, ls, e, I, now, fx: follow ? faceX : null, fy: follow ? faceY : null, aim: follow ? [faceX, faceY] : null });
         } else if (cfg.lamp) {
-          const dir = follow ? Math.atan2(-(faceX - bx), Math.max(10, faceY - bulbY)) * 0.9 - ls.angle * 0.9 : -sway * 0.9 + (bx - w / 2) / w * 0.55;
+          const ang = cfg.lightAngle === 90 || cfg.lightAngle === 60 || cfg.lightAngle === 45 || cfg.lightAngle === 30 ? cfg.lightAngle : 0;
+          const tgtX = follow ? faceX : w / 2, sgn = Math.abs(tgtX - bx) < w * 0.02 ? (bx < w / 2 ? 1 : -1) : Math.sign(tgtX - bx), sideK = ang ? (90 - ang) / 60 : 0;
+          let dir = follow ? Math.atan2(-(faceX - bx), Math.max(10, faceY - bulbY)) * 0.9 - ls.angle * 0.9 : -sway * 0.9 + (bx - w / 2) / w * 0.55;
+          if (ang) dir = -sgn * ((90 - ang) * Math.PI / 180) - ls.angle * 0.9; // 90 = straight down; the smaller the angle, the more it comes from the side
           cone(g, bx, bulbY, h * 1.05, w * 0.78, dir, e.rgb, 0.46 * I * ls.bright * (1 + 0.5 * dark));
-          const gx = follow ? faceX : w / 2 + (bx - w / 2) * 0.3, gy = follow ? faceY : h * 0.46;
+          const gx0 = follow ? faceX : w / 2 + (bx - w / 2) * 0.3, gy = follow ? faceY : h * 0.46, gx = gx0 + (bx - gx0) * 0.4 * sideK;
           glow(g, gx, gy, h * 0.66, e.rgb, 0.34 * I * ls.bright * (1 + 0.9 * dark)); // light on your face (more in a dark room)
         } else {
           glow(g, follow ? faceX : w / 2, follow ? faceY : h * 0.46, h * 0.62, e.rgb, 0.22 * I * (1 + 0.9 * dark)); // no lamp: a soft light on you
         }
         g.restore();
+        if (cfg.lamp && fixture === 'lamp' && (cfg.lightAngle === 60 || cfg.lightAngle === 45 || cfg.lightAngle === 30)) { // light from the side: the far side of the picture falls into shade
+          const sk = (90 - cfg.lightAngle) / 60, ax = follow ? faceX : w / 2, ls0 = lampPos.cx + Math.sin(ls.angle) * drop, sg = ax >= ls0 ? 1 : -1;
+          const sh = g.createLinearGradient(ax, 0, ax + sg * w * 0.6, 0);
+          sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(0,0,0,${0.42 * sk})`);
+          g.save(); g.fillStyle = sh; g.fillRect(0, 0, w, h); g.restore();
+        }
 
         if (R.mood && MOOD[R.mood] && MOOD[R.mood].burst && R.burstAt >= 0) drawBurst(g, w, h, now);
         else if (follow && pulseK > 0.01) drawBurst(g, w, h, now);
@@ -1924,7 +1956,7 @@ void main(){
     return {
       person: { dx: clamp(x, -0.3, 1.1) - 0.5, dy: y - 0.45, visible, wave: waving ? ms : 0 },
       voice: talking ? 0.4 + 0.3 * Math.abs(Math.sin(ms / 170)) : 0,
-      track: { present: visible, x: clamp(x, 0, 1), y, energy: moving || waving ? 0.75 : 0.1, side: clamp((x - 0.5) * 2, -1, 1), rise: clamp((0.4 - y) / 0.2), away: visible ? 0 : 1, vx: (x - x0) / 0.12, vy: (y - y0) / 0.12,
+      track: { present: visible, x: clamp(x, 0, 1), y, energy: moving || waving ? 0.75 : 0.1, side: clamp((x - 0.5) * 2, -1, 1), rise: clamp((0.4 - y) / 0.2), away: visible ? 0 : Math.max(0, (ms - 16400) / 1000), vx: (x - x0) / 0.12, vy: (y - y0) / 0.12,
         enterAt: at(22000), exitAt: at(16400), exitSide: 1, riseAt: at(14400), waveAt: at(2400), live: true },
     };
   }
