@@ -4,6 +4,57 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added (work towards 1.3.0, not released yet)
+- **Lights & looks** on your own camera: a hanging lamp, a spotlight on you, coloured corner lights and light shows, five filters, lights that follow the memes you play, and a no-flashing option. A live preview in the panel shows exactly what the call will see. Works in the background tab too (frame-by-frame camera pipeline).
+- **Time passes** (Pro and Pro Max hours of real use, no expiry date). The timer counts only while the pass is switched on and you are in a call, and the pass switches itself off at 0. The balance is kept on the site (`/api/license` accepts the seconds used). The admin can gift minutes. The payment page comes last.
+- **Characters**: a cat, dog, bunny (Pro, one at a time) and a panda, owl, fox, penguin, lion, monkey, frog, unicorn, robot (Pro Max) sit in a corner of your camera, pop up with a bounce, blink and breathe, and react to the sound that plays (laugh, jump, sad face with a tear, sweat drop, narrowed eyes). Drawn with code, so there are no pictures to copy and nothing to download.
+- **Music**: thirteen original tunes (Chill and Funky are free; the rest are Pro). Disco, Club, Bass (808), Desi (dhol) and House are long, about a minute each, with an intro, a build, a drop with a pumping sub bass, and a break. made by the code itself, so no copyright and nothing to download. They play into your call like a meme, get quieter while you talk, stop with "Stop all", and the lights and characters follow them. A locked tune can be previewed on your own speakers for 20 s.
+- Ten more filters (Pro Max): VHS, Cyber, Comic, Matrix, Glam, Night vision, Old film, Synthwave, Thermal, Snow.
+- Six more corner light shows (Pro): Aurora, Fire, Lasers, Neon frame, Police (slow fade, never a flash), Hearts.
+- **Things that hang like the lamp** (Pro): a mirror ball that turns and throws spots of light around the room, a paper lantern (kandil), fairy lights, a chandelier, a moon, a star and a stage spotlight. Four more animations (Pro): Sway, Bounce, Pendulum and "To the beat" (kicks with the sound). The plain still lamp stays free.
+- **The camera is always ready for Lights**: switching Lights on needs no camera restart any more (the frames pass through untouched until something is on).
+- **Pricing page** (`/pricing`): Free, Pro and Pro Max, passes of ₹19 / 29 / 49 / 69 (and $1.99 / 3.99 / 5.99 / 8.99), in rupees for India and dollars elsewhere. `/buy` sells the passes by UPI for now (approved by hand); the old ₹99 lifetime Pro and the picture packs are closed to new buyers (existing keys keep working). Card payment in dollars comes with the payment gateway.
+- Free choices stay free; Pro and add-on choices can be previewed on your own screen (20 s, "PREVIEW" mark) and are not sent to the call.
+
+## [1.2.6] - 2026-10-10
+
+### Changed
+- The **Sound effects pack is optional**. It is not added to anyone's list, on a first install or on an update, so the 😂 button's random pick, the list and the shortcuts are exactly as before, with the Hindi, Hinglish and English meme voices. To get the effects: Settings → Packs → Sound effects → **Add** (it is free).
+- The tutorial video is back to the meme voices first (click 😂, pick a line, muted, add your own sound), and ends with an optional step that adds the Sound effects pack and plays the airhorn.
+- The store description calls the Sound effects pack optional.
+
+## [1.2.5] - 2026-10-10
+
+### Added
+- A **Sound effects** pack, free for everyone: airhorn, rimshot (ba-dum-tss), sad trombone, drumroll, wrong buzzer, ta-da, applause, crickets, evil laugh, dun-dun-DUNNN, record scratch, boing and slide whistle. They are real sound effects, not speech: loud, short and easy to recognise on a call. Synthesized in plain code (`npm run sfx`, `tools/lib/sfx.mjs`), so there are no samples and no licences. New installs get the pack; people updating from 1.2.x get it added once, and their own lines are never touched. Packs can be exported and imported with these lines too (`kind: "sfx"`).
+- The tutorial video now shows how to **add your own sound** (Options → Add a clip → choose, trim, name, save) and then plays it in the call.
+
+### Changed
+- The Normal, Chipmunk and Excited voices speak a little slower, so the words are easier to understand.
+- The tutorial plays the new effects, so you can really hear what everyone in the call hears.
+
+## [1.2.4] - 2026-10-10
+
+### Changed
+- The tutorial video now has **real sound**: it is the actual microphone mix the call hears (the memes, and silence while muted), recorded from the extension. The muted step plays a meme on purpose to show that nobody hears it.
+- Tutorial captions sit higher, clear of the video player's control bar.
+- A **🔊 Sound on** button (12 languages) on the website and the welcome page, because browsers only autoplay muted video. It restarts the video with sound.
+
+## [1.2.3] - 2026-10-10
+
+### Added
+- A **30 second tutorial video** on the welcome page, on the website's home page and on the Google Meet and Discord pages. It is silent, with big captions: join your call, click 😂, right-click for the panel, unmute your mic. Made from the real extension by `npm run tutorial`.
+- The welcome page lists call tabs that were open before MemeBox was installed, with a **Reload this tab** button for each. Nothing reloads by itself, because reloading leaves a live call.
+- The feedback form and the uninstall survey ask **where you used MemeBox** (Google Meet, Zoom or Teams in the browser or the desktop app, Discord, or not at all) and **which device** (Windows, Mac, Chromebook, Linux). Picked from a list, in all 12 languages. The link from the extension pre-selects the browser version.
+- Admin: charts for those two answers, and a **Pro users** line (paid, owner/gift, and checked in during the last 7 days).
+
+### Changed
+- Muted in the call: the 😂 button shows a 🔇 badge, the panel's status line turns into an amber warning, and the "you are muted" note stays for 6 seconds instead of 3.
+- Removed the "Everyone heard Chai break!" label from the home page picture; the video shows it.
+
+### Notes for the site owner
+- Before deploying the site, run once: `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-platform-device.sql`. Until then, answers are still saved, only without the two new fields.
+
 ## [1.2.2] - 2026-09-28
 
 ### Added

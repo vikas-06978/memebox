@@ -84,8 +84,8 @@ test('non-objects are rejected cleanly', () => {
   for (const x of [null, 42, 'pack', [], true]) assert.equal(P.validate(x).ok, false);
 });
 
-test('built-in packs: College, Cricket, Office, Party + general, all valid', () => {
-  assert.deepEqual([...MEME_PACKS.ids], ['general', 'college', 'cricket', 'office', 'party']);
+test('built-in packs: Sound effects, College, Cricket, Office, Party + general, all valid', () => {
+  assert.deepEqual([...MEME_PACKS.ids], ['general', 'effects', 'college', 'cricket', 'office', 'party']);
   const all = MEME_PACKS.all();
   assert.equal(new Set(all.map((l) => l.id)).size, all.length, 'unique ids');
   for (const id of MEME_PACKS.ids) {
@@ -94,6 +94,7 @@ test('built-in packs: College, Cricket, Office, Party + general, all valid', () 
     for (const l of lines) {
       assert.deepEqual(G.MEME.sanitizeLine(l), l, `${l.id} is a clean line`);
       if (id !== 'general') assert.equal(l.category, id);
+      if (l.kind === 'sfx') assert.ok(G.MEME.SFX.includes(l.sfx), `${l.id} uses a known effect`);
       if (l.lang === 'hi') assert.match(l.say || l.text, /[ऀ-ॿ]/, `${l.id} has a Devanagari pronunciation`);
     }
   }
@@ -107,4 +108,14 @@ test('built-in packs: College, Cricket, Office, Party + general, all valid', () 
 test('built-in packs stay friendly: no words about religion, caste, gender, looks, disability', () => {
   const banned = /\b(religions?|hindus?|muslims?|christians?|sikhs?|castes?|dalits?|gay|lesbians?|trans|girls?|boys?|women|woman|men|fat|ugly|black|white|dark|pagal|andha|langda|mota|kaala|kali)\b/i;
   for (const l of MEME_PACKS.all()) assert.doesNotMatch(`${l.text} ${l.say || ''}`, banned, l.id);
+});
+
+test('updating never adds the optional Sound effects pack, and never touches my lines', () => {
+  const mine = { id: 'mine-1', kind: 'tts', text: 'My own line', lang: 'en', tone: 'normal', fav: 3, category: 'mine', volume: 1 };
+  assert.equal(MEME_PACKS.missing([mine], 1).length, 0, 'from 1.2.x: nothing is added');
+  const fromOld = MEME_PACKS.missing([mine], 0);
+  assert.equal(fromOld.length, MEME_PACKS.all().length, 'from before packs existed: the packs');
+  assert.ok(fromOld.every((l) => l.category !== 'effects' && l.fav === 0));
+  assert.ok(MEME_PACKS.all().every((l) => l.kind !== 'sfx'), 'a first install has no effects');
+  assert.equal(MEME_PACKS.lines('effects').length, 13, 'but the pack is there to add');
 });

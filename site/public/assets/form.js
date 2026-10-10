@@ -13,6 +13,9 @@
   const type = form.dataset.type === 'uninstall' ? 'uninstall' : 'feedback';
   const version = /^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(params.get('v') || '') ? params.get('v') : '';
   const site = SITES.includes(params.get('site')) ? params.get('site') : '';
+  // The extension only works in the browser, so a link from it means the browser version.
+  const FROM_SITE = { meet: 'meet', zoom: 'zoom-web', teams: 'teams-web', discord: 'discord' };
+  if (form.elements.platform && FROM_SITE[site]) form.elements.platform.value = FROM_SITE[site];
 
   // ---------- Turnstile ----------
   let token = '';
@@ -49,6 +52,8 @@
     const fd = new FormData(form);
     const body = { type, version, lang, website: String(fd.get('website') || ''), token };
     if (site) body.site = site;
+    body.platform = String(fd.get('platform') || '');
+    body.device = String(fd.get('device') || '');
     if (type === 'feedback') {
       body.rating = Number(fd.get('rating')) || 0;
       body.used = fd.getAll('used').map(String);

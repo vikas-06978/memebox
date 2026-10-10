@@ -2,6 +2,9 @@
 // running against a D1 stand-in (node:sqlite with site/db/schema.sql).
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { ROOT } from './helpers.mjs';
 import { validateSubmission, FEATURES } from '../../site/src/validate.js';
 import {
   rateLimit, makeSession, checkSession, safeEqual, readCookie, SESSION_MS, TURNSTILE_VERIFY, sha256Hex,
@@ -127,7 +130,7 @@ test('CSV cells are quoted and formulas are neutralised', () => {
   assert.equal(csvCell('=HYPERLINK("x")'), '"\'=HYPERLINK(""x"")"');
   assert.equal(csvCell('+1'), "'+1");
   assert.equal(csvCell(null), '');
-  assert.match(toCsv([]), /^id,created_at,type,rating,used,wants,message,email,reason,version,site,lang\r\n$/);
+  assert.match(toCsv([]), /^id,created_at,type,rating,used,wants,message,email,reason,platform,device,version,site,lang\r\n$/);
 });
 
 // ---------- the real Pages Functions ----------
@@ -279,4 +282,43 @@ test('admin: tampered or expired cookies are refused, and sign-in tries are limi
 test('admin without ADMIN_KEY configured is closed', async () => {
   const res = await call(adminPage, adminReq('/admin'), { DB: db });
   assert.equal(res.status, 503);
+});
+
+// ---------- platform and device (picked from lists) ----------
+
+test('platform and device are stored when picked, rejected when made up, and optional', async () => {
+  const ok = await call(feedbackApi, post({ type: 'uninstall', reason: 'didnt-work', platform: 'zoom-app', device: 'chromebook', version: '1.2.3', token: 'ok' }));
+  assert.equal(ok.status, 200);
+  const row = await db.prepare('SELECT * FROM feedback').first();
+  assert.equal(row.platform, 'zoom-app');
+  assert.equal(row.device, 'chromebook');
+
+  const bad = await call(feedbackApi, post({ type: 'uninstall', reason: 'other', platform: 'tiktok', device: 'toaster', token: 'ok' }, { ip: '198.51.100.7' }));
+  assert.equal(bad.status, 400);
+  const errors = (await bad.json()).errors;
+  assert.ok(errors.some((e) => e.startsWith('platform:')) && errors.some((e) => e.startsWith('device:')));
+
+  const none = await call(feedbackApi, post({ type: 'feedback', rating: 3, token: 'ok' }, { ip: '198.51.100.8' }));
+  assert.equal(none.status, 200); // both fields stay optional
+});
+
+test('an un-migrated database still saves the answer (without platform and device)', async () => {
+  // The database the site had before the migration: no platform/device columns.
+  await db.prepare('ALTER TABLE feedback DROP COLUMN platform').run();
+  await db.prepare('ALTER TABLE feedback DROP COLUMN device').run();
+  const res = await call(feedbackApi, post({ type: 'uninstall', reason: 'too-hard', platform: 'meet', device: 'windows', version: '1.2.3', token: 'ok' }));
+  assert.equal(res.status, 200);
+  const row = await db.prepare('SELECT * FROM feedback').first();
+  assert.equal(row.reason, 'too-hard');
+  assert.equal(row.platform, undefined);
+});
+
+test('the tutorial video has a sound track (and the copy in the extension is the same file)', () => {
+  const assets = path.join(ROOT, 'site', 'public', 'assets');
+  const mp4 = fs.readFileSync(path.join(assets, 'tutorial.mp4'));
+  const webm = fs.readFileSync(path.join(assets, 'tutorial.webm'));
+  assert.ok(mp4.includes('mp4a'), 'mp4 has an AAC audio track');
+  assert.ok(webm.includes('A_OPUS'), 'webm has an Opus audio track');
+  assert.ok(mp4.length < 2e6 && webm.length < 2e6, 'small enough to autoplay on a phone');
+  assert.ok(webm.equals(fs.readFileSync(path.join(ROOT, 'extension', 'tutorial.webm'))), 'extension/tutorial.webm is the same file');
 });

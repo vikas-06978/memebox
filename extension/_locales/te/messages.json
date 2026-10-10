@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "క్రికెట్"
   },
+  "cat_effects": {
+    "message": "సౌండ్ ఎఫెక్ట్స్"
+  },
   "cat_office": {
     "message": "ఆఫీస్"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "అప్‌లోడ్ చేసిన క్లిప్"
+  },
+  "tag_sfx": {
+    "message": "ఎఫెక్ట్"
   },
   "tag_lang": {
     "message": "భాష"
@@ -740,6 +746,18 @@
   "ob_done": {
     "message": "మీరు సిద్ధం. మీ లైన్లు, క్లిప్స్, ప్యాక్స్ Settings లో ఉన్నాయి."
   },
+  "ob_reload_title": {
+    "message": "కాల్ ట్యాబ్ ఇప్పటికే తెరిచి ఉంది"
+  },
+  "ob_reload_text": {
+    "message": "ఇది MemeBox కంటే ముందే తెరిచారు, కాబట్టి ఇంకా మీమ్‌లను ప్లే చేయలేదు. దాన్ని రీలోడ్ చేసి, కాల్‌లో మళ్లీ చేరండి. రీలోడ్ చేస్తే మీరు కాల్ నుండి బయటకు వస్తారు, కాబట్టి సిద్ధమైనప్పుడే చేయండి."
+  },
+  "ob_reload_btn": {
+    "message": "ఈ ట్యాబ్‌ను రీలోడ్ చేయండి"
+  },
+  "ob_sound": {
+    "message": "🔊 ధ్వని ఆన్ చేయండి"
+  },
   "ob_settings": {
     "message": "⚙️ సెట్టింగ్స్ తెరవండి"
   },
@@ -876,5 +894,362 @@
   },
   "lang_reload": {
     "message": "భాష మారింది. MemeBox ను అందులో చూడటానికి ఈ కాల్ ట్యాబ్‌ను రీలోడ్ చేయండి."
+  },
+  "fx_title": {
+    "message": "💡 లైట్లు & లుక్"
+  },
+  "fx_state_on": {
+    "message": "ఆన్"
+  },
+  "fx_state_off": {
+    "message": "ఆఫ్"
+  },
+  "fx_how": {
+    "message": "మీ కెమెరాపై లాంప్ మరియు రంగుల లైట్లు. కాల్‌లో అందరికీ కనిపిస్తాయి. కింది ప్రివ్యూలో అన్నీ ప్రయత్నించండి."
+  },
+  "fx_on": {
+    "message": "నా కెమెరాను వెలిగించు"
+  },
+  "fx_hint_off": {
+    "message": "ప్రయత్నించడానికి ఆన్ చేయండి. వాడటానికి కాల్‌లో చేరండి లేదా మళ్లీ చేరండి."
+  },
+  "fx_restart": {
+    "message": "లైట్లు మొదలవడానికి కాల్‌లో కెమెరాను ఒకసారి ఆఫ్ చేసి మళ్లీ ఆన్ చేయండి."
+  },
+  "fx_active": {
+    "message": "✓ లైట్లు మీ కెమెరాపై ఉన్నాయి"
+  },
+  "fx_locked": {
+    "message": "🔒 ప్రివ్యూ మాత్రమే: కాల్‌కు వెళ్లదు."
+  },
+  "fx_plans": {
+    "message": "ప్లాన్లు చూడండి"
+  },
+  "fx_watermark": {
+    "message": "ప్రివ్యూ"
+  },
+  "fx_lamp": {
+    "message": "వేలాడే లాంప్"
+  },
+  "fx_lamp_show": {
+    "message": "లాంప్ చూపించు"
+  },
+  "fx_pos_center": {
+    "message": "మధ్య"
+  },
+  "fx_pos_left": {
+    "message": "ఎడమ"
+  },
+  "fx_pos_right": {
+    "message": "కుడి"
+  },
+  "fx_anim_still": {
+    "message": "స్థిరం"
+  },
+  "fx_anim_swing": {
+    "message": "ఊగే"
+  },
+  "fx_anim_drop": {
+    "message": "పడే"
+  },
+  "fx_anim_flicker": {
+    "message": "మినుకుమినుకు"
+  },
+  "fx_colors": {
+    "message": "కాంతి రంగు"
+  },
+  "fx_corners": {
+    "message": "మూల లైట్లు"
+  },
+  "fx_corners_show": {
+    "message": "మూల లైట్లు చూపించు"
+  },
+  "fx_looks": {
+    "message": "లుక్ (ఫిల్టర్లు)"
+  },
+  "fx_pat_steady": {
+    "message": "స్థిరం"
+  },
+  "fx_pat_pulse": {
+    "message": "స్పందన"
+  },
+  "fx_pat_candle": {
+    "message": "కొవ్వొత్తి"
+  },
+  "fx_pat_rainbow": {
+    "message": "ఇంద్రధనస్సు"
+  },
+  "fx_pat_disco": {
+    "message": "డిస్కో"
+  },
+  "fx_pat_sweep": {
+    "message": "స్వీప్"
+  },
+  "fx_pat_sparkle": {
+    "message": "మెరుపు"
+  },
+  "fx_filter_none": {
+    "message": "ఏదీ కాదు"
+  },
+  "fx_filter_warm": {
+    "message": "వెచ్చని"
+  },
+  "fx_filter_bw": {
+    "message": "నలుపు తెలుపు"
+  },
+  "fx_filter_glow": {
+    "message": "గ్లో"
+  },
+  "fx_filter_vintage": {
+    "message": "వింటేజ్"
+  },
+  "fx_filter_cool": {
+    "message": "చల్లని"
+  },
+  "fx_filter_neon": {
+    "message": "నియాన్"
+  },
+  "fx_filter_noir": {
+    "message": "నోయర్"
+  },
+  "fx_filter_dream": {
+    "message": "డ్రీమ్"
+  },
+  "fx_filter_sunset": {
+    "message": "సన్‌సెట్"
+  },
+  "fx_filter_pixel": {
+    "message": "పిక్సెల్"
+  },
+  "fx_focus": {
+    "message": "నాపై స్పాట్‌లైట్ (అంచులు ముదురు)"
+  },
+  "fx_focus_tip": {
+    "message": "అంచులు ముదురు, కాంతి ముఖంపై ఉంటుంది"
+  },
+  "fx_sync": {
+    "message": "లైట్లు శబ్దాలను అనుసరిస్తాయి"
+  },
+  "fx_sync_tip": {
+    "message": "మీరు ప్లే చేసే మీమ్‌కు తగ్గట్టు రంగు మారుతుంది"
+  },
+  "fx_safe": {
+    "message": "ఫ్లాష్ లేదు (మృదువైన మార్పులు మాత్రమే)"
+  },
+  "fx_safe_tip": {
+    "message": "ఫ్లాష్‌కు సున్నితమైన వారికి సురక్షితం"
+  },
+  "fx_bright": {
+    "message": "ప్రకాశం"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: అపరిమితం ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 మిగిలింది"
+  },
+  "fx_pass_running": {
+    "message": "నడుస్తోంది"
+  },
+  "fx_pass_pause": {
+    "message": "ఆపు"
+  },
+  "fx_pass_start": {
+    "message": "పాస్ ప్రారంభించు"
+  },
+  "fx_pass_none": {
+    "message": "ఇంకా పాస్ లేదు. ప్రివ్యూ ఉచితం; పాస్‌తో కాల్‌లో అందరికీ కనిపిస్తుంది."
+  },
+  "fx_character": {
+    "message": "పాత్ర (శబ్దాలకు స్పందిస్తుంది)"
+  },
+  "fx_char_none": {
+    "message": "ఏదీ కాదు"
+  },
+  "fx_char_cat": {
+    "message": "పిల్లి"
+  },
+  "fx_char_dog": {
+    "message": "కుక్క"
+  },
+  "fx_char_bunny": {
+    "message": "కుందేలు"
+  },
+  "fx_char_panda": {
+    "message": "పాండా"
+  },
+  "fx_char_owl": {
+    "message": "గుడ్లగూబ"
+  },
+  "fx_char_fox": {
+    "message": "నక్క"
+  },
+  "mu_title": {
+    "message": "🎵 సంగీతం"
+  },
+  "mu_how": {
+    "message": "కాపీరైట్ లేని సొంత ట్యూన్లు. మీమ్ లాగా కాల్‌లో వినిపిస్తాయి, మీరు మాట్లాడితే తగ్గుతాయి."
+  },
+  "mu_stop": {
+    "message": "ఆపు"
+  },
+  "mu_vol": {
+    "message": "సంగీతం వాల్యూమ్"
+  },
+  "mu_locked": {
+    "message": "🔒 ప్రివ్యూ మాత్రమే (మీ స్పీకర్‌పై, కాల్‌లో కాదు)."
+  },
+  "mu_in_call": {
+    "message": "కాల్‌లో ప్లే అవుతోంది: $1"
+  },
+  "mu_preview": {
+    "message": "ప్రివ్యూ: $1, $2 సెకన్లు, మీకు మాత్రమే వినిపిస్తుంది"
+  },
+  "mu_idle": {
+    "message": "ట్యూన్ నొక్కి వినండి. ఉచితం: చిల్, ఫంకీ."
+  },
+  "mu_idle_call": {
+    "message": "ట్యూన్ నొక్కితే కాల్‌లో ప్లే అవుతుంది."
+  },
+  "mu_t_chill": {
+    "message": "చిల్"
+  },
+  "mu_t_funky": {
+    "message": "ఫంకీ"
+  },
+  "mu_t_party": {
+    "message": "పార్టీ"
+  },
+  "mu_t_suspense": {
+    "message": "సస్పెన్స్"
+  },
+  "mu_t_retro": {
+    "message": "రెట్రో"
+  },
+  "mu_t_jazz": {
+    "message": "జాజ్"
+  },
+  "mu_t_epic": {
+    "message": "ఎపిక్"
+  },
+  "mu_t_tropical": {
+    "message": "ట్రాపికల్"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "సైబర్"
+  },
+  "fx_filter_comic": {
+    "message": "కామిక్"
+  },
+  "fx_filter_matrix": {
+    "message": "మ్యాట్రిక్స్"
+  },
+  "fx_filter_glam": {
+    "message": "గ్లామ్"
+  },
+  "mu_t_disco": {
+    "message": "డిస్కో"
+  },
+  "mu_t_club": {
+    "message": "క్లబ్"
+  },
+  "mu_t_bass": {
+    "message": "బాస్"
+  },
+  "mu_t_desi": {
+    "message": "దేశీ"
+  },
+  "mu_t_house": {
+    "message": "హౌస్"
+  },
+  "fx_char_penguin": {
+    "message": "పెంగ్విన్"
+  },
+  "fx_char_lion": {
+    "message": "సింహం"
+  },
+  "fx_char_monkey": {
+    "message": "కోతి"
+  },
+  "fx_char_frog": {
+    "message": "కప్ప"
+  },
+  "fx_char_unicorn": {
+    "message": "యునికార్న్"
+  },
+  "fx_char_robot": {
+    "message": "రోబో"
+  },
+  "fx_filter_night": {
+    "message": "నైట్ విజన్"
+  },
+  "fx_filter_film": {
+    "message": "పాత సినిమా"
+  },
+  "fx_filter_wave": {
+    "message": "సింథ్‌వేవ్"
+  },
+  "fx_filter_heat": {
+    "message": "థర్మల్"
+  },
+  "fx_filter_snow": {
+    "message": "మంచు"
+  },
+  "fx_pat_aurora": {
+    "message": "అరోరా"
+  },
+  "fx_pat_fire": {
+    "message": "అగ్ని"
+  },
+  "fx_pat_laser": {
+    "message": "లేజర్"
+  },
+  "fx_pat_neonframe": {
+    "message": "నియాన్ ఫ్రేమ్"
+  },
+  "fx_pat_police": {
+    "message": "పోలీస్"
+  },
+  "fx_pat_heart": {
+    "message": "హృదయాలు"
+  },
+  "fx_fix_lamp": {
+    "message": "లాంప్"
+  },
+  "fx_fix_discoball": {
+    "message": "డిస్కో బాల్"
+  },
+  "fx_fix_lantern": {
+    "message": "లాంతరు"
+  },
+  "fx_fix_fairy": {
+    "message": "ఫెయిరీ లైట్లు"
+  },
+  "fx_fix_chandelier": {
+    "message": "షాండ్లియర్"
+  },
+  "fx_fix_moon": {
+    "message": "చంద్రుడు"
+  },
+  "fx_fix_star": {
+    "message": "నక్షత్రం"
+  },
+  "fx_fix_spotlight": {
+    "message": "స్పాట్‌లైట్"
+  },
+  "fx_anim_sway": {
+    "message": "ఊగుతుంది"
+  },
+  "fx_anim_bounce": {
+    "message": "ఎగురుతుంది"
+  },
+  "fx_anim_pendulum": {
+    "message": "లోలకం"
+  },
+  "fx_anim_beat": {
+    "message": "బీట్‌కు"
   }
 }

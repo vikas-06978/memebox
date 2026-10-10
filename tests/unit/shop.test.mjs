@@ -2,7 +2,7 @@
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  PRODUCTS, newLicenseKey, newOrderId, LICENSE_RE, ORDER_RE, upiLink, cleanKey, createLicense, getLicense,
+  PRODUCTS, forSale, newLicenseKey, newOrderId, LICENSE_RE, ORDER_RE, upiLink, cleanKey, createLicense, getLicense,
 } from '../../site/src/shop.js';
 import { makeSession } from '../../site/src/security.js';
 import { onRequest as licenseApi } from '../../site/functions/api/license.js';
@@ -43,10 +43,14 @@ test('UPI link has the payee, amount in rupees, INR and the order code as the no
   assert.throws(() => upiLink({ upiId: 'not a vpa', amount: 1, orderId: 'x' }));
 });
 
-test('prices: 5 pictures for ₹29, Pro for ₹99', () => {
-  assert.deepEqual({ ...PRODUCTS.pictures5 }, { name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false });
-  assert.equal(PRODUCTS.pro.inr, 99);
-  assert.equal(PRODUCTS.pro.unlimited, true);
+test('prices: time passes ₹19 / 29 / 49 / 69 and $1.99 / 3.99 / 5.99 / 8.99; the old lifetime Pro and picture packs are closed', () => {
+  const p = PRODUCTS;
+  assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_180.inr], [19, 29, 49, 69]);
+  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_180.usd], [1.99, 3.99, 5.99, 8.99]);
+  assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_max_180.maxSeconds], [1800, 3600, 7200, 10800]);
+  assert.equal(p.pro.closed, true);
+  assert.equal(p.pictures5.closed, true);
+  assert.deepEqual(forSale().map(([id]) => id), ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_180']);
 });
 
 test('wrangler.toml has no UPI ID or other settings, so the dashboard values are never overwritten', () => {
@@ -56,7 +60,9 @@ test('wrangler.toml has no UPI ID or other settings, so the dashboard values are
 test('/api/config tells the buy page the products and whether payments are open', async () => {
   const on = await (await call(configApi, req('/api/config'))).json();
   assert.equal(on.payments, true);
-  assert.equal(on.products.pro.inr, 99);
+  assert.equal(on.products.pass_max_180.inr, 69);
+  assert.equal(on.products.pass_max_180.usd, 8.99);
+  assert.equal(on.products.pro, undefined, 'the old lifetime Pro is not for sale');
   const off = await (await call(configApi, req('/api/config'), { DB: db })).json();
   assert.equal(off.payments, false);
 });
@@ -66,7 +72,7 @@ test('/api/license: active, unknown, badly formed and turned-off keys; CORS for 
   const ok = await call(licenseApi, postJson('/api/license', { key: key.toLowerCase() }));
   assert.equal(ok.status, 200);
   assert.equal(ok.headers.get('Access-Control-Allow-Origin'), '*');
-  assert.deepEqual((await ok.json()).license, { key, status: 'active', unlimited: true, pictureSlots: 0 });
+  assert.deepEqual((await ok.json()).license, { key, status: 'active', unlimited: true, pictureSlots: 0, proSeconds: 0, maxSeconds: 0 });
   assert.match((await getLicense(db, key)).last_seen, /^\d{4}-\d\d-\d\d$/);
 
   assert.equal((await call(licenseApi, postJson('/api/license', { key: 'MBX-AAAA-BBBB-CCCC' }))).status, 404);
@@ -81,10 +87,10 @@ test('/api/license: active, unknown, badly formed and turned-off keys; CORS for 
 });
 
 test('order flow: create → QR link → claim with UTR → admin approves → buyer sees a new key', async () => {
-  const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }))).json();
+  const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }))).json();
   assert.equal(created.ok, true);
-  assert.equal(created.amount, 99);
-  assert.match(created.upiUrl, new RegExp(`^upi://pay\\?pa=memebox@upi&pn=MemeBox&am=99\\.00&cu=INR&tn=MemeBox%20${created.orderId}$`));
+  assert.equal(created.amount, 29);
+  assert.match(created.upiUrl, new RegExp(`^upi://pay\\?pa=memebox@upi&pn=MemeBox&am=29\\.00&cu=INR&tn=MemeBox%20${created.orderId}$`));
 
   const bad = await call(orderApi, postJson('/api/order', { action: 'claim', orderId: created.orderId, utr: '123' }));
   assert.equal(bad.status, 400);
@@ -103,31 +109,35 @@ test('order flow: create → QR link → claim with UTR → admin approves → b
   assert.equal(status.order.status, 'approved');
   assert.match(status.order.licenseKey, LICENSE_RE);
   const lic = await getLicense(db, status.order.licenseKey);
-  assert.equal(lic.unlimited, 1);
+  assert.equal(lic.unlimited, 0);
+  assert.equal(lic.pro_seconds, 3600, 'one hour of Pro');
   assert.equal(lic.kind, 'paid');
 
   const after = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
-  assert.match(after, /Earned so far: <b>₹99<\/b> from 1 approved order\./);
+  assert.match(after, /Earned so far: <b>₹29<\/b> from 1 approved order\./);
 });
 
-test('picture slots top up an existing key, and a used UTR can\'t be reused', async () => {
-  const key = await createLicense(db, { kind: 'paid', pictureSlots: 5 });
-  const a = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pictures5', forKey: key }))).json();
+test('hours top up an existing key (Pro Max too), a closed product cannot be ordered, and a used UTR can\'t be reused', async () => {
+  const key = await createLicense(db, { kind: 'paid', proSeconds: 600 });
+  const a = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_max_180', forKey: key }))).json();
   await call(orderApi, postJson('/api/order', { action: 'claim', orderId: a.orderId, utr: '400000000001' }));
   await call(adminOrder, adminForm('/admin/order', { id: a.orderId, action: 'approve' }));
-  assert.equal((await getLicense(db, key)).picture_slots, 10);
+  const row = await getLicense(db, key);
+  assert.deepEqual([row.pro_seconds, row.max_seconds], [600, 10800]);
 
-  const b = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pictures5' }))).json();
+  const b = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_30' }))).json();
   const reuse = await call(orderApi, postJson('/api/order', { action: 'claim', orderId: b.orderId, utr: '400000000001' }));
   assert.equal(reuse.status, 409);
   assert.match((await reuse.json()).error, /already used/);
 
-  const unknownKey = await call(orderApi, postJson('/api/order', { action: 'create', product: 'pictures5', forKey: 'MBX-AAAA-BBBB-CCCC' }));
+  assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }))).status, 400, 'lifetime Pro is closed');
+  assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pictures5' }))).status, 400, 'picture packs are closed');
+  const unknownKey = await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_30', forKey: 'MBX-AAAA-BBBB-CCCC' }));
   assert.equal(unknownKey.status, 400);
 });
 
 test('rejecting an order gives no key; orders can\'t be approved twice', async () => {
-  const o = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }))).json();
+  const o = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }))).json();
   await call(orderApi, postJson('/api/order', { action: 'claim', orderId: o.orderId, utr: '499999999999' }));
   await call(adminOrder, adminForm('/admin/order', { id: o.orderId, action: 'reject' }));
   const s = await (await call(orderApi, req('/api/order?id=' + o.orderId))).json();
@@ -165,14 +175,51 @@ test('only a signed-in admin can make keys or approve orders', async () => {
   const r = await call(adminLicense, adminForm('/admin/license', { action: 'create', kind: 'owner', unlimited: 'on' }));
   assert.equal(r.headers.get('Location'), '/admin');
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM licenses').first()).n, 0);
-  const o = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }))).json();
+  const o = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }))).json();
   await call(orderApi, postJson('/api/order', { action: 'claim', orderId: o.orderId, utr: '411111111111' }));
   await call(adminOrder, adminForm('/admin/order', { id: o.orderId, action: 'approve' }));
   assert.equal((await db.prepare('SELECT status FROM orders').first()).status, 'waiting');
 });
 
 test('payments closed without a valid UPI_ID; orders are rate limited', async () => {
-  assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }), env({ UPI_ID: '' }))).status, 503);
-  for (let i = 0; i < 10; i++) assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }, '198.51.100.9'))).status, 200);
-  assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }, '198.51.100.9'))).status, 429);
+  assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }), env({ UPI_ID: '' }))).status, 503);
+  for (let i = 0; i < 10; i++) assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }, '198.51.100.9'))).status, 200);
+  assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }, '198.51.100.9'))).status, 429);
+});
+
+test('admin page counts paid Pro users, owner/gift keys and picture-only buyers separately', async () => {
+  await createLicense(db, { kind: 'paid', unlimited: true, pictureSlots: 0, note: 'order A' });
+  await createLicense(db, { kind: 'paid', unlimited: true, pictureSlots: 0, note: 'order B' });
+  await createLicense(db, { kind: 'paid', unlimited: false, pictureSlots: 5, note: 'order C' });
+  await createLicense(db, { kind: 'owner', unlimited: true, pictureSlots: 0, note: 'me' });
+  const html = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
+  assert.match(html, /<b>Pro users:<\/b> 2 paid · 1 owner\/gift · 0 checked in the last 7 days · 1 bought only picture slots/);
+});
+
+test('time pass: the extension reports seconds used; Pro Max is spent first, the balance never goes below 0, one report is capped', async () => {
+  const key = await createLicense(db, { kind: 'gift', proSeconds: 1800, maxSeconds: 60 });
+  const spend = async (n) => (await (await call(licenseApi, postJson('/api/license', { key, spend: n }))).json()).license;
+  let l = await spend(0);
+  assert.deepEqual([l.maxSeconds, l.proSeconds], [60, 1800]);
+  l = await spend(45);
+  assert.deepEqual([l.maxSeconds, l.proSeconds], [15, 1800]);
+  l = await spend(60);
+  assert.deepEqual([l.maxSeconds, l.proSeconds], [0, 1755]);
+  l = await spend(-500);
+  assert.equal(l.proSeconds, 1755, 'a negative report gives nothing back');
+  l = await spend(99999);
+  assert.equal(l.proSeconds, 1155, 'at most 10 minutes per report');
+  assert.ok(l.proSeconds >= 0);
+});
+
+test('time pass: a turned-off key spends nothing, and the admin can gift minutes', async () => {
+  await call(adminLicense, adminForm('/admin/license', { action: 'create', kind: 'gift', proMinutes: '30', maxMinutes: '60' }));
+  const row = await db.prepare("SELECT * FROM licenses WHERE kind = 'gift'").first();
+  assert.deepEqual([row.pro_seconds, row.max_seconds], [1800, 3600]);
+  await call(adminLicense, adminForm('/admin/license', { action: 'revoke', key: row.key }));
+  const r = await (await call(licenseApi, postJson('/api/license', { key: row.key, spend: 300 }))).json();
+  assert.equal(r.license.status, 'revoked');
+  assert.equal((await getLicense(db, row.key)).max_seconds, 3600);
+  const page = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
+  assert.match(page, /Pro Max 60 min left, Pro 30 min left/);
 });

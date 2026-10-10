@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "كريكيت"
   },
+  "cat_effects": {
+    "message": "مؤثرات صوتية"
+  },
   "cat_office": {
     "message": "المكتب"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "مقطع مرفوع"
+  },
+  "tag_sfx": {
+    "message": "مؤثر"
   },
   "tag_lang": {
     "message": "اللغة"
@@ -740,6 +746,18 @@
   "ob_done": {
     "message": "كل شيء جاهز. عباراتك ومقاطعك وحزمك في الإعدادات."
   },
+  "ob_reload_title": {
+    "message": "علامة تبويب المكالمة مفتوحة بالفعل"
+  },
+  "ob_reload_text": {
+    "message": "فُتحت قبل MemeBox، لذا لا يمكنها تشغيل الميمات بعد. أعد تحميلها ثم انضم إلى المكالمة مرة أخرى. إعادة التحميل تُخرجك من المكالمة، فافعل ذلك عندما تكون جاهزاً."
+  },
+  "ob_reload_btn": {
+    "message": "إعادة تحميل علامة التبويب هذه"
+  },
+  "ob_sound": {
+    "message": "🔊 تشغيل الصوت"
+  },
   "ob_settings": {
     "message": "⚙️ افتح الإعدادات"
   },
@@ -876,5 +894,362 @@
   },
   "lang_reload": {
     "message": "تم تغيير اللغة. أعد تحميل تبويب المكالمة لترى MemeBox بها."
+  },
+  "fx_title": {
+    "message": "💡 الإضاءة والمظهر"
+  },
+  "fx_state_on": {
+    "message": "تشغيل"
+  },
+  "fx_state_off": {
+    "message": "إيقاف"
+  },
+  "fx_how": {
+    "message": "مصباح وأضواء ملوّنة على كاميراك. يراها الجميع في المكالمة. جرّب كل شيء في المعاينة بالأسفل."
+  },
+  "fx_on": {
+    "message": "أضئ كاميراي"
+  },
+  "fx_hint_off": {
+    "message": "شغّله للتجربة. انضم إلى المكالمة أو أعد الانضمام لاستخدامه."
+  },
+  "fx_restart": {
+    "message": "أوقف الكاميرا ثم شغّلها مرة واحدة في المكالمة لتبدأ الأضواء."
+  },
+  "fx_active": {
+    "message": "✓ الأضواء على كاميراك"
+  },
+  "fx_locked": {
+    "message": "🔒 معاينة فقط: لا تُرسل إلى مكالمتك."
+  },
+  "fx_plans": {
+    "message": "عرض الخطط"
+  },
+  "fx_watermark": {
+    "message": "معاينة"
+  },
+  "fx_lamp": {
+    "message": "مصباح معلّق"
+  },
+  "fx_lamp_show": {
+    "message": "إظهار المصباح"
+  },
+  "fx_pos_center": {
+    "message": "وسط"
+  },
+  "fx_pos_left": {
+    "message": "يسار"
+  },
+  "fx_pos_right": {
+    "message": "يمين"
+  },
+  "fx_anim_still": {
+    "message": "ثابت"
+  },
+  "fx_anim_swing": {
+    "message": "يتأرجح"
+  },
+  "fx_anim_drop": {
+    "message": "يسقط"
+  },
+  "fx_anim_flicker": {
+    "message": "يومض"
+  },
+  "fx_colors": {
+    "message": "لون الضوء"
+  },
+  "fx_corners": {
+    "message": "أضواء الزوايا"
+  },
+  "fx_corners_show": {
+    "message": "إظهار أضواء الزوايا"
+  },
+  "fx_looks": {
+    "message": "المظهر (الفلاتر)"
+  },
+  "fx_pat_steady": {
+    "message": "ثابت"
+  },
+  "fx_pat_pulse": {
+    "message": "نبض"
+  },
+  "fx_pat_candle": {
+    "message": "شمعة"
+  },
+  "fx_pat_rainbow": {
+    "message": "قوس قزح"
+  },
+  "fx_pat_disco": {
+    "message": "ديسكو"
+  },
+  "fx_pat_sweep": {
+    "message": "مسح"
+  },
+  "fx_pat_sparkle": {
+    "message": "لمعان"
+  },
+  "fx_filter_none": {
+    "message": "بدون"
+  },
+  "fx_filter_warm": {
+    "message": "دافئ"
+  },
+  "fx_filter_bw": {
+    "message": "أبيض وأسود"
+  },
+  "fx_filter_glow": {
+    "message": "توهج"
+  },
+  "fx_filter_vintage": {
+    "message": "عتيق"
+  },
+  "fx_filter_cool": {
+    "message": "بارد"
+  },
+  "fx_filter_neon": {
+    "message": "نيون"
+  },
+  "fx_filter_noir": {
+    "message": "نوار"
+  },
+  "fx_filter_dream": {
+    "message": "حلم"
+  },
+  "fx_filter_sunset": {
+    "message": "غروب"
+  },
+  "fx_filter_pixel": {
+    "message": "بكسل"
+  },
+  "fx_focus": {
+    "message": "تسليط الضوء عليّ (حواف أغمق)"
+  },
+  "fx_focus_tip": {
+    "message": "حواف أغمق ليبقى الضوء على وجهك"
+  },
+  "fx_sync": {
+    "message": "الأضواء تتبع الأصوات"
+  },
+  "fx_sync_tip": {
+    "message": "تتغير الألوان مع الميم الذي تشغّله"
+  },
+  "fx_safe": {
+    "message": "بدون وميض (تغييرات هادئة فقط)"
+  },
+  "fx_safe_tip": {
+    "message": "أكثر أمانًا لمن يتأثرون بالوميض"
+  },
+  "fx_bright": {
+    "message": "السطوع"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: غير محدود ✓"
+  },
+  "fx_pass_left": {
+    "message": "المتبقي $1"
+  },
+  "fx_pass_running": {
+    "message": "قيد التشغيل"
+  },
+  "fx_pass_pause": {
+    "message": "إيقاف مؤقت"
+  },
+  "fx_pass_start": {
+    "message": "ابدأ تصريحي"
+  },
+  "fx_pass_none": {
+    "message": "لا يوجد تصريح بعد. المعاينة مجانية؛ بالتصريح يراها الآخرون في مكالمتك."
+  },
+  "fx_character": {
+    "message": "شخصية (تتفاعل مع الأصوات)"
+  },
+  "fx_char_none": {
+    "message": "بدون"
+  },
+  "fx_char_cat": {
+    "message": "قطة"
+  },
+  "fx_char_dog": {
+    "message": "كلب"
+  },
+  "fx_char_bunny": {
+    "message": "أرنب"
+  },
+  "fx_char_panda": {
+    "message": "باندا"
+  },
+  "fx_char_owl": {
+    "message": "بومة"
+  },
+  "fx_char_fox": {
+    "message": "ثعلب"
+  },
+  "mu_title": {
+    "message": "🎵 الموسيقى"
+  },
+  "mu_how": {
+    "message": "ألحان أصلية بلا حقوق نشر. تُسمع في مكالمتك كالميم وتخفت عندما تتحدث."
+  },
+  "mu_stop": {
+    "message": "إيقاف"
+  },
+  "mu_vol": {
+    "message": "مستوى الموسيقى"
+  },
+  "mu_locked": {
+    "message": "🔒 معاينة فقط (على سماعاتك، وليس في المكالمة)."
+  },
+  "mu_in_call": {
+    "message": "قيد التشغيل في مكالمتك: $1"
+  },
+  "mu_preview": {
+    "message": "معاينة: $1، $2 ثانية، أنت فقط تسمعها"
+  },
+  "mu_idle": {
+    "message": "اضغط على لحن لتسمعه. مجاني: هادئ وفانكي."
+  },
+  "mu_idle_call": {
+    "message": "اضغط على لحن لتشغيله في مكالمتك."
+  },
+  "mu_t_chill": {
+    "message": "هادئ"
+  },
+  "mu_t_funky": {
+    "message": "فانكي"
+  },
+  "mu_t_party": {
+    "message": "حفلة"
+  },
+  "mu_t_suspense": {
+    "message": "تشويق"
+  },
+  "mu_t_retro": {
+    "message": "ريترو"
+  },
+  "mu_t_jazz": {
+    "message": "جاز"
+  },
+  "mu_t_epic": {
+    "message": "ملحمي"
+  },
+  "mu_t_tropical": {
+    "message": "استوائي"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "سايبر"
+  },
+  "fx_filter_comic": {
+    "message": "كوميك"
+  },
+  "fx_filter_matrix": {
+    "message": "ماتريكس"
+  },
+  "fx_filter_glam": {
+    "message": "ساحر"
+  },
+  "mu_t_disco": {
+    "message": "ديسكو"
+  },
+  "mu_t_club": {
+    "message": "نادي"
+  },
+  "mu_t_bass": {
+    "message": "باس"
+  },
+  "mu_t_desi": {
+    "message": "ديزي"
+  },
+  "mu_t_house": {
+    "message": "هاوس"
+  },
+  "fx_char_penguin": {
+    "message": "بطريق"
+  },
+  "fx_char_lion": {
+    "message": "أسد"
+  },
+  "fx_char_monkey": {
+    "message": "قرد"
+  },
+  "fx_char_frog": {
+    "message": "ضفدع"
+  },
+  "fx_char_unicorn": {
+    "message": "يونيكورن"
+  },
+  "fx_char_robot": {
+    "message": "روبوت"
+  },
+  "fx_filter_night": {
+    "message": "رؤية ليلية"
+  },
+  "fx_filter_film": {
+    "message": "فيلم قديم"
+  },
+  "fx_filter_wave": {
+    "message": "سينثويف"
+  },
+  "fx_filter_heat": {
+    "message": "حراري"
+  },
+  "fx_filter_snow": {
+    "message": "ثلج"
+  },
+  "fx_pat_aurora": {
+    "message": "شفق"
+  },
+  "fx_pat_fire": {
+    "message": "نار"
+  },
+  "fx_pat_laser": {
+    "message": "ليزر"
+  },
+  "fx_pat_neonframe": {
+    "message": "إطار نيون"
+  },
+  "fx_pat_police": {
+    "message": "شرطة"
+  },
+  "fx_pat_heart": {
+    "message": "قلوب"
+  },
+  "fx_fix_lamp": {
+    "message": "مصباح"
+  },
+  "fx_fix_discoball": {
+    "message": "كرة ديسكو"
+  },
+  "fx_fix_lantern": {
+    "message": "فانوس"
+  },
+  "fx_fix_fairy": {
+    "message": "أضواء الجنيات"
+  },
+  "fx_fix_chandelier": {
+    "message": "ثريا"
+  },
+  "fx_fix_moon": {
+    "message": "قمر"
+  },
+  "fx_fix_star": {
+    "message": "نجمة"
+  },
+  "fx_fix_spotlight": {
+    "message": "كشاف"
+  },
+  "fx_anim_sway": {
+    "message": "يتمايل"
+  },
+  "fx_anim_bounce": {
+    "message": "يرتد"
+  },
+  "fx_anim_pendulum": {
+    "message": "بندول"
+  },
+  "fx_anim_beat": {
+    "message": "مع الإيقاع"
   }
 }

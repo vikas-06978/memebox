@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "Kriket"
   },
+  "cat_effects": {
+    "message": "Efek suara"
+  },
   "cat_office": {
     "message": "Kantor"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "Klip unggahan"
+  },
+  "tag_sfx": {
+    "message": "Efek"
   },
   "tag_lang": {
     "message": "Bahasa"
@@ -740,6 +746,18 @@
   "ob_done": {
     "message": "Siap. Kalimat, klip, dan paket Anda ada di Pengaturan."
   },
+  "ob_reload_title": {
+    "message": "Tab panggilan sudah terbuka"
+  },
+  "ob_reload_text": {
+    "message": "Tab ini dibuka sebelum MemeBox, jadi belum bisa memutar meme. Muat ulang, lalu gabung lagi ke panggilan. Memuat ulang akan mengeluarkan Anda dari panggilan, jadi lakukan saat sudah siap."
+  },
+  "ob_reload_btn": {
+    "message": "Muat ulang tab ini"
+  },
+  "ob_sound": {
+    "message": "🔊 Nyalakan suara"
+  },
   "ob_settings": {
     "message": "⚙️ Buka pengaturan"
   },
@@ -876,5 +894,362 @@
   },
   "lang_reload": {
     "message": "Bahasa diganti. Muat ulang tab panggilan ini untuk melihat MemeBox dalam bahasa itu."
+  },
+  "fx_title": {
+    "message": "💡 Lampu & tampilan"
+  },
+  "fx_state_on": {
+    "message": "Nyala"
+  },
+  "fx_state_off": {
+    "message": "Mati"
+  },
+  "fx_how": {
+    "message": "Lampu gantung dan lampu warna-warni di kameramu. Peserta lain di panggilan bisa melihatnya. Coba semuanya di pratinjau di bawah."
+  },
+  "fx_on": {
+    "message": "Terangi kameraku"
+  },
+  "fx_hint_off": {
+    "message": "Nyalakan untuk mencoba. Bergabung atau gabung ulang ke panggilan untuk memakainya."
+  },
+  "fx_restart": {
+    "message": "Matikan lalu nyalakan kamera sekali di panggilan untuk memulai lampu."
+  },
+  "fx_active": {
+    "message": "✓ Lampu aktif di kameramu"
+  },
+  "fx_locked": {
+    "message": "🔒 Hanya pratinjau: tidak dikirim ke panggilanmu."
+  },
+  "fx_plans": {
+    "message": "Lihat paket"
+  },
+  "fx_watermark": {
+    "message": "PRATINJAU"
+  },
+  "fx_lamp": {
+    "message": "Lampu gantung"
+  },
+  "fx_lamp_show": {
+    "message": "Tampilkan lampu"
+  },
+  "fx_pos_center": {
+    "message": "Tengah"
+  },
+  "fx_pos_left": {
+    "message": "Kiri"
+  },
+  "fx_pos_right": {
+    "message": "Kanan"
+  },
+  "fx_anim_still": {
+    "message": "Diam"
+  },
+  "fx_anim_swing": {
+    "message": "Berayun"
+  },
+  "fx_anim_drop": {
+    "message": "Jatuh"
+  },
+  "fx_anim_flicker": {
+    "message": "Berkedip"
+  },
+  "fx_colors": {
+    "message": "Warna cahaya"
+  },
+  "fx_corners": {
+    "message": "Lampu sudut"
+  },
+  "fx_corners_show": {
+    "message": "Tampilkan lampu sudut"
+  },
+  "fx_looks": {
+    "message": "Tampilan (filter)"
+  },
+  "fx_pat_steady": {
+    "message": "Tetap"
+  },
+  "fx_pat_pulse": {
+    "message": "Berdenyut"
+  },
+  "fx_pat_candle": {
+    "message": "Lilin"
+  },
+  "fx_pat_rainbow": {
+    "message": "Pelangi"
+  },
+  "fx_pat_disco": {
+    "message": "Disko"
+  },
+  "fx_pat_sweep": {
+    "message": "Menyapu"
+  },
+  "fx_pat_sparkle": {
+    "message": "Berkilau"
+  },
+  "fx_filter_none": {
+    "message": "Tidak ada"
+  },
+  "fx_filter_warm": {
+    "message": "Hangat"
+  },
+  "fx_filter_bw": {
+    "message": "Hitam putih"
+  },
+  "fx_filter_glow": {
+    "message": "Berpendar"
+  },
+  "fx_filter_vintage": {
+    "message": "Vintage"
+  },
+  "fx_filter_cool": {
+    "message": "Dingin"
+  },
+  "fx_filter_neon": {
+    "message": "Neon"
+  },
+  "fx_filter_noir": {
+    "message": "Noir"
+  },
+  "fx_filter_dream": {
+    "message": "Mimpi"
+  },
+  "fx_filter_sunset": {
+    "message": "Senja"
+  },
+  "fx_filter_pixel": {
+    "message": "Piksel"
+  },
+  "fx_focus": {
+    "message": "Sorot padaku (tepi lebih gelap)"
+  },
+  "fx_focus_tip": {
+    "message": "Tepi lebih gelap agar cahaya ada di wajahmu"
+  },
+  "fx_sync": {
+    "message": "Lampu mengikuti suara"
+  },
+  "fx_sync_tip": {
+    "message": "Warna berubah sesuai meme yang kamu putar"
+  },
+  "fx_safe": {
+    "message": "Tanpa kedip (perubahan lembut saja)"
+  },
+  "fx_safe_tip": {
+    "message": "Lebih aman untuk yang sensitif pada kilatan"
+  },
+  "fx_bright": {
+    "message": "Kecerahan"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: tanpa batas ✓"
+  },
+  "fx_pass_left": {
+    "message": "sisa $1"
+  },
+  "fx_pass_running": {
+    "message": "berjalan"
+  },
+  "fx_pass_pause": {
+    "message": "Jeda"
+  },
+  "fx_pass_start": {
+    "message": "Mulai pass saya"
+  },
+  "fx_pass_none": {
+    "message": "Belum ada pass. Pratinjau gratis; dengan pass, peserta lain melihatnya di panggilanmu."
+  },
+  "fx_character": {
+    "message": "Karakter (bereaksi pada suara)"
+  },
+  "fx_char_none": {
+    "message": "Tidak ada"
+  },
+  "fx_char_cat": {
+    "message": "Kucing"
+  },
+  "fx_char_dog": {
+    "message": "Anjing"
+  },
+  "fx_char_bunny": {
+    "message": "Kelinci"
+  },
+  "fx_char_panda": {
+    "message": "Panda"
+  },
+  "fx_char_owl": {
+    "message": "Burung hantu"
+  },
+  "fx_char_fox": {
+    "message": "Rubah"
+  },
+  "mu_title": {
+    "message": "🎵 Musik"
+  },
+  "mu_how": {
+    "message": "Lagu orisinal tanpa hak cipta. Diputar di panggilanmu seperti meme dan mengecil saat kamu bicara."
+  },
+  "mu_stop": {
+    "message": "Berhenti"
+  },
+  "mu_vol": {
+    "message": "Volume musik"
+  },
+  "mu_locked": {
+    "message": "🔒 Hanya pratinjau (di speakermu, bukan di panggilan)."
+  },
+  "mu_in_call": {
+    "message": "Diputar di panggilanmu: $1"
+  },
+  "mu_preview": {
+    "message": "Pratinjau: $1, $2 detik, hanya kamu yang dengar"
+  },
+  "mu_idle": {
+    "message": "Ketuk lagu untuk mendengar. Gratis: Chill dan Funky."
+  },
+  "mu_idle_call": {
+    "message": "Ketuk lagu untuk memutarnya di panggilanmu."
+  },
+  "mu_t_chill": {
+    "message": "Santai"
+  },
+  "mu_t_funky": {
+    "message": "Funky"
+  },
+  "mu_t_party": {
+    "message": "Pesta"
+  },
+  "mu_t_suspense": {
+    "message": "Menegangkan"
+  },
+  "mu_t_retro": {
+    "message": "Retro"
+  },
+  "mu_t_jazz": {
+    "message": "Jazz"
+  },
+  "mu_t_epic": {
+    "message": "Epik"
+  },
+  "mu_t_tropical": {
+    "message": "Tropis"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "Cyber"
+  },
+  "fx_filter_comic": {
+    "message": "Komik"
+  },
+  "fx_filter_matrix": {
+    "message": "Matrix"
+  },
+  "fx_filter_glam": {
+    "message": "Glamor"
+  },
+  "mu_t_disco": {
+    "message": "Disko"
+  },
+  "mu_t_club": {
+    "message": "Klub"
+  },
+  "mu_t_bass": {
+    "message": "Bass"
+  },
+  "mu_t_desi": {
+    "message": "Desi"
+  },
+  "mu_t_house": {
+    "message": "House"
+  },
+  "fx_char_penguin": {
+    "message": "Penguin"
+  },
+  "fx_char_lion": {
+    "message": "Singa"
+  },
+  "fx_char_monkey": {
+    "message": "Monyet"
+  },
+  "fx_char_frog": {
+    "message": "Katak"
+  },
+  "fx_char_unicorn": {
+    "message": "Unicorn"
+  },
+  "fx_char_robot": {
+    "message": "Robot"
+  },
+  "fx_filter_night": {
+    "message": "Night vision"
+  },
+  "fx_filter_film": {
+    "message": "Film tua"
+  },
+  "fx_filter_wave": {
+    "message": "Synthwave"
+  },
+  "fx_filter_heat": {
+    "message": "Termal"
+  },
+  "fx_filter_snow": {
+    "message": "Salju"
+  },
+  "fx_pat_aurora": {
+    "message": "Aurora"
+  },
+  "fx_pat_fire": {
+    "message": "Api"
+  },
+  "fx_pat_laser": {
+    "message": "Laser"
+  },
+  "fx_pat_neonframe": {
+    "message": "Bingkai neon"
+  },
+  "fx_pat_police": {
+    "message": "Polisi"
+  },
+  "fx_pat_heart": {
+    "message": "Hati"
+  },
+  "fx_fix_lamp": {
+    "message": "Lampu"
+  },
+  "fx_fix_discoball": {
+    "message": "Bola disko"
+  },
+  "fx_fix_lantern": {
+    "message": "Lentera"
+  },
+  "fx_fix_fairy": {
+    "message": "Lampu peri"
+  },
+  "fx_fix_chandelier": {
+    "message": "Lampu gantung kristal"
+  },
+  "fx_fix_moon": {
+    "message": "Bulan"
+  },
+  "fx_fix_star": {
+    "message": "Bintang"
+  },
+  "fx_fix_spotlight": {
+    "message": "Lampu sorot"
+  },
+  "fx_anim_sway": {
+    "message": "Bergoyang"
+  },
+  "fx_anim_bounce": {
+    "message": "Memantul"
+  },
+  "fx_anim_pendulum": {
+    "message": "Bandul"
+  },
+  "fx_anim_beat": {
+    "message": "Mengikuti beat"
   }
 }

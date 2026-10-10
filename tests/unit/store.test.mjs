@@ -140,7 +140,9 @@ test('sitemap lists the public pages that exist, and robots.txt points to it', (
 
 test('landing page links privacy, terms, feedback and the source code, and has an install button', () => {
   const html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
-  for (const href of ['/privacy', '/terms', '/feedback', 'https://github.com/vikas-06978/memebox']) assert.ok(html.includes(`href="${href}"`), href);
+  for (const href of ['/privacy', '/terms', '/feedback']) assert.ok(html.includes(`href="${href}"`), href);
+  assert.ok(!/github\.com\/vikas/i.test(html), 'the home page does not link the source repository');
+  assert.match(html, /chromewebstore\.google\.com/, 'the install button goes to the Chrome Web Store');
   assert.match(html, /id="install"/);
   assert.ok(fs.existsSync(path.join(PUBLIC, 'assets', 'demo.png')));
 });

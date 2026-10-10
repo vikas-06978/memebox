@@ -7,12 +7,12 @@
   // espeak: rate = words per minute (80-450), pitch/range 0-99, volume 0-200.
   // playbackRate / gain / effect are applied by mic-hook.js when playing.
   const TONES = {
-    normal:   { label: 'Normal',   emoji: '🙂', espeak: { rate: 175, pitch: 50, range: 50, volume: 100 }, playbackRate: 1,    gain: 1 },
-    chipmunk: { label: 'Chipmunk', emoji: '🐿️', espeak: { rate: 210, pitch: 95, range: 70, volume: 100 }, playbackRate: 1.3,  gain: 1 },
+    normal:   { label: 'Normal',   emoji: '🙂', espeak: { rate: 160, pitch: 50, range: 50, volume: 100 }, playbackRate: 1,    gain: 1 },
+    chipmunk: { label: 'Chipmunk', emoji: '🐿️', espeak: { rate: 185, pitch: 95, range: 70, volume: 100 }, playbackRate: 1.3,  gain: 1 },
     villain:  { label: 'Villain',  emoji: '😈', espeak: { rate: 135, pitch: 10, range: 35, volume: 110 }, playbackRate: 0.82, gain: 1.1 },
     robot:    { label: 'Robot',    emoji: '🤖', espeak: { rate: 160, pitch: 40, range: 0,  volume: 100 }, playbackRate: 1,    gain: 1, effect: 'robot' },
     slowmo:   { label: 'Slow-mo',  emoji: '🐢', espeak: { rate: 90,  pitch: 35, range: 50, volume: 100 }, playbackRate: 0.75, gain: 1 },
-    excited:  { label: 'Excited',  emoji: '🤩', espeak: { rate: 225, pitch: 78, range: 95, volume: 125 }, playbackRate: 1.1,  gain: 1.35 },
+    excited:  { label: 'Excited',  emoji: '🤩', espeak: { rate: 190, pitch: 78, range: 95, volume: 125 }, playbackRate: 1.1,  gain: 1.35 },
   };
 
   // `text` is what is shown and `say` (optional) is what eSpeak pronounces.
@@ -33,6 +33,19 @@
     { id: 'd-en-5', lang: 'en', tone: 'normal',   fav: 0, text: "That's what she said... about the deadline" },
     { id: 'd-en-6', lang: 'en', tone: 'chipmunk', fav: 9, text: 'Task failed successfully' },
   ].map((l) => ({ kind: 'tts', category: 'general', volume: 1, ...l }));
+
+  // Built-in sound effects (extension/sfx/<id>.wav, made by npm run sfx). Lines of kind "sfx" play one of them.
+  const SFX = ['airhorn', 'sad-trombone', 'rimshot', 'drumroll', 'wrong-buzzer', 'tada', 'boing',
+    'slide-whistle', 'crickets', 'applause', 'evil-laugh', 'dramatic', 'record-scratch'];
+
+  // How the lights feel for each sound (Lights sync): suspense, excited, surprise, sad, fun, awkward.
+  const SFX_MOOD = {
+    airhorn: 'excited', 'sad-trombone': 'sad', rimshot: 'surprise', drumroll: 'suspense', 'wrong-buzzer': 'sad', tada: 'surprise',
+    boing: 'fun', 'slide-whistle': 'fun', crickets: 'awkward', applause: 'excited', 'evil-laugh': 'suspense', dramatic: 'suspense',
+    'record-scratch': 'surprise',
+  };
+  const TONE_MOOD = { normal: '', chipmunk: 'fun', villain: 'suspense', robot: '', slowmo: 'suspense', excited: 'excited' };
+  const moodFor = (line) => (line && (SFX_MOOD[line.sfx] || TONE_MOOD[line.tone])) || '';
 
   // Live voice changer for YOUR voice (applied in mic-hook.js).
   const VOICES = {
@@ -62,6 +75,7 @@
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
     theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)
+    fx: {},               // Lights & looks (lib/fx.js): lamp, colours, light show, filter. {} = the defaults
     timersEnabled: false, // master switch for timed lines (off by default)
     timers: [],           // { id, lineId, mode: 'clock'|'interval', time: 'HH:MM', minutes, enabled }
   };
@@ -117,7 +131,7 @@
   function sanitizeLine(l) {
     if (!l || typeof l !== 'object') return null;
     if (l.kind === 'url') return null; // old streamed links (0.x), re-add them as clips
-    const kind = l.kind === 'clip' ? 'clip' : 'tts';
+    const kind = l.kind === 'clip' ? 'clip' : l.kind === 'sfx' && SFX.includes(l.sfx) ? 'sfx' : 'tts';
     const text = String(l.text || '').trim().slice(0, LIMITS.textChars);
     if (!text) return null;
     const out = {
@@ -134,13 +148,14 @@
     const say = String(l.say || '').trim().slice(0, LIMITS.textChars);
     if (say) out.say = say;
     if (kind === 'clip') out.clipId = String(l.clipId || '').slice(0, 64);
+    if (kind === 'sfx') out.sfx = l.sfx;
     const pictureId = String(l.pictureId || '').slice(0, 64);
     if (pictureId) out.pictureId = pictureId; // meme picture shown while the line plays
     return out;
   }
 
   globalThis.MEME = Object.freeze({
-    TONES, VOICES, THEMES, LINES, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, THEMES, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

@@ -1,6 +1,6 @@
 // MemeBox site: admin dashboard data, HTML and CSV.
 import { escapeHtml as h } from './http.js';
-import { FEATURES, REASONS } from './validate.js';
+import { FEATURES, REASONS, PLATFORMS, DEVICES } from './validate.js';
 
 export const RATING_FACES = { 1: '😞', 2: '😐', 3: '🙂', 4: '😍' };
 const REASON_TEXT = {
@@ -10,6 +10,22 @@ const REASON_TEXT = {
   'found-another': 'Found another one',
   other: 'Other',
 };
+
+const PLATFORM_TEXT = {
+  meet: 'Google Meet', 'zoom-web': 'Zoom (browser)', 'zoom-app': 'Zoom (desktop app)', 'teams-web': 'Teams (browser)',
+  'teams-app': 'Teams (desktop app)', discord: 'Discord', 'not-tried': 'Did not get to try it', other: 'Other',
+};
+const DEVICE_TEXT = { windows: 'Windows', mac: 'Mac', chromebook: 'Chromebook', linux: 'Linux', other: 'Other' };
+
+// Counts of a picked column. Older databases without the column just show zeros.
+async function countBy(db, column, list) {
+  const out = Object.fromEntries(list.map((x) => [x, 0]));
+  try {
+    const rows = (await db.prepare(`SELECT ${column} AS v, COUNT(*) AS n FROM feedback WHERE ${column} <> '' GROUP BY ${column}`).all()).results;
+    for (const r of rows) if (r.v in out) out[r.v] = Number(r.n);
+  } catch { /* column not migrated yet */ }
+  return out;
+}
 
 export async function loadStats(db) {
   const ratings = (await db.prepare(
@@ -38,7 +54,9 @@ export async function loadStats(db) {
   for (const r of ratings) if (r.rating in byRating) byRating[r.rating] = Number(r.n);
   const byReason = Object.fromEntries(REASONS.map((x) => [x, 0]));
   for (const r of reasons) if (r.reason in byReason) byReason[r.reason] = Number(r.n);
-  return { total: Number(total?.n || 0), byRating, byReason, requests, used, latest };
+  const byPlatform = await countBy(db, 'platform', PLATFORMS);
+  const byDevice = await countBy(db, 'device', DEVICES);
+  return { total: Number(total?.n || 0), byRating, byReason, byPlatform, byDevice, requests, used, latest };
 }
 
 function page(title, body) {
@@ -75,10 +93,16 @@ function bars(entries) {
     <li><span class="label">${h(label)}</span><progress max="${max}" value="${n}"></progress><b>${n}</b></li>`).join('')}</ul>`;
 }
 
-const PRODUCT_TEXT = { pictures5: '5 more pictures', pro: 'Pro (unlimited)' };
+const PRODUCT_TEXT = { pictures5: '5 more pictures', pro: 'Pro (unlimited)', pass_pro_30: 'Pro pass 30 min', pass_pro_60: 'Pro pass 1 h', pass_pro_120: 'Pro pass 2 h', pass_max_180: 'Pro Max pass 3 h' };
 
 function licenseText(l) {
-  return l.unlimited ? 'Pro, unlimited' : `${l.picture_slots} picture slot${l.picture_slots === 1 ? '' : 's'}`;
+  if (l.unlimited) return 'Pro, unlimited';
+  const mins = (s) => Math.floor((Number(s) || 0) / 60);
+  const parts = [];
+  if (l.max_seconds > 0) parts.push(`Pro Max ${mins(l.max_seconds)} min left`);
+  if (l.pro_seconds > 0) parts.push(`Pro ${mins(l.pro_seconds)} min left`);
+  if (l.picture_slots > 0 || !parts.length) parts.push(`${l.picture_slots} picture slot${l.picture_slots === 1 ? '' : 's'}`);
+  return parts.join(', ');
 }
 
 // Orders waiting for approval and license keys. `notice` is shown at the top (a new key, an approval).
@@ -115,6 +139,7 @@ ${notice ? `<p class="notice" role="status">${notice}</p>` : ''}
   <h2>Payments waiting for you (${shop.waiting.length})</h2>
   <p class="muted">Open your bank or UPI app. Find a payment with the same amount and UTR (the note says "MemeBox" and the order code). Only then press Approve.</p>
   ${shop.waiting.length ? `<div class="table-wrap"><table><thead><tr><th>Paid at (UTC)</th><th>What</th><th>Payment</th><th></th></tr></thead><tbody>${waiting}</tbody></table></div>` : '<p class="muted">Nothing waiting.</p>'}
+  <p><b>Pro users:</b> ${h(shop.proPaid)} paid · ${h(shop.proGift)} owner/gift · ${h(shop.proActive)} checked in the last 7 days · ${h(shop.pictureBuyers)} bought only picture slots</p>
   <p class="muted">Earned so far: <b>₹${h(shop.earnedInr)}</b> from ${h(shop.paidOrders)} approved order${shop.paidOrders === 1 ? '' : 's'}.</p>
   ${shop.recent.length ? `<details><summary>Last 20 decisions</summary><div class="table-wrap"><table><thead><tr><th>When</th><th>What</th><th>Result</th><th>UTR</th><th>Key</th></tr></thead><tbody>${recent}</tbody></table></div></details>` : ''}
 </section>
@@ -124,6 +149,8 @@ ${notice ? `<p class="notice" role="status">${notice}</p>` : ''}
     <input type="hidden" name="action" value="create">
     <label>Who <select name="kind"><option value="owner">Me (owner)</option><option value="gift">A friend (gift)</option></select></label>
     <label class="check"><input type="checkbox" name="unlimited" checked> Pro, unlimited</label>
+    <label>or Pro minutes <input type="number" name="proMinutes" min="0" max="14400" value="0"></label>
+    <label>Pro Max minutes <input type="number" name="maxMinutes" min="0" max="14400" value="0"></label>
     <label>or picture slots <input type="number" name="slots" min="0" max="10000" value="0"></label>
     <label>Note <input name="note" maxlength="200" placeholder="e.g. my laptop"></label>
     <button type="submit" class="primary">Make a key</button>
@@ -141,7 +168,7 @@ export function dashboardPage(s, shopHtml = '') {
       <td>${r.type === 'uninstall' ? 'Uninstall: ' + h(REASON_TEXT[r.reason] || r.reason) : h(RATING_FACES[r.rating] || '')}</td>
       <td>${h(r.message)}${r.wants ? `<div class="muted">Wants: ${h(r.wants)}</div>` : ''}</td>
       <td>${h(r.email)}</td>
-      <td class="nowrap">${h(r.version)} ${h(r.site)} ${h(r.lang)}</td>
+      <td class="nowrap">${h(r.version)} ${h(r.site)} ${h(r.lang)}${r.platform || r.device ? `<div class="muted">${h(PLATFORM_TEXT[r.platform] || '')}${r.platform && r.device ? ' · ' : ''}${h(DEVICE_TEXT[r.device] || '')}</div>` : ''}</td>
     </tr>`).join('');
   return page('MemeBox admin', `
 <header class="admin-head">
@@ -156,6 +183,8 @@ ${shopHtml}
   <section class="card"><h2>Ratings</h2>${bars(Object.entries(s.byRating).map(([k, n]) => [RATING_FACES[k], n]))}</section>
   <section class="card"><h2>Features used</h2>${bars(Object.entries(s.used))}</section>
   <section class="card"><h2>Why people uninstalled</h2>${bars(Object.entries(s.byReason).map(([k, n]) => [REASON_TEXT[k], n]))}</section>
+  <section class="card"><h2>Where they used it</h2>${bars(Object.entries(s.byPlatform || {}).map(([k, n]) => [PLATFORM_TEXT[k], n]))}</section>
+  <section class="card"><h2>Which device</h2>${bars(Object.entries(s.byDevice || {}).map(([k, n]) => [DEVICE_TEXT[k], n]))}</section>
   <section class="card"><h2>Top requests</h2>${s.requests.length
     ? `<ol class="requests">${s.requests.map((r) => `<li>${h(r.want)} <b>×${r.n}</b></li>`).join('')}</ol>`
     : '<p class="muted">No requests yet.</p>'}</section>
@@ -170,7 +199,7 @@ ${shopHtml}
 
 // CSV with every column. Cells that start like a formula are prefixed with ' so
 // spreadsheet apps show them as text instead of running them.
-export const CSV_COLUMNS = ['id', 'created_at', 'type', 'rating', 'used', 'wants', 'message', 'email', 'reason', 'version', 'site', 'lang'];
+export const CSV_COLUMNS = ['id', 'created_at', 'type', 'rating', 'used', 'wants', 'message', 'email', 'reason', 'platform', 'device', 'version', 'site', 'lang'];
 
 export function csvCell(v) {
   let s = v === null || v === undefined ? '' : String(v);

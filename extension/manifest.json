@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "__MSG_extShortName__",
-  "version": "1.2.2",
+  "version": "1.2.6",
   "description": "__MSG_extDesc__",
   "default_locale": "en",
   "minimum_chrome_version": "116",
@@ -50,6 +50,8 @@
       ],
       "js": [
         "lib/pitch-shift.js",
+        "lib/fx.js",
+        "lib/music.js",
         "mic-hook.js"
       ],
       "world": "MAIN",
@@ -68,7 +70,11 @@
         "config.js",
         "lib/plan.js",
         "defaults.js",
+        "lib/fx-ui.js",
+        "lib/music-ui.js",
         "bridge.js",
+        "lights-ui.js",
+        "music-section.js",
         "ui.js"
       ],
       "run_at": "document_start",

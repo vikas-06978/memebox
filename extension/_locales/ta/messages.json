@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "கிரிக்கெட்"
   },
+  "cat_effects": {
+    "message": "ஒலி விளைவுகள்"
+  },
   "cat_office": {
     "message": "அலுவலகம்"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "பதிவேற்றிய கிளிப்"
+  },
+  "tag_sfx": {
+    "message": "விளைவு"
   },
   "tag_lang": {
     "message": "மொழி"
@@ -740,6 +746,18 @@
   "ob_done": {
     "message": "நீங்கள் தயார். உங்கள் வரிகள், கிளிப்கள், தொகுப்புகள் Settings-ல் உள்ளன."
   },
+  "ob_reload_title": {
+    "message": "அழைப்பு தாவல் ஏற்கனவே திறந்துள்ளது"
+  },
+  "ob_reload_text": {
+    "message": "இது MemeBox-க்கு முன்பே திறக்கப்பட்டது, அதனால் இன்னும் மீம்களை இயக்க முடியாது. அதை மீண்டும் ஏற்றி, அழைப்பில் மீண்டும் சேருங்கள். மீண்டும் ஏற்றினால் அழைப்பிலிருந்து வெளியேறுவீர்கள், எனவே தயாரானதும் செய்யுங்கள்."
+  },
+  "ob_reload_btn": {
+    "message": "இந்தத் தாவலை மீண்டும் ஏற்று"
+  },
+  "ob_sound": {
+    "message": "🔊 ஒலியை இயக்கு"
+  },
   "ob_settings": {
     "message": "⚙️ அமைப்புகளைத் திற"
   },
@@ -876,5 +894,362 @@
   },
   "lang_reload": {
     "message": "மொழி மாற்றப்பட்டது. MemeBox-ஐ அதில் பார்க்க இந்த அழைப்புத் தாவலை மீண்டும் ஏற்றுங்கள்."
+  },
+  "fx_title": {
+    "message": "💡 விளக்குகள் & தோற்றம்"
+  },
+  "fx_state_on": {
+    "message": "இயக்கம்"
+  },
+  "fx_state_off": {
+    "message": "நிறுத்தம்"
+  },
+  "fx_how": {
+    "message": "உங்கள் கேமராவில் விளக்கும் வண்ண விளக்குகளும். அழைப்பில் அனைவரும் பார்ப்பார்கள். கீழே உள்ள முன்னோட்டத்தில் முயன்று பாருங்கள்."
+  },
+  "fx_on": {
+    "message": "என் கேமராவை ஒளிரச் செய்"
+  },
+  "fx_hint_off": {
+    "message": "முயற்சிக்க இயக்கவும். பயன்படுத்த அழைப்பில் சேருங்கள் அல்லது மீண்டும் சேருங்கள்."
+  },
+  "fx_restart": {
+    "message": "விளக்குகளைத் தொடங்க அழைப்பில் கேமராவை ஒருமுறை அணைத்து மீண்டும் இயக்குங்கள்."
+  },
+  "fx_active": {
+    "message": "✓ விளக்குகள் உங்கள் கேமராவில் உள்ளன"
+  },
+  "fx_locked": {
+    "message": "🔒 முன்னோட்டம் மட்டும்: அழைப்புக்குப் போகாது."
+  },
+  "fx_plans": {
+    "message": "திட்டங்களைப் பார்"
+  },
+  "fx_watermark": {
+    "message": "முன்னோட்டம்"
+  },
+  "fx_lamp": {
+    "message": "தொங்கும் விளக்கு"
+  },
+  "fx_lamp_show": {
+    "message": "விளக்கைக் காட்டு"
+  },
+  "fx_pos_center": {
+    "message": "நடுவில்"
+  },
+  "fx_pos_left": {
+    "message": "இடது"
+  },
+  "fx_pos_right": {
+    "message": "வலது"
+  },
+  "fx_anim_still": {
+    "message": "அசையாது"
+  },
+  "fx_anim_swing": {
+    "message": "ஆடும்"
+  },
+  "fx_anim_drop": {
+    "message": "விழுந்து வரும்"
+  },
+  "fx_anim_flicker": {
+    "message": "மினுங்கும்"
+  },
+  "fx_colors": {
+    "message": "ஒளி நிறம்"
+  },
+  "fx_corners": {
+    "message": "மூலை விளக்குகள்"
+  },
+  "fx_corners_show": {
+    "message": "மூலை விளக்குகளைக் காட்டு"
+  },
+  "fx_looks": {
+    "message": "தோற்றம் (வடிகட்டிகள்)"
+  },
+  "fx_pat_steady": {
+    "message": "நிலையான"
+  },
+  "fx_pat_pulse": {
+    "message": "துடிப்பு"
+  },
+  "fx_pat_candle": {
+    "message": "மெழுகுவர்த்தி"
+  },
+  "fx_pat_rainbow": {
+    "message": "வானவில்"
+  },
+  "fx_pat_disco": {
+    "message": "டிஸ்கோ"
+  },
+  "fx_pat_sweep": {
+    "message": "ஸ்வீப்"
+  },
+  "fx_pat_sparkle": {
+    "message": "மின்னல்"
+  },
+  "fx_filter_none": {
+    "message": "எதுவுமில்லை"
+  },
+  "fx_filter_warm": {
+    "message": "சூடான"
+  },
+  "fx_filter_bw": {
+    "message": "கருப்பு வெள்ளை"
+  },
+  "fx_filter_glow": {
+    "message": "ஒளிர்வு"
+  },
+  "fx_filter_vintage": {
+    "message": "விண்டேஜ்"
+  },
+  "fx_filter_cool": {
+    "message": "குளிர்"
+  },
+  "fx_filter_neon": {
+    "message": "நியான்"
+  },
+  "fx_filter_noir": {
+    "message": "நுவார்"
+  },
+  "fx_filter_dream": {
+    "message": "கனவு"
+  },
+  "fx_filter_sunset": {
+    "message": "சூரிய அஸ்தமனம்"
+  },
+  "fx_filter_pixel": {
+    "message": "பிக்சல்"
+  },
+  "fx_focus": {
+    "message": "என்மேல் ஸ்பாட்லைட் (ஓரங்கள் கருமை)"
+  },
+  "fx_focus_tip": {
+    "message": "ஓரங்கள் கருமை, ஒளி முகத்தில் இருக்கும்"
+  },
+  "fx_sync": {
+    "message": "விளக்குகள் ஒலிகளுடன் நகரும்"
+  },
+  "fx_sync_tip": {
+    "message": "நீங்கள் இயக்கும் மீமுக்கேற்ப நிறம் மாறும்"
+  },
+  "fx_safe": {
+    "message": "ஒளிர்வு இல்லை (மென்மையான மாற்றம் மட்டும்)"
+  },
+  "fx_safe_tip": {
+    "message": "ஒளிர்வுக்கு உணர்திறன் உள்ளவர்களுக்குப் பாதுகாப்பானது"
+  },
+  "fx_bright": {
+    "message": "பிரகாசம்"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: வரம்பற்றது ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 மீதம்"
+  },
+  "fx_pass_running": {
+    "message": "ஓடுகிறது"
+  },
+  "fx_pass_pause": {
+    "message": "இடைநிறுத்து"
+  },
+  "fx_pass_start": {
+    "message": "பாஸைத் தொடங்கு"
+  },
+  "fx_pass_none": {
+    "message": "இன்னும் பாஸ் இல்லை. முன்னோட்டம் இலவசம்; பாஸ் இருந்தால் அழைப்பில் அனைவரும் காண்பர்."
+  },
+  "fx_character": {
+    "message": "கதாபாத்திரம் (ஒலிகளுக்கு எதிர்வினை)"
+  },
+  "fx_char_none": {
+    "message": "எதுவுமில்லை"
+  },
+  "fx_char_cat": {
+    "message": "பூனை"
+  },
+  "fx_char_dog": {
+    "message": "நாய்"
+  },
+  "fx_char_bunny": {
+    "message": "முயல்"
+  },
+  "fx_char_panda": {
+    "message": "பாண்டா"
+  },
+  "fx_char_owl": {
+    "message": "ஆந்தை"
+  },
+  "fx_char_fox": {
+    "message": "நரி"
+  },
+  "mu_title": {
+    "message": "🎵 இசை"
+  },
+  "mu_how": {
+    "message": "பதிப்புரிமை இல்லாத சொந்த இசை. மீம் போல அழைப்பில் ஒலிக்கும்; நீங்கள் பேசினால் மெதுவாகும்."
+  },
+  "mu_stop": {
+    "message": "நிறுத்து"
+  },
+  "mu_vol": {
+    "message": "இசை ஒலியளவு"
+  },
+  "mu_locked": {
+    "message": "🔒 முன்னோட்டம் மட்டும் (உங்கள் ஸ்பீக்கரில், அழைப்பில் அல்ல)."
+  },
+  "mu_in_call": {
+    "message": "அழைப்பில் ஒலிக்கிறது: $1"
+  },
+  "mu_preview": {
+    "message": "முன்னோட்டம்: $1, $2 வினாடி, உங்களுக்கு மட்டும் கேட்கும்"
+  },
+  "mu_idle": {
+    "message": "இசையை அழுத்தி கேளுங்கள். இலவசம்: சில் மற்றும் ஃபங்கி."
+  },
+  "mu_idle_call": {
+    "message": "இசையை அழுத்தினால் அழைப்பில் ஒலிக்கும்."
+  },
+  "mu_t_chill": {
+    "message": "சில்"
+  },
+  "mu_t_funky": {
+    "message": "ஃபங்கி"
+  },
+  "mu_t_party": {
+    "message": "பார்ட்டி"
+  },
+  "mu_t_suspense": {
+    "message": "சஸ்பென்ஸ்"
+  },
+  "mu_t_retro": {
+    "message": "ரெட்ரோ"
+  },
+  "mu_t_jazz": {
+    "message": "ஜாஸ்"
+  },
+  "mu_t_epic": {
+    "message": "எபிக்"
+  },
+  "mu_t_tropical": {
+    "message": "டிராபிகல்"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "சைபர்"
+  },
+  "fx_filter_comic": {
+    "message": "காமிக்"
+  },
+  "fx_filter_matrix": {
+    "message": "மேட்ரிக்ஸ்"
+  },
+  "fx_filter_glam": {
+    "message": "கிளாம்"
+  },
+  "mu_t_disco": {
+    "message": "டிஸ்கோ"
+  },
+  "mu_t_club": {
+    "message": "கிளப்"
+  },
+  "mu_t_bass": {
+    "message": "பாஸ்"
+  },
+  "mu_t_desi": {
+    "message": "தேசி"
+  },
+  "mu_t_house": {
+    "message": "ஹவுஸ்"
+  },
+  "fx_char_penguin": {
+    "message": "பெங்குயின்"
+  },
+  "fx_char_lion": {
+    "message": "சிங்கம்"
+  },
+  "fx_char_monkey": {
+    "message": "குரங்கு"
+  },
+  "fx_char_frog": {
+    "message": "தவளை"
+  },
+  "fx_char_unicorn": {
+    "message": "யூனிகார்ன்"
+  },
+  "fx_char_robot": {
+    "message": "ரோபோ"
+  },
+  "fx_filter_night": {
+    "message": "நைட் விஷன்"
+  },
+  "fx_filter_film": {
+    "message": "பழைய படம்"
+  },
+  "fx_filter_wave": {
+    "message": "சிந்த்வேவ்"
+  },
+  "fx_filter_heat": {
+    "message": "வெப்பம்"
+  },
+  "fx_filter_snow": {
+    "message": "பனி"
+  },
+  "fx_pat_aurora": {
+    "message": "அரோரா"
+  },
+  "fx_pat_fire": {
+    "message": "நெருப்பு"
+  },
+  "fx_pat_laser": {
+    "message": "லேசர்"
+  },
+  "fx_pat_neonframe": {
+    "message": "நியான் சட்டம்"
+  },
+  "fx_pat_police": {
+    "message": "போலீஸ்"
+  },
+  "fx_pat_heart": {
+    "message": "இதயங்கள்"
+  },
+  "fx_fix_lamp": {
+    "message": "விளக்கு"
+  },
+  "fx_fix_discoball": {
+    "message": "டிஸ்கோ பந்து"
+  },
+  "fx_fix_lantern": {
+    "message": "விளக்குக் கூடு"
+  },
+  "fx_fix_fairy": {
+    "message": "தேவதை விளக்குகள்"
+  },
+  "fx_fix_chandelier": {
+    "message": "சரவிளக்கு"
+  },
+  "fx_fix_moon": {
+    "message": "நிலா"
+  },
+  "fx_fix_star": {
+    "message": "நட்சத்திரம்"
+  },
+  "fx_fix_spotlight": {
+    "message": "ஸ்பாட்லைட்"
+  },
+  "fx_anim_sway": {
+    "message": "அசையும்"
+  },
+  "fx_anim_bounce": {
+    "message": "துள்ளும்"
+  },
+  "fx_anim_pendulum": {
+    "message": "ஊசல்"
+  },
+  "fx_anim_beat": {
+    "message": "துடிப்புக்கு"
   }
 }

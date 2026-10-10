@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "क्रिकेट"
   },
+  "cat_effects": {
+    "message": "साउंड इफेक्ट्स"
+  },
   "cat_office": {
     "message": "ऑफिस"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "अपलोड केलेली क्लिप"
+  },
+  "tag_sfx": {
+    "message": "इफेक्ट"
   },
   "tag_lang": {
     "message": "भाषा"
@@ -740,6 +746,18 @@
   "ob_done": {
     "message": "तुम्ही तयार आहात. तुमच्या ओळी, क्लिप्स आणि पॅक Settings मध्ये आहेत."
   },
+  "ob_reload_title": {
+    "message": "कॉल टॅब आधीच उघडा आहे"
+  },
+  "ob_reload_text": {
+    "message": "हा टॅब MemeBox च्या आधी उघडला होता, म्हणून अजून मीम वाजवू शकत नाही. तो रीलोड करा आणि पुन्हा कॉलमध्ये सामील व्हा. रीलोड केल्यावर तुम्ही कॉलमधून बाहेर पडाल, म्हणून तयार असाल तेव्हाच करा."
+  },
+  "ob_reload_btn": {
+    "message": "हा टॅब रीलोड करा"
+  },
+  "ob_sound": {
+    "message": "🔊 आवाज सुरू करा"
+  },
   "ob_settings": {
     "message": "⚙️ सेटिंग्ज उघडा"
   },
@@ -876,5 +894,362 @@
   },
   "lang_reload": {
     "message": "भाषा बदलली. MemeBox त्यात पाहण्यासाठी हा कॉल टॅब रीलोड करा."
+  },
+  "fx_title": {
+    "message": "💡 लाइट्स आणि लूक"
+  },
+  "fx_state_on": {
+    "message": "चालू"
+  },
+  "fx_state_off": {
+    "message": "बंद"
+  },
+  "fx_how": {
+    "message": "तुमच्या कॅमेऱ्यावर दिवा आणि रंगीत दिवे. कॉलमधील सर्वांना दिसतील. खालच्या प्रिव्ह्यूमध्ये सर्व करून पाहा."
+  },
+  "fx_on": {
+    "message": "माझा कॅमेरा उजळवा"
+  },
+  "fx_hint_off": {
+    "message": "करून पाहण्यासाठी चालू करा. वापरण्यासाठी कॉलमध्ये सामील व्हा किंवा पुन्हा सामील व्हा."
+  },
+  "fx_restart": {
+    "message": "दिवे सुरू करण्यासाठी कॉलमध्ये कॅमेरा एकदा बंद करून पुन्हा चालू करा."
+  },
+  "fx_active": {
+    "message": "✓ दिवे तुमच्या कॅमेऱ्यावर आहेत"
+  },
+  "fx_locked": {
+    "message": "🔒 फक्त प्रिव्ह्यू: कॉलमध्ये जाणार नाही."
+  },
+  "fx_plans": {
+    "message": "प्लॅन पाहा"
+  },
+  "fx_watermark": {
+    "message": "प्रिव्ह्यू"
+  },
+  "fx_lamp": {
+    "message": "लटकता दिवा"
+  },
+  "fx_lamp_show": {
+    "message": "दिवा दाखवा"
+  },
+  "fx_pos_center": {
+    "message": "मध्यभागी"
+  },
+  "fx_pos_left": {
+    "message": "डावीकडे"
+  },
+  "fx_pos_right": {
+    "message": "उजवीकडे"
+  },
+  "fx_anim_still": {
+    "message": "स्थिर"
+  },
+  "fx_anim_swing": {
+    "message": "झुलणारा"
+  },
+  "fx_anim_drop": {
+    "message": "खाली पडणारा"
+  },
+  "fx_anim_flicker": {
+    "message": "लुकलुकणारा"
+  },
+  "fx_colors": {
+    "message": "दिव्याचा रंग"
+  },
+  "fx_corners": {
+    "message": "कोपऱ्यातील दिवे"
+  },
+  "fx_corners_show": {
+    "message": "कोपऱ्यातील दिवे दाखवा"
+  },
+  "fx_looks": {
+    "message": "लूक (फिल्टर)"
+  },
+  "fx_pat_steady": {
+    "message": "स्थिर"
+  },
+  "fx_pat_pulse": {
+    "message": "स्पंदन"
+  },
+  "fx_pat_candle": {
+    "message": "मेणबत्ती"
+  },
+  "fx_pat_rainbow": {
+    "message": "इंद्रधनुष्य"
+  },
+  "fx_pat_disco": {
+    "message": "डिस्को"
+  },
+  "fx_pat_sweep": {
+    "message": "स्वीप"
+  },
+  "fx_pat_sparkle": {
+    "message": "चमक"
+  },
+  "fx_filter_none": {
+    "message": "काही नाही"
+  },
+  "fx_filter_warm": {
+    "message": "उबदार"
+  },
+  "fx_filter_bw": {
+    "message": "कृष्णधवल"
+  },
+  "fx_filter_glow": {
+    "message": "ग्लो"
+  },
+  "fx_filter_vintage": {
+    "message": "व्हिंटेज"
+  },
+  "fx_filter_cool": {
+    "message": "थंड"
+  },
+  "fx_filter_neon": {
+    "message": "निऑन"
+  },
+  "fx_filter_noir": {
+    "message": "नुआर"
+  },
+  "fx_filter_dream": {
+    "message": "ड्रीम"
+  },
+  "fx_filter_sunset": {
+    "message": "सनसेट"
+  },
+  "fx_filter_pixel": {
+    "message": "पिक्सेल"
+  },
+  "fx_focus": {
+    "message": "माझ्यावर स्पॉटलाइट (कडा गडद)"
+  },
+  "fx_focus_tip": {
+    "message": "कडा गडद, म्हणजे प्रकाश चेहऱ्यावर राहतो"
+  },
+  "fx_sync": {
+    "message": "दिवे आवाजांसोबत चालतात"
+  },
+  "fx_sync_tip": {
+    "message": "तुम्ही लावलेल्या मीमनुसार रंग बदलतात"
+  },
+  "fx_safe": {
+    "message": "फ्लॅश नाही (फक्त हळुवार बदल)"
+  },
+  "fx_safe_tip": {
+    "message": "फ्लॅशमुळे त्रास होणाऱ्यांसाठी सुरक्षित"
+  },
+  "fx_bright": {
+    "message": "तेजस्विता"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: अमर्यादित ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 शिल्लक"
+  },
+  "fx_pass_running": {
+    "message": "सुरू आहे"
+  },
+  "fx_pass_pause": {
+    "message": "थांबवा"
+  },
+  "fx_pass_start": {
+    "message": "पास सुरू करा"
+  },
+  "fx_pass_none": {
+    "message": "अजून पास नाही. प्रिव्ह्यू मोफत; पासने कॉलमध्ये सर्वांना दिसेल."
+  },
+  "fx_character": {
+    "message": "पात्र (आवाजांना प्रतिसाद देतो)"
+  },
+  "fx_char_none": {
+    "message": "काही नाही"
+  },
+  "fx_char_cat": {
+    "message": "मांजर"
+  },
+  "fx_char_dog": {
+    "message": "कुत्रा"
+  },
+  "fx_char_bunny": {
+    "message": "ससा"
+  },
+  "fx_char_panda": {
+    "message": "पांडा"
+  },
+  "fx_char_owl": {
+    "message": "घुबड"
+  },
+  "fx_char_fox": {
+    "message": "कोल्हा"
+  },
+  "mu_title": {
+    "message": "🎵 संगीत"
+  },
+  "mu_how": {
+    "message": "कॉपीराइटशिवाय स्वतःच्या धून. मीमसारख्या कॉलमध्ये वाजतात आणि तुम्ही बोलता तेव्हा हळू होतात."
+  },
+  "mu_stop": {
+    "message": "थांबवा"
+  },
+  "mu_vol": {
+    "message": "संगीताचा आवाज"
+  },
+  "mu_locked": {
+    "message": "🔒 फक्त प्रिव्ह्यू (तुमच्या स्पीकरवर, कॉलमध्ये नाही)."
+  },
+  "mu_in_call": {
+    "message": "कॉलमध्ये वाजत आहे: $1"
+  },
+  "mu_preview": {
+    "message": "प्रिव्ह्यू: $1, $2 सेकंद, फक्त तुम्हाला ऐकू येईल"
+  },
+  "mu_idle": {
+    "message": "धून दाबून ऐका. मोफत: चिल आणि फंकी."
+  },
+  "mu_idle_call": {
+    "message": "धून दाबा, कॉलमध्ये वाजेल."
+  },
+  "mu_t_chill": {
+    "message": "चिल"
+  },
+  "mu_t_funky": {
+    "message": "फंकी"
+  },
+  "mu_t_party": {
+    "message": "पार्टी"
+  },
+  "mu_t_suspense": {
+    "message": "सस्पेन्स"
+  },
+  "mu_t_retro": {
+    "message": "रेट्रो"
+  },
+  "mu_t_jazz": {
+    "message": "जॅझ"
+  },
+  "mu_t_epic": {
+    "message": "एपिक"
+  },
+  "mu_t_tropical": {
+    "message": "ट्रॉपिकल"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "सायबर"
+  },
+  "fx_filter_comic": {
+    "message": "कॉमिक"
+  },
+  "fx_filter_matrix": {
+    "message": "मॅट्रिक्स"
+  },
+  "fx_filter_glam": {
+    "message": "ग्लॅम"
+  },
+  "mu_t_disco": {
+    "message": "डिस्को"
+  },
+  "mu_t_club": {
+    "message": "क्लब"
+  },
+  "mu_t_bass": {
+    "message": "बेस"
+  },
+  "mu_t_desi": {
+    "message": "देसी"
+  },
+  "mu_t_house": {
+    "message": "हाउस"
+  },
+  "fx_char_penguin": {
+    "message": "पेंग्विन"
+  },
+  "fx_char_lion": {
+    "message": "सिंह"
+  },
+  "fx_char_monkey": {
+    "message": "माकड"
+  },
+  "fx_char_frog": {
+    "message": "बेडूक"
+  },
+  "fx_char_unicorn": {
+    "message": "युनिकॉर्न"
+  },
+  "fx_char_robot": {
+    "message": "रोबोट"
+  },
+  "fx_filter_night": {
+    "message": "नाइट व्हिजन"
+  },
+  "fx_filter_film": {
+    "message": "जुना चित्रपट"
+  },
+  "fx_filter_wave": {
+    "message": "सिंथवेव"
+  },
+  "fx_filter_heat": {
+    "message": "थर्मल"
+  },
+  "fx_filter_snow": {
+    "message": "बर्फ"
+  },
+  "fx_pat_aurora": {
+    "message": "ऑरोरा"
+  },
+  "fx_pat_fire": {
+    "message": "आग"
+  },
+  "fx_pat_laser": {
+    "message": "लेझर"
+  },
+  "fx_pat_neonframe": {
+    "message": "निऑन फ्रेम"
+  },
+  "fx_pat_police": {
+    "message": "पोलीस"
+  },
+  "fx_pat_heart": {
+    "message": "हृदय"
+  },
+  "fx_fix_lamp": {
+    "message": "दिवा"
+  },
+  "fx_fix_discoball": {
+    "message": "डिस्को बॉल"
+  },
+  "fx_fix_lantern": {
+    "message": "कंदील"
+  },
+  "fx_fix_fairy": {
+    "message": "परी दिवे"
+  },
+  "fx_fix_chandelier": {
+    "message": "झुंबर"
+  },
+  "fx_fix_moon": {
+    "message": "चंद्र"
+  },
+  "fx_fix_star": {
+    "message": "तारा"
+  },
+  "fx_fix_spotlight": {
+    "message": "स्पॉटलाइट"
+  },
+  "fx_anim_sway": {
+    "message": "डोलतो"
+  },
+  "fx_anim_bounce": {
+    "message": "उडतो"
+  },
+  "fx_anim_pendulum": {
+    "message": "पेंडुलम"
+  },
+  "fx_anim_beat": {
+    "message": "बीटवर"
   }
 }

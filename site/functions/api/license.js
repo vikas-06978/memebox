@@ -4,7 +4,7 @@
 // (a "simple" request, so no preflight is needed). Rate limited per IP (hashed).
 import { json, methodNotAllowed } from '../../src/http.js';
 import { rateLimit, clientIp } from '../../src/security.js';
-import { cleanKey, getLicense, licenseView, LICENSE_RE } from '../../src/shop.js';
+import { cleanKey, getLicense, licenseView, spendPassTime, LICENSE_RE } from '../../src/shop.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -29,5 +29,8 @@ export async function onRequest({ request, env }) {
   const row = await getLicense(env.DB, key);
   if (!row) return json({ ok: false, error: 'Unknown key.' }, 404, CORS);
   await env.DB.prepare('UPDATE licenses SET last_seen = ? WHERE key = ?').bind(new Date().toISOString().slice(0, 10), key).run();
-  return json({ ok: true, license: licenseView(row) }, 200, CORS);
+  // `spend`: seconds of time pass used since the last report (the extension counts them while in a call).
+  const used = body && Number.isFinite(Number(body.spend)) ? Number(body.spend) : 0;
+  const fresh = used > 0 && row.status === 'active' ? await spendPassTime(env.DB, row, used) : row;
+  return json({ ok: true, license: licenseView(fresh) }, 200, CORS);
 }

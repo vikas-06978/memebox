@@ -20,7 +20,16 @@
   </header>
 
   <main>
-    <ol class="steps">
+    <section class="card tutorial">
+<video src="tutorial.webm" controls autoplay muted loop playsinline preload="auto" aria-label="A 30 second tutorial: join a call in the browser, click the laughing button, right-click for the panel, unmute your mic"></video>
+<button type="button" id="sound-on" class="soundon" data-i18n="ob_sound">🔊 Sound on</button>
+</section>
+<section class="card reload" id="reload-card" hidden>
+<h2 data-i18n="ob_reload_title">A call tab is already open</h2>
+<p data-i18n="ob_reload_text">It was opened before MemeBox, so it can't use memes yet. Reload it, then join the call again. Reloading leaves the call, so do it when you're ready.</p>
+<ul id="reload-list"></ul>
+</section>
+<ol class="steps">
       <li class="card step">
         <svg viewBox="0 0 240 150" role="img" aria-labelledby="s1t">
           <title id="s1t">A video call in a browser tab</title>

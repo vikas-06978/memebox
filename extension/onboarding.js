@@ -114,3 +114,36 @@ $('hear').addEventListener('click', hearMeme);
 $('open-settings').addEventListener('click', () => chrome.runtime.openOptionsPage());
 $('close').addEventListener('click', () => window.close());
 window.addEventListener('pagehide', stopMic);
+
+// Call tabs that were already open when MemeBox was installed don't have the 😂 button until they
+// are reloaded. Offer a button per tab. Nothing reloads by itself: reloading leaves a live call.
+async function showOpenCallTabs() {
+  const patterns = chrome.runtime.getManifest().host_permissions;
+  const tabs = await chrome.tabs.query({ url: patterns });
+  const stale = [];
+  for (const tab of tabs) {
+    const alive = await chrome.tabs.sendMessage(tab.id, { type: 'ping' }, { frameId: 0 }).catch(() => null);
+    if (!alive) stale.push(tab);
+  }
+  if (!stale.length) return;
+  $('reload-list').replaceChildren(...stale.map((tab) => {
+    const li = document.createElement('li');
+    const url = Object.assign(document.createElement('span'), { className: 'url', textContent: new URL(tab.url).host });
+    const btn = Object.assign(document.createElement('button'), { type: 'button', className: 'primary', textContent: t('ob_reload_btn') });
+    btn.addEventListener('click', () => { chrome.tabs.reload(tab.id); li.remove(); if (!$('reload-list').children.length) $('reload-card').hidden = true; });
+    li.append(url, btn);
+    return li;
+  }));
+  $('reload-card').hidden = false;
+}
+showOpenCallTabs().catch(() => {});
+
+// People who asked their system for less motion get the tutorial paused (its controls still work).
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelector('.tutorial video').pause();
+
+// Chrome only autoplays muted video, so this button turns the sound on (and restarts from the top).
+{
+  const v = document.querySelector('.tutorial video');
+  $('sound-on').addEventListener('click', () => { v.muted = false; v.currentTime = 0; v.play().catch(() => {}); });
+  v.addEventListener('volumechange', () => { $('sound-on').hidden = !v.muted; });
+}

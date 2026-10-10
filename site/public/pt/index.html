@@ -71,7 +71,7 @@
       "inLanguage": "pt",
       "image": "https://memebox.pages.dev/assets/og-card.png",
       "screenshot": "https://memebox.pages.dev/assets/demo.png",
-      "downloadUrl": "https://github.com/vikas-06978/memebox/releases/latest",
+      "downloadUrl": "https://chromewebstore.google.com/search/MemeBox",
       "softwareHelp": "https://memebox.pages.dev/feedback",
       "offers": [
         {
@@ -82,10 +82,10 @@
         },
         {
           "@type": "Offer",
-          "name": "Pro",
-          "price": "99",
+          "name": "Pro pass (30 minutes)",
+          "price": "19",
           "priceCurrency": "INR",
-          "url": "https://memebox.pages.dev/buy"
+          "url": "https://memebox.pages.dev/pricing"
         }
       ]
     },
@@ -155,7 +155,7 @@
         <a href="#faq" data-t="nav_faq">Perguntas</a>
         <div class="prefs" data-prefs></div>
         <!-- INSTALL LINK: replace with the Chrome Web Store address once published (all "Add to Chrome" links on this page). -->
-        <a class="button primary" href="https://github.com/vikas-06978/memebox/releases/latest" data-t="nav_add">Adicionar ao Chrome</a>
+        <a class="button primary" href="https://chromewebstore.google.com/search/MemeBox" data-t="nav_add">Adicionar ao Chrome</a>
       </nav>
     </div>
   </header>
@@ -167,7 +167,7 @@
         <h1><span data-t="hero_h1a">Deixe cada chamada</span> <span class="hl" data-t="hero_h1b">10× mais engraçada</span></h1>
         <p class="lead" data-t="hero_lead">Clique em 😂 e um meme toca pelo seu microfone, então todos na chamada ouvem. Só você precisa do MemeBox.</p>
         <p class="actions">
-          <a class="button primary big" id="install" href="https://github.com/vikas-06978/memebox/releases/latest" data-t="hero_cta">Adicionar ao Chrome, é grátis</a>
+          <a class="button primary big" id="install" href="https://chromewebstore.google.com/search/MemeBox" data-t="hero_cta">Adicionar ao Chrome, é grátis</a>
           <a class="button big" href="#try" data-t="hero_try">▶ Experimente aqui</a>
         </p>
         <ul class="ticks">
@@ -179,13 +179,17 @@
       <figure class="demo">
         <div class="frame">
           <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <!-- DEMO GIF: replace demo.png with a short screen recording (demo.gif) when you have one. -->
-          <img src="/assets/demo.png" width="1280" height="800" fetchpriority="high" alt="A video call with the MemeBox panel open and a big CHAI BREAK! caption on screen">
+          <!-- Silent tutorial video (npm run tutorial): captions say what to do. Autoplays muted, loops, has controls. -->
+          <video controls autoplay muted loop playsinline preload="auto" width="1280" height="800" poster="/assets/tutorial-poster.png" aria-label="A 30 second tutorial: join a call in the browser, click the laughing button, right-click for the panel, unmute your mic">
+            <source src="/assets/tutorial.webm" type="video/webm">
+            <source src="/assets/tutorial.mp4" type="video/mp4">
+            <img src="/assets/demo.png" width="1280" height="800" alt="A video call with the MemeBox panel open and a big CHAI BREAK! caption on screen">
+          </video>
+          <button type="button" class="soundon" data-t="hero_sound">🔊 Ativar som</button>
         </div>
         <button type="button" class="float f1 poke" aria-label="😂">😂</button>
         <button type="button" class="float f2 poke" aria-label="🔊">🔊</button>
         <button type="button" class="float f3 poke" aria-label="🤣">🤣</button>
-        <div class="heard" aria-hidden="true"><span class="bars"><i></i><i></i><i></i><i></i></span> <span data-t="hero_heard">Todo mundo ouviu “Chai break!”</span></div>
       </figure>
     </section>
 
@@ -270,7 +274,7 @@
             <li data-t="pf4">10 clipes, 1 meme com imagem</li>
             <li data-t="pf5">Pacotes Geral e Faculdade</li>
           </ul>
-          <a class="button" href="https://github.com/vikas-06978/memebox/releases/latest" data-t="nav_add">Adicionar ao Chrome</a>
+          <a class="button" href="https://chromewebstore.google.com/search/MemeBox" data-t="nav_add">Adicionar ao Chrome</a>
         </article>
         <article class="card plan pro">
           <span class="badge" data-t="plan_best">Melhor custo</span>
@@ -312,7 +316,7 @@
       <div class="band">
         <h2 data-t="band_title">Sua próxima chamada vai ser muito mais divertida</h2>
         <p data-t="band_sub">Grátis, privado e pronto em segundos.</p>
-        <a class="button big" href="https://github.com/vikas-06978/memebox/releases/latest" data-t="band_cta">Adicionar o MemeBox ao Chrome</a>
+        <a class="button big" href="https://chromewebstore.google.com/search/MemeBox" data-t="band_cta">Adicionar o MemeBox ao Chrome</a>
       </div>
     </section>
   </main>
@@ -320,10 +324,10 @@
   <footer class="wrap site-foot">
     <a href="/pt/" class="brand"><img src="/assets/icon.png" alt="" width="26" height="26"> MemeBox</a>
     <a href="/feedback?lang=pt" data-t="foot_feedback">Opinião</a>
+    <a href="/pricing?lang=pt" data-t="foot_pricing">Preços</a>
     <a href="/buy?lang=pt" data-t="foot_buy">Comprar Pro</a>
     <a href="/privacy" data-t="foot_privacy">Privacidade</a>
     <a href="/terms" data-t="foot_terms">Termos</a>
-    <a href="https://github.com/vikas-06978/memebox" data-t="foot_source">Código-fonte</a>
     <a href="mailto:memebox.help@gmail.com">memebox.help@gmail.com</a>
     <div class="prefs" data-prefs></div>
   </footer>

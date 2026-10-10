@@ -39,7 +39,8 @@ In Chrome or Edge, on the web versions of Google Meet, Zoom, Microsoft Teams and
 • A big meme caption appears on your screen for 3 seconds.
 • Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They're ignored while you type.
 • Auto-duck lowers the meme sounds while you're talking.
-• Your own sound effects: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
+• Add your own sounds: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
+• Optional Sound effects pack (add it in Settings → Packs): airhorn, rimshot, sad trombone, drumroll, applause, crickets and more.
 • The College pack of friendly roasts. Share your own packs as a file.
 • Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
 • One picture meme: give a line a picture (a monkey, a reaction face, anything) and it flashes on your screen while the line plays.
@@ -64,7 +65,7 @@ Your microphone, camera and tab audio are only mixed inside your browser. They a
 • After installing or updating, reload an open call tab once.
 • Keep it friendly and follow the rules of your class or workplace.
 
-MemeBox is open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox. It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.
+MemeBox is free software (GPL-3.0-or-later). The source code is available on request: memebox.help@gmail.com. It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.
 
 ## Single purpose
 

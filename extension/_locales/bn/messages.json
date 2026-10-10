@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "ক্রিকেট"
   },
+  "cat_effects": {
+    "message": "সাউন্ড ইফেক্ট"
+  },
   "cat_office": {
     "message": "অফিস"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "আপলোড করা ক্লিপ"
+  },
+  "tag_sfx": {
+    "message": "ইফেক্ট"
   },
   "tag_lang": {
     "message": "ভাষা"
@@ -740,6 +746,18 @@
   "ob_done": {
     "message": "আপনি তৈরি। আপনার লাইন, ক্লিপ আর প্যাক Settings-এ আছে।"
   },
+  "ob_reload_title": {
+    "message": "একটি কল ট্যাব আগে থেকেই খোলা আছে"
+  },
+  "ob_reload_text": {
+    "message": "ট্যাবটি MemeBox-এর আগে খোলা হয়েছিল, তাই এখনো মিম চালাতে পারবে না। এটি রিলোড করে আবার কলে যোগ দিন। রিলোড করলে আপনি কল থেকে বেরিয়ে যাবেন, তাই প্রস্তুত হলেই করুন।"
+  },
+  "ob_reload_btn": {
+    "message": "এই ট্যাব রিলোড করুন"
+  },
+  "ob_sound": {
+    "message": "🔊 শব্দ চালু করুন"
+  },
   "ob_settings": {
     "message": "⚙️ সেটিংস খুলুন"
   },
@@ -876,5 +894,362 @@
   },
   "lang_reload": {
     "message": "ভাষা বদলেছে। MemeBox এতে দেখতে এই কলের ট্যাব রিলোড করুন।"
+  },
+  "fx_title": {
+    "message": "💡 লাইট ও লুক"
+  },
+  "fx_state_on": {
+    "message": "চালু"
+  },
+  "fx_state_off": {
+    "message": "বন্ধ"
+  },
+  "fx_how": {
+    "message": "আপনার ক্যামেরায় ল্যাম্প ও রঙিন আলো। কলের সবাই দেখবে। নিচের প্রিভিউতে সব চেষ্টা করুন।"
+  },
+  "fx_on": {
+    "message": "আমার ক্যামেরায় আলো দাও"
+  },
+  "fx_hint_off": {
+    "message": "চেষ্টা করতে চালু করুন। ব্যবহার করতে কলে যোগ দিন বা আবার যোগ দিন।"
+  },
+  "fx_restart": {
+    "message": "আলো শুরু করতে কলে ক্যামেরা একবার বন্ধ করে আবার চালু করুন।"
+  },
+  "fx_active": {
+    "message": "✓ আলো আপনার ক্যামেরায় আছে"
+  },
+  "fx_locked": {
+    "message": "🔒 শুধু প্রিভিউ: কলে যাবে না।"
+  },
+  "fx_plans": {
+    "message": "প্ল্যান দেখুন"
+  },
+  "fx_watermark": {
+    "message": "প্রিভিউ"
+  },
+  "fx_lamp": {
+    "message": "ঝোলানো ল্যাম্প"
+  },
+  "fx_lamp_show": {
+    "message": "ল্যাম্প দেখান"
+  },
+  "fx_pos_center": {
+    "message": "মাঝে"
+  },
+  "fx_pos_left": {
+    "message": "বাঁয়ে"
+  },
+  "fx_pos_right": {
+    "message": "ডানে"
+  },
+  "fx_anim_still": {
+    "message": "স্থির"
+  },
+  "fx_anim_swing": {
+    "message": "দোলানো"
+  },
+  "fx_anim_drop": {
+    "message": "ঝুলে নামা"
+  },
+  "fx_anim_flicker": {
+    "message": "মিটমিট"
+  },
+  "fx_colors": {
+    "message": "আলোর রঙ"
+  },
+  "fx_corners": {
+    "message": "কোণার আলো"
+  },
+  "fx_corners_show": {
+    "message": "কোণার আলো দেখান"
+  },
+  "fx_looks": {
+    "message": "লুক (ফিল্টার)"
+  },
+  "fx_pat_steady": {
+    "message": "স্থির"
+  },
+  "fx_pat_pulse": {
+    "message": "স্পন্দন"
+  },
+  "fx_pat_candle": {
+    "message": "মোমবাতি"
+  },
+  "fx_pat_rainbow": {
+    "message": "রামধনু"
+  },
+  "fx_pat_disco": {
+    "message": "ডিস্কো"
+  },
+  "fx_pat_sweep": {
+    "message": "স্ইপ"
+  },
+  "fx_pat_sparkle": {
+    "message": "ঝিলিক"
+  },
+  "fx_filter_none": {
+    "message": "কিছু না"
+  },
+  "fx_filter_warm": {
+    "message": "উষ্ণ"
+  },
+  "fx_filter_bw": {
+    "message": "সাদা-কালো"
+  },
+  "fx_filter_glow": {
+    "message": "গ্লো"
+  },
+  "fx_filter_vintage": {
+    "message": "ভিনটেজ"
+  },
+  "fx_filter_cool": {
+    "message": "ঠান্ডা"
+  },
+  "fx_filter_neon": {
+    "message": "নিয়ন"
+  },
+  "fx_filter_noir": {
+    "message": "নোয়ার"
+  },
+  "fx_filter_dream": {
+    "message": "ড্রিম"
+  },
+  "fx_filter_sunset": {
+    "message": "সানসেট"
+  },
+  "fx_filter_pixel": {
+    "message": "পিক্সেল"
+  },
+  "fx_focus": {
+    "message": "আমার ওপর স্পটলাইট (কিনারা গাঢ়)"
+  },
+  "fx_focus_tip": {
+    "message": "কিনারা গাঢ় যাতে আলো মুখে থাকে"
+  },
+  "fx_sync": {
+    "message": "আলো শব্দের সাথে চলে"
+  },
+  "fx_sync_tip": {
+    "message": "যে মিম বাজান তার সাথে রঙ বদলায়"
+  },
+  "fx_safe": {
+    "message": "ঝলকানি নয় (শুধু মৃদু বদল)"
+  },
+  "fx_safe_tip": {
+    "message": "ঝলকানিতে সংবেদনশীলদের জন্য নিরাপদ"
+  },
+  "fx_bright": {
+    "message": "উজ্জ্বলতা"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: আনলিমিটেড ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 বাকি"
+  },
+  "fx_pass_running": {
+    "message": "চলছে"
+  },
+  "fx_pass_pause": {
+    "message": "থামান"
+  },
+  "fx_pass_start": {
+    "message": "পাস শুরু করুন"
+  },
+  "fx_pass_none": {
+    "message": "এখনও পাস নেই। প্রিভিউ ফ্রি; পাসে কলে সবাই দেখবে।"
+  },
+  "fx_character": {
+    "message": "চরিত্র (শব্দে প্রতিক্রিয়া দেয়)"
+  },
+  "fx_char_none": {
+    "message": "কিছু না"
+  },
+  "fx_char_cat": {
+    "message": "বিড়াল"
+  },
+  "fx_char_dog": {
+    "message": "কুকুর"
+  },
+  "fx_char_bunny": {
+    "message": "খরগোশ"
+  },
+  "fx_char_panda": {
+    "message": "পান্ডা"
+  },
+  "fx_char_owl": {
+    "message": "পেঁচা"
+  },
+  "fx_char_fox": {
+    "message": "শিয়াল"
+  },
+  "mu_title": {
+    "message": "🎵 মিউজিক"
+  },
+  "mu_how": {
+    "message": "কপিরাইটমুক্ত নিজেদের সুর। মিমের মতো কলে বাজে এবং আপনি কথা বললে আস্তে হয়ে যায়।"
+  },
+  "mu_stop": {
+    "message": "থামান"
+  },
+  "mu_vol": {
+    "message": "মিউজিকের ভলিউম"
+  },
+  "mu_locked": {
+    "message": "🔒 শুধু প্রিভিউ (আপনার স্পিকারে, কলে নয়)।"
+  },
+  "mu_in_call": {
+    "message": "কলে বাজছে: $1"
+  },
+  "mu_preview": {
+    "message": "প্রিভিউ: $1, $2 সেকেন্ড, শুধু আপনি শুনবেন"
+  },
+  "mu_idle": {
+    "message": "সুরে চাপ দিয়ে শুনুন। ফ্রি: চিল ও ফাংকি।"
+  },
+  "mu_idle_call": {
+    "message": "সুরে চাপ দিন, কলে বাজবে।"
+  },
+  "mu_t_chill": {
+    "message": "চিল"
+  },
+  "mu_t_funky": {
+    "message": "ফাংকি"
+  },
+  "mu_t_party": {
+    "message": "পার্টি"
+  },
+  "mu_t_suspense": {
+    "message": "সাসপেন্স"
+  },
+  "mu_t_retro": {
+    "message": "রেট্রো"
+  },
+  "mu_t_jazz": {
+    "message": "জ্যাজ"
+  },
+  "mu_t_epic": {
+    "message": "এপিক"
+  },
+  "mu_t_tropical": {
+    "message": "ট্রপিক্যাল"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "সাইবার"
+  },
+  "fx_filter_comic": {
+    "message": "কমিক"
+  },
+  "fx_filter_matrix": {
+    "message": "ম্যাট্রিক্স"
+  },
+  "fx_filter_glam": {
+    "message": "গ্ল্যাম"
+  },
+  "mu_t_disco": {
+    "message": "ডিস্কো"
+  },
+  "mu_t_club": {
+    "message": "ক্লাব"
+  },
+  "mu_t_bass": {
+    "message": "বেস"
+  },
+  "mu_t_desi": {
+    "message": "দেশি"
+  },
+  "mu_t_house": {
+    "message": "হাউস"
+  },
+  "fx_char_penguin": {
+    "message": "পেঙ্গুইন"
+  },
+  "fx_char_lion": {
+    "message": "সিংহ"
+  },
+  "fx_char_monkey": {
+    "message": "বানর"
+  },
+  "fx_char_frog": {
+    "message": "ব্যাঙ"
+  },
+  "fx_char_unicorn": {
+    "message": "ইউনিকর্ন"
+  },
+  "fx_char_robot": {
+    "message": "রোবট"
+  },
+  "fx_filter_night": {
+    "message": "নাইট ভিশন"
+  },
+  "fx_filter_film": {
+    "message": "পুরনো ফিল্ম"
+  },
+  "fx_filter_wave": {
+    "message": "সিন্থওয়েভ"
+  },
+  "fx_filter_heat": {
+    "message": "থার্মাল"
+  },
+  "fx_filter_snow": {
+    "message": "তুষার"
+  },
+  "fx_pat_aurora": {
+    "message": "অরোরা"
+  },
+  "fx_pat_fire": {
+    "message": "আগুন"
+  },
+  "fx_pat_laser": {
+    "message": "লেজার"
+  },
+  "fx_pat_neonframe": {
+    "message": "নিয়ন ফ্রেম"
+  },
+  "fx_pat_police": {
+    "message": "পুলিশ"
+  },
+  "fx_pat_heart": {
+    "message": "হৃদয়"
+  },
+  "fx_fix_lamp": {
+    "message": "ল্যাম্প"
+  },
+  "fx_fix_discoball": {
+    "message": "ডিস্কো বল"
+  },
+  "fx_fix_lantern": {
+    "message": "লণ্ঠন"
+  },
+  "fx_fix_fairy": {
+    "message": "ফেয়ারি লাইট"
+  },
+  "fx_fix_chandelier": {
+    "message": "ঝাড়বাতি"
+  },
+  "fx_fix_moon": {
+    "message": "চাঁদ"
+  },
+  "fx_fix_star": {
+    "message": "তারা"
+  },
+  "fx_fix_spotlight": {
+    "message": "স্পটলাইট"
+  },
+  "fx_anim_sway": {
+    "message": "দোলে"
+  },
+  "fx_anim_bounce": {
+    "message": "লাফায়"
+  },
+  "fx_anim_pendulum": {
+    "message": "পেন্ডুলাম"
+  },
+  "fx_anim_beat": {
+    "message": "বিটে"
   }
 }

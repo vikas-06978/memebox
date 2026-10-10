@@ -34,3 +34,16 @@
 .sw-candy .chipcolor { background: linear-gradient(135deg, #ffdeeb, #f06595); }
 .done { text-align: center; }
 .done .actions { justify-content: center; }
+
+.reload { border-color: #f9ab00; background: color-mix(in srgb, #f9ab00 14%, var(--field)); margin-bottom: 16px; }
+.reload h2 { font-size: 17px; margin: 0 0 6px; }
+.reload p { margin: 0 0 10px; }
+#reload-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+#reload-list li { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+#reload-list .url { flex: 1 1 200px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.tutorial { padding: 0; overflow: hidden; margin-bottom: 16px; position: relative; }
+.soundon { position: absolute; top: 12px; right: 12px; border: 0; border-radius: 999px; padding: 9px 16px; font: 700 15px/1 inherit; cursor: pointer;
+  background: #ffd43b; color: #3d2c00; box-shadow: 0 4px 14px rgba(0, 0, 0, .35); }
+.soundon[hidden] { display: none; }
+.tutorial video { display: block; width: 100%; height: auto; max-height: 70vh; background: #1f2023; }
+@media (prefers-reduced-motion: reduce) { .tutorial video { animation: none; } }

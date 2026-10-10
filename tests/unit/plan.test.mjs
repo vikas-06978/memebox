@@ -58,7 +58,7 @@ test('with PRO_ENABLED but no license yet, only Pro features lock', () => {
   for (const f of Object.keys(plan.PRO_FEATURES)) assert.equal(plan.can(f), false, f);
   assert.equal(plan.can('soundboard'), true);
   assert.equal(plan.FREE_LIMITS.clips, 10);
-  assert.deepEqual([...plan.FREE_LIMITS.packs], ['general', 'college']);
+  assert.deepEqual([...plan.FREE_LIMITS.packs], ['general', 'effects', 'college']);
 });
 
 test('only an explicit true turns Pro on', () => {
@@ -89,4 +89,82 @@ test('plan.js loads before the scripts that use it', () => {
   const html = fs.readFileSync(path.join(EXT, 'options.html'), 'utf8');
   assert.ok(html.indexOf('config.js') < html.indexOf('lib/plan.js'));
   assert.ok(html.indexOf('lib/plan.js') < html.indexOf('options.js'));
+});
+
+test('time pass: works only while it is switched on and has seconds; Pro Max also has extra filters and characters', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  const lic = (o) => plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: false, checkedAt: now - 1000, ...o });
+
+  lic({ proSeconds: 600 });
+  assert.equal(plan.passTier(now), null, 'bought but not started');
+  assert.equal(plan.canFx('lampAnim', now), false);
+
+  plan.setPass({ on: true });
+  assert.equal(plan.passTier(now), 'pro');
+  assert.equal(plan.canFx('lampAnim', now), true);
+  assert.equal(plan.can('voiceChanger', now), true);
+  assert.equal(plan.canFx('filter:neon', now), false, 'Pro does not have the extra filters');
+  assert.equal(plan.canFx('characters', now), false);
+  assert.equal(plan.can('unlimitedClips', now), false, 'a pass does not lift the saved-items limits');
+  assert.equal(plan.pictureLimit(now), 1);
+
+  lic({ proSeconds: 600, maxSeconds: 60 });
+  assert.equal(plan.passTier(now), 'max');
+  assert.equal(plan.canFx('filter:neon', now), true);
+  assert.equal(plan.canFx('characters', now), true);
+
+  lic({ proSeconds: 0, maxSeconds: 0 });
+  assert.equal(plan.passTier(now), null, 'used up');
+  assert.equal(plan.canFx('lampAnim', now), false);
+
+  lic({ proSeconds: 600 });
+  plan.setPass({ on: false });
+  assert.equal(plan.passTier(now), null, 'paused');
+  assert.equal(plan.passLeft(), 600);
+});
+
+test('time pass: a permanent key still has everything, and a giant balance is capped', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: true, checkedAt: now - 1000 });
+  assert.equal(plan.canFx('characters', now), true);
+  assert.equal(plan.canFx('filter:pixel', now), true);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 1e12, checkedAt: now });
+  assert.equal(plan.license.proSeconds, plan.PASS_MAX_SECONDS);
+});
+
+test('characters: Pro has the three standard ones, Pro Max and a permanent key have all twelve; the lists match the engine', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  const fx = loadScript('lib/fx.js').MemeFx;
+  assert.deepEqual([...plan.STANDARD_CHARACTERS], [...fx.STANDARD_CHARACTERS]);
+  assert.equal(fx.CHARACTERS.length, 12);
+  const lic = (o) => plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: false, checkedAt: now - 1000, ...o });
+  assert.equal(plan.canFx('character:cat', now), false, 'no pass');
+  plan.setPass({ on: true });
+  lic({ proSeconds: 600 });
+  assert.equal(plan.canFx('character:dog', now), true);
+  assert.equal(plan.canFx('character:panda', now), false);
+  lic({ maxSeconds: 600 });
+  assert.equal(plan.canFx('character:panda', now), true);
+  const can = (f) => plan.canFx(f, now);
+  assert.equal(fx.sanitize({ character: 'fox' }, can).character, 'fox');
+  lic({ proSeconds: 600 });
+  assert.equal(fx.sanitize({ character: 'fox' }, (f) => plan.canFx(f, now)).character, 'none');
+  assert.equal(fx.sanitize({ character: 'cat', charPos: 'left' }, (f) => plan.canFx(f, now)).charPos, 'left');
+  assert.equal(fx.sanitize({ character: 'dragon' }).character, 'none');
+});
+
+test('music: Chill and Funky are free, the other tunes need Pro (a pass or a key); the lists match the engine', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
+  assert.deepEqual([...plan.FREE_TUNES], [...music.FREE_TUNES]);
+  assert.equal(music.IDS.length, 13);
+  assert.equal(plan.canFx('music:chill', now), true);
+  assert.equal(plan.canFx('music:party', now), false);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now - 1000 });
+  plan.setPass({ on: true });
+  assert.equal(plan.canFx('music:party', now), true);
 });

@@ -78,6 +78,8 @@ You need a free Cloudflare account. Run these from the `site/` folder.
 7. Deploy again so the secrets are used: `npx wrangler pages deploy`
 8. Put your address in `extension/config.js` as `SITE_URL` (no slash at the end).
 
+**Updating an existing site:** if a release adds a file to `site/db/migrations/`, run it once on the live database before you deploy, for example `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-platform-device.sql`. Then `npx wrangler pages deploy --branch=main`.
+
 The D1 binding is named `DB` in `wrangler.toml`. If you use the dashboard instead, go to **Pages → memebox → Settings → Bindings**, add a D1 binding called `DB` pointing to `memebox-feedback`, and add the same secrets as encrypted variables.
 
 ## Pro, license keys and UPI payments
@@ -184,6 +186,7 @@ It uploads the zip as the **memebox-extension** build artifact.
 
 ```sh
 npm run store-images   # store/screenshot-*.png (1280x800) and store/promo-440x280.png
+npm run tutorial       # the 30 second how-to video: site/public/assets/tutorial.mp4 + .webm (needs ffmpeg); copy the .webm to extension/tutorial.webm for the welcome page
 npm run icons          # extension/icons/*.png and store/icon-300.png (Edge logo)
 ```
 

@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "Cricket"
   },
+  "cat_effects": {
+    "message": "Effets sonores"
+  },
   "cat_office": {
     "message": "Bureau"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "Clip importé"
+  },
+  "tag_sfx": {
+    "message": "Effet"
   },
   "tag_lang": {
     "message": "Langue"
@@ -740,6 +746,18 @@
   "ob_done": {
     "message": "C'est prêt. Vos répliques, clips et packs sont dans les Réglages."
   },
+  "ob_reload_title": {
+    "message": "Un onglet d'appel est déjà ouvert"
+  },
+  "ob_reload_text": {
+    "message": "Il a été ouvert avant MemeBox et ne peut pas encore jouer de mèmes. Rechargez-le, puis rejoignez de nouveau l'appel. Recharger vous fait quitter l'appel, faites-le quand vous êtes prêt."
+  },
+  "ob_reload_btn": {
+    "message": "Recharger cet onglet"
+  },
+  "ob_sound": {
+    "message": "🔊 Activer le son"
+  },
   "ob_settings": {
     "message": "⚙️ Ouvrir les réglages"
   },
@@ -876,5 +894,362 @@
   },
   "lang_reload": {
     "message": "Langue changée. Rechargez cet onglet d'appel pour voir MemeBox dans cette langue."
+  },
+  "fx_title": {
+    "message": "💡 Lumières et looks"
+  },
+  "fx_state_on": {
+    "message": "Oui"
+  },
+  "fx_state_off": {
+    "message": "Non"
+  },
+  "fx_how": {
+    "message": "Une lampe et des lumières colorées sur VOTRE caméra. Les autres dans l’appel les voient. Essayez tout dans l’aperçu ci-dessous."
+  },
+  "fx_on": {
+    "message": "Éclairer ma caméra"
+  },
+  "fx_hint_off": {
+    "message": "Activez pour essayer. Rejoignez l’appel (ou rejoignez-le à nouveau) pour l’utiliser."
+  },
+  "fx_restart": {
+    "message": "Coupez puis rallumez votre caméra une fois dans l’appel pour lancer les lumières."
+  },
+  "fx_active": {
+    "message": "✓ Les lumières sont sur votre caméra"
+  },
+  "fx_locked": {
+    "message": "🔒 Aperçu seulement : non envoyé dans votre appel."
+  },
+  "fx_plans": {
+    "message": "Voir les offres"
+  },
+  "fx_watermark": {
+    "message": "APERÇU"
+  },
+  "fx_lamp": {
+    "message": "Lampe suspendue"
+  },
+  "fx_lamp_show": {
+    "message": "Afficher la lampe"
+  },
+  "fx_pos_center": {
+    "message": "Centre"
+  },
+  "fx_pos_left": {
+    "message": "Gauche"
+  },
+  "fx_pos_right": {
+    "message": "Droite"
+  },
+  "fx_anim_still": {
+    "message": "Fixe"
+  },
+  "fx_anim_swing": {
+    "message": "Balancement"
+  },
+  "fx_anim_drop": {
+    "message": "Chute"
+  },
+  "fx_anim_flicker": {
+    "message": "Scintillement"
+  },
+  "fx_colors": {
+    "message": "Couleur de la lumière"
+  },
+  "fx_corners": {
+    "message": "Lumières de coin"
+  },
+  "fx_corners_show": {
+    "message": "Afficher les lumières de coin"
+  },
+  "fx_looks": {
+    "message": "Looks (filtres)"
+  },
+  "fx_pat_steady": {
+    "message": "Fixe"
+  },
+  "fx_pat_pulse": {
+    "message": "Pulsation"
+  },
+  "fx_pat_candle": {
+    "message": "Bougie"
+  },
+  "fx_pat_rainbow": {
+    "message": "Arc-en-ciel"
+  },
+  "fx_pat_disco": {
+    "message": "Disco"
+  },
+  "fx_pat_sweep": {
+    "message": "Balayage"
+  },
+  "fx_pat_sparkle": {
+    "message": "Étincelles"
+  },
+  "fx_filter_none": {
+    "message": "Aucun"
+  },
+  "fx_filter_warm": {
+    "message": "Chaud"
+  },
+  "fx_filter_bw": {
+    "message": "Noir et blanc"
+  },
+  "fx_filter_glow": {
+    "message": "Halo"
+  },
+  "fx_filter_vintage": {
+    "message": "Vintage"
+  },
+  "fx_filter_cool": {
+    "message": "Froid"
+  },
+  "fx_filter_neon": {
+    "message": "Néon"
+  },
+  "fx_filter_noir": {
+    "message": "Noir"
+  },
+  "fx_filter_dream": {
+    "message": "Rêve"
+  },
+  "fx_filter_sunset": {
+    "message": "Coucher de soleil"
+  },
+  "fx_filter_pixel": {
+    "message": "Pixel"
+  },
+  "fx_focus": {
+    "message": "Projecteur sur moi (bords sombres)"
+  },
+  "fx_focus_tip": {
+    "message": "Bords plus sombres pour que la lumière soit sur votre visage"
+  },
+  "fx_sync": {
+    "message": "Les lumières suivent les sons"
+  },
+  "fx_sync_tip": {
+    "message": "Les couleurs changent avec le mème joué"
+  },
+  "fx_safe": {
+    "message": "Sans clignotement (changements doux)"
+  },
+  "fx_safe_tip": {
+    "message": "Plus sûr pour les personnes sensibles aux flashs"
+  },
+  "fx_bright": {
+    "message": "Luminosité"
+  },
+  "fx_pass_forever": {
+    "message": "Pro : illimité ✓"
+  },
+  "fx_pass_left": {
+    "message": "reste $1"
+  },
+  "fx_pass_running": {
+    "message": "en cours"
+  },
+  "fx_pass_pause": {
+    "message": "Pause"
+  },
+  "fx_pass_start": {
+    "message": "Démarrer mon pass"
+  },
+  "fx_pass_none": {
+    "message": "Pas encore de pass. L’aperçu est gratuit ; avec un pass, les autres le voient dans votre appel."
+  },
+  "fx_character": {
+    "message": "Personnage (réagit aux sons)"
+  },
+  "fx_char_none": {
+    "message": "Aucun"
+  },
+  "fx_char_cat": {
+    "message": "Chat"
+  },
+  "fx_char_dog": {
+    "message": "Chien"
+  },
+  "fx_char_bunny": {
+    "message": "Lapin"
+  },
+  "fx_char_panda": {
+    "message": "Panda"
+  },
+  "fx_char_owl": {
+    "message": "Hibou"
+  },
+  "fx_char_fox": {
+    "message": "Renard"
+  },
+  "mu_title": {
+    "message": "🎵 Musique"
+  },
+  "mu_how": {
+    "message": "Des mélodies originales sans droits d’auteur. Elles passent dans votre appel comme un mème et baissent quand vous parlez."
+  },
+  "mu_stop": {
+    "message": "Arrêter"
+  },
+  "mu_vol": {
+    "message": "Volume de la musique"
+  },
+  "mu_locked": {
+    "message": "🔒 Aperçu seulement (sur vos haut-parleurs, pas dans l’appel)."
+  },
+  "mu_in_call": {
+    "message": "Diffusé dans votre appel : $1"
+  },
+  "mu_preview": {
+    "message": "Aperçu : $1, $2 secondes, vous seul l’entendez"
+  },
+  "mu_idle": {
+    "message": "Touchez un morceau pour l’écouter. Gratuit : Chill et Funky."
+  },
+  "mu_idle_call": {
+    "message": "Touchez un morceau pour le diffuser dans votre appel."
+  },
+  "mu_t_chill": {
+    "message": "Chill"
+  },
+  "mu_t_funky": {
+    "message": "Funky"
+  },
+  "mu_t_party": {
+    "message": "Fête"
+  },
+  "mu_t_suspense": {
+    "message": "Suspense"
+  },
+  "mu_t_retro": {
+    "message": "Rétro"
+  },
+  "mu_t_jazz": {
+    "message": "Jazz"
+  },
+  "mu_t_epic": {
+    "message": "Épique"
+  },
+  "mu_t_tropical": {
+    "message": "Tropical"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "Cyber"
+  },
+  "fx_filter_comic": {
+    "message": "BD"
+  },
+  "fx_filter_matrix": {
+    "message": "Matrix"
+  },
+  "fx_filter_glam": {
+    "message": "Glamour"
+  },
+  "mu_t_disco": {
+    "message": "Disco"
+  },
+  "mu_t_club": {
+    "message": "Club"
+  },
+  "mu_t_bass": {
+    "message": "Basses"
+  },
+  "mu_t_desi": {
+    "message": "Desi"
+  },
+  "mu_t_house": {
+    "message": "House"
+  },
+  "fx_char_penguin": {
+    "message": "Manchot"
+  },
+  "fx_char_lion": {
+    "message": "Lion"
+  },
+  "fx_char_monkey": {
+    "message": "Singe"
+  },
+  "fx_char_frog": {
+    "message": "Grenouille"
+  },
+  "fx_char_unicorn": {
+    "message": "Licorne"
+  },
+  "fx_char_robot": {
+    "message": "Robot"
+  },
+  "fx_filter_night": {
+    "message": "Vision nocturne"
+  },
+  "fx_filter_film": {
+    "message": "Vieux film"
+  },
+  "fx_filter_wave": {
+    "message": "Synthwave"
+  },
+  "fx_filter_heat": {
+    "message": "Thermique"
+  },
+  "fx_filter_snow": {
+    "message": "Neige"
+  },
+  "fx_pat_aurora": {
+    "message": "Aurore"
+  },
+  "fx_pat_fire": {
+    "message": "Feu"
+  },
+  "fx_pat_laser": {
+    "message": "Lasers"
+  },
+  "fx_pat_neonframe": {
+    "message": "Cadre néon"
+  },
+  "fx_pat_police": {
+    "message": "Police"
+  },
+  "fx_pat_heart": {
+    "message": "Cœurs"
+  },
+  "fx_fix_lamp": {
+    "message": "Lampe"
+  },
+  "fx_fix_discoball": {
+    "message": "Boule disco"
+  },
+  "fx_fix_lantern": {
+    "message": "Lanterne"
+  },
+  "fx_fix_fairy": {
+    "message": "Guirlande"
+  },
+  "fx_fix_chandelier": {
+    "message": "Lustre"
+  },
+  "fx_fix_moon": {
+    "message": "Lune"
+  },
+  "fx_fix_star": {
+    "message": "Étoile"
+  },
+  "fx_fix_spotlight": {
+    "message": "Projecteur"
+  },
+  "fx_anim_sway": {
+    "message": "Balancement doux"
+  },
+  "fx_anim_bounce": {
+    "message": "Rebond"
+  },
+  "fx_anim_pendulum": {
+    "message": "Pendule"
+  },
+  "fx_anim_beat": {
+    "message": "Au rythme"
   }
 }

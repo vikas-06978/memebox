@@ -46,7 +46,7 @@ test('every t("key") used in scripts exists', () => {
 
 test('dynamic keys (status, categories, voices, themes) exist', () => {
   for (const s of ['none', 'suspended', 'muted', 'live']) assert.ok(en['st_' + s], `st_${s}`);
-  for (const c of ['general', 'college', 'cricket', 'office', 'party', 'clips', 'mine']) assert.ok(en['cat_' + c], `cat_${c}`);
+  for (const c of ['general', 'effects', 'college', 'cricket', 'office', 'party', 'clips', 'mine']) assert.ok(en['cat_' + c], `cat_${c}`);
   for (const v of ['off', 'chipmunk', 'deep', 'robot', 'echo', 'radio']) assert.ok(en['voice_' + v], `voice_${v}`);
   for (const th of ['auto', 'light', 'dark', 'sunny', 'neon', 'candy']) assert.ok(en['theme_' + th], `theme_${th}`);
 });
@@ -107,13 +107,29 @@ test('every data-t key on the site exists, and the English in the HTML matches e
 });
 
 test('keys the site scripts ask for exist', () => {
-  for (const f of ['form.js', 'buy.js', 'demo.js', 'prefs.js']) {
+  for (const f of ['form.js', 'buy.js', 'demo.js', 'prefs.js', 'pricing.js']) {
     const src = fs.readFileSync(path.join(SITE, 'assets', f), 'utf8');
     for (const [, key] of src.matchAll(/\bT?t\('([a-z0-9_]+)'/g)) {
       if (key.endsWith('_') || key === 'key') continue; // dynamic prefix, or the usage example in a comment
       assert.ok(key in siteEn, `${f}: missing "${key}"`);
     }
   }
-  for (const p of ['pro', 'pictures5']) assert.ok(siteEn['buy_name_' + p]);
+  for (const p of ['pro', 'pictures5', 'pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_180']) assert.ok(siteEn['buy_name_' + p]);
+  for (const k of ['pr_dur_30', 'pr_dur_60', 'pr_dur_120', 'pr_dur_180']) assert.ok(siteEn[k]);
   for (const th of ['auto', 'light', 'dark', 'sunny', 'neon', 'candy']) assert.ok(siteEn['theme_' + th]);
+});
+
+test('every Lights filter, character and music tune has a name in every language', async () => {
+  const { loadScript } = await import('./helpers.mjs');
+  const fx = loadScript('lib/fx.js').MemeFx;
+  const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
+  const keys = [
+    ...fx.FILTERS.map((f) => 'fx_filter_' + f),
+    ...['none', ...fx.CHARACTERS].map((c) => 'fx_char_' + c),
+    ...fx.LAMP_ANIMS.map((a) => 'fx_anim_' + a),
+    ...fx.PATTERNS.map((p) => 'fx_pat_' + p),
+    ...fx.FIXTURES.map((f) => 'fx_fix_' + f),
+    ...music.IDS.map((id) => 'mu_t_' + id),
+  ];
+  for (const [lang, msgs] of Object.entries(all)) for (const k of keys) assert.ok(msgs[k] && msgs[k].message, `${lang} is missing ${k}`);
 });

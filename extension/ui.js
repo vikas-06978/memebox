@@ -86,7 +86,7 @@
       if ('lines' in r && !Array.isArray(r.lines)) r.lines = MEME.defaultLines();
       applyStored(r);
       renderAll();
-      if ('settings' in r) sendAudioSettings();
+      if ('settings' in r) { sendAudioSettings(); for (const fn of settingsCbs) { try { fn(); } catch { /* ignore */ } } }
     });
   } catch { /* orphaned */ }
 
@@ -168,7 +168,7 @@
         clearTimeout(onPlayResult.t);
         onPlayResult.t = setTimeout(() => { state.nowPlayingId = null; renderList(); }, 3000);
       }
-      if (msg.muted) toast(t('muted_nobody'));
+      if (msg.muted) toast(t('muted_nobody'), 6000);
     } else {
       toast(msg.reason === 'no-call' ? t('join_first') : t('err_play', msg.reason));
     }
@@ -274,6 +274,7 @@
   }
 
   bridge.onUiMessage = (msg) => {
+    for (const fn of messageCbs) { try { fn(msg); } catch { /* ignore */ } }
     if (msg.type === 'frame-status') onFrameStatus(msg);
     else if (msg.type === 'play-result') onPlayResult(msg);
     else if (msg.type === 'tab-audio-start' && typeof msg.streamId === 'string') {
@@ -435,6 +436,9 @@
     @keyframes ring { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(1.5); } }
     .fab .dot { position: absolute; right: 1px; bottom: 1px; width: 15px; height: 15px; border-radius: 50%;
       border: 2.5px solid #fff; background: #9aa0a6; }
+    /* Muted in the call: memes would be silent, so the button says so (and the panel too). */
+    .fab.muted::before { content: "🔇"; position: absolute; left: -7px; bottom: -4px; width: 24px; height: 24px; border-radius: 50%;
+      background: #fff; border: 2px solid #f9ab00; font: 13px/20px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; text-align: center; }
 
     /* Emoji burst when a meme plays (interactive and fun, off with reduced motion). */
     .burst { position: fixed; pointer-events: none; font: 24px/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
@@ -467,6 +471,9 @@
       display: grid; place-items: center; padding: 0; transition: background .1s; }
     .icon:hover { background: var(--p-soft); }
     .status { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; background: var(--p-soft); font-weight: 600; }
+    .status.warn { background: #fff3cd; color: #5c3d00; border: 1px solid #f9ab00; font-size: 13px; line-height: 1.35; }
+    :host([data-theme="dark"]) .status.warn, :host([data-theme="neon"]) .status.warn { background: #4a3a00; color: #ffe08a; }
+    @media (prefers-color-scheme: dark) { :host(:not([data-theme])) .status.warn, :host([data-theme="auto"]) .status.warn { background: #4a3a00; color: #ffe08a; } }
     .status .dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #9aa0a6; box-shadow: 0 0 0 3px rgba(127,127,127,.15); }
     .search { width: 100%; padding: 10px 14px; border: 1px solid var(--p-line); border-radius: 12px; font: inherit; color: inherit; background: var(--p-field);
       transition: border-color .1s, box-shadow .1s; }
@@ -521,6 +528,24 @@
     .settings[open] summary::after { transform: rotate(180deg); }
     .settings summary .sum { flex: 1; text-align: right; color: var(--p-muted); font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .settings-body { display: grid; gap: 10px; padding: 10px 2px 2px; }
+    .panel.fx-open { overflow-y: auto; }
+    .panel.fx-open .list, .panel.fx-open .chips, .panel.fx-open .search { display: none; }
+    .fx-pass { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--p-soft); border-radius: 10px; padding: 8px 10px; font-weight: 600; font-size: 12px; }
+    .fx-pass.on { background: #e6f4ea; color: #137333; }
+    .fx-how, .fx-status { color: var(--p-muted); font-size: 12px; line-height: 1.4; }
+    .fx-status.ok { color: #188038; font-weight: 700; }
+    .fx-prev { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--p-line); background: #23253a; display: block; }
+    .fx-body.fx-off .fx-prev { opacity: .75; }
+    .fx-main { font-size: 14px; }
+    .fx-group { display: grid; gap: 6px; }
+    .fx-label { font-weight: 700; font-size: 12px; color: var(--p-muted); text-transform: none; }
+    .fx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .fx-chips .chip.locked { opacity: .8; border-style: dashed; }
+    .fx-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+    .fx-sw { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--p-line); cursor: pointer; padding: 0; }
+    .fx-sw.on { border-color: var(--p-text); box-shadow: 0 0 0 2px var(--p-bg), 0 0 0 4px var(--p-text); }
+    .fx-sw.locked { opacity: .6; }
+    .fx-lock { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--p-blue-bg); color: var(--p-blue-fg); border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 600; }
     .foot { color: var(--p-muted); font-size: 11px; }
 
     .ask { position: fixed; width: 260px; padding: 14px; border-radius: 16px; background: var(--p-bg); color: var(--p-text); border: 1px solid var(--p-line);
@@ -571,6 +596,7 @@
   // Panel
   const statusDot = el('span', { className: 'dot' });
   const statusText = el('span');
+  const statusBox = el('div', { className: 'status' }, statusDot, statusText);
   const search = el('input', { className: 'search', type: 'search', placeholder: t('search_ph') });
   search.setAttribute('aria-label', t('search_ph'));
   const chips = el('div', { className: 'chips', role: 'tablist' });
@@ -620,7 +646,7 @@
   });
   const panel = el('div', { className: 'panel' },
     el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), feedbackBtn, optionsBtn, closeBtn),
-    el('div', { className: 'status' }, statusDot, statusText),
+    statusBox,
     tabBar,
     search,
     chips,
@@ -648,6 +674,27 @@
   ask.dir = DIR;
 
   shadow.append(style, fab, monBtn, listBtn, panel, ask, toastEl);
+
+  // Extra panel sections (Lights & looks) live in their own files and plug in here.
+  const panelToggleCbs = [], messageCbs = [], settingsCbs = [];
+  const uiApi = {
+    el, t, settingsDetails: settings, panel,
+    getSettings: () => state.settings,
+    setLocal: (k, v) => { state.settings = { ...state.settings, [k]: v }; },
+    saveSetting: (k, v) => saveSetting(k, v),
+    placePanel: () => placePanel(),
+    panelIsOpen: () => panelOpen,
+    openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
+    inCall: () => !!activeFrame(),
+    sendToHook: (cmd) => sendToHook(cmd),
+    send: (msg) => bridge.toRuntime(msg),
+    onPanelToggle: (fn) => panelToggleCbs.push(fn),
+    onMessage: (fn) => messageCbs.push(fn),
+    onSettings: (fn) => settingsCbs.push(fn),
+  };
+  for (const mount of (globalThis.MemeUiMounts || [])) {
+    try { mount(uiApi); } catch { /* a broken extra section must not break the panel */ }
+  }
 
   // ---------- rendering ----------
 
@@ -678,7 +725,9 @@
     const s = status();
     fabDot.style.background = STATUS_COLOR[s];
     statusDot.style.background = STATUS_COLOR[s];
-    statusText.textContent = t('st_' + s);
+    statusText.textContent = (s === 'muted' ? '🔇 ' : '') + t('st_' + s);
+    statusBox.classList.toggle('warn', s === 'muted' || s === 'none');
+    fab.classList.toggle('muted', s === 'muted');
     fab.title = 'MemeBox: ' + t('st_' + s) + '\n' + t('fab_tip');
   }
 
@@ -740,7 +789,7 @@
     for (const line of items) {
       const tone = TONES[line.tone] || TONES.normal;
       const tags = el('span', { className: 'tags' },
-        line.kind === 'clip' ? el('span', { className: 'tag', title: t('tag_clip') }, '🎵')
+        line.kind !== 'tts' ? el('span', { className: 'tag', title: t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip') }, '🎵')
           : el('span', { className: 'tag', title: t('tag_lang') }, line.lang.toUpperCase()),
         el('span', { title: tone.label }, tone.emoji));
       if (line.fav) tags.append(el('span', { className: 'tag', title: t('tag_shortcut') }, 'Alt+' + line.fav));
@@ -758,7 +807,7 @@
   }
 
   let toastTimer = 0;
-  function toast(text) {
+  function toast(text, ms = 3200) {
     toastEl.textContent = text;
     const anchor = state.hidden ? { left: 16, width: 0, top: window.innerHeight - 60, bottom: window.innerHeight - 60 } : fab.getBoundingClientRect();
     const w = Math.min(280, window.innerWidth - 16);
@@ -769,7 +818,7 @@
     toastEl.style.bottom = above ? window.innerHeight - anchor.top + 8 + 'px' : '';
     toastEl.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
   }
 
   // The 😂 button laughs and a few emoji burst out of it whenever a meme plays.
@@ -900,11 +949,13 @@
     renderAll();
     placePanel();
     search.focus({ preventScroll: true });
+    for (const fn of panelToggleCbs) { try { fn(true); } catch { /* ignore */ } }
   }
 
   function closePanel() {
     panelOpen = false;
     panel.classList.remove('open');
+    for (const fn of panelToggleCbs) { try { fn(false); } catch { /* ignore */ } }
   }
 
   closeBtn.addEventListener('click', closePanel);

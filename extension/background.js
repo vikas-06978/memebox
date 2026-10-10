@@ -17,8 +17,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (!Array.isArray(lines)) {
     patch.lines = MEME_PACKS.all();
   } else if ((seeded || 0) < PACKS_SEEDED) {
-    const have = new Set(lines.map((l) => l && l.id));
-    patch.lines = [...lines, ...MEME_PACKS.all().filter((l) => !have.has(l.id)).map((l) => ({ ...l, fav: 0 }))];
+    patch.lines = [...lines, ...MEME_PACKS.missing(lines, seeded || 0)];
   }
   patch.seeded = PACKS_SEEDED;
   if (!settings || typeof settings !== 'object') patch.settings = MEME.defaultSettings();
@@ -59,6 +58,50 @@ async function refreshLicense() {
   else if (res.status === 404) await chrome.storage.local.set({ license: { ...license, status: 'revoked', checkedAt: Date.now() } });
 }
 refreshLicense().catch(() => {}); // offline: try again next time
+
+// ---------- time pass (Pro / Pro Max hours) ----------
+// The panel in the call tab reports "a call with the pass on" every PASS_TICK_MS. The seconds are taken off
+// the saved balance here (Pro Max first); every PASS_SYNC_MS they are also reported to the site, which keeps
+// the real balance. When it reaches 0 the pass switches itself off. Nothing runs outside a call.
+const PASS_TICK_MS = 10000;
+const PASS_SYNC_MS = 5 * 60 * 1000;
+let lastPassTick = 0;
+let passQueue = Promise.resolve();
+
+async function reportPassTime(license, seconds) {
+  try {
+    const res = await fetch(SITE_URL + '/api/license', {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key: license.key, spend: seconds }),
+    });
+    const data = await res.json().catch(() => ({}));
+    return res.ok && data.ok ? data.license : null;
+  } catch { return null; } // offline: keep counting, report later
+}
+
+async function passTick(now = Date.now()) {
+  const { license, pass } = await chrome.storage.local.get(['license', 'pass']);
+  if (!pass || pass.on !== true || !license || license.status !== 'active') return;
+  if (now - lastPassTick < PASS_TICK_MS * 0.8) return; // another frame of the same call already counted this
+  const seconds = lastPassTick ? Math.min(30, Math.round((now - lastPassTick) / 1000)) : PASS_TICK_MS / 1000;
+  lastPassTick = now;
+  let max = Math.max(0, Number(license.maxSeconds) || 0);
+  let pro = Math.max(0, Number(license.proSeconds) || 0);
+  const fromMax = Math.min(max, seconds);
+  max -= fromMax;
+  pro = Math.max(0, pro - (seconds - fromMax));
+  const unsynced = (Number(pass.unsynced) || 0) + seconds;
+  let next = { ...license, maxSeconds: max, proSeconds: pro };
+  let owed = unsynced;
+  if (max + pro <= 0 || now - (Number(pass.syncedAt) || 0) >= PASS_SYNC_MS) {
+    const fresh = await reportPassTime(license, unsynced);
+    if (fresh) { next = { ...license, ...fresh, checkedAt: now }; owed = 0; }
+  }
+  const empty = next.maxSeconds + next.proSeconds <= 0;
+  await chrome.storage.local.set({
+    license: next,
+    pass: { on: !empty, unsynced: owed, syncedAt: owed === 0 ? now : Number(pass.syncedAt) || 0 },
+  });
+}
 
 chrome.runtime.setUninstallURL(`${SITE_URL}/uninstall?v=${encodeURIComponent(VERSION)}`).catch(() => {});
 
@@ -122,6 +165,11 @@ function toBase64(buf) {
 async function audioFor(item) {
   if (!item || typeof item !== 'object') throw new Error('Nothing to play');
   const tone = Object.prototype.hasOwnProperty.call(TONES, item.tone) ? item.tone : 'normal';
+  if (item.kind === 'sfx') {
+    if (!MEME.SFX.includes(item.sfx)) throw new Error('Unknown sound effect');
+    const res = await fetch(chrome.runtime.getURL(`sfx/${item.sfx}.wav`));
+    return { b64: toBase64(await res.arrayBuffer()), tone };
+  }
   if (item.kind === 'clip') {
     const clip = await MemeDB.getClip(String(item.clipId));
     if (!clip) throw new Error('Clip not found. Re-upload it in Options.');
@@ -148,7 +196,7 @@ async function handlePlay(tabId, { frameId, reqId, item }) {
       type: 'hook',
       cmd: {
         type: 'play-audio', reqId, b64, playbackRate: t.playbackRate, gain: t.gain * lineVolume, effect: t.effect || '',
-        text: String(item.text || '').slice(0, LIMITS.textChars),
+        text: String(item.text || '').slice(0, LIMITS.textChars), mood: MEME.moodFor(item),
         ...(picture ? { picture: picture.b64, pictureType: picture.type } : {}),
       },
     }, frameId);
@@ -242,6 +290,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     chrome.runtime.openOptionsPage();
     return;
   }
+  if (msg.type === 'open-site') {
+    // Only our own few pages, never a path the page chose.
+    const path = ['/buy', '/pricing'].includes(msg.path) ? msg.path : '/buy';
+    chrome.tabs.create({ url: SITE_URL + path });
+    return;
+  }
   if (msg.type === 'open-feedback') {
     openFeedback({ site: String(msg.site || ''), rate: msg.rate === true });
     return;
@@ -257,6 +311,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   switch (msg.type) {
     // A frame's mic hook reported something -> tell the UI in the top frame.
+    // The call tab says: a call is running with the pass switched on.
+    case 'pass-tick':
+      passQueue = passQueue.then(() => passTick()).catch(() => {});
+      break;
+
+    case 'music-state':
+      sendToTab(tabId, { type: 'music-state', id: typeof msg.id === 'string' ? msg.id : '', frameId: sender.frameId }, 0);
+      break;
+
+    case 'fx-status':
+      sendToTab(tabId, { type: 'fx-status', active: msg.active === true, frameId: sender.frameId }, 0);
+      break;
+
     case 'frame-status':
       updateCallTab(tabId, (e) => {
         const had = Object.keys(e.frames).length > 0;

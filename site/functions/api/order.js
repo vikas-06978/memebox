@@ -37,7 +37,7 @@ export async function onRequest({ request, env }) {
   const salt = env.RATE_SALT || env.ADMIN_KEY || '';
 
   if (body.action === 'create') {
-    if (!Object.prototype.hasOwnProperty.call(PRODUCTS, body.product)) return json({ ok: false, error: 'Unknown product.' }, 400);
+    if (!Object.prototype.hasOwnProperty.call(PRODUCTS, body.product) || PRODUCTS[body.product].closed) return json({ ok: false, error: 'Unknown product.' }, 400);
     let forKey = '';
     if (body.forKey) {
       forKey = cleanKey(body.forKey);
