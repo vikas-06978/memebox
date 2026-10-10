@@ -33,7 +33,8 @@ test('first install has the general pack + College, Cricket, Office, Party', asy
   const page = await openOptions(context, extensionId);
   const { lines } = await page.store('lines');
   const cats = new Set(lines.map((l) => l.category));
-  for (const c of ['general', 'effects', 'college', 'cricket', 'office', 'party']) expect(cats.has(c)).toBe(true);
+  for (const c of ['general', 'college', 'cricket', 'office', 'party']) expect(cats.has(c)).toBe(true);
+  expect(cats.has('effects')).toBe(false); // the Sound effects pack is optional: it is only there once added
   expect(lines.length).toBeGreaterThanOrEqual(46);
   await expect(page.locator('#builtin-packs li')).toHaveCount(6);
 });

@@ -4,6 +4,13 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.6] - 2026-10-10
+
+### Changed
+- The **Sound effects pack is optional**. It is not added to anyone's list, on a first install or on an update, so the 😂 button's random pick, the list and the shortcuts are exactly as before, with the Hindi, Hinglish and English meme voices. To get the effects: Settings → Packs → Sound effects → **Add** (it is free).
+- The tutorial video is back to the meme voices first (click 😂, pick a line, muted, add your own sound), and ends with an optional step that adds the Sound effects pack and plays the airhorn.
+- The store description calls the Sound effects pack optional.
+
 ## [1.2.5] - 2026-10-10
 
 ### Added

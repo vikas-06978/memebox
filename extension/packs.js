@@ -9,7 +9,8 @@
   const fx = (id, sfx, text) => ({ id, kind: 'sfx', sfx, lang: 'en', text, tone: 'normal', fav: 0 });
 
   const PACKS = {
-    // Real sound effects, not speech: loud, clear and funny (synthesized, see tools/lib/sfx.mjs).
+    // OPTIONAL pack of real sound effects, not speech (synthesized, see tools/lib/sfx.mjs). Not added automatically:
+    // Options → Packs → Add.
     effects: [
       fx('p-fx-airhorn', 'airhorn', 'AIRHORN!'),
       fx('p-fx-rimshot', 'rimshot', 'Ba-dum-tss!'),
@@ -79,15 +80,16 @@
       return (PACKS[id] || []).map((l) => ({ ...l }));
     },
     // Built-in lines a stored library doesn't have yet, for people who updated (own lines are never touched).
-    // seeded: 0 = from before packs existed (every pack), 1 = from before sound effects (just that pack).
+    // seeded: 0 = from before packs existed. The optional Sound effects pack is never added by itself:
+    // people add it in Options → Packs, so Random and the list stay exactly as they were.
     missing(lines, seeded) {
+      if (seeded >= 1) return [];
       const have = new Set(lines.map((l) => l && l.id));
-      const wanted = seeded < 1 ? this.all() : this.lines('effects');
-      return wanted.filter((l) => !have.has(l.id)).map((l) => ({ ...l, fav: 0 }));
+      return this.all().filter((l) => !have.has(l.id)).map((l) => ({ ...l, fav: 0 }));
     },
-    // Every built-in line, for the first install.
+    // Every built-in line that comes with a first install (not the optional Sound effects pack).
     all() {
-      return this.ids.flatMap((id) => this.lines(id));
+      return this.ids.filter((id) => id !== 'effects').flatMap((id) => this.lines(id));
     },
   });
 })();

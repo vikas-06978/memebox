@@ -9,7 +9,7 @@ const { TONES, LIMITS } = globalThis.MEME;
 
 // First install: the general pack + every built-in pack. Updates from before packs existed
 // get the new packs added once (their own lines are kept).
-const PACKS_SEEDED = 2; // 2: the Sound effects pack
+const PACKS_SEEDED = 1;
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') chrome.tabs.create({ url: 'onboarding.html' }).catch(() => {});
   const { lines, settings, seeded } = await chrome.storage.local.get(['lines', 'settings', 'seeded']);

@@ -3,9 +3,15 @@ import { test, expect } from './fixtures.mjs';
 
 const FAB = { x: 16 + 26, y: 720 - 120 - 26 };
 
-test('airhorn, rimshot and sad trombone play loud into the call from the panel', async ({ callPage }) => {
+test('after adding the optional pack, airhorn, rimshot and sad trombone play loud into the call', async ({ context, callPage }) => {
+  const [sw] = context.serviceWorkers();
+  await sw.evaluate(async () => { // what Options → Packs → Add does
+    const { lines } = await chrome.storage.local.get('lines');
+    await chrome.storage.local.set({ lines: [...lines, ...MEME_PACKS.lines('effects')] });
+  });
   await callPage.evaluate(() => window.joinCall());
   await callPage.evaluate(() => window.noDuck());
+  await callPage.waitForTimeout(500);
   await callPage.mouse.click(FAB.x, FAB.y, { button: 'right' }); // open the panel
   await callPage.waitForTimeout(700);
   for (const query of ['airhorn', 'ba-dum', 'sad trombone']) { // the search looks at the shown text

@@ -1,8 +1,9 @@
 // npm run tutorial: records the "how to use MemeBox" video from the real extension running in Chromium,
 // on a neutral mock call (coloured tiles, first names, no logos or real people).
-//   1 join a call   2 click 😂   3 right-click for the panel and pick sounds   4 muted = silent
-//   5 add your own sound (the Options page: choose a file, trim, name, save)   6 play it in the call
-// The sound is real: it is the mixed microphone the call would receive (the effects, and silence while
+//   1 join a call   2 click 😂 (a Hindi or English meme line)   3 right-click for the panel and pick a line
+//   4 muted = silent   5 add your own sound (Options: choose a file, trim, name, save)   6 play it in the call
+//   7 OPTIONAL: add the Sound effects pack (Options → Packs → Add) and play the airhorn
+// The sound is real: it is the mixed microphone the call would receive (the memes, and silence while
 // muted), recorded from the extension. Big captions say what to do, so it also works with the sound off.
 // Output: site/public/assets/tutorial.mp4 and tutorial.webm, plus tutorial-poster.png. Needs ffmpeg.
 import { chromium } from '@playwright/test';
@@ -126,9 +127,9 @@ const context = await chromium.launchPersistentContext('', {
 let [sw] = context.serviceWorkers();
 if (!sw) sw = await context.waitForEvent('serviceworker');
 await new Promise((r) => setTimeout(r, 1500)); // let the install finish (packs, welcome tab)
-// The library for the video: the Sound effects pack, plus one spoken line. A random click is then (almost) always an effect.
+// The library for the video: a few of the short built-in meme lines (Hindi and English), so a random click is always short.
 await sw.evaluate(() => chrome.storage.local.set({
-  lines: [...MEME_PACKS.lines('effects'), ...MEME.defaultLines().filter((l) => l.id === 'd-hi-7')],
+  lines: MEME.defaultLines().filter((l) => ['d-hi-1', 'd-hi-7', 'd-hi-8', 'd-en-1', 'd-en-2', 'd-en-3', 'd-en-4', 'd-en-6'].includes(l.id)),
 }));
 
 await context.route('https://meet.google.com/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: CALL_SCENE }));
@@ -166,7 +167,7 @@ await caption('1', 'Join your call in the browser', 'Google Meet · Zoom · Team
 await wait(3400);
 
 // 2. One click.
-await caption('2', 'Click the 😂 button', 'A random sound plays');
+await caption('2', 'Click the 😂 button', 'A random meme plays');
 await wait(900);
 await glide(FAB.x, FAB.y);
 await wait(500);
@@ -176,24 +177,23 @@ await caption('✓', 'Everyone in the call hears it', 'It goes into your microph
 await wait(3600);
 
 // 3. The panel: pick sounds.
-await caption('3', 'Right-click 😂 to pick a sound', 'Search, favourites, sound effects');
+await caption('3', 'Right-click 😂 to pick a meme', 'Search, favourites, voices');
 await wait(700);
 await call.mouse.click(FAB.x, FAB.y, { button: 'right' });
 await wait(900);
-await type('air');
+await type('chai');
 await wait(700);
-const posterWall = now();
-await call.keyboard.press('Enter'); // the airhorn
-await wait(2900);
-await search('sad');
-await call.keyboard.press('Enter'); // sad trombone
-await wait(3900);
+await call.keyboard.press('Enter'); // "Chai break!"
+await wait(3300);
+await search('bruh');
+await call.keyboard.press('Enter'); // "Bruh."
+await wait(3300);
 
 // 4. Muted.
-await caption('!', 'Muted? Sounds are silent too', 'Unmute your mic in the call first');
+await caption('!', 'Muted? Memes are silent too', 'Unmute your mic in the call first');
 await call.evaluate(() => { window.s.getAudioTracks()[0].enabled = false; }); // the call's mute button
 await wait(2800); // the panel notices and turns amber
-await call.keyboard.press('Enter'); // sad trombone again: nobody hears it now
+await call.keyboard.press('Enter'); // "Bruh." again: nobody hears it now
 await wait(3600);
 await call.evaluate(() => { window.s.getAudioTracks()[0].enabled = true; });
 await call.mouse.click(900, 300); // close the panel
@@ -250,7 +250,44 @@ await wait(900);
 await search('boom');
 await wait(600);
 await call.keyboard.press('Enter');
-await wait(3800);
+await wait(3200);
+await call.mouse.click(900, 300); // close the panel
+await caption('', '');
+finish();
+
+// 7. OPTIONAL: the Sound effects pack (Options → Packs → Add).
+await opt.bringToFront();
+page = opt;
+await wait(600);
+await opt.evaluate(() => { document.getElementById('builtin-packs').scrollIntoView({ block: 'start' }); window.scrollBy(0, -120); });
+await opt.mouse.move(700, 300);
+begin('opt', tOpt0);
+await caption('7', 'Optional: add the Sound effects pack', 'Settings → Packs → Add. Airhorn, rimshot, sad trombone…');
+await wait(1800);
+const addPack = opt.locator('#builtin-packs li', { hasText: 'Sound effects' }).locator('button.primary');
+const addBox = await addPack.boundingBox();
+await glide(addBox.x + addBox.width / 2, addBox.y + addBox.height / 2);
+await wait(500);
+await opt.mouse.down(); await opt.mouse.up(); // the click adds the pack
+await wait(2200);
+await caption('', '');
+finish();
+
+page = call;
+await call.bringToFront();
+await wait(700);
+begin('call', t0);
+await caption('7', 'Now try the airhorn', 'Right-click 😂, search “air”, press Enter');
+await call.mouse.move(640, 400);
+await call.mouse.click(FAB.x, FAB.y, { button: 'right' });
+await wait(900);
+await search('air'); // replaces the text left from step 6
+const posterWall = now();
+await call.keyboard.press('Enter'); // the airhorn
+await wait(2900);
+await search('sad');
+await call.keyboard.press('Enter'); // sad trombone
+await wait(3900);
 
 // End card: close the panel and hide the button first (they sit above everything else on the page).
 await call.mouse.click(900, 300);
@@ -293,7 +330,8 @@ fs.mkdirSync(OUT, { recursive: true });
 run(['-i', joined, '-c:v', 'libx264', '-preset', 'slow', '-crf', '30', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '80k', '-ac', '1', '-movflags', '+faststart', path.join(OUT, 'tutorial.mp4')]);
 run(['-i', joined, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '38', '-c:a', 'libopus', '-b:a', '56k', '-ac', '1', path.join(OUT, 'tutorial.webm')]);
 // Poster: the airhorn moment, with the panel open (what shows before the video loads).
-const posterAt = (posterWall - segments[0].w0) / 1000 + 0.9;
+const last = segments.at(-1);
+const posterAt = segments.slice(0, -1).reduce((a, s) => a + (s.w1 - s.w0) / 1000, 0) + (posterWall - last.w0) / 1000 + 0.9;
 run(['-ss', posterAt.toFixed(2), '-i', path.join(OUT, 'tutorial.mp4'), '-frames:v', '1', path.join(OUT, 'tutorial-poster.png')]);
 for (const f of ['tutorial.mp4', 'tutorial.webm', 'tutorial-poster.png']) {
   console.log(`assets/${f}  ${(fs.statSync(path.join(OUT, f)).size / 1024).toFixed(0)} KB`);

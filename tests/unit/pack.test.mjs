@@ -110,14 +110,12 @@ test('built-in packs stay friendly: no words about religion, caste, gender, look
   for (const l of MEME_PACKS.all()) assert.doesNotMatch(`${l.text} ${l.say || ''}`, banned, l.id);
 });
 
-test('updating adds only what is missing: from 1.2.x just the Sound effects, from before packs every pack, never touching my lines', () => {
+test('updating never adds the optional Sound effects pack, and never touches my lines', () => {
   const mine = { id: 'mine-1', kind: 'tts', text: 'My own line', lang: 'en', tone: 'normal', fav: 3, category: 'mine', volume: 1 };
-  const fromEffects = MEME_PACKS.missing([mine], 1);
-  assert.equal(fromEffects.length, 13);
-  assert.ok(fromEffects.every((l) => l.kind === 'sfx' && l.fav === 0 && l.category === 'effects'));
+  assert.equal(MEME_PACKS.missing([mine], 1).length, 0, 'from 1.2.x: nothing is added');
   const fromOld = MEME_PACKS.missing([mine], 0);
-  assert.equal(fromOld.length, MEME_PACKS.all().length);
-  assert.equal(MEME_PACKS.missing([mine, ...fromEffects], 1).length, 0, 'nothing is added twice');
-  const someDeleted = fromEffects.slice(0, 5); // the user deleted 8 effects: they come back only on the one-time update, not on every start
-  assert.equal(MEME_PACKS.missing([mine, ...someDeleted], 1).length, 8);
+  assert.equal(fromOld.length, MEME_PACKS.all().length, 'from before packs existed: the packs');
+  assert.ok(fromOld.every((l) => l.category !== 'effects' && l.fav === 0));
+  assert.ok(MEME_PACKS.all().every((l) => l.kind !== 'sfx'), 'a first install has no effects');
+  assert.equal(MEME_PACKS.lines('effects').length, 13, 'but the pack is there to add');
 });
