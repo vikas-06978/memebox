@@ -63,12 +63,16 @@
     const patChips = chipRow();
     const looksG = group(t('fx_looks'));
     const filterChips = chipRow();
+    const charG = group(t('fx_character'));
+    const charChips = chipRow();
+    const charPosChips = chipRow();
     const lampLine = el('label', { className: 'check' }, lampBox, t('fx_lamp_show'));
     const cornersLine = el('label', { className: 'check' }, cornersBox, t('fx_corners_show'));
     lampG.append(lampLine, animChips, posChips);
     colorsG.append(swatches);
     cornersG.append(cornersLine, patChips);
     looksG.append(filterChips);
+    charG.append(charChips, charPosChips);
     const extras = el('div', { className: 'checks' },
       el('label', { className: 'check', title: t('fx_focus_tip') }, focusBox, t('fx_focus')),
       el('label', { className: 'check', title: t('fx_sync_tip') }, syncBox, t('fx_sync')),
@@ -76,7 +80,7 @@
       el('div', { className: 'row' }, el('span', {}, '☀'), bright));
     const body = el('div', { className: 'settings-body fx-body' },
       el('div', { className: 'fx-how' }, t('fx_how')),
-      onRow, canvas, status, lockBar, lampG, colorsG, cornersG, looksG, extras);
+      onRow, canvas, status, lockBar, lampG, colorsG, cornersG, looksG, charG, extras);
 
     // ---- the time pass: Pro / Pro Max hours of use (the service worker counts them while you are in a call) ----
     const passText = el('div', { className: 'fx-pass-text' });
@@ -150,6 +154,10 @@
       }));
       patChips.replaceChildren(...Fx.PATTERNS.map((p) =>
         chip(t('fx_pat_' + p), c.pattern === p, p !== 'steady' && !can('corners'), () => set({ pattern: p, corners: true }, true))));
+      charChips.replaceChildren(...['none', ...Fx.CHARACTERS].map((id) =>
+        chip(t('fx_char_' + id), c.character === id, id !== 'none' && !can('character:' + id), () => set({ character: id }, true))));
+      charPosChips.replaceChildren(...['left', 'right'].map((p) =>
+        chip(t('fx_pos_' + p), c.charPos === p, false, () => set({ charPos: p }))));
       filterChips.replaceChildren(...Fx.FILTERS.map((f) => {
         const locked = f !== 'none' && !Fx.FREE_FILTERS.includes(f)
           && !(Fx.PRO_FILTERS.includes(f) ? can('filtersPro') : can('filter:' + f));
@@ -187,7 +195,7 @@
       Fx.drawSample(sample.getContext('2d'), w, h, now);
       // The preview always shows the lights, even if the switch is off, so people see what they would get.
       const mood = ['suspense', 'excited', 'fun', 'surprise'][Math.floor(now / 3500) % 4];
-      renderer.render(g, sample, w, h, { ...shown, on: true }, now, { level: 0.3 + 0.2 * Math.sin(now / 300), beat: 0, mood: shown.sync ? mood : '' },
+      renderer.render(g, sample, w, h, { ...shown, on: true }, now, { level: 0.3 + 0.2 * Math.sin(now / 300), beat: 0, mood: shown.sync || shown.character !== 'none' ? mood : '' },
         { preview: trying && Fx.lockedParts(c, can).length > 0, watermark: t('fx_watermark') });
       if (!trying && trialUntil) { trialUntil = 0; render(); }
       raf = requestAnimationFrame(frame);

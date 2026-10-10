@@ -7,6 +7,7 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 ### Added (work towards 1.3.0, not released yet)
 - **Lights & looks** on your own camera: a hanging lamp, a spotlight on you, coloured corner lights and light shows, five filters, lights that follow the memes you play, and a no-flashing option. A live preview in the panel shows exactly what the call will see. Works in the background tab too (frame-by-frame camera pipeline).
 - **Time passes** (Pro and Pro Max hours of real use, no expiry date). The timer counts only while the pass is switched on and you are in a call, and the pass switches itself off at 0. The balance is kept on the site (`/api/license` accepts the seconds used). The admin can gift minutes. The payment page comes last.
+- **Characters**: a cat, dog, bunny (Pro, one at a time) and a panda, owl, fox (Pro Max) sit in a corner of your camera, pop up with a bounce, blink and breathe, and react to the sound that plays (laugh, jump, sad face with a tear, sweat drop, narrowed eyes). Drawn with code, so there are no pictures to copy and nothing to download.
 - Free choices stay free; Pro and add-on choices can be previewed on your own screen (20 s, "PREVIEW" mark) and are not sent to the call.
 
 ## [1.2.6] - 2026-10-10

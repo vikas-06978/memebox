@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "Pas encore de pass. L’aperçu est gratuit ; avec un pass, les autres le voient dans votre appel."
+  },
+  "fx_character": {
+    "message": "Personnage (réagit aux sons)"
+  },
+  "fx_char_none": {
+    "message": "Aucun"
+  },
+  "fx_char_cat": {
+    "message": "Chat"
+  },
+  "fx_char_dog": {
+    "message": "Chien"
+  },
+  "fx_char_bunny": {
+    "message": "Lapin"
+  },
+  "fx_char_panda": {
+    "message": "Panda"
+  },
+  "fx_char_owl": {
+    "message": "Hibou"
+  },
+  "fx_char_fox": {
+    "message": "Renard"
   }
 }

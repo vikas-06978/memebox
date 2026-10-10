@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "Aún sin pase. La vista previa es gratis; con un pase, los demás lo ven en tu llamada."
+  },
+  "fx_character": {
+    "message": "Personaje (reacciona a los sonidos)"
+  },
+  "fx_char_none": {
+    "message": "Ninguno"
+  },
+  "fx_char_cat": {
+    "message": "Gato"
+  },
+  "fx_char_dog": {
+    "message": "Perro"
+  },
+  "fx_char_bunny": {
+    "message": "Conejo"
+  },
+  "fx_char_panda": {
+    "message": "Panda"
+  },
+  "fx_char_owl": {
+    "message": "Búho"
+  },
+  "fx_char_fox": {
+    "message": "Zorro"
   }
 }

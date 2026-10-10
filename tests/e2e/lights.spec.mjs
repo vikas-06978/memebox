@@ -99,3 +99,19 @@ test('a free person cannot send Pro looks: locked corner lights, a drop animatio
   const proCorner = await callPage.evaluate(() => window.avg(0, 0.88, 0.1, 1));
   expect(proCorner.r, 'the rose corner light for Pro').toBeGreaterThan(corner.r + 25);
 });
+
+test('a character (cat) sits in the corner for Pro, not for a free person', async ({ context, callPage }) => {
+  const [sw] = context.serviceWorkers();
+  await sw.evaluate(() => chrome.storage.local.remove('license'));
+  await callPage.evaluate(helpers);
+  await setFx(context, { armed: true, on: true, lamp: false, focus: false, character: 'cat', charPos: 'right' });
+  await callPage.evaluate(() => window.openCam());
+  await callPage.waitForTimeout(1800);
+  const free = await callPage.evaluate(() => window.avg(0.78, 0.68, 0.88, 0.8));
+
+  await sw.evaluate(() => chrome.storage.local.set({ license: { key: 'MBX-TEST-TEST-TEST', status: 'active', unlimited: true, pictureSlots: 0, checkedAt: Date.now() } }));
+  await callPage.waitForTimeout(2500); // the cat pops up
+  const pro = await callPage.evaluate(() => window.avg(0.78, 0.68, 0.88, 0.8));
+  await callPage.screenshot({ path: 'tests/.tmp/cat-in-call.png' });
+  expect(pro.r - free.r, 'orange fur where the plain camera was').toBeGreaterThan(40);
+});

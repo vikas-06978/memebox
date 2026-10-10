@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "இன்னும் பாஸ் இல்லை. முன்னோட்டம் இலவசம்; பாஸ் இருந்தால் அழைப்பில் அனைவரும் காண்பர்."
+  },
+  "fx_character": {
+    "message": "கதாபாத்திரம் (ஒலிகளுக்கு எதிர்வினை)"
+  },
+  "fx_char_none": {
+    "message": "எதுவுமில்லை"
+  },
+  "fx_char_cat": {
+    "message": "பூனை"
+  },
+  "fx_char_dog": {
+    "message": "நாய்"
+  },
+  "fx_char_bunny": {
+    "message": "முயல்"
+  },
+  "fx_char_panda": {
+    "message": "பாண்டா"
+  },
+  "fx_char_owl": {
+    "message": "ஆந்தை"
+  },
+  "fx_char_fox": {
+    "message": "நரி"
   }
 }

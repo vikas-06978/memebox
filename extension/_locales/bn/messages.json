@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "এখনও পাস নেই। প্রিভিউ ফ্রি; পাসে কলে সবাই দেখবে।"
+  },
+  "fx_character": {
+    "message": "চরিত্র (শব্দে প্রতিক্রিয়া দেয়)"
+  },
+  "fx_char_none": {
+    "message": "কিছু না"
+  },
+  "fx_char_cat": {
+    "message": "বিড়াল"
+  },
+  "fx_char_dog": {
+    "message": "কুকুর"
+  },
+  "fx_char_bunny": {
+    "message": "খরগোশ"
+  },
+  "fx_char_panda": {
+    "message": "পান্ডা"
+  },
+  "fx_char_owl": {
+    "message": "পেঁচা"
+  },
+  "fx_char_fox": {
+    "message": "শিয়াল"
   }
 }

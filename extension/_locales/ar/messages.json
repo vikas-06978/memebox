@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "لا يوجد تصريح بعد. المعاينة مجانية؛ بالتصريح يراها الآخرون في مكالمتك."
+  },
+  "fx_character": {
+    "message": "شخصية (تتفاعل مع الأصوات)"
+  },
+  "fx_char_none": {
+    "message": "بدون"
+  },
+  "fx_char_cat": {
+    "message": "قطة"
+  },
+  "fx_char_dog": {
+    "message": "كلب"
+  },
+  "fx_char_bunny": {
+    "message": "أرنب"
+  },
+  "fx_char_panda": {
+    "message": "باندا"
+  },
+  "fx_char_owl": {
+    "message": "بومة"
+  },
+  "fx_char_fox": {
+    "message": "ثعلب"
   }
 }

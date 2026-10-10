@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "Ainda sem passe. A prévia é grátis; com um passe, os outros veem na sua chamada."
+  },
+  "fx_character": {
+    "message": "Personagem (reage aos sons)"
+  },
+  "fx_char_none": {
+    "message": "Nenhum"
+  },
+  "fx_char_cat": {
+    "message": "Gato"
+  },
+  "fx_char_dog": {
+    "message": "Cachorro"
+  },
+  "fx_char_bunny": {
+    "message": "Coelho"
+  },
+  "fx_char_panda": {
+    "message": "Panda"
+  },
+  "fx_char_owl": {
+    "message": "Coruja"
+  },
+  "fx_char_fox": {
+    "message": "Raposa"
   }
 }

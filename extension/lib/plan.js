@@ -29,6 +29,7 @@
   // Time passes (Pro and Pro Max): bought hours of real use, no expiry date. The timer only runs while the
   // pass is switched on AND you are in a call (the service worker spends the seconds), so nothing is wasted.
   // `proSeconds` / `maxSeconds` are the seconds left. Pro Max is spent first when someone has both.
+  const STANDARD_CHARACTERS = Object.freeze(['cat', 'dog', 'bunny']); // same list as MemeFx.STANDARD_CHARACTERS (a test checks)
   const PASS_MAX_SECONDS = 10 * 24 * 3600;
   const LICENSE_MAX_AGE_MS = 30 * 24 * 3600 * 1000;
 
@@ -105,6 +106,8 @@
     const max = config().PRO_ENABLED !== true || hasLicense(now) || passTier(now) === 'max';
     if (feature.startsWith('filter:')) return max || hasAddon(feature, now);
     if (feature === 'characters') return max;
+    // One character at a time: Pro has the three standard ones, Pro Max (or a permanent key) has all six.
+    if (feature.startsWith('character:')) return max || (isPro(now) && STANDARD_CHARACTERS.includes(feature.slice(10)));
     return isPro(now);
   }
 
@@ -131,7 +134,7 @@
 
   globalThis.MemePlan = Object.freeze({
     PRO_FEATURES, FREE_LIMITS, LICENSE_MAX_AGE_MS,
-    PASS_MAX_SECONDS, isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, setPass, validLicense, passTier, passLeft,
+    PASS_MAX_SECONDS, STANDARD_CHARACTERS, isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, setPass, validLicense, passTier, passLeft,
     get ready() { return ready; },
     get license() { return license; },
   });

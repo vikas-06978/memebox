@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "ఇంకా పాస్ లేదు. ప్రివ్యూ ఉచితం; పాస్‌తో కాల్‌లో అందరికీ కనిపిస్తుంది."
+  },
+  "fx_character": {
+    "message": "పాత్ర (శబ్దాలకు స్పందిస్తుంది)"
+  },
+  "fx_char_none": {
+    "message": "ఏదీ కాదు"
+  },
+  "fx_char_cat": {
+    "message": "పిల్లి"
+  },
+  "fx_char_dog": {
+    "message": "కుక్క"
+  },
+  "fx_char_bunny": {
+    "message": "కుందేలు"
+  },
+  "fx_char_panda": {
+    "message": "పాండా"
+  },
+  "fx_char_owl": {
+    "message": "గుడ్లగూబ"
+  },
+  "fx_char_fox": {
+    "message": "నక్క"
   }
 }

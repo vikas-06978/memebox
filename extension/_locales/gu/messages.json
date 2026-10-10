@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "હજી પાસ નથી. પ્રિવ્યૂ મફત; પાસથી કૉલમાં બધાને દેખાશે."
+  },
+  "fx_character": {
+    "message": "પાત્ર (અવાજો પર પ્રતિક્રિયા આપે છે)"
+  },
+  "fx_char_none": {
+    "message": "કંઈ નહીં"
+  },
+  "fx_char_cat": {
+    "message": "બિલાડી"
+  },
+  "fx_char_dog": {
+    "message": "કૂતરો"
+  },
+  "fx_char_bunny": {
+    "message": "સસલું"
+  },
+  "fx_char_panda": {
+    "message": "પાન્ડા"
+  },
+  "fx_char_owl": {
+    "message": "ઘુવડ"
+  },
+  "fx_char_fox": {
+    "message": "શિયાળ"
   }
 }

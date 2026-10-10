@@ -30,6 +30,11 @@
   const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];             // 3 free
   const PRO_FILTERS = ['vintage', 'cool'];                         // + 2 in Pro = 5
   const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel']; // each one is an add-on
+  // Characters that sit in a bottom corner and react to the sounds. Pro: one of the standard three at a time.
+  // Pro Max: all six. Every one is drawn with code (no pictures), so they are small and original.
+  const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny'];
+  const PREMIUM_CHARACTERS = ['panda', 'owl', 'fox'];
+  const CHARACTERS = [...STANDARD_CHARACTERS, ...PREMIUM_CHARACTERS];
   const MOODS = ['suspense', 'excited', 'surprise', 'sad', 'fun', 'awkward'];
 
   const DEFAULTS = Object.freeze({
@@ -45,6 +50,8 @@
     sync: false,        // lights follow the sounds (mood, level, beat)
     safe: true,         // no flashing: slow, gentle changes only
     filter: 'none',
+    character: 'none',  // none | cat | dog | bunny | panda | owl | fox
+    charPos: 'right',   // left | right (bottom corner)
     intensity: 0.8,
   });
 
@@ -67,6 +74,8 @@
       sync: c.sync === true,
       safe: c.safe !== false,
       filter: FILTERS.includes(c.filter) ? c.filter : 'none',
+      character: CHARACTERS.includes(c.character) ? c.character : 'none',
+      charPos: c.charPos === 'left' ? 'left' : 'right',
       intensity: Number.isFinite(Number(c.intensity)) ? clamp(Number(c.intensity), 0.2, 1) : 0.8,
     };
     if (out.lampAnim !== 'still' && !can('lampAnim')) out.lampAnim = 'still';
@@ -76,6 +85,7 @@
     if (out.sync && !can('sync')) out.sync = false;
     if (PRO_FILTERS.includes(out.filter) && !can('filtersPro')) out.filter = 'none';
     if (ADDON_FILTERS.includes(out.filter) && !can('filter:' + out.filter)) out.filter = 'none';
+    if (out.character !== 'none' && !can('character:' + out.character)) out.character = 'none';
     return out;
   }
 
@@ -84,7 +94,7 @@
     const want = sanitize(cfg, () => true);
     const have = sanitize(cfg, can);
     const locked = [];
-    for (const k of ['lampAnim', 'color', 'corners', 'pattern', 'sync', 'filter']) if (want[k] !== have[k]) locked.push(k);
+    for (const k of ['lampAnim', 'color', 'corners', 'pattern', 'sync', 'filter', 'character']) if (want[k] !== have[k]) locked.push(k);
     return locked;
   }
 
@@ -201,6 +211,7 @@
     const R = {
       dropStart: -1, lastKey: '', mood: '', moodBlend: 0, moodStart: 0, lastSeen: 0,
       beat: 0, lastBeat: 0, burstAt: -1, sparkles: [], lastT: 0, pix: null,
+      charStart: -1, charKey: '', cMood: '', cSeen: -1e9, cStart: 0,
     };
 
     // Lamp: drawn around (0,0) = the point where the cord hangs.
@@ -380,6 +391,183 @@
       g.restore();
     }
 
+    // ---- characters ----
+    const easeOutBack = (x) => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2; };
+    const FUR = {
+      cat:   { fur: '#f4a259', light: '#fff0dc', dark: '#b8651f', ear: '#ff9fb5' },
+      dog:   { fur: '#c98d5c', light: '#f5dfc3', dark: '#7a4a28', ear: '#8a5430' },
+      bunny: { fur: '#f6f1ee', light: '#ffffff', dark: '#cfc3bd', ear: '#ffb3c6' },
+      panda: { fur: '#fbfbfb', light: '#ffffff', dark: '#26262b', ear: '#26262b' },
+      owl:   { fur: '#9a7452', light: '#e8d3b0', dark: '#5f452c', ear: '#7d5b3b' },
+      fox:   { fur: '#ee7b30', light: '#fff4e6', dark: '#3a2418', ear: '#3a2418' },
+    };
+
+    // How the character feels for the sound that is playing (it holds the feeling for 1.6 s).
+    function characterMood(audio, now) {
+      const lvl = audio ? clamp(audio.level || 0) : 0;
+      if (audio && MOODS.includes(audio.mood) && lvl > 0.02) {
+        if (R.cMood !== audio.mood) R.cStart = now;
+        R.cMood = audio.mood; R.cSeen = now;
+      }
+      const m = now - R.cSeen < 1600 ? R.cMood : '';
+      return { mood: m, lvl, since: (now - R.cStart) / 1000 };
+    }
+
+    function ell(g, x, y, rx, ry, fill, rot = 0) {
+      g.fillStyle = fill; g.beginPath(); g.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot, 0, TAU); g.fill();
+    }
+    function tri(g, a, b, c, fill) {
+      g.fillStyle = fill; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.lineTo(c[0], c[1]); g.closePath(); g.fill();
+    }
+
+    // The character is drawn in a 100-unit box: the ground is y = 0, the head is around y = -62.
+    function drawCharacter(g, w, h, kind, pos, now, audio) {
+      const P = FUR[kind];
+      const t = now / 1000;
+      const S = h * 0.4, u = S / 100;
+      const { mood, lvl, since } = characterMood(audio, now);
+      const ex = mood === 'excited' || mood === 'fun' ? 'happy' : mood === 'surprise' ? 'wow' : mood === 'sad' ? 'sad'
+        : mood === 'suspense' ? 'wary' : mood === 'awkward' ? 'awk' : 'idle';
+      const rise = (1 - easeOutBack((now - R.charStart) / 900)) * 125; // pops up from the bottom with a little bounce
+      let bob = Math.sin(t * 1.7) * 1.2 + lvl * 2.5;                  // breathing
+      let tilt = 0, lift = 0;
+      if (ex === 'happy') { bob = -Math.abs(Math.sin(t * (mood === 'fun' ? 5 : 7))) * 9; tilt = Math.sin(t * (mood === 'fun' ? 5 : 7)) * 0.07; }
+      if (ex === 'wow') { lift = Math.max(0, Math.sin(clamp(since * 3.2, 0, Math.PI))) * 16; }
+      if (ex === 'sad') bob = 6 + Math.sin(t * 1.1);
+      if (ex === 'wary') tilt = Math.sin(t * 1.3) * 0.04;
+      const blink = (now % 3600) < 130 && ex !== 'happy';
+      const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2));
+      const x = pos === 'left' ? S * 0.6 : w - S * 0.6;
+      g.save();
+      g.translate(x, h + rise * u + 4 * u);
+      g.scale(u, u);
+      g.translate(0, bob - lift);
+      g.rotate(tilt);
+      g.lineCap = 'round'; g.lineJoin = 'round';
+
+      // tail (behind)
+      if (kind === 'cat' || kind === 'dog' || kind === 'fox') {
+        g.save(); g.translate(28, -18); g.rotate(-0.5 + wag * 0.35);
+        g.strokeStyle = P.fur; g.lineWidth = kind === 'fox' ? 17 : 9;
+        g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(26, -8, 24, -38); g.stroke();
+        if (kind === 'fox') { g.strokeStyle = P.light; g.lineWidth = 12; g.beginPath(); g.moveTo(21, -24); g.quadraticCurveTo(25, -30, 24, -38); g.stroke(); }
+        g.restore();
+      }
+      // body
+      ell(g, 0, -14, 37, 36, P.fur);
+      if (kind === 'owl') ell(g, 0, -12, 25, 28, P.light);
+      else if (kind !== 'panda' || true) ell(g, 0, -6, 21, 24, kind === 'panda' ? P.fur : P.light);
+      // arms: they wave when the sound is fun
+      const wave = ex === 'happy' ? Math.sin(t * 9) * 0.5 : 0;
+      for (const s of [-1, 1]) {
+        g.save(); g.translate(s * 30, -20); g.rotate(s * (0.35 + (ex === 'happy' ? 0.9 + wave * s : 0)));
+        ell(g, 0, 8, 9, 17, kind === 'panda' ? P.dark : P.fur);
+        g.restore();
+      }
+      // ears that sit behind the head
+      const earY = -86;
+      if (kind === 'cat' || kind === 'fox') {
+        for (const s of [-1, 1]) {
+          const d = ex === 'sad' ? 8 : 0;
+          tri(g, [s * 8, earY + 8], [s * 30, earY - 14 + d], [s * 31, earY + 14], kind === 'fox' ? P.fur : P.fur);
+          tri(g, [s * 14, earY + 8], [s * 27, earY - 6 + d], [s * 28, earY + 11], P.ear);
+          if (kind === 'fox') tri(g, [s * 22, earY - 4 + d], [s * 30, earY - 14 + d], [s * 31, earY + 6], P.dark);
+        }
+      } else if (kind === 'bunny') {
+        for (const s of [-1, 1]) {
+          const droop = ex === 'sad' ? 0.9 : 0, sway = Math.sin(t * 2 + s) * 0.05;
+          g.save(); g.translate(s * 13, -88); g.rotate(s * (0.12 + droop) + sway);
+          ell(g, 0, -22, 10, 30, P.fur); ell(g, 0, -20, 5.5, 22, P.ear);
+          g.restore();
+        }
+      } else if (kind === 'panda') {
+        for (const s of [-1, 1]) ell(g, s * 27, -88, 12, 12, P.ear);
+      } else if (kind === 'owl') {
+        for (const s of [-1, 1]) tri(g, [s * 12, -90], [s * 30, -108], [s * 32, -80], P.dark);
+      }
+
+      // head
+      ell(g, 0, -62, 36, 33, P.fur);
+      if (kind === 'owl') { ell(g, 0, -58, 30, 26, P.light); }
+      if (kind === 'dog') { for (const s of [-1, 1]) { g.save(); g.translate(s * 31, -74); g.rotate(s * (ex === 'sad' ? 0.1 : -0.15) + wag * 0.04 * s); ell(g, 0, 12, 11, 24, P.ear); g.restore(); } }
+      if (kind === 'panda') for (const s of [-1, 1]) { g.save(); g.translate(s * 14, -64); g.rotate(s * 0.45); ell(g, 0, 0, 8, 11, P.dark); g.restore(); }
+      if (kind === 'fox') { for (const s of [-1, 1]) tri(g, [s * 36, -62], [s * 12, -42], [s * 30, -42], P.light); ell(g, 0, -44, 15, 10, P.light); }
+      if (kind === 'cat') { // stripes
+        g.strokeStyle = P.dark; g.lineWidth = 2.4;
+        for (const dx of [-8, 0, 8]) { g.beginPath(); g.moveTo(dx, -94); g.lineTo(dx * 0.8, -86); g.stroke(); }
+      }
+      if (kind === 'cat' || kind === 'dog' || kind === 'bunny') ell(g, 0, -50, 17, 12, P.light); // muzzle
+
+      // eyes
+      const ey = -64, ed = kind === 'owl' ? 15 : 14;
+      const dark = '#23222b';
+      for (const s of [-1, 1]) {
+        const cx = s * ed;
+        if (kind === 'panda') { g.save(); g.translate(cx, ey); g.rotate(s * 0.5); ell(g, 0, 0, 7.5, 10, P.dark); g.restore(); }
+        if (kind === 'owl') ell(g, cx, ey, 12, 12, '#fffdf5');
+        if (blink) {
+          g.strokeStyle = kind === 'panda' ? '#fff' : dark; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 5, ey); g.lineTo(cx + 5, ey); g.stroke();
+          continue;
+        }
+        if (ex === 'happy') {
+          g.strokeStyle = kind === 'panda' ? '#fff' : dark; g.lineWidth = 3; g.beginPath(); g.arc(cx, ey + 2, 5.5, Math.PI * 1.1, Math.PI * 1.9); g.stroke();
+          continue;
+        }
+        const r = ex === 'wow' ? 8 : kind === 'owl' ? 7 : 5.5;
+        const look = ex === 'awk' ? 3 * Math.sign(Math.sin(t * 0.8)) : 0;
+        if (kind !== 'panda' && kind !== 'owl') ell(g, cx, ey, r + 1.5, r + 2, '#ffffff');
+        ell(g, cx + look, ey, kind === 'panda' ? r - 1 : r - 1.2, kind === 'panda' ? r - 1 : r, kind === 'panda' ? '#fff' : dark);
+        ell(g, cx + look + (kind === 'panda' ? 0 : 0), ey, r * 0.62, r * 0.62, dark);
+        ell(g, cx + look + 1.6, ey - 2, 1.8, 1.8, '#fff'); // sparkle in the eye
+        if (ex === 'wary') { g.fillStyle = P.fur; g.fillRect(cx - 10, ey - 11, 20, 10); g.strokeStyle = dark; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - 8, ey - 1); g.lineTo(cx + 8, ey - 1); g.stroke(); }
+        if (ex === 'sad') { g.strokeStyle = dark; g.lineWidth = 2.4; g.beginPath(); g.moveTo(cx - s * 9, ey - 11 - s * 0); g.lineTo(cx + s * 7, ey - 7 - 4 * 0); g.stroke(); }
+      }
+      if (ex === 'sad') { // a tear
+        const k = (t * 0.7) % 1;
+        ell(g, -ed - 2, -56 + k * 16, 2.6, 3.8, 'rgba(110,180,255,' + (0.9 - k * 0.7) + ')');
+      }
+      if (ex === 'awk') { // a sweat drop
+        const k = (t * 0.9) % 1;
+        ell(g, 32, -82 + k * 10, 3.4, 5, 'rgba(120,190,255,' + (0.95 - k * 0.5) + ')');
+      }
+
+      // nose and mouth
+      if (kind === 'owl') {
+        tri(g, [-5, -52], [5, -52], [0, -42], '#f2a33a');
+      } else {
+        if (kind === 'cat') tri(g, [-4, -53], [4, -53], [0, -48], '#ff8fa8');
+        else if (kind === 'bunny') ell(g, 0, -52, 4, 3, '#ff9bb3');
+        else ell(g, 0, -53, kind === 'dog' ? 6 : 4.5, kind === 'dog' ? 4.5 : 3.4, dark);
+        g.strokeStyle = dark; g.fillStyle = dark; g.lineWidth = 2.2;
+        const my = -48;
+        if (ex === 'happy') {
+          g.beginPath(); g.moveTo(-8, my); g.quadraticCurveTo(0, my + 16, 8, my); g.closePath(); g.fill();
+          if (kind === 'dog' || kind === 'cat') ell(g, 0, my + 7, 4.5, 4, '#ff7a8f');
+        } else if (ex === 'wow') {
+          ell(g, 0, my + 4, 4, 6, dark);
+        } else if (ex === 'sad') {
+          g.beginPath(); g.arc(0, my + 9, 7, Math.PI * 1.2, Math.PI * 1.8); g.stroke();
+        } else if (ex === 'wary') {
+          g.beginPath(); g.moveTo(-5, my + 2); g.lineTo(5, my + 2); g.stroke();
+        } else if (ex === 'awk') {
+          g.beginPath(); g.moveTo(-6, my + 3); g.quadraticCurveTo(-3, my - 1, 0, my + 3); g.quadraticCurveTo(3, my + 7, 6, my + 3); g.stroke();
+        } else {
+          g.beginPath();
+          if (kind === 'cat') { g.arc(-3.5, my, 3.5, 0.1 * Math.PI, 0.9 * Math.PI); g.moveTo(10.5, my + 1); g.arc(3.5, my, 3.5, 0.1 * Math.PI, 0.9 * Math.PI); }
+          else g.arc(0, my - 3, 8, 0.2 * Math.PI, 0.8 * Math.PI);
+          g.stroke();
+        }
+        if (kind === 'bunny' && (ex === 'idle' || ex === 'happy')) { g.fillStyle = '#fff'; g.strokeStyle = P.dark; g.lineWidth = 1; g.fillRect(-3.4, my + (ex === 'happy' ? 6 : 1.5), 3.2, 5); g.fillRect(0.2, my + (ex === 'happy' ? 6 : 1.5), 3.2, 5); }
+        if (kind === 'cat' || kind === 'fox') { // whiskers
+          g.strokeStyle = 'rgba(40,36,46,0.55)'; g.lineWidth = 1.3;
+          for (const s of [-1, 1]) for (const dy of [-1.5, 3]) { g.beginPath(); g.moveTo(s * 15, -50 + dy); g.lineTo(s * 33, -52 + dy * 1.8); g.stroke(); }
+        }
+      }
+      // cheeks
+      if (ex === 'happy' || ex === 'awk' || kind === 'bunny') for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');
+      g.restore();
+    }
+
     // The effective look right now: the settings, nudged by the mood of the sound that is playing.
     function effective(cfg, audio, now) {
       const e = { rgb: hexToRgb(cfg.color), pattern: cfg.pattern, corners: cfg.corners, focus: cfg.focus ? 0.4 : 0,
@@ -450,6 +638,11 @@
 
         if (R.mood && MOOD[R.mood] && MOOD[R.mood].burst && R.burstAt >= 0) drawBurst(g, w, h, now);
         if (cfg.lamp) drawLamp(g, w, h, { cx: lampPos.cx, rgb: e.rgb, bright: ls.bright * clamp(0.55 + I), angle: ls.angle, dy: ls.dy });
+        if (cfg.character !== 'none') {
+          const ck = cfg.character + '|' + cfg.charPos;
+          if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; }
+          drawCharacter(g, w, h, cfg.character, cfg.charPos, now, audio);
+        } else R.charKey = '';
       }
       if (opts.preview) {
         const fs = Math.max(11, Math.round(h * 0.045));
@@ -493,7 +686,7 @@
   }
 
   globalThis.MemeFx = Object.freeze({
-    COLORS, FREE_COLORS, LAMP_ANIMS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
+    COLORS, FREE_COLORS, LAMP_ANIMS, CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
     sanitize, lockedParts, createRenderer, drawSample,
   });
 })();

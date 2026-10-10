@@ -133,3 +133,25 @@ test('time pass: a permanent key still has everything, and a giant balance is ca
   plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 1e12, checkedAt: now });
   assert.equal(plan.license.proSeconds, plan.PASS_MAX_SECONDS);
 });
+
+test('characters: Pro has the three standard ones, Pro Max and a permanent key have all six; the lists match the engine', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  const fx = loadScript('lib/fx.js').MemeFx;
+  assert.deepEqual([...plan.STANDARD_CHARACTERS], [...fx.STANDARD_CHARACTERS]);
+  assert.equal(fx.CHARACTERS.length, 6);
+  const lic = (o) => plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: false, checkedAt: now - 1000, ...o });
+  assert.equal(plan.canFx('character:cat', now), false, 'no pass');
+  plan.setPass({ on: true });
+  lic({ proSeconds: 600 });
+  assert.equal(plan.canFx('character:dog', now), true);
+  assert.equal(plan.canFx('character:panda', now), false);
+  lic({ maxSeconds: 600 });
+  assert.equal(plan.canFx('character:panda', now), true);
+  const can = (f) => plan.canFx(f, now);
+  assert.equal(fx.sanitize({ character: 'fox' }, can).character, 'fox');
+  lic({ proSeconds: 600 });
+  assert.equal(fx.sanitize({ character: 'fox' }, (f) => plan.canFx(f, now)).character, 'none');
+  assert.equal(fx.sanitize({ character: 'cat', charPos: 'left' }, (f) => plan.canFx(f, now)).charPos, 'left');
+  assert.equal(fx.sanitize({ character: 'dragon' }).character, 'none');
+});

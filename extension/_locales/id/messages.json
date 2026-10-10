@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "Belum ada pass. Pratinjau gratis; dengan pass, peserta lain melihatnya di panggilanmu."
+  },
+  "fx_character": {
+    "message": "Karakter (bereaksi pada suara)"
+  },
+  "fx_char_none": {
+    "message": "Tidak ada"
+  },
+  "fx_char_cat": {
+    "message": "Kucing"
+  },
+  "fx_char_dog": {
+    "message": "Anjing"
+  },
+  "fx_char_bunny": {
+    "message": "Kelinci"
+  },
+  "fx_char_panda": {
+    "message": "Panda"
+  },
+  "fx_char_owl": {
+    "message": "Burung hantu"
+  },
+  "fx_char_fox": {
+    "message": "Rubah"
   }
 }

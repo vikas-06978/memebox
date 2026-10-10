@@ -1059,5 +1059,29 @@
   },
   "fx_pass_none": {
     "message": "अभी कोई पास नहीं। प्रिव्यू मुफ़्त है; पास से कॉल में सबको दिखेगा।"
+  },
+  "fx_character": {
+    "message": "किरदार (आवाज़ों पर रिएक्ट करता है)"
+  },
+  "fx_char_none": {
+    "message": "कोई नहीं"
+  },
+  "fx_char_cat": {
+    "message": "बिल्ली"
+  },
+  "fx_char_dog": {
+    "message": "कुत्ता"
+  },
+  "fx_char_bunny": {
+    "message": "खरगोश"
+  },
+  "fx_char_panda": {
+    "message": "पांडा"
+  },
+  "fx_char_owl": {
+    "message": "उल्लू"
+  },
+  "fx_char_fox": {
+    "message": "लोमड़ी"
   }
 }
