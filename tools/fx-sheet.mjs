@@ -41,6 +41,7 @@ await page.evaluate((only) => {
     add('animal ' + kind + ': its own things, then its dance', tiles);
   }
   add('follow me: lamp and cat go with you (centre, left, right, standing up, gone, back)', [3000, 7200, 10500, 14600, 17500, 19500, 21500, 23000].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, character: 'cat', charPos: 'left' }, sim: ms })));
+  add('light colours: warm, white, blue, rose, purple, green, red, cyan, gold', ['warm', 'white', 'blue', 'rose', 'purple', 'green', 'red', 'cyan', 'gold'].map((c) => ({ label: c, cfg: { ...base, color: c, follow: false } })));
   add('light angle: auto, 90, 60, 45, 30 (lamp left of you / right of you)', [['auto', 'left'], [90, 'left'], [60, 'left'], [45, 'left'], [30, 'left'], [45, 'right'], [30, 'right']].map(([a, p]) => ({ label: a + ' / ' + p, cfg: { ...base, lightAngle: a, lampPos: p, follow: false } })));
   add('follow me: disco ball and frog', [1200, 3000, 5000, 7200, 10500, 14600, 18000, 21000, 23000].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, fixture: 'discoball', character: 'frog', charPos: 'right' }, sim: ms })));
   const spec = [0.8, 0.9, 0.75, 0.6, 0.55, 0.5, 0.4, 0.45, 0.35, 0.3, 0.3, 0.25, 0.2, 0.2, 0.15, 0.1];

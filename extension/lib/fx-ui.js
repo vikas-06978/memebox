@@ -143,6 +143,22 @@
     g.fillRect(x - r, y - r, r * 2, r * 2);
   }
 
+  const chromaOf = (rgb) => (Math.max(rgb[0], rgb[1], rgb[2]) - Math.min(rgb[0], rgb[1], rgb[2])) / 255;
+  // The colour of the light must be SEEN: the whole picture takes on its hue (blue light makes the room blue),
+  // strongest around you. White light changes nothing.
+  function tintWash(g, w, h, rgb, amt, cx, cy) {
+    const a = clamp(amt * chromaOf(rgb) * 1.15, 0, 0.9);
+    if (a < 0.03) return;
+    g.save();
+    const R1 = Math.hypot(w, h) * 0.75;
+    const gr = g.createRadialGradient(cx, cy, h * 0.12, cx, cy, R1);
+    gr.addColorStop(0, rgba(rgb, a)); gr.addColorStop(0.6, rgba(rgb, a * 0.75)); gr.addColorStop(1, rgba(rgb, a * 0.5));
+    g.fillStyle = gr;
+    g.globalCompositeOperation = 'soft-light'; g.fillRect(0, 0, w, h);
+    g.globalCompositeOperation = 'color'; g.globalAlpha = 0.3; g.fillRect(0, 0, w, h); // shifts the hue, keeps the brightness
+    g.restore();
+  }
+
   // A soft cone of light from (x, y) opening downwards. dir is an angle in radians (0 = straight down).
   function cone(g, x, y, length, spread, dir, rgb, alpha) {
     g.save();
@@ -543,6 +559,7 @@ void main(){
       g.bezierCurveTo(lampW * 0.22, 0, lampW / 2, lampH * 0.28, lampW / 2, lampH);
       g.closePath();
       g.fill();
+      g.save(); g.globalCompositeOperation = 'screen'; g.fillStyle = rgba(rgb, (0.2 + 0.4 * bright) * (0.4 + chromaOf(rgb))); g.fill(); g.restore(); // the shade takes the colour of the light
       g.strokeStyle = 'rgba(255,255,255,0.18)';
       g.lineWidth = Math.max(1, h * 0.0025);
       g.beginPath();
@@ -551,19 +568,19 @@ void main(){
       g.stroke();
       // lit opening and bulb
       const og = g.createRadialGradient(0, lampH, 0, 0, lampH, lampW * 0.5);
-      og.addColorStop(0, rgba([255, 252, 240], 0.55 + 0.45 * bright));
+      og.addColorStop(0, rgba(mixRgb([255, 252, 240], rgb, 0.5 * chromaOf(rgb) + 0.1), 0.55 + 0.45 * bright));
       og.addColorStop(0.5, rgba(rgb, 0.75 * bright + 0.15));
       og.addColorStop(1, rgba(rgb, 0.05));
       g.fillStyle = og;
       g.beginPath(); g.ellipse(0, lampH, lampW / 2, lampH * 0.13, 0, 0, TAU); g.fill();
       const bulb = lampH * 0.17;
-      const bg = g.createRadialGradient(0, lampH + bulb * 0.2, 0, 0, lampH + bulb * 0.2, bulb * 2.6);
-      bg.addColorStop(0, rgba([255, 255, 255], 0.95 * bright));
-      bg.addColorStop(0.28, rgba(rgb, 0.9 * bright));
+      const bg = g.createRadialGradient(0, lampH + bulb * 0.2, 0, 0, lampH + bulb * 0.2, bulb * 3.4);
+      bg.addColorStop(0, rgba(mixRgb([255, 255, 255], rgb, 0.35 * chromaOf(rgb)), 0.95 * bright));
+      bg.addColorStop(0.3, rgba(rgb, 1.0 * bright));
       bg.addColorStop(1, rgba(rgb, 0));
       g.globalCompositeOperation = 'screen';
       g.fillStyle = bg;
-      g.beginPath(); g.arc(0, lampH + bulb * 0.2, bulb * 2.6, 0, TAU); g.fill();
+      g.beginPath(); g.arc(0, lampH + bulb * 0.2, bulb * 3.4, 0, TAU); g.fill();
       g.restore();
     }
 
@@ -1062,7 +1079,7 @@ void main(){
       rg.drawImage(g.canvas, 0, 0, w, h);
       rg.filter = 'none';
       rg.globalCompositeOperation = 'multiply';
-      rg.fillStyle = rgba(mixRgb([255, 255, 255], rgb, 0.5), 1);
+      rg.fillStyle = rgba(mixRgb([255, 255, 255], rgb, 0.5 + 0.4 * chromaOf(rgb)), 1);
       rg.fillRect(0, 0, w, h);
       rg.globalCompositeOperation = 'destination-in';
       const m = rg.createRadialGradient(aimX, aimY, h * 0.04, aimX, aimY, h * 0.64);
@@ -1829,6 +1846,8 @@ void main(){
         // The lamp (any hanging light) lights your face; with no lamp there is still a soft light on you.
         relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp, follow ? faceX : w / 2 + ls.angle * w * 0.5, follow ? faceY : h * 0.48, dark * (1 - 0.5 * lifted));
 
+        tintWash(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.6) * I * ls.bright * (0.5 + 0.5 * ls.focusRamp), follow ? faceX : w / 2, follow ? faceY : h * 0.46);
+        const chromaK = 1 + 0.7 * chromaOf(e.rgb);
         g.save();
         if (focus > 0.01) { // darker edges, light on you
           const vcx = follow ? faceX : w / 2, vcy = follow ? faceY : h * 0.46;
@@ -1853,9 +1872,9 @@ void main(){
           const tgtX = follow ? faceX : w / 2, sgn = Math.abs(tgtX - bx) < w * 0.02 ? (bx < w / 2 ? 1 : -1) : Math.sign(tgtX - bx), sideK = ang ? (90 - ang) / 60 : 0;
           let dir = follow ? Math.atan2(-(faceX - bx), Math.max(10, faceY - bulbY)) * 0.9 - ls.angle * 0.9 : -sway * 0.9 + (bx - w / 2) / w * 0.55;
           if (ang) dir = -sgn * ((90 - ang) * Math.PI / 180) - ls.angle * 0.9; // 90 = straight down; the smaller the angle, the more it comes from the side
-          cone(g, bx, bulbY, h * 1.05, w * 0.78, dir, e.rgb, 0.46 * I * ls.bright * (1 + 0.5 * dark));
+          cone(g, bx, bulbY, h * 1.05, w * 0.78, dir, e.rgb, 0.46 * chromaK * I * ls.bright * (1 + 0.5 * dark));
           const gx0 = follow ? faceX : w / 2 + (bx - w / 2) * 0.3, gy = follow ? faceY : h * 0.46, gx = gx0 + (bx - gx0) * 0.4 * sideK;
-          glow(g, gx, gy, h * 0.66, e.rgb, 0.34 * I * ls.bright * (1 + 0.9 * dark)); // light on your face (more in a dark room)
+          glow(g, gx, gy, h * 0.66, e.rgb, 0.34 * chromaK * I * ls.bright * (1 + 0.9 * dark)); // light on your face (more in a dark room)
         } else {
           glow(g, follow ? faceX : w / 2, follow ? faceY : h * 0.46, h * 0.62, e.rgb, 0.22 * I * (1 + 0.9 * dark)); // no lamp: a soft light on you
         }
