@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "તેજ"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: અનલિમિટેડ ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 બાકી"
+  },
+  "fx_pass_running": {
+    "message": "ચાલુ"
+  },
+  "fx_pass_pause": {
+    "message": "રોકો"
+  },
+  "fx_pass_start": {
+    "message": "પાસ શરૂ કરો"
+  },
+  "fx_pass_none": {
+    "message": "હજી પાસ નથી. પ્રિવ્યૂ મફત; પાસથી કૉલમાં બધાને દેખાશે."
   }
 }

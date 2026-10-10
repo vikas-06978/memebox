@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "উজ্জ্বলতা"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: আনলিমিটেড ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 বাকি"
+  },
+  "fx_pass_running": {
+    "message": "চলছে"
+  },
+  "fx_pass_pause": {
+    "message": "থামান"
+  },
+  "fx_pass_start": {
+    "message": "পাস শুরু করুন"
+  },
+  "fx_pass_none": {
+    "message": "এখনও পাস নেই। প্রিভিউ ফ্রি; পাসে কলে সবাই দেখবে।"
   }
 }

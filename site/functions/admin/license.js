@@ -1,5 +1,5 @@
 // POST /admin/license: the admin makes a key (for themself or a friend) or turns one off/on.
-//   action=create  kind (owner|gift), unlimited (on), slots (number), note
+//   action=create  kind (owner|gift), unlimited (on), slots (number), proMinutes, maxMinutes (time pass), note
 //   action=revoke | restore  key
 import { adminResponse, adminRedirect } from '../../src/http.js';
 import { isAdmin } from '../../src/security.js';
@@ -16,6 +16,8 @@ export async function onRequest({ request, env }) {
       kind: form.get('kind') === 'owner' ? 'owner' : 'gift',
       unlimited: form.get('unlimited') === 'on',
       pictureSlots: Number(form.get('slots')) || 0,
+      proSeconds: (Number(form.get('proMinutes')) || 0) * 60,
+      maxSeconds: (Number(form.get('maxMinutes')) || 0) * 60,
       note: String(form.get('note') || ''),
     });
     return adminRedirect(`/admin?created=${encodeURIComponent(key)}#licenses`);

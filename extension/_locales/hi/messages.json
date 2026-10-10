@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "चमक"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: अनलिमिटेड ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 बाकी"
+  },
+  "fx_pass_running": {
+    "message": "चालू"
+  },
+  "fx_pass_pause": {
+    "message": "रोकें"
+  },
+  "fx_pass_start": {
+    "message": "पास शुरू करें"
+  },
+  "fx_pass_none": {
+    "message": "अभी कोई पास नहीं। प्रिव्यू मुफ़्त है; पास से कॉल में सबको दिखेगा।"
   }
 }

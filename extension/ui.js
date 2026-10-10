@@ -530,6 +530,8 @@
     .settings-body { display: grid; gap: 10px; padding: 10px 2px 2px; }
     .panel.fx-open { overflow-y: auto; }
     .panel.fx-open .list, .panel.fx-open .chips, .panel.fx-open .search { display: none; }
+    .fx-pass { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--p-soft); border-radius: 10px; padding: 8px 10px; font-weight: 600; font-size: 12px; }
+    .fx-pass.on { background: #e6f4ea; color: #137333; }
     .fx-how, .fx-status { color: var(--p-muted); font-size: 12px; line-height: 1.4; }
     .fx-status.ok { color: #188038; font-weight: 700; }
     .fx-prev { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--p-line); background: #23253a; display: block; }
@@ -683,6 +685,8 @@
     placePanel: () => placePanel(),
     panelIsOpen: () => panelOpen,
     openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
+    inCall: () => !!activeFrame(),
+    send: (msg) => bridge.toRuntime(msg),
     onPanelToggle: (fn) => panelToggleCbs.push(fn),
     onMessage: (fn) => messageCbs.push(fn),
     onSettings: (fn) => settingsCbs.push(fn),

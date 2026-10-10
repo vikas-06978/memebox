@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "பிரகாசம்"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: வரம்பற்றது ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 மீதம்"
+  },
+  "fx_pass_running": {
+    "message": "ஓடுகிறது"
+  },
+  "fx_pass_pause": {
+    "message": "இடைநிறுத்து"
+  },
+  "fx_pass_start": {
+    "message": "பாஸைத் தொடங்கு"
+  },
+  "fx_pass_none": {
+    "message": "இன்னும் பாஸ் இல்லை. முன்னோட்டம் இலவசம்; பாஸ் இருந்தால் அழைப்பில் அனைவரும் காண்பர்."
   }
 }

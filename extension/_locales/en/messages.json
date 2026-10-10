@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "Brightness"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: unlimited ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 left"
+  },
+  "fx_pass_running": {
+    "message": "running"
+  },
+  "fx_pass_pause": {
+    "message": "Pause"
+  },
+  "fx_pass_start": {
+    "message": "Start my pass"
+  },
+  "fx_pass_none": {
+    "message": "No pass yet. Preview is free; a pass lets others see it in your call."
   }
 }

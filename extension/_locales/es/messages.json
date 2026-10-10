@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "Brillo"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: ilimitado ✓"
+  },
+  "fx_pass_left": {
+    "message": "quedan $1"
+  },
+  "fx_pass_running": {
+    "message": "en marcha"
+  },
+  "fx_pass_pause": {
+    "message": "Pausar"
+  },
+  "fx_pass_start": {
+    "message": "Iniciar mi pase"
+  },
+  "fx_pass_none": {
+    "message": "Aún sin pase. La vista previa es gratis; con un pase, los demás lo ven en tu llamada."
   }
 }

@@ -78,6 +78,52 @@
       el('div', { className: 'fx-how' }, t('fx_how')),
       onRow, canvas, status, lockBar, lampG, colorsG, cornersG, looksG, extras);
 
+    // ---- the time pass: Pro / Pro Max hours of use (the service worker counts them while you are in a call) ----
+    const passText = el('div', { className: 'fx-pass-text' });
+    const passBtn = el('button', { className: 'btn small', type: 'button' });
+    const passRow = el('div', { className: 'fx-pass' }, passText, passBtn);
+    body.insertBefore(passRow, body.firstChild);
+    let passOn = false;
+    const clock = (s) => {
+      s = Math.max(0, Math.floor(s));
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+      return h ? `${h}:${String(m).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}` : `${m}:${String(s % 60).padStart(2, '0')}`;
+    };
+    function renderPass() {
+      const l = plan.validLicense();
+      const left = plan.passLeft();
+      passRow.classList.toggle('on', passOn && left > 0);
+      if (l && l.unlimited) { passText.textContent = t('fx_pass_forever'); passBtn.hidden = true; return; }
+      passBtn.hidden = false;
+      if (left > 0) {
+        const tier = l.maxSeconds > 0 ? 'Pro Max' : 'Pro';
+        passText.textContent = `${tier} · ${t('fx_pass_left', clock(left))}${passOn ? ' · ' + t('fx_pass_running') : ''}`;
+        passBtn.textContent = passOn ? t('fx_pass_pause') : t('fx_pass_start');
+        passBtn.dataset.mode = passOn ? 'pause' : 'start';
+      } else {
+        passText.textContent = t('fx_pass_none');
+        passBtn.textContent = t('fx_plans');
+        passBtn.dataset.mode = 'buy';
+      }
+    }
+    passBtn.addEventListener('click', () => {
+      if (passBtn.dataset.mode === 'buy') { api.openSite('/buy'); return; }
+      const on = passBtn.dataset.mode === 'start';
+      try { chrome.storage.local.set({ pass: { on, unsynced: 0, syncedAt: 0 } }); } catch { /* orphaned */ }
+      passOn = on; renderPass();
+    });
+    try {
+      chrome.storage.local.get('pass').then((r) => { passOn = !!(r.pass && r.pass.on === true); renderPass(); }).catch(() => {});
+      chrome.storage.onChanged.addListener((changes, area) => {
+        if (area !== 'local') return;
+        if (changes.pass) passOn = !!(changes.pass.newValue && changes.pass.newValue.on === true);
+        if (changes.pass || changes.license) { renderPass(); render(); }
+      });
+    } catch { /* orphaned */ }
+    // Tell the service worker every 10 s that a call is running with the pass on (it does the counting).
+    setInterval(() => { if (passOn && plan.passLeft() > 0 && api.inCall()) api.send({ type: 'pass-tick' }); }, 10000);
+    setInterval(renderPass, 15000);
+
     const sum = el('span', { className: 'sum' });
     const details = el('details', { className: 'settings fx' }, el('summary', {}, el('span', {}, t('fx_title')), sum), body);
     api.settingsDetails.after(details);
@@ -118,6 +164,7 @@
       bright.value = Math.round(c.intensity * 100);
       body.classList.toggle('fx-off', !c.on);
       sum.textContent = c.on ? t('fx_state_on') : t('fx_state_off');
+      renderPass();
       fill();
       const locked = Fx.lockedParts(c, can);
       lockBar.hidden = locked.length === 0;

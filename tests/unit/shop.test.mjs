@@ -66,7 +66,7 @@ test('/api/license: active, unknown, badly formed and turned-off keys; CORS for 
   const ok = await call(licenseApi, postJson('/api/license', { key: key.toLowerCase() }));
   assert.equal(ok.status, 200);
   assert.equal(ok.headers.get('Access-Control-Allow-Origin'), '*');
-  assert.deepEqual((await ok.json()).license, { key, status: 'active', unlimited: true, pictureSlots: 0 });
+  assert.deepEqual((await ok.json()).license, { key, status: 'active', unlimited: true, pictureSlots: 0, proSeconds: 0, maxSeconds: 0 });
   assert.match((await getLicense(db, key)).last_seen, /^\d{4}-\d\d-\d\d$/);
 
   assert.equal((await call(licenseApi, postJson('/api/license', { key: 'MBX-AAAA-BBBB-CCCC' }))).status, 404);
@@ -184,4 +184,32 @@ test('admin page counts paid Pro users, owner/gift keys and picture-only buyers 
   await createLicense(db, { kind: 'owner', unlimited: true, pictureSlots: 0, note: 'me' });
   const html = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
   assert.match(html, /<b>Pro users:<\/b> 2 paid · 1 owner\/gift · 0 checked in the last 7 days · 1 bought only picture slots/);
+});
+
+test('time pass: the extension reports seconds used; Pro Max is spent first, the balance never goes below 0, one report is capped', async () => {
+  const key = await createLicense(db, { kind: 'gift', proSeconds: 1800, maxSeconds: 60 });
+  const spend = async (n) => (await (await call(licenseApi, postJson('/api/license', { key, spend: n }))).json()).license;
+  let l = await spend(0);
+  assert.deepEqual([l.maxSeconds, l.proSeconds], [60, 1800]);
+  l = await spend(45);
+  assert.deepEqual([l.maxSeconds, l.proSeconds], [15, 1800]);
+  l = await spend(60);
+  assert.deepEqual([l.maxSeconds, l.proSeconds], [0, 1755]);
+  l = await spend(-500);
+  assert.equal(l.proSeconds, 1755, 'a negative report gives nothing back');
+  l = await spend(99999);
+  assert.equal(l.proSeconds, 1155, 'at most 10 minutes per report');
+  assert.ok(l.proSeconds >= 0);
+});
+
+test('time pass: a turned-off key spends nothing, and the admin can gift minutes', async () => {
+  await call(adminLicense, adminForm('/admin/license', { action: 'create', kind: 'gift', proMinutes: '30', maxMinutes: '60' }));
+  const row = await db.prepare("SELECT * FROM licenses WHERE kind = 'gift'").first();
+  assert.deepEqual([row.pro_seconds, row.max_seconds], [1800, 3600]);
+  await call(adminLicense, adminForm('/admin/license', { action: 'revoke', key: row.key }));
+  const r = await (await call(licenseApi, postJson('/api/license', { key: row.key, spend: 300 }))).json();
+  assert.equal(r.license.status, 'revoked');
+  assert.equal((await getLicense(db, row.key)).max_seconds, 3600);
+  const page = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
+  assert.match(page, /Pro Max 60 min left, Pro 30 min left/);
 });

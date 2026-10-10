@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "السطوع"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: غير محدود ✓"
+  },
+  "fx_pass_left": {
+    "message": "المتبقي $1"
+  },
+  "fx_pass_running": {
+    "message": "قيد التشغيل"
+  },
+  "fx_pass_pause": {
+    "message": "إيقاف مؤقت"
+  },
+  "fx_pass_start": {
+    "message": "ابدأ تصريحي"
+  },
+  "fx_pass_none": {
+    "message": "لا يوجد تصريح بعد. المعاينة مجانية؛ بالتصريح يراها الآخرون في مكالمتك."
   }
 }

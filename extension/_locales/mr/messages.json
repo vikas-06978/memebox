@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "तेजस्विता"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: अमर्यादित ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 शिल्लक"
+  },
+  "fx_pass_running": {
+    "message": "सुरू आहे"
+  },
+  "fx_pass_pause": {
+    "message": "थांबवा"
+  },
+  "fx_pass_start": {
+    "message": "पास सुरू करा"
+  },
+  "fx_pass_none": {
+    "message": "अजून पास नाही. प्रिव्ह्यू मोफत; पासने कॉलमध्ये सर्वांना दिसेल."
   }
 }

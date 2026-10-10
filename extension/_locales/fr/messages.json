@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "Luminosité"
+  },
+  "fx_pass_forever": {
+    "message": "Pro : illimité ✓"
+  },
+  "fx_pass_left": {
+    "message": "reste $1"
+  },
+  "fx_pass_running": {
+    "message": "en cours"
+  },
+  "fx_pass_pause": {
+    "message": "Pause"
+  },
+  "fx_pass_start": {
+    "message": "Démarrer mon pass"
+  },
+  "fx_pass_none": {
+    "message": "Pas encore de pass. L’aperçu est gratuit ; avec un pass, les autres le voient dans votre appel."
   }
 }

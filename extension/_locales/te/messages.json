@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "ప్రకాశం"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: అపరిమితం ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 మిగిలింది"
+  },
+  "fx_pass_running": {
+    "message": "నడుస్తోంది"
+  },
+  "fx_pass_pause": {
+    "message": "ఆపు"
+  },
+  "fx_pass_start": {
+    "message": "పాస్ ప్రారంభించు"
+  },
+  "fx_pass_none": {
+    "message": "ఇంకా పాస్ లేదు. ప్రివ్యూ ఉచితం; పాస్‌తో కాల్‌లో అందరికీ కనిపిస్తుంది."
   }
 }

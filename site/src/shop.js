@@ -45,6 +45,8 @@ export function licenseView(row) {
     status: row.status,
     unlimited: row.unlimited === 1,
     pictureSlots: Number(row.picture_slots) || 0,
+    proSeconds: Number(row.pro_seconds) || 0,
+    maxSeconds: Number(row.max_seconds) || 0,
   };
 }
 
@@ -53,12 +55,37 @@ export async function getLicense(db, key) {
   return db.prepare('SELECT * FROM licenses WHERE key = ?').bind(key).first();
 }
 
-export async function createLicense(db, { kind = 'gift', unlimited = false, pictureSlots = 0, note = '' } = {}) {
+const PASS_CAP = 10 * 24 * 3600; // most seconds of pass a key may hold
+const passSecs = (n) => Math.max(0, Math.min(PASS_CAP, Math.floor(Number(n)) || 0));
+
+export async function createLicense(db, { kind = 'gift', unlimited = false, pictureSlots = 0, proSeconds = 0, maxSeconds = 0, note = '' } = {}) {
   const key = newLicenseKey();
   await db.prepare(
-    'INSERT INTO licenses (key, created_at, kind, unlimited, picture_slots, status, note) VALUES (?, ?, ?, ?, ?, \'active\', ?)',
-  ).bind(key, now(), kind, unlimited ? 1 : 0, Math.max(0, Math.min(10000, Math.floor(pictureSlots) || 0)), String(note).slice(0, 200)).run();
+    'INSERT INTO licenses (key, created_at, kind, unlimited, picture_slots, pro_seconds, max_seconds, status, note) VALUES (?, ?, ?, ?, ?, ?, ?, \'active\', ?)',
+  ).bind(key, now(), kind, unlimited ? 1 : 0, Math.max(0, Math.min(10000, Math.floor(pictureSlots) || 0)), passSecs(proSeconds), passSecs(maxSeconds), String(note).slice(0, 200)).run();
   return key;
+}
+
+// Add bought time to a key (never above the cap).
+export async function addPassTime(db, key, { proSeconds = 0, maxSeconds = 0 }) {
+  await db.prepare('UPDATE licenses SET pro_seconds = MIN(?, pro_seconds + ?), max_seconds = MIN(?, max_seconds + ?) WHERE key = ?')
+    .bind(PASS_CAP, passSecs(proSeconds), PASS_CAP, passSecs(maxSeconds), key).run();
+}
+
+// The extension reports seconds of pass it used (Pro Max is spent first). At most 10 minutes per report, so one
+// call can never drain a key; the answer is the new balance.
+export const MAX_SPEND_PER_CALL = 600;
+export async function spendPassTime(db, row, seconds) {
+  let s = Math.max(0, Math.min(MAX_SPEND_PER_CALL, Math.floor(Number(seconds)) || 0));
+  if (!s) return row;
+  const fromMax = Math.min(Number(row.max_seconds) || 0, s);
+  s -= fromMax;
+  const fromPro = Math.min(Number(row.pro_seconds) || 0, s);
+  if (fromMax || fromPro) {
+    await db.prepare('UPDATE licenses SET max_seconds = MAX(0, max_seconds - ?), pro_seconds = MAX(0, pro_seconds - ?) WHERE key = ?')
+      .bind(fromMax, fromPro, row.key).run();
+  }
+  return getLicense(db, row.key);
 }
 
 export async function setLicenseStatus(db, key, status) {

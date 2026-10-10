@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "Brilho"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: ilimitado ✓"
+  },
+  "fx_pass_left": {
+    "message": "restam $1"
+  },
+  "fx_pass_running": {
+    "message": "rodando"
+  },
+  "fx_pass_pause": {
+    "message": "Pausar"
+  },
+  "fx_pass_start": {
+    "message": "Iniciar meu passe"
+  },
+  "fx_pass_none": {
+    "message": "Ainda sem passe. A prévia é grátis; com um passe, os outros veem na sua chamada."
   }
 }

@@ -1041,5 +1041,23 @@
   },
   "fx_bright": {
     "message": "Kecerahan"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: tanpa batas ✓"
+  },
+  "fx_pass_left": {
+    "message": "sisa $1"
+  },
+  "fx_pass_running": {
+    "message": "berjalan"
+  },
+  "fx_pass_pause": {
+    "message": "Jeda"
+  },
+  "fx_pass_start": {
+    "message": "Mulai pass saya"
+  },
+  "fx_pass_none": {
+    "message": "Belum ada pass. Pratinjau gratis; dengan pass, peserta lain melihatnya di panggilanmu."
   }
 }

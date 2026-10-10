@@ -96,7 +96,13 @@ function bars(entries) {
 const PRODUCT_TEXT = { pictures5: '5 more pictures', pro: 'Pro (unlimited)' };
 
 function licenseText(l) {
-  return l.unlimited ? 'Pro, unlimited' : `${l.picture_slots} picture slot${l.picture_slots === 1 ? '' : 's'}`;
+  if (l.unlimited) return 'Pro, unlimited';
+  const mins = (s) => Math.floor((Number(s) || 0) / 60);
+  const parts = [];
+  if (l.max_seconds > 0) parts.push(`Pro Max ${mins(l.max_seconds)} min left`);
+  if (l.pro_seconds > 0) parts.push(`Pro ${mins(l.pro_seconds)} min left`);
+  if (l.picture_slots > 0 || !parts.length) parts.push(`${l.picture_slots} picture slot${l.picture_slots === 1 ? '' : 's'}`);
+  return parts.join(', ');
 }
 
 // Orders waiting for approval and license keys. `notice` is shown at the top (a new key, an approval).
@@ -143,6 +149,8 @@ ${notice ? `<p class="notice" role="status">${notice}</p>` : ''}
     <input type="hidden" name="action" value="create">
     <label>Who <select name="kind"><option value="owner">Me (owner)</option><option value="gift">A friend (gift)</option></select></label>
     <label class="check"><input type="checkbox" name="unlimited" checked> Pro, unlimited</label>
+    <label>or Pro minutes <input type="number" name="proMinutes" min="0" max="14400" value="0"></label>
+    <label>Pro Max minutes <input type="number" name="maxMinutes" min="0" max="14400" value="0"></label>
     <label>or picture slots <input type="number" name="slots" min="0" max="10000" value="0"></label>
     <label>Note <input name="note" maxlength="200" placeholder="e.g. my laptop"></label>
     <button type="submit" class="primary">Make a key</button>

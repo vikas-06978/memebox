@@ -90,3 +90,46 @@ test('plan.js loads before the scripts that use it', () => {
   assert.ok(html.indexOf('config.js') < html.indexOf('lib/plan.js'));
   assert.ok(html.indexOf('lib/plan.js') < html.indexOf('options.js'));
 });
+
+test('time pass: works only while it is switched on and has seconds; Pro Max also has extra filters and characters', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  const lic = (o) => plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: false, checkedAt: now - 1000, ...o });
+
+  lic({ proSeconds: 600 });
+  assert.equal(plan.passTier(now), null, 'bought but not started');
+  assert.equal(plan.canFx('lampAnim', now), false);
+
+  plan.setPass({ on: true });
+  assert.equal(plan.passTier(now), 'pro');
+  assert.equal(plan.canFx('lampAnim', now), true);
+  assert.equal(plan.can('voiceChanger', now), true);
+  assert.equal(plan.canFx('filter:neon', now), false, 'Pro does not have the extra filters');
+  assert.equal(plan.canFx('characters', now), false);
+  assert.equal(plan.can('unlimitedClips', now), false, 'a pass does not lift the saved-items limits');
+  assert.equal(plan.pictureLimit(now), 1);
+
+  lic({ proSeconds: 600, maxSeconds: 60 });
+  assert.equal(plan.passTier(now), 'max');
+  assert.equal(plan.canFx('filter:neon', now), true);
+  assert.equal(plan.canFx('characters', now), true);
+
+  lic({ proSeconds: 0, maxSeconds: 0 });
+  assert.equal(plan.passTier(now), null, 'used up');
+  assert.equal(plan.canFx('lampAnim', now), false);
+
+  lic({ proSeconds: 600 });
+  plan.setPass({ on: false });
+  assert.equal(plan.passTier(now), null, 'paused');
+  assert.equal(plan.passLeft(), 600);
+});
+
+test('time pass: a permanent key still has everything, and a giant balance is capped', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: true, checkedAt: now - 1000 });
+  assert.equal(plan.canFx('characters', now), true);
+  assert.equal(plan.canFx('filter:pixel', now), true);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 1e12, checkedAt: now });
+  assert.equal(plan.license.proSeconds, plan.PASS_MAX_SECONDS);
+});

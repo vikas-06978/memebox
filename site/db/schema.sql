@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS licenses (
   kind          TEXT NOT NULL CHECK (kind IN ('owner', 'gift', 'paid')),
   unlimited     INTEGER NOT NULL DEFAULT 0,
   picture_slots INTEGER NOT NULL DEFAULT 0,
+  pro_seconds   INTEGER NOT NULL DEFAULT 0,       -- time pass left: seconds of Pro use (no expiry date)
+  max_seconds   INTEGER NOT NULL DEFAULT 0,       -- seconds of Pro Max use, spent first
   status        TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'revoked')),
   note          TEXT NOT NULL DEFAULT '',
   last_seen     TEXT                              -- day of the last check, no IP or device
