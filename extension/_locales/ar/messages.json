@@ -1134,5 +1134,35 @@
   },
   "mu_t_tropical": {
     "message": "استوائي"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "سايبر"
+  },
+  "fx_filter_comic": {
+    "message": "كوميك"
+  },
+  "fx_filter_matrix": {
+    "message": "ماتريكس"
+  },
+  "fx_filter_glam": {
+    "message": "ساحر"
+  },
+  "mu_t_disco": {
+    "message": "ديسكو"
+  },
+  "mu_t_club": {
+    "message": "نادي"
+  },
+  "mu_t_bass": {
+    "message": "باس"
+  },
+  "mu_t_desi": {
+    "message": "ديزي"
+  },
+  "mu_t_house": {
+    "message": "هاوس"
   }
 }

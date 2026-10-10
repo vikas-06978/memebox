@@ -1,4 +1,4 @@
-// node tools/music-sheet.mjs [outDir]: renders every tune offline (16 s) and writes a WAV and a spectrogram
+// node tools/music-sheet.mjs [outDir]: renders every tune offline (40 s) and writes a WAV and a spectrogram
 // per tune, plus loudness numbers, so a change to lib/music.js can be checked without listening to everything.
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
@@ -6,15 +6,16 @@ import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const outDir = process.argv[2] || path.join(ROOT, 'tests', '.tmp', 'music');
+const only = (process.argv[3] || '').split(',').filter(Boolean); // e.g. disco,club (default: all)
 fs.mkdirSync(outDir, { recursive: true });
 const src = fs.readFileSync(path.join(ROOT, 'extension', 'lib', 'music.js'), 'utf8');
 const browser = await chromium.launch({ channel: 'chromium' });
 const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
 await page.setContent('<body style="margin:0;background:#111;color:#ddd;font:12px system-ui"></body>');
 await page.addScriptTag({ content: src });
-const result = await page.evaluate(async () => {
-  const SR = 24000, SECS = 16, out = [];
-  for (const id of MemeMusic.IDS) {
+const result = await page.evaluate(async (only) => {
+  const SR = 24000, SECS = 40, out = [];
+  for (const id of MemeMusic.IDS.filter((x) => !only.length || only.includes(x))) {
     const ctx = new OfflineAudioContext(1, SR * SECS, SR);
     const master = ctx.createGain(); master.gain.value = 0.4; master.connect(ctx.destination);
     MemeMusic.scheduleTune(ctx, master, id, 0, SECS);
@@ -38,10 +39,10 @@ const result = await page.evaluate(async () => {
       }
     }
     document.body.append(Object.assign(document.createElement('div'), { textContent: `${id}  peak ${peak.toFixed(2)}  rms ${Math.sqrt(sum / d.length).toFixed(3)}` }), c);
-    out.push({ id, peak, rms: Math.sqrt(sum / d.length), pcm: Array.from(d.slice(0, SR * 8), (x) => Math.round(Math.max(-1, Math.min(1, x)) * 32767)) });
+    out.push({ id, peak, rms: Math.sqrt(sum / d.length), pcm: Array.from(d.slice(0, SR * 20), (x) => Math.round(Math.max(-1, Math.min(1, x)) * 32767)) });
   }
   return out;
-});
+}, only);
 for (const r of result) {
   const n = r.pcm.length, b = Buffer.alloc(44 + n * 2);
   b.write('RIFF', 0); b.writeUInt32LE(36 + n * 2, 4); b.write('WAVEfmt ', 8); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22);

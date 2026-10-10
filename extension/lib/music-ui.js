@@ -17,7 +17,7 @@
 
   // `h` is a helper for one tune: h.note(midiNote, startSec, lengthSec, wave, gain), h.kick / snare / hat / clap(start, gain).
   // `s` is the 16th-note step counted from 0 (it loops by itself), `t` is when that step sounds.
-  function makeHelpers(ctx, out, noiseBuf) {
+  function makeHelpers(ctx, out, noiseBuf, side) {
     const env = (g, t, a, len, peak) => {
       g.gain.setValueAtTime(0.0001, t);
       g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t + a);
@@ -33,8 +33,14 @@
         env(g, t, opts.attack || 0.012, len, peak);
         let node = g;
         if (opts.lowpass) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = opts.lowpass; g.connect(f); node = f; }
-        o.connect(g); node.connect(out);
+        o.connect(g); node.connect(opts.side && side ? side : out);
         o.start(t); o.stop(t + len + 0.05);
+      },
+      // "Pumping": the notes sent through `side` duck on every kick and swell back (the club sound).
+      pump(t, depth = 0.22, rel = 0.2) {
+        if (!side) return;
+        side.gain.setValueAtTime(depth, t);
+        side.gain.linearRampToValueAtTime(1, t + rel);
       },
       kick(t, peak = 0.7, low = 48) {
         const o = ctx.createOscillator(), g = ctx.createGain();
@@ -50,6 +56,8 @@
         s.start(t, Math.random() * 0.5); s.stop(t + len + 0.02);
       },
     };
+    const kick0 = h.kick;
+    h.kick = (t, peak, low) => { kick0(t, peak, low); h.pump(t); };
     h.snare = (t, peak = 0.35) => { h.noise(t, 0.16, peak, 'bandpass', 1900, 0.7); h.note(52, t, 0.1, 'triangle', peak * 0.5, { slideTo: 44 }); };
     h.clap = (t, peak = 0.3) => { for (let i = 0; i < 3; i++) h.noise(t + i * 0.011, 0.09, peak, 'bandpass', 1500, 1.1); };
     h.hat = (t, peak = 0.12, open = false) => h.noise(t, open ? 0.14 : 0.04, peak, 'highpass', 7000, 0.5);
@@ -186,6 +194,129 @@
         if (i % 2 === 0) h.hat(t, 0.06); else h.hat(t, 0.035);
       },
     },
+
+    // ---- the long ones: 32 bars (about a minute) with an intro, a build, a drop and a break ----
+
+    // Real disco: four on the floor, rolling octave bass, strings, funky guitar, cowbell.
+    disco: {
+      bpm: 118, swing: 0.02,
+      step(s, t, h, q) {
+        const i = s % 16, bar = Math.floor(s / 16) % 32, sec = Math.floor(bar / 8) % 4; // 0 intro, 1 build, 2 groove, 3 break
+        const roots = [45, 38, 43, 36], root = roots[(bar >> 1) % 4], kinds = [[0, 3, 7, 10], [0, 3, 7, 10], [0, 4, 7, 10], [0, 4, 7, 11]];
+        const ch = chord(root + 12, kinds[(bar >> 1) % 4]);
+        if (sec !== 3 || i % 4 === 0) if (i % 4 === 0) h.kick(t, 0.8, 50);
+        if (sec >= 1 && (i === 4 || i === 12)) h.clap(t, 0.3);
+        if (i % 4 === 2) h.hat(t, 0.15, true);
+        if (sec >= 1 && i % 2 === 1) h.hat(t, 0.05);
+        // octave bass, 8th notes
+        if (sec !== 3 && i % 2 === 0) h.note(root - (i % 4 === 2 ? 12 : 24), t, q * 1.7, 'sawtooth', 0.3, { lowpass: 520, side: true });
+        if (sec !== 3 && i % 2 === 0) h.note(root - 36, t, q * 1.8, 'sine', 0.34, { side: true });
+        // strings pad
+        if (i === 0 && sec >= 1) ch.forEach((n, k) => h.note(n + 12, t, q * 15.5, 'sawtooth', 0.04, { attack: 0.5, lowpass: 1500, detune: k % 2 ? 8 : -8, side: true }));
+        // funky guitar stabs
+        if (sec >= 2 && [2, 3, 6, 10, 11, 14].includes(i)) ch.slice(1).forEach((n) => h.note(n + 12, t, q * 0.8, 'square', 0.03, { lowpass: 2600 }));
+        if (sec >= 2 && (i === 3 || i === 11)) h.noise(t, 0.05, 0.2, 'bandpass', 2800, 8); // cowbell-ish tick
+        // the "whoo": a rising line at the end of the build
+        if (sec === 1 && bar % 8 >= 6 && i % 2 === 0) h.note(root + 24 + ((bar % 8) - 6) * 8 + i / 2, t, q * 2, 'square', 0.04, { lowpass: 3000 });
+        if (sec === 2 && i === 0 && bar % 2 === 0) h.note(root + 36, t, q * 14, 'sine', 0.06, { slideTo: root + 34, attack: 0.1 });
+      },
+    },
+    // Big room: a long build, a snare roll, a huge pumping drop with a sub bass.
+    club: {
+      bpm: 128, swing: 0,
+      step(s, t, h, q) {
+        const i = s % 16, bar = Math.floor(s / 16) % 32, sec = Math.floor(bar / 8) % 4, b8 = bar % 8;
+        const roots = [41, 37, 44, 39], root = roots[(bar >> 1) % 4];
+        const drop = sec === 2, build = sec === 1;
+        if (sec !== 3 && i % 4 === 0) h.kick(t, 0.95, 44);
+        if (sec === 3 && i === 0) h.kick(t, 0.6, 46);
+        if (drop || (build && b8 >= 4)) { if (i === 4 || i === 12) h.clap(t, 0.32); }
+        if (i % 4 === 2) h.hat(t, drop ? 0.17 : 0.1, true);
+        if ((drop || build) && i % 2 === 1) h.hat(t, 0.04);
+        // the snare roll: every beat, then 8ths, then 16ths into the drop
+        if (build && b8 >= 6) {
+          const every = b8 === 7 ? 1 : 2;
+          if (i % every === 0) h.snare(t, 0.1 + 0.2 * ((b8 - 6) * 16 + i) / 32);
+        }
+        // sub + growling bass (pumping on the kick)
+        if (drop && (i % 4 === 0 || i % 4 === 2 || i === 7 || i === 15)) {
+          h.note(root - 12, t, q * 2.8, 'sine', 0.55, { side: true });
+          h.note(root, t, q * 2.4, 'sawtooth', 0.14, { lowpass: 380 + 600 * Math.abs(Math.sin(s / 11)), side: true });
+        }
+        if (build && i % 4 === 0) h.note(root - 12, t, q * 3.6, 'sine', 0.3, { side: true });
+        // super-saw chords: only in the drop and the break
+        if ((drop || sec === 3) && i % 4 === 0 && (i === 0 || i === 8 || drop)) chord(root + 24, [0, 3, 7, 12]).forEach((n, k) => {
+          h.note(n, t, q * 3.4, 'sawtooth', 0.04, { lowpass: 2800, detune: (k - 1.5) * 9, side: true });
+        });
+        if (sec === 3 && i === 0) chord(root + 24, [0, 7, 12, 15]).forEach((n) => h.note(n, t, q * 15, 'sine', 0.06, { attack: 0.6, side: true }));
+        // a riser: noise that climbs through the build
+        if (build && i === 0 && b8 >= 4) h.noise(t, q * 15, 0.03 + 0.012 * b8, 'highpass', 1500 + b8 * 600, 1.2);
+        if (drop && i === 0 && b8 === 0) h.noise(t, 0.6, 0.18, 'lowpass', 600, 0.6); // the impact
+      },
+    },
+    // Heavy 808 trap: half-time snare, rolling hats, a long bass that slides.
+    bass: {
+      bpm: 70, swing: 0,
+      step(s, t, h, q) {
+        const i = s % 16, bar = Math.floor(s / 16) % 32, sec = Math.floor(bar / 8) % 4;
+        const roots = [34, 34, 39, 36], root = roots[(bar >> 2) % 4];
+        if (sec >= 1 || bar % 4 >= 2) {
+          if (i === 0 || i === 6 || i === 10 + (bar % 2) * 2) h.note(root, t, q * 5.5, 'sine', 0.75, { slideTo: root - 2, attack: 0.006 }); // 808
+          if (i === 0) h.note(root + 12, t, q * 3, 'sawtooth', 0.04, { lowpass: 300 });
+        }
+        if (sec >= 1 && i === 8) { h.snare(t, 0.4); h.clap(t, 0.2); }
+        if (i === 0 && sec !== 3) h.kick(t, 0.9, 42);
+        if (sec >= 1) {
+          // hats: steady 8ths, with rolls at the end of every second bar
+          if (i % 2 === 0) h.hat(t, 0.1);
+          if (bar % 2 === 1 && i >= 12) { h.hat(t, 0.1); h.hat(t + q / 2, 0.07); }
+        }
+        if (sec >= 2 && [4, 5, 12, 13].includes(i)) h.note(root + 31 + (i % 2) * 3, t, q * 1.5, 'triangle', 0.07, { lowpass: 2400 }); // a dark bell line
+        if (sec === 3 && i === 0) h.note(root + 24, t, q * 15, 'sine', 0.05, { attack: 0.4 });
+      },
+    },
+    // Desi party: a dhol beat, a plucked tumbi line, a deep drone and a pumping bass.
+    desi: {
+      bpm: 106, swing: 0,
+      step(s, t, h, q) {
+        const i = s % 16, bar = Math.floor(s / 16) % 32, sec = Math.floor(bar / 8) % 4;
+        const sa = 50; // D: the home note
+        const scale = [0, 1, 4, 5, 7, 8, 11, 12]; // a Bhairav-style scale
+        const dha = [0, 6, 10], tin = [3, 7, 11, 14];
+        if (dha.includes(i)) { h.kick(t, 0.8, 85); h.note(sa - 12, t, q * 1.4, 'triangle', 0.3, { slideTo: sa - 17 }); }
+        if (tin.includes(i)) h.noise(t, 0.07, 0.3, 'bandpass', 2400, 3);
+        if (sec >= 1 && (i === 4 || i === 12)) h.clap(t, 0.24);
+        if (sec >= 1 && i % 2 === 1) h.hat(t, 0.05);
+        if (sec !== 0) h.note(sa - 24, t, q * (i % 8 === 0 ? 6 : 0.01), 'sine', 0.4, { side: true });
+        if (i % 4 === 0) h.note(sa - 12, t, q * 4.2, 'sawtooth', 0.1, { lowpass: 400, side: true });
+        if (sec === 0 && i === 0) h.note(sa, t, q * 15, 'sawtooth', 0.04, { attack: 0.5, lowpass: 700 }); // drone
+        // the tumbi: a short, bright pluck that plays a little tune that changes every 2 bars
+        const tune = [[0, 2, 4, 2, 0, 3, 4, 7], [4, 4, 5, 4, 2, 3, 2, 0], [7, 6, 4, 6, 7, 6, 4, 2], [4, 3, 2, 3, 4, 2, 0, 0]][(bar >> 1) % 4];
+        const steps = [0, 2, 3, 6, 8, 10, 11, 14];
+        const at = steps.indexOf(i);
+        if (sec >= 2 && at >= 0) h.note(sa + 24 + scale[tune[at] % scale.length], t, q * 1.6, 'sawtooth', 0.07, { lowpass: 3600, attack: 0.003 });
+        if (sec === 1 && at >= 0 && at % 2 === 0) h.note(sa + 12 + scale[tune[at] % scale.length], t, q * 1.6, 'triangle', 0.1, { attack: 0.003 });
+        if (sec === 3 && i === 0) chord(sa + 12, [0, 4, 7]).forEach((n) => h.note(n, t, q * 15, 'sine', 0.05, { attack: 0.5 }));
+      },
+    },
+    // Deep house: shuffled chords, a round bass, off-beat hats. Smooth and warm.
+    house: {
+      bpm: 122, swing: 0.2,
+      step(s, t, h, q) {
+        const i = s % 16, bar = Math.floor(s / 16) % 32, sec = Math.floor(bar / 8) % 4;
+        const prog = [[57, [0, 3, 7, 10, 14]], [53, [0, 4, 7, 11, 14]], [48, [0, 4, 7, 11, 14]], [55, [0, 4, 7, 10, 14]]];
+        const [root, tones] = prog[(bar >> 1) % 4];
+        if (sec !== 3 && i % 4 === 0) h.kick(t, 0.8, 48);
+        if (sec >= 1 && (i === 4 || i === 12)) h.clap(t, 0.22);
+        if (i % 4 === 2) h.hat(t, 0.13, true);
+        if (sec >= 1 && i % 2 === 1) h.hat(t, 0.045);
+        if (sec !== 3 && (i % 4 === 2 || i === 7 || i === 15)) h.note(root - 24, t, q * 2.6, 'sine', 0.45, { side: true });
+        if (sec !== 0 && [0, 3, 6, 10, 13].includes(i)) tones.forEach((x) => h.note(root + x, t, q * 1.8, 'triangle', 0.06, { lowpass: 2400, side: true }));
+        if (sec >= 2 && [0, 3, 6, 10, 13].includes(i)) tones.slice(1).forEach((x) => h.note(root + 12 + x, t, q * 1.2, 'sine', 0.03));
+        if (sec >= 2 && i % 4 === 0) h.note(root + 24 + [0, 3, 7, 10][(i / 4 + bar) % 4], t, q * 3, 'sine', 0.05);
+        if (sec === 0 && i === 0) tones.forEach((x) => h.note(root + x, t, q * 15, 'sine', 0.04, { attack: 0.8 }));
+      },
+    },
   };
   const IDS = Object.keys(TUNES);
 
@@ -198,9 +329,10 @@
   }
 
   // Schedules one tune on any (real or offline) AudioContext. `until` is how many seconds of music to queue.
-  function scheduleTune(ctx, out, id, from, until, startStep = 0, noiseBuf = null) {
+  function scheduleTune(ctx, out, id, from, until, startStep = 0, noiseBuf = null, side = null) {
     const tune = TUNES[id];
-    const h = makeHelpers(ctx, out, noiseBuf || makeNoise(ctx));
+    if (!side) { side = ctx.createGain(); side.connect(out); } // offline renders: one pumping group
+    const h = makeHelpers(ctx, out, noiseBuf || makeNoise(ctx), side);
     const q = 60 / tune.bpm / 4; // a 16th note
     let s = startStep;
     let t = from;
@@ -219,14 +351,14 @@
     master.gain.value = 0.4;
     master.connect(destination);
     const noiseBuf = makeNoise(ctx);
-    let timer = 0, id = '', next = null, stopAt = 0, bus = null;
+    let timer = 0, id = '', next = null, stopAt = 0, bus = null, side = null;
     const AHEAD = 0.6;
 
     function pump() {
       if (!id) return;
       if (stopAt && ctx.currentTime >= stopAt) { stop(); return; }
       if (next.nextTime < ctx.currentTime + AHEAD) {
-        next = scheduleTune(ctx, bus, id, next.nextTime, ctx.currentTime + AHEAD + 0.5, next.nextStep, noiseBuf);
+        next = scheduleTune(ctx, bus, id, next.nextTime, ctx.currentTime + AHEAD + 0.5, next.nextStep, noiseBuf, side);
       }
     }
     // `seconds` (optional) = stop by itself after that long (the 20 s preview).
@@ -237,6 +369,8 @@
       stopAt = seconds ? ctx.currentTime + seconds : 0;
       bus = ctx.createGain();
       bus.connect(master);
+      side = ctx.createGain(); // notes that "pump" with the kick go through here
+      side.connect(bus);
       next = { nextStep: 0, nextTime: ctx.currentTime + 0.08 };
       pump();
       timer = setInterval(pump, 120);

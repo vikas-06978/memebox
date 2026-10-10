@@ -117,3 +117,17 @@ test('keys the site scripts ask for exist', () => {
   for (const p of ['pro', 'pictures5']) assert.ok(siteEn['buy_name_' + p]);
   for (const th of ['auto', 'light', 'dark', 'sunny', 'neon', 'candy']) assert.ok(siteEn['theme_' + th]);
 });
+
+test('every Lights filter, character and music tune has a name in every language', async () => {
+  const { loadScript } = await import('./helpers.mjs');
+  const fx = loadScript('lib/fx.js').MemeFx;
+  const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
+  const keys = [
+    ...fx.FILTERS.map((f) => 'fx_filter_' + f),
+    ...['none', ...fx.CHARACTERS].map((c) => 'fx_char_' + c),
+    ...fx.LAMP_ANIMS.map((a) => 'fx_anim_' + a),
+    ...fx.PATTERNS.map((p) => 'fx_pat_' + p),
+    ...music.IDS.map((id) => 'mu_t_' + id),
+  ];
+  for (const [lang, msgs] of Object.entries(all)) for (const k of keys) assert.ok(msgs[k] && msgs[k].message, `${lang} is missing ${k}`);
+});

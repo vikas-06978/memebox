@@ -1134,5 +1134,35 @@
   },
   "mu_t_tropical": {
     "message": "Tropical"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "Ciber"
+  },
+  "fx_filter_comic": {
+    "message": "Cómic"
+  },
+  "fx_filter_matrix": {
+    "message": "Matrix"
+  },
+  "fx_filter_glam": {
+    "message": "Glamour"
+  },
+  "mu_t_disco": {
+    "message": "Disco"
+  },
+  "mu_t_club": {
+    "message": "Club"
+  },
+  "mu_t_bass": {
+    "message": "Bajos"
+  },
+  "mu_t_desi": {
+    "message": "Desi"
+  },
+  "mu_t_house": {
+    "message": "House"
   }
 }

@@ -32,7 +32,7 @@ await page.evaluate((only) => {
   for (const row of rows) {
     if (only && !row.title.includes(only)) continue;
     const h = document.createElement('div'); h.textContent = row.title; h.style.cssText = 'padding:4px 8px;font-weight:700'; document.body.append(h);
-    const line = document.createElement('div'); line.style.cssText = 'display:flex;gap:6px;padding:0 8px'; document.body.append(line);
+    const line = document.createElement('div'); line.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:0 8px'; document.body.append(line);
     for (const t of row.tiles) {
       const wrap = document.createElement('div'); const c = document.createElement('canvas'); c.width = W; c.height = H;
       const g = c.getContext('2d'); const r = FX.createRenderer();

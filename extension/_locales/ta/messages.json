@@ -1134,5 +1134,35 @@
   },
   "mu_t_tropical": {
     "message": "டிராபிகல்"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "சைபர்"
+  },
+  "fx_filter_comic": {
+    "message": "காமிக்"
+  },
+  "fx_filter_matrix": {
+    "message": "மேட்ரிக்ஸ்"
+  },
+  "fx_filter_glam": {
+    "message": "கிளாம்"
+  },
+  "mu_t_disco": {
+    "message": "டிஸ்கோ"
+  },
+  "mu_t_club": {
+    "message": "கிளப்"
+  },
+  "mu_t_bass": {
+    "message": "பாஸ்"
+  },
+  "mu_t_desi": {
+    "message": "தேசி"
+  },
+  "mu_t_house": {
+    "message": "ஹவுஸ்"
   }
 }

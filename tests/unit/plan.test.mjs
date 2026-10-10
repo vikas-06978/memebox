@@ -161,7 +161,7 @@ test('music: Chill and Funky are free, the other tunes need Pro (a pass or a key
   const plan = withConfig({ PRO_ENABLED: true });
   const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
   assert.deepEqual([...plan.FREE_TUNES], [...music.FREE_TUNES]);
-  assert.equal(music.IDS.length, 8);
+  assert.equal(music.IDS.length, 13);
   assert.equal(plan.canFx('music:chill', now), true);
   assert.equal(plan.canFx('music:party', now), false);
   plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now - 1000 });

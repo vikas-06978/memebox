@@ -1134,5 +1134,35 @@
   },
   "mu_t_tropical": {
     "message": "ట్రాపికల్"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "సైబర్"
+  },
+  "fx_filter_comic": {
+    "message": "కామిక్"
+  },
+  "fx_filter_matrix": {
+    "message": "మ్యాట్రిక్స్"
+  },
+  "fx_filter_glam": {
+    "message": "గ్లామ్"
+  },
+  "mu_t_disco": {
+    "message": "డిస్కో"
+  },
+  "mu_t_club": {
+    "message": "క్లబ్"
+  },
+  "mu_t_bass": {
+    "message": "బాస్"
+  },
+  "mu_t_desi": {
+    "message": "దేశీ"
+  },
+  "mu_t_house": {
+    "message": "హౌస్"
   }
 }

@@ -26,10 +26,10 @@
   const FREE_COLORS = ['warm', 'white', 'blue'];
   const LAMP_ANIMS = ['still', 'swing', 'drop', 'flicker'];        // "still" is free, the rest are Pro
   const PATTERNS = ['steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle']; // corner light shows (Pro)
-  const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel'];
+  const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam'];
   const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];             // 3 free
   const PRO_FILTERS = ['vintage', 'cool'];                         // + 2 in Pro = 5
-  const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel']; // each one is an add-on
+  const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam']; // Pro Max (or one by one)
   // Characters that sit in a bottom corner and react to the sounds. Pro: one of the standard three at a time.
   // Pro Max: all six. Every one is drawn with code (no pictures), so they are small and original.
   const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny'];
@@ -150,13 +150,90 @@
     noir: 'grayscale(1) contrast(1.65) brightness(0.86)',
     sunset: 'sepia(0.45) saturate(1.7) hue-rotate(-24deg) brightness(1.04)',
     dream: 'blur(1.1px) saturate(1.3) brightness(1.08)',
+    vhs: 'saturate(1.35) contrast(1.08) brightness(1.03)',
+    cyber: 'saturate(1.5) contrast(1.18) brightness(0.96)',
+    comic: 'saturate(1.9) contrast(1.55) brightness(1.02)',
+    matrix: 'grayscale(1) contrast(1.35) brightness(0.9)',
+    glam: 'brightness(1.12) contrast(0.92) saturate(1.2) sepia(0.12)',
   };
 
   function makeScratch(w, h) {
     return typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
   }
 
-  function drawFiltered(R, g, src, w, h, filter) {
+  // The "styled" filters: a base colour grade (FILTER_CSS) plus overlays drawn on top.
+  function drawStyled(R, g, src, w, h, filter, now) {
+    const t = now / 1000;
+    g.save();
+    if (filter === 'vhs') {
+      if ('filter' in g) { // colour fringes: a red ghost to the left, a cyan one to the right
+        const off = Math.max(2, Math.round(w / 200));
+        g.globalCompositeOperation = 'screen';
+        g.globalAlpha = 0.22;
+        g.filter = 'sepia(1) saturate(7) hue-rotate(-45deg) brightness(0.8)';
+        g.drawImage(src, -off, 0, w, h);
+        g.filter = 'sepia(1) saturate(7) hue-rotate(150deg) brightness(0.8)';
+        g.drawImage(src, off, 0, w, h);
+        g.filter = 'none';
+      }
+      g.globalCompositeOperation = 'source-over';
+      g.globalAlpha = 0.16;
+      g.fillStyle = '#000';
+      const step = Math.max(3, Math.round(h / 140));
+      for (let y = 0; y < h; y += step) g.fillRect(0, y, w, 1);
+      const band = ((t * 0.18) % 1.3 - 0.15) * h; // a slow tracking band rolling down
+      const bg = g.createLinearGradient(0, band, 0, band + h * 0.09);
+      bg.addColorStop(0, 'rgba(255,255,255,0)'); bg.addColorStop(0.5, 'rgba(255,255,255,0.10)'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+      g.globalAlpha = 1; g.fillStyle = bg; g.fillRect(0, band, w, h * 0.09);
+      const fs = Math.max(11, Math.round(h * 0.05));
+      g.font = `700 ${fs}px "Courier New", monospace`; g.textBaseline = 'top';
+      g.fillStyle = 'rgba(255,255,255,0.9)'; g.fillText('PLAY \u25B6', fs * 0.7, fs * 0.6);
+      if (Math.floor(t) % 2 === 0) { g.fillStyle = '#ff3b3b'; g.beginPath(); g.arc(w - fs * 1.1, fs * 1.1, fs * 0.32, 0, TAU); g.fill(); }
+    } else if (filter === 'cyber') {
+      const gr = g.createLinearGradient(0, 0, w, h);
+      gr.addColorStop(0, '#00e5ff'); gr.addColorStop(0.5, '#6a4cff'); gr.addColorStop(1, '#ff2bd6');
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.7; g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.1; g.fillRect(0, 0, w, h);
+    } else if (filter === 'comic') {
+      const dot = Math.max(5, Math.round(h / 55));
+      if (!R.dots || R.dotsH !== h) {
+        R.dotsH = h; R.dots = makeScratch(w, h);
+        const dg = R.dots.getContext('2d');
+        dg.fillStyle = '#fff'; dg.fillRect(0, 0, w, h); dg.fillStyle = '#000';
+        for (let y = 0, r = 0; y < h + dot; y += dot, r++) for (let x = (r % 2) * dot / 2; x < w + dot; x += dot) { dg.beginPath(); dg.arc(x, y, dot * 0.2, 0, TAU); dg.fill(); }
+      }
+      g.globalCompositeOperation = 'multiply'; g.globalAlpha = 0.2; g.drawImage(R.dots, 0, 0, w, h);
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+      g.strokeStyle = 'rgba(20,20,30,0.85)'; g.lineWidth = Math.max(3, h * 0.012); g.strokeRect(0, 0, w, h); // a comic panel border
+    } else if (filter === 'matrix') {
+      g.globalCompositeOperation = 'multiply'; g.fillStyle = '#19ff7a'; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'source-over';
+      const fs = Math.max(10, Math.round(h / 28)), cols = Math.ceil(w / fs);
+      if (!R.rain || R.rain.length !== cols) R.rain = Array.from({ length: cols }, (_, i) => ({ y: ((i * 7919) % 97) / 97 * h, v: 0.35 + ((i * 31) % 13) / 13 }));
+      g.font = `${fs}px "Courier New", monospace`; g.textBaseline = 'top';
+      const dt = Math.min(0.1, R.matrixAt ? t - R.matrixAt : 0.033); R.matrixAt = t;
+      R.rain.forEach((c, i) => {
+        c.y = (c.y + c.v * h * 0.35 * dt) % (h + fs * 8);
+        for (let k = 0; k < 7; k++) {
+          const y = c.y - k * fs; if (y < -fs || y > h) continue;
+          g.fillStyle = k === 0 ? 'rgba(210,255,225,0.95)' : `rgba(40,255,120,${0.55 - k * 0.07})`;
+          g.fillText(String.fromCharCode(0x30A0 + ((i * 13 + k * 7 + Math.floor(t * 6)) % 60)), i * fs, y);
+        }
+      });
+    } else if (filter === 'glam') {
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.42;
+      if ('filter' in g) g.filter = `blur(${Math.max(4, Math.round(h / 60))}px) brightness(1.25)`;
+      g.drawImage(src, 0, 0, w, h);
+      g.filter = 'none';
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.3; g.fillStyle = '#ff8fb8'; g.fillRect(0, 0, w, h);
+      const vg = g.createRadialGradient(w / 2, h * 0.45, h * 0.3, w / 2, h * 0.45, h * 0.95); // a soft golden vignette
+      vg.addColorStop(0, 'rgba(255,200,120,0)'); vg.addColorStop(1, 'rgba(255,170,90,0.35)');
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 1; g.fillStyle = vg; g.fillRect(0, 0, w, h);
+    }
+    g.restore();
+  }
+
+  function drawFiltered(R, g, src, w, h, filter, now = 0) {
     const css = FILTER_CSS[filter];
     if (filter === 'pixel') {
       const sw = Math.max(24, Math.round(w / 14)), sh = Math.max(18, Math.round(h / 14));
@@ -184,6 +261,8 @@
       if ('filter' in g) g.filter = `blur(${Math.max(4, Math.round(h / 60))}px) brightness(1.25)`;
       g.drawImage(src, 0, 0, w, h);
       g.restore();
+    } else if (filter === 'vhs' || filter === 'cyber' || filter === 'comic' || filter === 'matrix' || filter === 'glam') {
+      drawStyled(R, g, src, w, h, filter, now);
     } else if (filter === 'cool' || filter === 'sunset' || filter === 'vintage') {
       g.save();
       g.globalCompositeOperation = 'soft-light';
@@ -603,7 +682,7 @@
 
     R.render = function render(g, src, w, h, cfgIn, now, audio, opts = {}) {
       const cfg = cfgIn;
-      drawFiltered(R, g, src, w, h, cfg.filter);
+      drawFiltered(R, g, src, w, h, cfg.filter, now);
       if (cfg.on) {
         // restart the lamp's drop each time Lights is switched on or "Slow drop" is picked
         const key = cfg.lampAnim + '|' + (cfg.on ? 1 : 0);

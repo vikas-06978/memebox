@@ -1134,5 +1134,35 @@
   },
   "mu_t_tropical": {
     "message": "ट्रॉपिकल"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "सायबर"
+  },
+  "fx_filter_comic": {
+    "message": "कॉमिक"
+  },
+  "fx_filter_matrix": {
+    "message": "मॅट्रिक्स"
+  },
+  "fx_filter_glam": {
+    "message": "ग्लॅम"
+  },
+  "mu_t_disco": {
+    "message": "डिस्को"
+  },
+  "mu_t_club": {
+    "message": "क्लब"
+  },
+  "mu_t_bass": {
+    "message": "बेस"
+  },
+  "mu_t_desi": {
+    "message": "देसी"
+  },
+  "mu_t_house": {
+    "message": "हाउस"
   }
 }
