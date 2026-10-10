@@ -185,8 +185,8 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
   await page.screenshot({ path: 'tests/.tmp/pricing-inr.png', fullPage: true });
 
   await page.locator('.seg-btn[data-cur="usd"]').click();
-  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['$0.99', '$1.49', '$2.49']);
-  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$3.99']);
+  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['$1.49', '$2.49', '$3.99']);
+  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$5.49']);
   await expect(page.locator('.pass a.button')).toHaveCount(0);
   await expect(page.locator('#usd-note')).toBeVisible();
   await page.screenshot({ path: 'tests/.tmp/pricing-usd.png', fullPage: true });

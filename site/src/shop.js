@@ -6,10 +6,10 @@
 // `usd` is shown on the pricing page (card payment comes with the payment gateway). `proSeconds` / `maxSeconds`
 // are the hours of use a time pass gives (see extension/lib/plan.js). `closed`: not sold any more (existing keys keep working).
 export const PRODUCTS = Object.freeze({
-  pass_pro_30: Object.freeze({ name: 'Pro pass: 30 minutes', inr: 9, usd: 0.99, pictureSlots: 0, unlimited: false, proSeconds: 1800, maxSeconds: 0 }),
-  pass_pro_60: Object.freeze({ name: 'Pro pass: 1 hour', inr: 15, usd: 1.49, pictureSlots: 0, unlimited: false, proSeconds: 3600, maxSeconds: 0 }),
-  pass_pro_120: Object.freeze({ name: 'Pro pass: 2 hours', inr: 25, usd: 2.49, pictureSlots: 0, unlimited: false, proSeconds: 7200, maxSeconds: 0 }),
-  pass_max_180: Object.freeze({ name: 'Pro Max pass: 3 hours', inr: 35, usd: 3.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 10800 }),
+  pass_pro_30: Object.freeze({ name: 'Pro pass: 30 minutes', inr: 9, usd: 1.49, pictureSlots: 0, unlimited: false, proSeconds: 1800, maxSeconds: 0 }),
+  pass_pro_60: Object.freeze({ name: 'Pro pass: 1 hour', inr: 15, usd: 2.49, pictureSlots: 0, unlimited: false, proSeconds: 3600, maxSeconds: 0 }),
+  pass_pro_120: Object.freeze({ name: 'Pro pass: 2 hours', inr: 25, usd: 3.99, pictureSlots: 0, unlimited: false, proSeconds: 7200, maxSeconds: 0 }),
+  pass_max_180: Object.freeze({ name: 'Pro Max pass: 3 hours', inr: 35, usd: 5.49, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 10800 }),
   pictures5: Object.freeze({ name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false, proSeconds: 0, maxSeconds: 0, closed: true }),
   pro: Object.freeze({ name: 'MemeBox Pro (lifetime): everything unlimited', inr: 99, pictureSlots: 0, unlimited: true, proSeconds: 0, maxSeconds: 0, closed: true }),
 });

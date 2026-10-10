@@ -7,10 +7,10 @@
   const DUR = { pass_pro_30: 'pr_dur_30', pass_pro_60: 'pr_dur_60', pass_pro_120: 'pr_dur_120', pass_max_180: 'pr_dur_180' };
   // Used only if /api/config cannot be reached: the same list prices as site/src/shop.js.
   const FALLBACK = {
-    pass_pro_30: { inr: 9, usd: 0.99, proSeconds: 1800, maxSeconds: 0 },
-    pass_pro_60: { inr: 15, usd: 1.49, proSeconds: 3600, maxSeconds: 0 },
-    pass_pro_120: { inr: 25, usd: 2.49, proSeconds: 7200, maxSeconds: 0 },
-    pass_max_180: { inr: 35, usd: 3.99, proSeconds: 0, maxSeconds: 10800 },
+    pass_pro_30: { inr: 9, usd: 1.49, proSeconds: 1800, maxSeconds: 0 },
+    pass_pro_60: { inr: 15, usd: 2.49, proSeconds: 3600, maxSeconds: 0 },
+    pass_pro_120: { inr: 25, usd: 3.99, proSeconds: 7200, maxSeconds: 0 },
+    pass_max_180: { inr: 35, usd: 5.49, proSeconds: 0, maxSeconds: 10800 },
   };
 
   const fromTimezone = () => {
