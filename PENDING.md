@@ -16,3 +16,12 @@
 - Store listing wording, version 2.0.0 (this is the 2nd big version; the number stays 1.2.6 until you say), final tutorial video and store zip (only when you say).
 - Dollar prices stay $1.49 / 2.49 / 3.99 / 5.49 (rupees ₹9 / 15 / 25 / 35).
 - Check if the "Start here" card is too tall; shrink if needed.
+
+## Security and copy protection (before the store release)
+- Honest limit: extension code can always be read by anyone who installs it. We can only make copying slow and the paid parts useless without us.
+- Release build: minify and obfuscate the JS, strip comments, no source maps, no tests or tools in the store zip.
+- Keep the value on the server: pass balance, prices, key checks and the Razorpay webhooks are checked server-side. The extension only asks, it never decides. A copied extension without our server gets only the free part.
+- Server-signed pass sessions, rate limits and abuse checks on /api/license and /api/order; secrets only through wrangler, never in the repo.
+- GitHub repo private, no repo link on the site or store; the source stays out of the public store listing.
+- Copyright notice and terms ("all rights reserved"), our own music, voices, characters and artwork are ours; check the licences of the third-party parts (THIRD_PARTY_NOTICES).
+- Owner key (MBX-294K-D9VF-9BF6): keep it private; it is unlimited, so rotate it if it ever leaks. Our own account is the main (owner) user of the system.
