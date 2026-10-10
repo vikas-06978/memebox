@@ -740,6 +740,15 @@
   "ob_done": {
     "message": "C'est prêt. Vos répliques, clips et packs sont dans les Réglages."
   },
+  "ob_reload_title": {
+    "message": "Un onglet d'appel est déjà ouvert"
+  },
+  "ob_reload_text": {
+    "message": "Il a été ouvert avant MemeBox et ne peut pas encore jouer de mèmes. Rechargez-le, puis rejoignez de nouveau l'appel. Recharger vous fait quitter l'appel, faites-le quand vous êtes prêt."
+  },
+  "ob_reload_btn": {
+    "message": "Recharger cet onglet"
+  },
   "ob_settings": {
     "message": "⚙️ Ouvrir les réglages"
   },

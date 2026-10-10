@@ -740,6 +740,15 @@
   "ob_done": {
     "message": "Todo listo. Tus frases, clips y packs están en Ajustes."
   },
+  "ob_reload_title": {
+    "message": "Ya hay una pestaña de llamada abierta"
+  },
+  "ob_reload_text": {
+    "message": "Se abrió antes que MemeBox, así que aún no puede usar memes. Recárgala y vuelve a unirte a la llamada. Al recargar sales de la llamada, así que hazlo cuando estés listo."
+  },
+  "ob_reload_btn": {
+    "message": "Recargar esta pestaña"
+  },
   "ob_settings": {
     "message": "⚙️ Abrir ajustes"
   },

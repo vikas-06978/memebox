@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS feedback (
   message    TEXT NOT NULL DEFAULT '',
   email      TEXT NOT NULL DEFAULT '',      -- optional, only if the person typed it
   reason     TEXT NOT NULL DEFAULT '',      -- uninstall survey answer
+  platform   TEXT NOT NULL DEFAULT '',      -- where they used it (picked from a list)
+  device     TEXT NOT NULL DEFAULT '',      -- which device (picked from a list)
   version    TEXT NOT NULL DEFAULT '',
   site       TEXT NOT NULL DEFAULT '',
   lang       TEXT NOT NULL DEFAULT 'en'

@@ -119,3 +119,58 @@ test('admin: wrong key refused; right key shows totals, requests and messages; C
   await expect(page.getByLabel('Admin key')).toBeVisible();
   expect(page.cspErrors).toEqual([]);
 });
+
+test('uninstall survey and feedback form can say where and on which device; the link pre-selects the browser version', async ({ page, site }) => {
+  await page.goto(`${site.url}/uninstall?v=1.2.3`);
+  await page.locator('input[name=reason][value="didnt-work"]').check({ force: true });
+  await page.locator('select[name=platform]').selectOption('zoom-app');
+  await page.locator('select[name=device]').selectOption('chromebook');
+  await page.waitForTimeout(150);
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.locator('#thanks')).toBeVisible();
+
+  await page.goto(`${site.url}/feedback?v=1.2.3&site=teams`);
+  await expect(page.locator('select[name=platform]')).toHaveValue('teams-web'); // the extension only runs in the browser
+  await page.locator('input[name=rating][value="4"]').check({ force: true });
+  await page.waitForTimeout(150);
+  await page.getByRole('button', { name: 'Send feedback' }).click();
+  await expect(page.locator('#thanks')).toBeVisible();
+
+  const rows = await site.rows();
+  expect(rows[0]).toMatchObject({ type: 'uninstall', reason: 'didnt-work', platform: 'zoom-app', device: 'chromebook' });
+  expect(rows[1]).toMatchObject({ type: 'feedback', platform: 'teams-web', device: '' });
+  expect(page.cspErrors).toEqual([]);
+});
+
+test('the new questions are translated (Hindi) and the admin page shows the answers and the Pro count', async ({ page, site }) => {
+  await page.goto(`${site.url}/uninstall?lang=hi`);
+  await expect(page.locator('label.field', { hasText: 'आपने MemeBox कहाँ इस्तेमाल किया?' })).toBeVisible();
+  await expect(page.locator('select[name=platform] option[value="zoom-app"]')).toHaveText('Zoom (डेस्कटॉप ऐप)');
+
+  await site.db.prepare("INSERT INTO feedback (id, created_at, type, reason, platform, device, version) VALUES ('a', '2026-10-07T01:00:00Z', 'uninstall', 'didnt-work', 'zoom-app', 'chromebook', '1.2.2')").run();
+  await page.goto(`${site.url}/admin`);
+  await page.locator('input[name=key]').fill(ADMIN_KEY);
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await expect(page.getByRole('heading', { name: 'Where they used it' })).toBeVisible();
+  await expect(page.locator('section', { has: page.getByRole('heading', { name: 'Where they used it' }) }).locator('li', { hasText: 'Zoom (desktop app)' })).toContainText('1');
+  await expect(page.getByRole('heading', { name: 'Which device' })).toBeVisible();
+  await expect(page.getByText(/Pro users:/)).toBeVisible();
+});
+
+test('landing page: the tutorial video autoplays muted, loops, has controls, and the page CSP allows it', async ({ page, site }) => {
+  await page.goto(site.url + '/');
+  const video = page.locator('.frame video');
+  await expect(video).toHaveCount(1);
+  await expect(video).toHaveAttribute('muted', '');
+  await expect(video).toHaveAttribute('loop', '');
+  await expect(video).toHaveAttribute('controls', '');
+  await expect.poll(() => video.evaluate((v) => v.currentTime), { timeout: 15000 }).toBeGreaterThan(1);
+  expect(await video.evaluate((v) => ({ paused: v.paused, muted: v.muted, h: v.videoHeight, d: v.duration }))).toMatchObject({ paused: false, muted: true, h: 800 });
+  await page.screenshot({ path: 'tests/.tmp/landing-hero.png' });
+  expect(page.cspErrors).toEqual([]);
+});
+
+test('landing page in Hindi has the same tutorial video', async ({ page, site }) => {
+  await page.goto(site.url + '/hi/');
+  await expect(page.locator('.frame video source')).toHaveCount(2);
+});

@@ -176,3 +176,12 @@ test('payments closed without a valid UPI_ID; orders are rate limited', async ()
   for (let i = 0; i < 10; i++) assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }, '198.51.100.9'))).status, 200);
   assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product: 'pro' }, '198.51.100.9'))).status, 429);
 });
+
+test('admin page counts paid Pro users, owner/gift keys and picture-only buyers separately', async () => {
+  await createLicense(db, { kind: 'paid', unlimited: true, pictureSlots: 0, note: 'order A' });
+  await createLicense(db, { kind: 'paid', unlimited: true, pictureSlots: 0, note: 'order B' });
+  await createLicense(db, { kind: 'paid', unlimited: false, pictureSlots: 5, note: 'order C' });
+  await createLicense(db, { kind: 'owner', unlimited: true, pictureSlots: 0, note: 'me' });
+  const html = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
+  assert.match(html, /<b>Pro users:<\/b> 2 paid · 1 owner\/gift · 0 checked in the last 7 days · 1 bought only picture slots/);
+});

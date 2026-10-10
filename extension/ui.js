@@ -168,7 +168,7 @@
         clearTimeout(onPlayResult.t);
         onPlayResult.t = setTimeout(() => { state.nowPlayingId = null; renderList(); }, 3000);
       }
-      if (msg.muted) toast(t('muted_nobody'));
+      if (msg.muted) toast(t('muted_nobody'), 6000);
     } else {
       toast(msg.reason === 'no-call' ? t('join_first') : t('err_play', msg.reason));
     }
@@ -435,6 +435,9 @@
     @keyframes ring { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(1.5); } }
     .fab .dot { position: absolute; right: 1px; bottom: 1px; width: 15px; height: 15px; border-radius: 50%;
       border: 2.5px solid #fff; background: #9aa0a6; }
+    /* Muted in the call: memes would be silent, so the button says so (and the panel too). */
+    .fab.muted::before { content: "🔇"; position: absolute; left: -7px; bottom: -4px; width: 24px; height: 24px; border-radius: 50%;
+      background: #fff; border: 2px solid #f9ab00; font: 13px/20px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; text-align: center; }
 
     /* Emoji burst when a meme plays (interactive and fun, off with reduced motion). */
     .burst { position: fixed; pointer-events: none; font: 24px/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
@@ -467,6 +470,9 @@
       display: grid; place-items: center; padding: 0; transition: background .1s; }
     .icon:hover { background: var(--p-soft); }
     .status { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; background: var(--p-soft); font-weight: 600; }
+    .status.warn { background: #fff3cd; color: #5c3d00; border: 1px solid #f9ab00; font-size: 13px; line-height: 1.35; }
+    :host([data-theme="dark"]) .status.warn, :host([data-theme="neon"]) .status.warn { background: #4a3a00; color: #ffe08a; }
+    @media (prefers-color-scheme: dark) { :host(:not([data-theme])) .status.warn, :host([data-theme="auto"]) .status.warn { background: #4a3a00; color: #ffe08a; } }
     .status .dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #9aa0a6; box-shadow: 0 0 0 3px rgba(127,127,127,.15); }
     .search { width: 100%; padding: 10px 14px; border: 1px solid var(--p-line); border-radius: 12px; font: inherit; color: inherit; background: var(--p-field);
       transition: border-color .1s, box-shadow .1s; }
@@ -571,6 +577,7 @@
   // Panel
   const statusDot = el('span', { className: 'dot' });
   const statusText = el('span');
+  const statusBox = el('div', { className: 'status' }, statusDot, statusText);
   const search = el('input', { className: 'search', type: 'search', placeholder: t('search_ph') });
   search.setAttribute('aria-label', t('search_ph'));
   const chips = el('div', { className: 'chips', role: 'tablist' });
@@ -620,7 +627,7 @@
   });
   const panel = el('div', { className: 'panel' },
     el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), feedbackBtn, optionsBtn, closeBtn),
-    el('div', { className: 'status' }, statusDot, statusText),
+    statusBox,
     tabBar,
     search,
     chips,
@@ -678,7 +685,9 @@
     const s = status();
     fabDot.style.background = STATUS_COLOR[s];
     statusDot.style.background = STATUS_COLOR[s];
-    statusText.textContent = t('st_' + s);
+    statusText.textContent = (s === 'muted' ? '🔇 ' : '') + t('st_' + s);
+    statusBox.classList.toggle('warn', s === 'muted' || s === 'none');
+    fab.classList.toggle('muted', s === 'muted');
     fab.title = 'MemeBox: ' + t('st_' + s) + '\n' + t('fab_tip');
   }
 
@@ -758,7 +767,7 @@
   }
 
   let toastTimer = 0;
-  function toast(text) {
+  function toast(text, ms = 3200) {
     toastEl.textContent = text;
     const anchor = state.hidden ? { left: 16, width: 0, top: window.innerHeight - 60, bottom: window.innerHeight - 60 } : fab.getBoundingClientRect();
     const w = Math.min(280, window.innerWidth - 16);
@@ -769,7 +778,7 @@
     toastEl.style.bottom = above ? window.innerHeight - anchor.top + 8 + 'px' : '';
     toastEl.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
   }
 
   // The 😂 button laughs and a few emoji burst out of it whenever a meme plays.

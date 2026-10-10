@@ -26,6 +26,30 @@
         <label><input type="radio" name="reason" value="found-another"> <span data-t="un_r_another">I found another one</span></label>
         <label><input type="radio" name="reason" value="other"> <span data-t="un_r_other">Other</span></label>
       </fieldset>
+      <label class="field"><span data-t="fb_platform">Where did you use MemeBox?</span>
+        <select name="platform">
+          <option value="" data-t="fb_p_choose">Choose…</option>
+          <option value="meet">Google Meet</option>
+          <option value="zoom-web" data-t="fb_p_zoom_web">Zoom (in the browser)</option>
+          <option value="zoom-app" data-t="fb_p_zoom_app">Zoom (desktop app)</option>
+          <option value="teams-web" data-t="fb_p_teams_web">Teams (in the browser)</option>
+          <option value="teams-app" data-t="fb_p_teams_app">Teams (desktop app)</option>
+          <option value="discord">Discord</option>
+          <option value="not-tried" data-t="fb_p_not_tried">I didn't get to try it</option>
+          <option value="other" data-t="fb_p_other">Somewhere else</option>
+        </select>
+      </label>
+      <label class="field"><span data-t="fb_device">Which device?</span>
+        <select name="device">
+          <option value="" data-t="fb_p_choose">Choose…</option>
+          <option value="windows">Windows</option>
+          <option value="mac">Mac</option>
+          <option value="chromebook">Chromebook</option>
+          <option value="linux">Linux</option>
+          <option value="other" data-t="fb_d_other">Another device</option>
+        </select>
+      </label>
+
       <label class="field"><span data-t="un_more">Anything else? (optional)</span>
         <textarea name="message" rows="3" maxlength="1000"></textarea>
       </label>

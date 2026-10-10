@@ -4,6 +4,21 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-10-10
+
+### Added
+- A **30 second tutorial video** on the welcome page, on the website's home page and on the Google Meet and Discord pages. It is silent, with big captions: join your call, click 😂, right-click for the panel, unmute your mic. Made from the real extension by `npm run tutorial`.
+- The welcome page lists call tabs that were open before MemeBox was installed, with a **Reload this tab** button for each. Nothing reloads by itself, because reloading leaves a live call.
+- The feedback form and the uninstall survey ask **where you used MemeBox** (Google Meet, Zoom or Teams in the browser or the desktop app, Discord, or not at all) and **which device** (Windows, Mac, Chromebook, Linux). Picked from a list, in all 12 languages. The link from the extension pre-selects the browser version.
+- Admin: charts for those two answers, and a **Pro users** line (paid, owner/gift, and checked in during the last 7 days).
+
+### Changed
+- Muted in the call: the 😂 button shows a 🔇 badge, the panel's status line turns into an amber warning, and the "you are muted" note stays for 6 seconds instead of 3.
+- Removed the "Everyone heard Chai break!" label from the home page picture; the video shows it.
+
+### Notes for the site owner
+- Before deploying the site, run once: `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-platform-device.sql`. Until then, answers are still saved, only without the two new fields.
+
 ## [1.2.2] - 2026-09-28
 
 ### Added

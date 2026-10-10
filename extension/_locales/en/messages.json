@@ -740,6 +740,15 @@
   "ob_done": {
     "message": "You're ready. Your lines, clips and packs are in Settings."
   },
+  "ob_reload_title": {
+    "message": "A call tab is already open"
+  },
+  "ob_reload_text": {
+    "message": "It was opened before MemeBox, so it can't use memes yet. Reload it, then join the call again. Reloading leaves the call, so do it when you're ready."
+  },
+  "ob_reload_btn": {
+    "message": "Reload this tab"
+  },
   "ob_settings": {
     "message": "⚙️ Open settings"
   },

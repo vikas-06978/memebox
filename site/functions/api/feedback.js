@@ -34,12 +34,19 @@ export async function onRequest({ request, env }) {
   }
 
   const v = res.value;
-  await env.DB.prepare(
-    'INSERT INTO feedback (id, created_at, type, rating, used, wants, message, email, reason, version, site, lang) ' +
-    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-  ).bind(
-    crypto.randomUUID(), new Date().toISOString(), v.type, v.rating, JSON.stringify(v.used),
-    v.wants, v.message, v.email, v.reason, v.version, v.site, v.lang,
-  ).run();
+  const base = [crypto.randomUUID(), new Date().toISOString(), v.type, v.rating, JSON.stringify(v.used), v.wants, v.message, v.email, v.reason];
+  try {
+    await env.DB.prepare(
+      'INSERT INTO feedback (id, created_at, type, rating, used, wants, message, email, reason, platform, device, version, site, lang) ' +
+      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    ).bind(...base, v.platform, v.device, v.version, v.site, v.lang).run();
+  } catch (err) {
+    // The database wasn't migrated yet (db/migrations): keep the answer, drop only the two new fields.
+    if (!/no column named (platform|device)/i.test(String(err && err.message))) throw err;
+    await env.DB.prepare(
+      'INSERT INTO feedback (id, created_at, type, rating, used, wants, message, email, reason, version, site, lang) ' +
+      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    ).bind(...base, v.version, v.site, v.lang).run();
+  }
   return json({ ok: true });
 }

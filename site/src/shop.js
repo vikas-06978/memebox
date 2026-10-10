@@ -123,5 +123,13 @@ export async function loadShop(db) {
   const recent = (await db.prepare("SELECT * FROM orders WHERE status IN ('approved', 'rejected') ORDER BY decided_at DESC LIMIT 20").all()).results;
   const licenses = (await db.prepare('SELECT * FROM licenses ORDER BY created_at DESC LIMIT 100').all()).results;
   const earned = await db.prepare("SELECT COALESCE(SUM(amount_inr), 0) AS inr, COUNT(*) AS n FROM orders WHERE status = 'approved'").first();
-  return { waiting, recent, licenses, earnedInr: Number(earned.inr), paidOrders: Number(earned.n) };
+  const week = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const count = async (where, ...args) => Number((await db.prepare(`SELECT COUNT(*) AS n FROM licenses WHERE ${where}`).bind(...args).first()).n);
+  return {
+    waiting, recent, licenses, earnedInr: Number(earned.inr), paidOrders: Number(earned.n),
+    proPaid: await count("kind = 'paid' AND unlimited = 1 AND status = 'active'"),
+    proGift: await count("kind <> 'paid' AND unlimited = 1 AND status = 'active'"),
+    proActive: await count("unlimited = 1 AND status = 'active' AND last_seen >= ?", week),
+    pictureBuyers: await count("kind = 'paid' AND unlimited = 0 AND status = 'active'"),
+  };
 }

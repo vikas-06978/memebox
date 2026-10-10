@@ -740,6 +740,15 @@
   "ob_done": {
     "message": "Siap. Kalimat, klip, dan paket Anda ada di Pengaturan."
   },
+  "ob_reload_title": {
+    "message": "Tab panggilan sudah terbuka"
+  },
+  "ob_reload_text": {
+    "message": "Tab ini dibuka sebelum MemeBox, jadi belum bisa memutar meme. Muat ulang, lalu gabung lagi ke panggilan. Memuat ulang akan mengeluarkan Anda dari panggilan, jadi lakukan saat sudah siap."
+  },
+  "ob_reload_btn": {
+    "message": "Muat ulang tab ini"
+  },
   "ob_settings": {
     "message": "⚙️ Buka pengaturan"
   },

@@ -8,6 +8,9 @@ test.describe('welcome page', () => {
     expect(page, 'the welcome tab opened by itself').toBeTruthy();
     await expect(page.locator('h1')).toHaveText('Welcome to MemeBox 😂');
     await expect(page.locator('.steps > li')).toHaveCount(3);
+    const video = page.locator('.tutorial video'); // the tutorial plays on the welcome page too
+    await expect.poll(() => video.evaluate((v) => v.currentTime), { timeout: 15000 }).toBeGreaterThan(1);
+    expect(await video.evaluate((v) => ({ paused: v.paused, muted: v.muted, h: v.videoHeight }))).toMatchObject({ paused: false, muted: true, h: 800 });
     await expect(page.locator('.steps svg')).toHaveCount(3);
 
     await page.locator('#mic-start').click();

@@ -4,6 +4,8 @@
   'use strict';
   const EMOJI = ['😂', '🤣', '😆', '🔊', '🎉', '😹', '💥', '🤪', '✨'];
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // The tutorial video autoplays (muted). People who asked for less motion get it paused, with its controls.
+  if (reduce.matches) for (const v of document.querySelectorAll('.frame video')) v.pause();
 
   function burst(x, y, count = 10, extra = []) {
     if (reduce.matches) return;

@@ -5,6 +5,9 @@ export const RATINGS = [1, 2, 3, 4];
 export const FEATURES = ['soundboard', 'voices', 'clips', 'tab-audio', 'voice-changer', 'captions'];
 export const SITES = ['meet', 'zoom', 'teams', 'discord'];
 export const REASONS = ['didnt-work', 'too-hard', 'not-funny', 'found-another', 'other'];
+// "Where did you use MemeBox?" and "Which device?": picked from a list, never read from the browser.
+export const PLATFORMS = ['meet', 'zoom-web', 'zoom-app', 'teams-web', 'teams-app', 'discord', 'not-tried', 'other'];
+export const DEVICES = ['windows', 'mac', 'chromebook', 'linux', 'other'];
 // The site's languages (site/public/assets/i18n/*.json).
 export const LANGS = ['en', 'hi', 'bn', 'mr', 'ta', 'te', 'gu', 'es', 'ar', 'pt', 'fr', 'id'];
 
@@ -13,8 +16,8 @@ export const LIMITS = { wants: 500, message: 2000, email: 254, version: 20, toke
 // Fields every form may send. `token` is the Turnstile answer, `website` is the honeypot.
 const COMMON = ['type', 'version', 'site', 'lang', 'token', 'website'];
 const ALLOWED = {
-  feedback: [...COMMON, 'rating', 'used', 'wants', 'message', 'email'],
-  uninstall: [...COMMON, 'reason', 'message'],
+  feedback: [...COMMON, 'rating', 'used', 'wants', 'message', 'email', 'platform', 'device'],
+  uninstall: [...COMMON, 'reason', 'message', 'platform', 'device'],
 };
 
 const EMAIL = /^[^\s@<>()[\]\\,;:"]{1,64}@[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
@@ -64,6 +67,8 @@ export function validateSubmission(body) {
     message: '',
     email: '',
     reason: '',
+    platform: oneOf(body.platform, PLATFORMS, 'platform', errors),
+    device: oneOf(body.device, DEVICES, 'device', errors),
     version,
     site: oneOf(body.site, SITES, 'site', errors),
     lang: oneOf(body.lang, LANGS, 'lang', errors) || 'en',

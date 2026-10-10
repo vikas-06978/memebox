@@ -141,7 +141,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--f
 .frame .dots { display: flex; gap: 6px; padding: 10px 12px; background: #2a2b2f; }
 .frame .dots i { width: 10px; height: 10px; border-radius: 50%; background: #ff6b6b; display: block; }
 .frame .dots i:nth-child(2) { background: #fcc419; } .frame .dots i:nth-child(3) { background: #51cf66; }
-.frame img { display: block; width: 100%; height: auto; }
+.frame img, .frame video { display: block; width: 100%; height: auto; }
 .float { position: absolute; font-size: 38px; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .2)); animation: bob 3.2s ease-in-out infinite; z-index: 2; }
 .float.f1 { top: -18px; left: -14px; }
 .float.f2 { top: 30%; right: -22px; animation-delay: .8s; font-size: 32px; }

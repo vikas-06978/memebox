@@ -740,6 +740,15 @@
   "ob_done": {
     "message": "Tudo pronto. Suas falas, clipes e pacotes estão nas Configurações."
   },
+  "ob_reload_title": {
+    "message": "Já há uma aba de chamada aberta"
+  },
+  "ob_reload_text": {
+    "message": "Ela foi aberta antes do MemeBox e ainda não pode usar memes. Recarregue e entre na chamada de novo. Recarregar tira você da chamada, então faça isso quando estiver pronto."
+  },
+  "ob_reload_btn": {
+    "message": "Recarregar esta aba"
+  },
   "ob_settings": {
     "message": "⚙️ Abrir configurações"
   },
