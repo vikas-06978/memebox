@@ -1383,5 +1383,11 @@
   },
   "fx_angle_auto": {
     "message": "Auto"
+  },
+  "fx_mirror": {
+    "message": "Izquierda / derecha como me veo"
+  },
+  "fx_mirror_tip": {
+    "message": "Como un espejo: tu izquierda es la de tu propio vídeo. Desmarca si se ve al revés."
   }
 }

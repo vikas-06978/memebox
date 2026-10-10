@@ -55,6 +55,7 @@
     const focusBox = el('input', { type: 'checkbox' });
     const syncBox = el('input', { type: 'checkbox' });
     const safeBox = el('input', { type: 'checkbox' });
+    const mirrorBox = el('input', { type: 'checkbox' });
     const followBox = el('input', { type: 'checkbox' });
     const studioBox = el('input', { type: 'checkbox' });
     const hdBox = el('input', { type: 'checkbox' });
@@ -92,7 +93,7 @@
     };
     const dragTo = (ev) => {
       const r = canvas.getBoundingClientRect();
-      const x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
+      const x0 = (ev.clientX - r.left) / r.width, x = cfg().mirror !== false ? 1 - x0 : x0, y = (ev.clientY - r.top) / r.height;
       const off = Fx.FIX_OFF[cfg().fixture] || 0.175;
       liveSet({ lampX: Math.min(0.94, Math.max(0.06, x)), lampHang: Math.min(0.4, Math.max(0, y - off)), lamp: true, on: true });
     };
@@ -134,6 +135,7 @@
       el('label', { className: 'check', title: t('fx_focus_tip') }, focusBox, t('fx_focus')),
       el('label', { className: 'check', title: t('fx_sync_tip') }, syncBox, t('fx_sync')),
       el('label', { className: 'check', title: t('fx_safe_tip') }, safeBox, t('fx_safe')),
+      el('label', { className: 'check', title: t('fx_mirror_tip') }, mirrorBox, t('fx_mirror')),
       el('label', { className: 'check', title: t('fx_hd_tip') }, hdBox, t('fx_hd')),
       el('div', { className: 'row' }, el('span', {}, '✨'), hdRange),
       el('label', { className: 'check', title: t('fx_studio_tip') }, studioBox, t('fx_studio')),
@@ -195,7 +197,7 @@
     api.settingsDetails.after(details);
 
     const wire = (box, key) => box.addEventListener('change', () => set({ [key]: box.checked }, true));
-    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe'); wire(followBox, 'follow'); hdBox.addEventListener('change', () => set({ enhance: hdBox.checked ? Math.max(0.6, cfg().enhance || 0) : 0, on: true }, true)); wire(studioBox, 'studio'); wire(awayBox, 'awayDance');
+    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe'); wire(mirrorBox, 'mirror'); wire(followBox, 'follow'); hdBox.addEventListener('change', () => set({ enhance: hdBox.checked ? Math.max(0.6, cfg().enhance || 0) : 0, on: true }, true)); wire(studioBox, 'studio'); wire(awayBox, 'awayDance');
     bright.addEventListener('input', () => set({ intensity: Number(bright.value) / 100 }));
 
     // ---- build the choice lists from what exists ----
@@ -234,7 +236,7 @@
     function render() {
       const c = cfg();
       onBox.checked = c.on; lampBox.checked = c.lamp; cornersBox.checked = c.corners;
-      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe; followBox.checked = c.follow; hdBox.checked = c.enhance > 0; hdRange.value = Math.round((c.enhance || 0.6) * 100); hdRange.disabled = !(c.enhance > 0); sizeRange.value = Math.round((c.lampSize || 1) * 100); studioBox.checked = c.studio; awayBox.checked = c.awayDance;
+      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe; mirrorBox.checked = c.mirror !== false; canvas.style.transform = c.mirror !== false ? 'scaleX(-1)' : ''; followBox.checked = c.follow; hdBox.checked = c.enhance > 0; hdRange.value = Math.round((c.enhance || 0.6) * 100); hdRange.disabled = !(c.enhance > 0); sizeRange.value = Math.round((c.lampSize || 1) * 100); studioBox.checked = c.studio; awayBox.checked = c.awayDance;
       bright.value = Math.round(c.intensity * 100);
       body.classList.toggle('fx-off', !c.on);
       sum.textContent = c.on ? t('fx_state_on') : t('fx_state_off');

@@ -1383,5 +1383,11 @@
   },
   "fx_angle_auto": {
     "message": "Otomatis"
+  },
+  "fx_mirror": {
+    "message": "Kiri / kanan seperti saya melihat diri"
+  },
+  "fx_mirror_tip": {
+    "message": "Seperti cermin: kiri Anda adalah kiri di video Anda sendiri. Hapus centang jika terbalik."
   }
 }

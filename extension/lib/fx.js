@@ -41,6 +41,7 @@
     on: false,          // the Lights switch
     armed: false,       // the camera is prepared in the next call (set once Lights has been used)
     lamp: true,         // the hanging lamp
+    mirror: true,       // Left / Right as in a mirror (your own video): the picture sent is not flipped, your own view of it is
     lampPos: 'center',  // center | left | right (so it does not cover your face)
     lightAngle: 'auto', // the light's angle onto you: auto (aimed at you), or 90 / 60 / 45 / 30 degrees
     lampX: null,        // where the lamp hangs, 0..1 across the picture (null = the Left / Centre / Right choice)
@@ -74,6 +75,7 @@
       on: c.on === true,
       armed: c.armed === true,
       lamp: c.lamp !== false,
+      mirror: c.mirror !== false,
       lampPos: ['center', 'left', 'right'].includes(c.lampPos) ? c.lampPos : 'center',
       lightAngle: [90, 60, 45, 30].includes(Number(c.lightAngle)) ? Number(c.lightAngle) : 'auto',
       lampX: Number.isFinite(Number(c.lampX)) && c.lampX !== null ? clamp(Number(c.lampX), 0.06, 0.94) : null,
@@ -1812,9 +1814,10 @@ void main(){
         if (party) { e.corners = true; e.pattern = 'rainbow'; } // nobody there: the lights throw a party
 
         const I = cfg.intensity * e.dim * (1 + 0.45 * pulseK) * (0.78 + 0.22 * clamp(darkRaw * 2)); // a little softer in a bright room, full strength in a dark one
-        const base = cfg.lampX != null ? cfg.lampX : cfg.lampPos === 'left' ? 0.22 : cfg.lampPos === 'right' ? 0.78 : 0.5;
+        const flip = cfg.mirror !== false; // "my left" is the left of the picture you see in your own video, which is the right of the picture that is sent
+        const base = cfg.lampX != null ? cfg.lampX : cfg.lampPos === 'left' ? (flip ? 0.78 : 0.22) : cfg.lampPos === 'right' ? (flip ? 0.22 : 0.78) : 0.5;
         const lsz = cfg.lampSize || 1, hang = h * (cfg.lampHang || 0);
-        const offs = cfg.lampX != null ? cfg.lampX - 0.5 : cfg.lampPos === 'left' ? -0.28 : cfg.lampPos === 'right' ? 0.28 : 0; // with Follow me, Left / Right means beside YOU
+        const offs = cfg.lampX != null ? cfg.lampX - 0.5 : cfg.lampPos === 'left' ? (flip ? 0.28 : -0.28) : cfg.lampPos === 'right' ? (flip ? -0.28 : 0.28) : 0; // with Follow me, Left / Right means beside YOU
         const lampPos = { cx: follow ? clamp(w * (0.5 + (fx - 0.5) * 1.3 + offs), w * 0.03, w * 0.97) : w * base }; // follows you all the way to the edges
         const ls = lampState(cfg, h, now, e, audio);
         if (party) { ls.angle += 0.2 * Math.sin(t * 2.7); ls.dy += h * 0.012 * Math.sin(t * 5.4); }
@@ -1872,10 +1875,11 @@ void main(){
         else if (cfg.lamp) drawLamp(g, w, h, body);
         g.restore();
         if (cfg.character !== 'none') {
-          const ck = cfg.character + '|' + cfg.charPos;
+          const cpos = flip ? (cfg.charPos === 'left' ? 'right' : 'left') : cfg.charPos;
+          const ck = cfg.character + '|' + cpos;
           if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; R.cAct = null; }
-          const stg = stageUpdate(cfg, tr, audio, now, cfg.charPos, h * 0.4, w);
-          drawCharacter(g, w, h, cfg.character, cfg.charPos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright) });
+          const stg = stageUpdate(cfg, tr, audio, now, cpos, h * 0.4, w);
+          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright) });
         } else R.charKey = '';
       }
       if (opts.preview) {
