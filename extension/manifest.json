@@ -51,6 +51,7 @@
       "js": [
         "lib/pitch-shift.js",
         "lib/fx.js",
+        "lib/music.js",
         "mic-hook.js"
       ],
       "world": "MAIN",
@@ -70,8 +71,10 @@
         "lib/plan.js",
         "defaults.js",
         "lib/fx-ui.js",
+        "lib/music-ui.js",
         "bridge.js",
         "lights-ui.js",
+        "music-section.js",
         "ui.js"
       ],
       "run_at": "document_start",

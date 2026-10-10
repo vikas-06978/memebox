@@ -80,7 +80,10 @@
       case 'query-status': announce(); break;
       case 'beep': play(d.reqId, beep, '(test beep)'); break;
       case 'play-audio': playAudio(d); break;
-      case 'stop': stopAll(); break;
+      case 'stop': stopAll(); stopMusic(); break;
+      case 'music-play': startMusic(String(d.value), d.volume); break;
+      case 'music-stop': stopMusic(); break;
+      case 'music-volume': if (musicPlayer) musicPlayer.setVolume(d.value); musicVolume = clamp(d.value, 0, 1, 0.5); break;
       case 'volume': setVolume(d.value); break;
       case 'duck': setDuck(d.value !== false); break;
       case 'monitor': setMonitor(d.value === true); break;
@@ -390,6 +393,35 @@
     applyBoardGain(0.02);
   }
 
+  // ---------- music: original tunes (lib/music.js) played into the mic ----------
+  // It goes through the same soundboard as the memes, so it gets quieter while you talk (auto-duck),
+  // and the lights and characters follow it (a mood per tune). "Stop all" stops it too.
+  let musicPlayer = null;
+  let musicVolume = 0.5;
+  let musicMoodTimer = 0;
+  const MUSIC_MOOD = { funky: 'fun', party: 'excited', suspense: 'suspense', retro: 'fun', jazz: 'fun', epic: 'suspense', tropical: 'excited' };
+
+  function startMusic(id, vol) {
+    if (!globalThis.MemeMusic || !MemeMusic.TUNES[id] || !isActive() || !ctx) { post({ type: 'music-state', id: '' }); return; }
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
+    if (!musicPlayer) musicPlayer = MemeMusic.createPlayer(ctx, board);
+    musicVolume = clamp(vol, 0, 1, musicVolume);
+    musicPlayer.setVolume(musicVolume);
+    musicPlayer.play(id);
+    const mood = MUSIC_MOOD[id] || '';
+    clearInterval(musicMoodTimer);
+    musicMoodTimer = setInterval(() => { if (mood) { fxMood = mood; fxMoodAt = performance.now(); } }, 3000);
+    if (mood) { fxMood = mood; fxMoodAt = performance.now(); }
+    duckTick(true);
+    startDuckWatch();
+    post({ type: 'music-state', id });
+  }
+
+  function stopMusic() {
+    clearInterval(musicMoodTimer);
+    if (musicPlayer && musicPlayer.playing) { musicPlayer.stop(); post({ type: 'music-state', id: '' }); }
+  }
+
   // ---------- auto-duck: memes get quieter while YOU are talking ----------
   // Watches the real mic level (before any effects) only while something is playing.
 
@@ -420,7 +452,7 @@
   }
 
   function duckTick(atStart = false) {
-    const busy = playing.size > 0 || !!tabAudio;
+    const busy = playing.size > 0 || !!tabAudio || !!(musicPlayer && musicPlayer.playing);
     if (!busy || !duckEnabled) {
       if (ducked) { ducked = false; applyBoardGain(0.15); }
       if (!busy) { clearInterval(duckTimer); duckTimer = 0; }

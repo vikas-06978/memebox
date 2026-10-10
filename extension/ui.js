@@ -686,6 +686,7 @@
     panelIsOpen: () => panelOpen,
     openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
     inCall: () => !!activeFrame(),
+    sendToHook: (cmd) => sendToHook(cmd),
     send: (msg) => bridge.toRuntime(msg),
     onPanelToggle: (fn) => panelToggleCbs.push(fn),
     onMessage: (fn) => messageCbs.push(fn),

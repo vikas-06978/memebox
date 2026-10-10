@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "Renard"
+  },
+  "mu_title": {
+    "message": "🎵 Musique"
+  },
+  "mu_how": {
+    "message": "Des mélodies originales sans droits d’auteur. Elles passent dans votre appel comme un mème et baissent quand vous parlez."
+  },
+  "mu_stop": {
+    "message": "Arrêter"
+  },
+  "mu_vol": {
+    "message": "Volume de la musique"
+  },
+  "mu_locked": {
+    "message": "🔒 Aperçu seulement (sur vos haut-parleurs, pas dans l’appel)."
+  },
+  "mu_in_call": {
+    "message": "Diffusé dans votre appel : $1"
+  },
+  "mu_preview": {
+    "message": "Aperçu : $1, $2 secondes, vous seul l’entendez"
+  },
+  "mu_idle": {
+    "message": "Touchez un morceau pour l’écouter. Gratuit : Chill et Funky."
+  },
+  "mu_idle_call": {
+    "message": "Touchez un morceau pour le diffuser dans votre appel."
+  },
+  "mu_t_chill": {
+    "message": "Chill"
+  },
+  "mu_t_funky": {
+    "message": "Funky"
+  },
+  "mu_t_party": {
+    "message": "Fête"
+  },
+  "mu_t_suspense": {
+    "message": "Suspense"
+  },
+  "mu_t_retro": {
+    "message": "Rétro"
+  },
+  "mu_t_jazz": {
+    "message": "Jazz"
+  },
+  "mu_t_epic": {
+    "message": "Épique"
+  },
+  "mu_t_tropical": {
+    "message": "Tropical"
   }
 }

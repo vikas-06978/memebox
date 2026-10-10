@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "Zorro"
+  },
+  "mu_title": {
+    "message": "🎵 Música"
+  },
+  "mu_how": {
+    "message": "Melodías originales sin derechos de autor. Suenan en tu llamada como un meme y bajan cuando hablas."
+  },
+  "mu_stop": {
+    "message": "Parar"
+  },
+  "mu_vol": {
+    "message": "Volumen de la música"
+  },
+  "mu_locked": {
+    "message": "🔒 Solo vista previa (en tus altavoces, no en la llamada)."
+  },
+  "mu_in_call": {
+    "message": "Sonando en tu llamada: $1"
+  },
+  "mu_preview": {
+    "message": "Vista previa: $1, $2 segundos, solo tú lo oyes"
+  },
+  "mu_idle": {
+    "message": "Toca una melodía para oírla. Gratis: Chill y Funky."
+  },
+  "mu_idle_call": {
+    "message": "Toca una melodía para ponerla en tu llamada."
+  },
+  "mu_t_chill": {
+    "message": "Chill"
+  },
+  "mu_t_funky": {
+    "message": "Funky"
+  },
+  "mu_t_party": {
+    "message": "Fiesta"
+  },
+  "mu_t_suspense": {
+    "message": "Suspense"
+  },
+  "mu_t_retro": {
+    "message": "Retro"
+  },
+  "mu_t_jazz": {
+    "message": "Jazz"
+  },
+  "mu_t_epic": {
+    "message": "Épica"
+  },
+  "mu_t_tropical": {
+    "message": "Tropical"
   }
 }

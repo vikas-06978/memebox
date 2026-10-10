@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "Fox"
+  },
+  "mu_title": {
+    "message": "🎵 Music"
+  },
+  "mu_how": {
+    "message": "Original tunes with no copyright. They play into your call like a meme and get quieter when you talk."
+  },
+  "mu_stop": {
+    "message": "Stop"
+  },
+  "mu_vol": {
+    "message": "Music volume"
+  },
+  "mu_locked": {
+    "message": "🔒 Preview only (on your speakers, not in the call)."
+  },
+  "mu_in_call": {
+    "message": "Playing in your call: $1"
+  },
+  "mu_preview": {
+    "message": "Preview: $1, $2 seconds, only you hear it"
+  },
+  "mu_idle": {
+    "message": "Tap a tune to hear it. Free: Chill and Funky."
+  },
+  "mu_idle_call": {
+    "message": "Tap a tune to play it into your call."
+  },
+  "mu_t_chill": {
+    "message": "Chill"
+  },
+  "mu_t_funky": {
+    "message": "Funky"
+  },
+  "mu_t_party": {
+    "message": "Party"
+  },
+  "mu_t_suspense": {
+    "message": "Suspense"
+  },
+  "mu_t_retro": {
+    "message": "Retro"
+  },
+  "mu_t_jazz": {
+    "message": "Jazz"
+  },
+  "mu_t_epic": {
+    "message": "Epic"
+  },
+  "mu_t_tropical": {
+    "message": "Tropical"
   }
 }

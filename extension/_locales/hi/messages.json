@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "लोमड़ी"
+  },
+  "mu_title": {
+    "message": "🎵 म्यूज़िक"
+  },
+  "mu_how": {
+    "message": "बिना कॉपीराइट की अपनी बनाई धुनें। मीम की तरह कॉल में बजती हैं और आपके बोलने पर धीमी हो जाती हैं।"
+  },
+  "mu_stop": {
+    "message": "रोकें"
+  },
+  "mu_vol": {
+    "message": "म्यूज़िक की आवाज़"
+  },
+  "mu_locked": {
+    "message": "🔒 सिर्फ़ प्रिव्यू (आपके स्पीकर पर, कॉल में नहीं)।"
+  },
+  "mu_in_call": {
+    "message": "कॉल में चल रहा है: $1"
+  },
+  "mu_preview": {
+    "message": "प्रिव्यू: $1, $2 सेकंड, सिर्फ़ आप सुनेंगे"
+  },
+  "mu_idle": {
+    "message": "धुन दबाकर सुनें। मुफ़्त: चिल और फंकी।"
+  },
+  "mu_idle_call": {
+    "message": "धुन दबाएँ, कॉल में बजेगी।"
+  },
+  "mu_t_chill": {
+    "message": "चिल"
+  },
+  "mu_t_funky": {
+    "message": "फंकी"
+  },
+  "mu_t_party": {
+    "message": "पार्टी"
+  },
+  "mu_t_suspense": {
+    "message": "सस्पेंस"
+  },
+  "mu_t_retro": {
+    "message": "रेट्रो"
+  },
+  "mu_t_jazz": {
+    "message": "जैज़"
+  },
+  "mu_t_epic": {
+    "message": "एपिक"
+  },
+  "mu_t_tropical": {
+    "message": "ट्रॉपिकल"
   }
 }

@@ -155,3 +155,16 @@ test('characters: Pro has the three standard ones, Pro Max and a permanent key h
   assert.equal(fx.sanitize({ character: 'cat', charPos: 'left' }, (f) => plan.canFx(f, now)).charPos, 'left');
   assert.equal(fx.sanitize({ character: 'dragon' }).character, 'none');
 });
+
+test('music: Chill and Funky are free, the other tunes need Pro (a pass or a key); the lists match the engine', () => {
+  const now = Date.UTC(2026, 9, 1);
+  const plan = withConfig({ PRO_ENABLED: true });
+  const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
+  assert.deepEqual([...plan.FREE_TUNES], [...music.FREE_TUNES]);
+  assert.equal(music.IDS.length, 8);
+  assert.equal(plan.canFx('music:chill', now), true);
+  assert.equal(plan.canFx('music:party', now), false);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now - 1000 });
+  plan.setPass({ on: true });
+  assert.equal(plan.canFx('music:party', now), true);
+});

@@ -88,7 +88,7 @@ test('the voice worklet is the only page-visible file, and only on the call site
 
 test('the pitch shifter and the Lights engine load in the MAIN world before mic-hook', () => {
   const hook = m.content_scripts.find((c) => c.js.includes('mic-hook.js'));
-  assert.deepEqual(hook.js, ['lib/pitch-shift.js', 'lib/fx.js', 'mic-hook.js']);
+  assert.deepEqual(hook.js, ['lib/pitch-shift.js', 'lib/fx.js', 'lib/music.js', 'mic-hook.js']);
 });
 
 test('page <-> extension messages use unique, checked sources', () => {
@@ -108,4 +108,15 @@ test('the Lights engine copy for the panel (lib/fx-ui.js) is exactly lib/fx.js: 
   assert.equal(copy.slice(copy.indexOf('\n') + 1), src);
   const iso = m.content_scripts.find((c) => c.js.includes('bridge.js'));
   assert.ok(iso.js.includes('lib/fx-ui.js') && !iso.js.includes('lib/fx.js'), 'the panel loads the copy, the page loads the original');
+});
+
+test('the music engine copy for the panel (lib/music-ui.js) is exactly lib/music.js, and the panel sections load before ui.js', () => {
+  const src = fs.readFileSync(path.join(EXT, 'lib', 'music.js'), 'utf8');
+  const copy = fs.readFileSync(path.join(EXT, 'lib', 'music-ui.js'), 'utf8');
+  assert.ok(copy.startsWith('// GENERATED from lib/music.js'));
+  assert.equal(copy.slice(copy.indexOf('\n') + 1), src);
+  const iso = m.content_scripts.find((c) => c.js.includes('bridge.js'));
+  assert.ok(iso.js.includes('lib/music-ui.js') && !iso.js.includes('lib/music.js'));
+  const at = (f) => iso.js.indexOf(f);
+  assert.ok(at('lights-ui.js') > at('bridge.js') && at('music-section.js') > at('lights-ui.js') && at('ui.js') > at('music-section.js'), 'sections mount in order, before ui.js');
 });

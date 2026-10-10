@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "ثعلب"
+  },
+  "mu_title": {
+    "message": "🎵 الموسيقى"
+  },
+  "mu_how": {
+    "message": "ألحان أصلية بلا حقوق نشر. تُسمع في مكالمتك كالميم وتخفت عندما تتحدث."
+  },
+  "mu_stop": {
+    "message": "إيقاف"
+  },
+  "mu_vol": {
+    "message": "مستوى الموسيقى"
+  },
+  "mu_locked": {
+    "message": "🔒 معاينة فقط (على سماعاتك، وليس في المكالمة)."
+  },
+  "mu_in_call": {
+    "message": "قيد التشغيل في مكالمتك: $1"
+  },
+  "mu_preview": {
+    "message": "معاينة: $1، $2 ثانية، أنت فقط تسمعها"
+  },
+  "mu_idle": {
+    "message": "اضغط على لحن لتسمعه. مجاني: هادئ وفانكي."
+  },
+  "mu_idle_call": {
+    "message": "اضغط على لحن لتشغيله في مكالمتك."
+  },
+  "mu_t_chill": {
+    "message": "هادئ"
+  },
+  "mu_t_funky": {
+    "message": "فانكي"
+  },
+  "mu_t_party": {
+    "message": "حفلة"
+  },
+  "mu_t_suspense": {
+    "message": "تشويق"
+  },
+  "mu_t_retro": {
+    "message": "ريترو"
+  },
+  "mu_t_jazz": {
+    "message": "جاز"
+  },
+  "mu_t_epic": {
+    "message": "ملحمي"
+  },
+  "mu_t_tropical": {
+    "message": "استوائي"
   }
 }

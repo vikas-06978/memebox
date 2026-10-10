@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "শিয়াল"
+  },
+  "mu_title": {
+    "message": "🎵 মিউজিক"
+  },
+  "mu_how": {
+    "message": "কপিরাইটমুক্ত নিজেদের সুর। মিমের মতো কলে বাজে এবং আপনি কথা বললে আস্তে হয়ে যায়।"
+  },
+  "mu_stop": {
+    "message": "থামান"
+  },
+  "mu_vol": {
+    "message": "মিউজিকের ভলিউম"
+  },
+  "mu_locked": {
+    "message": "🔒 শুধু প্রিভিউ (আপনার স্পিকারে, কলে নয়)।"
+  },
+  "mu_in_call": {
+    "message": "কলে বাজছে: $1"
+  },
+  "mu_preview": {
+    "message": "প্রিভিউ: $1, $2 সেকেন্ড, শুধু আপনি শুনবেন"
+  },
+  "mu_idle": {
+    "message": "সুরে চাপ দিয়ে শুনুন। ফ্রি: চিল ও ফাংকি।"
+  },
+  "mu_idle_call": {
+    "message": "সুরে চাপ দিন, কলে বাজবে।"
+  },
+  "mu_t_chill": {
+    "message": "চিল"
+  },
+  "mu_t_funky": {
+    "message": "ফাংকি"
+  },
+  "mu_t_party": {
+    "message": "পার্টি"
+  },
+  "mu_t_suspense": {
+    "message": "সাসপেন্স"
+  },
+  "mu_t_retro": {
+    "message": "রেট্রো"
+  },
+  "mu_t_jazz": {
+    "message": "জ্যাজ"
+  },
+  "mu_t_epic": {
+    "message": "এপিক"
+  },
+  "mu_t_tropical": {
+    "message": "ট্রপিক্যাল"
   }
 }

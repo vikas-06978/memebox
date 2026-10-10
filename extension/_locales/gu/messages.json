@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "શિયાળ"
+  },
+  "mu_title": {
+    "message": "🎵 સંગીત"
+  },
+  "mu_how": {
+    "message": "કૉપિરાઇટ વગરની પોતાની ધૂન. મીમની જેમ કૉલમાં વાગે છે અને તમે બોલો ત્યારે ધીમી થાય છે."
+  },
+  "mu_stop": {
+    "message": "રોકો"
+  },
+  "mu_vol": {
+    "message": "સંગીતનો અવાજ"
+  },
+  "mu_locked": {
+    "message": "🔒 ફક્ત પ્રિવ્યૂ (તમારા સ્પીકર પર, કૉલમાં નહીં)."
+  },
+  "mu_in_call": {
+    "message": "કૉલમાં વાગે છે: $1"
+  },
+  "mu_preview": {
+    "message": "પ્રિવ્યૂ: $1, $2 સેકન્ડ, ફક્ત તમને સંભળાશે"
+  },
+  "mu_idle": {
+    "message": "ધૂન દબાવીને સાંભળો. મફત: ચિલ અને ફંકી."
+  },
+  "mu_idle_call": {
+    "message": "ધૂન દબાવો, કૉલમાં વાગશે."
+  },
+  "mu_t_chill": {
+    "message": "ચિલ"
+  },
+  "mu_t_funky": {
+    "message": "ફંકી"
+  },
+  "mu_t_party": {
+    "message": "પાર્ટી"
+  },
+  "mu_t_suspense": {
+    "message": "સસ્પેન્સ"
+  },
+  "mu_t_retro": {
+    "message": "રેટ્રો"
+  },
+  "mu_t_jazz": {
+    "message": "જૅઝ"
+  },
+  "mu_t_epic": {
+    "message": "એપિક"
+  },
+  "mu_t_tropical": {
+    "message": "ટ્રોપિકલ"
   }
 }

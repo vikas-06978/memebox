@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "कोल्हा"
+  },
+  "mu_title": {
+    "message": "🎵 संगीत"
+  },
+  "mu_how": {
+    "message": "कॉपीराइटशिवाय स्वतःच्या धून. मीमसारख्या कॉलमध्ये वाजतात आणि तुम्ही बोलता तेव्हा हळू होतात."
+  },
+  "mu_stop": {
+    "message": "थांबवा"
+  },
+  "mu_vol": {
+    "message": "संगीताचा आवाज"
+  },
+  "mu_locked": {
+    "message": "🔒 फक्त प्रिव्ह्यू (तुमच्या स्पीकरवर, कॉलमध्ये नाही)."
+  },
+  "mu_in_call": {
+    "message": "कॉलमध्ये वाजत आहे: $1"
+  },
+  "mu_preview": {
+    "message": "प्रिव्ह्यू: $1, $2 सेकंद, फक्त तुम्हाला ऐकू येईल"
+  },
+  "mu_idle": {
+    "message": "धून दाबून ऐका. मोफत: चिल आणि फंकी."
+  },
+  "mu_idle_call": {
+    "message": "धून दाबा, कॉलमध्ये वाजेल."
+  },
+  "mu_t_chill": {
+    "message": "चिल"
+  },
+  "mu_t_funky": {
+    "message": "फंकी"
+  },
+  "mu_t_party": {
+    "message": "पार्टी"
+  },
+  "mu_t_suspense": {
+    "message": "सस्पेन्स"
+  },
+  "mu_t_retro": {
+    "message": "रेट्रो"
+  },
+  "mu_t_jazz": {
+    "message": "जॅझ"
+  },
+  "mu_t_epic": {
+    "message": "एपिक"
+  },
+  "mu_t_tropical": {
+    "message": "ट्रॉपिकल"
   }
 }

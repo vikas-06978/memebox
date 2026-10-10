@@ -201,7 +201,7 @@
       raf = requestAnimationFrame(frame);
     }
     const kick = () => { if (!raf && details.open && api.panelIsOpen()) raf = requestAnimationFrame(frame); };
-    details.addEventListener('toggle', () => { api.panel.classList.toggle('fx-open', details.open); if (details.open) { renderer.replay && renderer.replay(performance.now()); kick(); } if (api.panelIsOpen()) api.placePanel(); });
+    details.addEventListener('toggle', () => { api.panel.classList.toggle('fx-open', !!api.panel.querySelector('details.fx[open]')); if (details.open) { renderer.replay && renderer.replay(performance.now()); kick(); } if (api.panelIsOpen()) api.placePanel(); });
     api.onPanelToggle((open) => { if (open) { render(); kick(); } else if (raf) { cancelAnimationFrame(raf); raf = 0; } });
     api.onMessage((msg) => { if (msg.type === 'fx-status') { camActive = msg.active === true; render(); } });
     api.onSettings(render);

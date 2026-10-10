@@ -316,6 +316,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       passQueue = passQueue.then(() => passTick()).catch(() => {});
       break;
 
+    case 'music-state':
+      sendToTab(tabId, { type: 'music-state', id: typeof msg.id === 'string' ? msg.id : '', frameId: sender.frameId }, 0);
+      break;
+
     case 'fx-status':
       sendToTab(tabId, { type: 'fx-status', active: msg.active === true, frameId: sender.frameId }, 0);
       break;

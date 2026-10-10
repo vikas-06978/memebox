@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "Raposa"
+  },
+  "mu_title": {
+    "message": "🎵 Música"
+  },
+  "mu_how": {
+    "message": "Músicas originais sem direitos autorais. Tocam na sua chamada como um meme e baixam quando você fala."
+  },
+  "mu_stop": {
+    "message": "Parar"
+  },
+  "mu_vol": {
+    "message": "Volume da música"
+  },
+  "mu_locked": {
+    "message": "🔒 Só prévia (nos seus alto-falantes, não na chamada)."
+  },
+  "mu_in_call": {
+    "message": "Tocando na sua chamada: $1"
+  },
+  "mu_preview": {
+    "message": "Prévia: $1, $2 segundos, só você ouve"
+  },
+  "mu_idle": {
+    "message": "Toque numa música para ouvir. Grátis: Chill e Funky."
+  },
+  "mu_idle_call": {
+    "message": "Toque numa música para tocá-la na sua chamada."
+  },
+  "mu_t_chill": {
+    "message": "Chill"
+  },
+  "mu_t_funky": {
+    "message": "Funky"
+  },
+  "mu_t_party": {
+    "message": "Festa"
+  },
+  "mu_t_suspense": {
+    "message": "Suspense"
+  },
+  "mu_t_retro": {
+    "message": "Retrô"
+  },
+  "mu_t_jazz": {
+    "message": "Jazz"
+  },
+  "mu_t_epic": {
+    "message": "Épica"
+  },
+  "mu_t_tropical": {
+    "message": "Tropical"
   }
 }

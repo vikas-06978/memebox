@@ -1083,5 +1083,56 @@
   },
   "fx_char_fox": {
     "message": "Rubah"
+  },
+  "mu_title": {
+    "message": "🎵 Musik"
+  },
+  "mu_how": {
+    "message": "Lagu orisinal tanpa hak cipta. Diputar di panggilanmu seperti meme dan mengecil saat kamu bicara."
+  },
+  "mu_stop": {
+    "message": "Berhenti"
+  },
+  "mu_vol": {
+    "message": "Volume musik"
+  },
+  "mu_locked": {
+    "message": "🔒 Hanya pratinjau (di speakermu, bukan di panggilan)."
+  },
+  "mu_in_call": {
+    "message": "Diputar di panggilanmu: $1"
+  },
+  "mu_preview": {
+    "message": "Pratinjau: $1, $2 detik, hanya kamu yang dengar"
+  },
+  "mu_idle": {
+    "message": "Ketuk lagu untuk mendengar. Gratis: Chill dan Funky."
+  },
+  "mu_idle_call": {
+    "message": "Ketuk lagu untuk memutarnya di panggilanmu."
+  },
+  "mu_t_chill": {
+    "message": "Santai"
+  },
+  "mu_t_funky": {
+    "message": "Funky"
+  },
+  "mu_t_party": {
+    "message": "Pesta"
+  },
+  "mu_t_suspense": {
+    "message": "Menegangkan"
+  },
+  "mu_t_retro": {
+    "message": "Retro"
+  },
+  "mu_t_jazz": {
+    "message": "Jazz"
+  },
+  "mu_t_epic": {
+    "message": "Epik"
+  },
+  "mu_t_tropical": {
+    "message": "Tropis"
   }
 }
