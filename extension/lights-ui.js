@@ -32,6 +32,9 @@
     const g = canvas.getContext('2d');
     const renderer = Fx.createRenderer();
 
+    let darkPreview = false; // the preview shows a dark room, to see how Lights lifts it
+    const darkBtn = el('button', { className: 'chip', type: 'button' }, t('fx_darkprev'));
+    darkBtn.addEventListener('click', () => { darkPreview = !darkPreview; darkBtn.classList.toggle('on', darkPreview); });
     const onBox = el('input', { type: 'checkbox' });
     const onRow = el('label', { className: 'check fx-main' }, onBox, el('b', {}, t('fx_on')));
     const status = el('div', { className: 'fx-status' });
@@ -53,9 +56,27 @@
     const syncBox = el('input', { type: 'checkbox' });
     const safeBox = el('input', { type: 'checkbox' });
     const followBox = el('input', { type: 'checkbox' });
+    const studioBox = el('input', { type: 'checkbox' });
     const awayBox = el('input', { type: 'checkbox' });
     const bright = el('input', { className: 'vol', type: 'range', min: 20, max: 100, step: 5 });
     bright.setAttribute('aria-label', t('fx_bright'));
+    // ---- quick looks: one tap sets lamp, lights, music-reaction and more together ----
+    const PRESETS = {
+      party:  { fixture: 'discoball', lampAnim: 'sway', lamp: true, pattern: 'auto', corners: true, sync: true, color: 'rose', intensity: 0.9, filter: 'none', studio: true, focus: true, safe: true },
+      studio: { fixture: 'lamp', lampAnim: 'still', lamp: true, pattern: 'steady', corners: false, sync: false, color: 'warm', intensity: 0.85, filter: 'glam', studio: true, focus: true },
+      disco:  { fixture: 'discoball', lampAnim: 'bounce', lamp: true, pattern: 'disco', corners: true, sync: true, color: 'purple', intensity: 1, filter: 'none', studio: true, focus: true },
+      cozy:   { fixture: 'lantern', lampAnim: 'sway', lamp: true, pattern: 'candle', corners: true, sync: false, color: 'warm', intensity: 0.8, filter: 'warm', studio: true, focus: true },
+      cinema: { fixture: 'moon', lampAnim: 'still', lamp: true, pattern: 'steady', corners: false, sync: false, color: 'blue', intensity: 0.8, filter: 'film', studio: true, focus: true },
+      live:   { fixture: 'spotlight', lampAnim: 'sway', lamp: true, pattern: 'club', corners: true, sync: true, follow: true, color: 'white', intensity: 0.9, filter: 'none', studio: true, focus: true },
+    };
+    const presetG = group(t('fx_presets'));
+    const presetChips = chipRow();
+    for (const id of Object.keys(PRESETS)) {
+      const b = el('button', { className: 'chip preset', type: 'button' }, t('fx_pre_' + id));
+      b.addEventListener('click', () => set({ ...PRESETS[id], on: true }, true));
+      presetChips.append(b);
+    }
+    presetG.append(presetChips);
     const lampG = group(t('fx_lamp'));
     const fixChips = chipRow();
     const animChips = chipRow();
@@ -80,12 +101,13 @@
       el('label', { className: 'check', title: t('fx_focus_tip') }, focusBox, t('fx_focus')),
       el('label', { className: 'check', title: t('fx_sync_tip') }, syncBox, t('fx_sync')),
       el('label', { className: 'check', title: t('fx_safe_tip') }, safeBox, t('fx_safe')),
+      el('label', { className: 'check', title: t('fx_studio_tip') }, studioBox, t('fx_studio')),
       el('label', { className: 'check', title: t('fx_follow_tip') }, followBox, t('fx_follow')),
       el('label', { className: 'check', title: t('fx_away_tip') }, awayBox, t('fx_away')),
       el('div', { className: 'row' }, el('span', {}, '☀'), bright));
     const body = el('div', { className: 'settings-body fx-body' },
       el('div', { className: 'fx-how' }, t('fx_how')),
-      onRow, canvas, status, lockBar, lampG, colorsG, cornersG, looksG, charG, extras);
+      onRow, presetG, canvas, darkBtn, status, lockBar, lampG, colorsG, cornersG, looksG, charG, extras);
 
     // ---- the time pass: Pro / Pro Max hours of use (the service worker counts them while you are in a call) ----
     const passText = el('div', { className: 'fx-pass-text' });
@@ -138,7 +160,7 @@
     api.settingsDetails.after(details);
 
     const wire = (box, key) => box.addEventListener('change', () => set({ [key]: box.checked }, true));
-    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe'); wire(followBox, 'follow'); wire(awayBox, 'awayDance');
+    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe'); wire(followBox, 'follow'); wire(studioBox, 'studio'); wire(awayBox, 'awayDance');
     bright.addEventListener('input', () => set({ intensity: Number(bright.value) / 100 }));
 
     // ---- build the choice lists from what exists ----
@@ -175,7 +197,7 @@
     function render() {
       const c = cfg();
       onBox.checked = c.on; lampBox.checked = c.lamp; cornersBox.checked = c.corners;
-      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe; followBox.checked = c.follow; awayBox.checked = c.awayDance;
+      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe; followBox.checked = c.follow; studioBox.checked = c.studio; awayBox.checked = c.awayDance;
       bright.value = Math.round(c.intensity * 100);
       body.classList.toggle('fx-off', !c.on);
       sum.textContent = c.on ? t('fx_state_on') : t('fx_state_off');
@@ -200,10 +222,12 @@
       const sample = frame.src || (frame.src = document.createElement('canvas'));
       sample.width = w; sample.height = h;
       const sim = shown.follow ? Fx.simulate(now) : null; // the preview "you" walks around when Follow me is on
-      Fx.drawSample(sample.getContext('2d'), w, h, now, sim ? sim.person : {});
+      const sg = sample.getContext('2d');
+      Fx.drawSample(sg, w, h, now, sim ? sim.person : {});
+      if (darkPreview) { sg.fillStyle = 'rgba(0,0,0,0.82)'; sg.fillRect(0, 0, w, h); }
       // The preview always shows the lights, even if the switch is off, so people see what they would get.
       const mood = ['suspense', 'excited', 'fun', 'surprise'][Math.floor(now / 3500) % 4];
-      renderer.render(g, sample, w, h, { ...shown, on: true }, now, { level: 0.3 + 0.2 * Math.sin(now / 300), beat: now % 520 < 40 ? 1 : 0, mood: shown.sync || shown.character !== 'none' ? mood : '' },
+      renderer.render(g, sample, w, h, { ...shown, on: true }, now, { level: 0.45 + 0.3 * Math.sin(now / 300), bass: 0.5 + 0.4 * Math.max(0, Math.sin(now / 260)), mid: 0.4, high: 0.3, spec: Array.from({ length: 16 }, (_, k) => 0.55 * Math.abs(Math.sin(now / 420 + k * 0.7)) * (1 - k / 22)), tune: shown.sync ? 'club' : '', beat: now % 520 < 40 ? 1 : 0, mood: shown.sync || shown.character !== 'none' ? mood : '' },
         { preview: trying && Fx.lockedParts(c, can).length > 0, watermark: t('fx_watermark'), ...(sim ? { track: sim.track } : {}) });
       if (!trying && trialUntil) { trialUntil = 0; render(); }
       raf = requestAnimationFrame(frame);

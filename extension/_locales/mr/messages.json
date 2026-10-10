@@ -1266,5 +1266,83 @@
   },
   "fx_away_tip": {
     "message": "प्राणी तुम्हाला शोधतो, मग नाचतो आणि दिवे पार्टी करतात. परत आल्यावर स्वागत करतात."
+  },
+  "fx_presets": {
+    "message": "क्विक लूक"
+  },
+  "fx_pre_party": {
+    "message": "🎉 पार्टी"
+  },
+  "fx_pre_studio": {
+    "message": "😎 स्टुडिओ"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 डिस्को"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 कोझी"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 सिनेमा"
+  },
+  "fx_pre_live": {
+    "message": "🎤 लाइव्ह"
+  },
+  "fx_studio": {
+    "message": "अंधाऱ्या खोलीला आपोआप उजळवा"
+  },
+  "fx_studio_tip": {
+    "message": "खोली अंधारी असेल तर MemeBox तुमची प्रतिमा उजळवते, दिव्याशिवायही तुम्ही स्पष्ट दिसता."
+  },
+  "fx_darkprev": {
+    "message": "🌙 अंधाऱ्या खोलीत प्रिव्ह्यू"
+  },
+  "fx_pat_auto": {
+    "message": "संगीतासोबत चाला"
+  },
+  "fx_pat_party": {
+    "message": "मूव्हिंग हेड"
+  },
+  "fx_pat_equalizer": {
+    "message": "इक्वलायझर"
+  },
+  "fx_pat_club": {
+    "message": "क्लब"
+  },
+  "as_btn": {
+    "message": "फाइलमधून साउंड जोडा (ऑडिओ किंवा व्हिडिओ)"
+  },
+  "as_working": {
+    "message": "$1 जोडत आहे…"
+  },
+  "as_added": {
+    "message": "जोडले: $1"
+  },
+  "as_added_cut": {
+    "message": "जोडले: $1 (पहिले $2 सेकंद)"
+  },
+  "as_fail": {
+    "message": "$1 जोडता आले नाही"
+  },
+  "as_bad": {
+    "message": "$1 साउंड किंवा व्हिडिओ फाइल नाही, किंवा खूप मोठी आहे"
+  },
+  "mu_add": {
+    "message": "＋ माझे संगीत जोडा"
+  },
+  "mu_mine": {
+    "message": "माझे संगीत"
+  },
+  "mu_join": {
+    "message": "आधी कॉलमध्ये या, मग संगीत वाजवा"
+  },
+  "mu_big": {
+    "message": "ही फाइल 8 MB पेक्षा मोठी आहे"
+  },
+  "mu_many": {
+    "message": "जास्तीत जास्त 12 ट्रॅक. आधी एक काढा."
+  },
+  "mu_del": {
+    "message": "काढा"
   }
 }

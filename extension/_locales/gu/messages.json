@@ -1266,5 +1266,83 @@
   },
   "fx_away_tip": {
     "message": "પ્રાણી તમને શોધે છે, પછી નાચે છે અને લાઇટ પાર્ટી કરે છે. પાછા આવો ત્યારે સ્વાગત કરે છે."
+  },
+  "fx_presets": {
+    "message": "ક્વિક લૂક"
+  },
+  "fx_pre_party": {
+    "message": "🎉 પાર્ટી"
+  },
+  "fx_pre_studio": {
+    "message": "😎 સ્ટુડિયો"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 ડિસ્કો"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 કોઝી"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 સિનેમા"
+  },
+  "fx_pre_live": {
+    "message": "🎤 લાઇવ"
+  },
+  "fx_studio": {
+    "message": "અંધારા રૂમને આપમેળે ઉજળો કરો"
+  },
+  "fx_studio_tip": {
+    "message": "રૂમ અંધારો હોય તો MemeBox તમારી છબી ઉજળી કરે છે, લેમ્પ વગર પણ તમે સ્પષ્ટ દેખાઓ."
+  },
+  "fx_darkprev": {
+    "message": "🌙 અંધારા રૂમમાં પ્રિવ્યૂ"
+  },
+  "fx_pat_auto": {
+    "message": "સંગીત સાથે ચાલો"
+  },
+  "fx_pat_party": {
+    "message": "મૂવિંગ હેડ"
+  },
+  "fx_pat_equalizer": {
+    "message": "ઇક્વલાઇઝર"
+  },
+  "fx_pat_club": {
+    "message": "ક્લબ"
+  },
+  "as_btn": {
+    "message": "ફાઇલમાંથી સાઉન્ડ ઉમેરો (ઑડિયો અથવા વીડિયો)"
+  },
+  "as_working": {
+    "message": "$1 ઉમેરી રહ્યા છીએ…"
+  },
+  "as_added": {
+    "message": "ઉમેર્યું: $1"
+  },
+  "as_added_cut": {
+    "message": "ઉમેર્યું: $1 (પહેલી $2 સેકન્ડ)"
+  },
+  "as_fail": {
+    "message": "$1 ઉમેરી શકાયું નહીં"
+  },
+  "as_bad": {
+    "message": "$1 સાઉન્ડ કે વીડિયો ફાઇલ નથી, અથવા બહુ મોટી છે"
+  },
+  "mu_add": {
+    "message": "＋ મારું સંગીત ઉમેરો"
+  },
+  "mu_mine": {
+    "message": "મારું સંગીત"
+  },
+  "mu_join": {
+    "message": "પહેલા કૉલમાં જોડાઓ, પછી સંગીત વગાડો"
+  },
+  "mu_big": {
+    "message": "ફાઇલ 8 MB કરતાં મોટી છે"
+  },
+  "mu_many": {
+    "message": "વધુમાં વધુ 12 ટ્રૅક. પહેલા એક કાઢો."
+  },
+  "mu_del": {
+    "message": "કાઢો"
   }
 }

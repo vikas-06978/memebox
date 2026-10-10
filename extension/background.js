@@ -205,6 +205,54 @@ async function handlePlay(tabId, { frameId, reqId, item }) {
   }
 }
 
+// ---------- adding sounds and music from the call panel ----------
+// The panel (in the call page) makes the clip or reads the music file and sends it here, because only the extension
+// itself can write to its database. The lists in storage change, and every open panel and Options page updates by itself.
+const MUSIC_MAX_BYTES = 8 * 1024 * 1024;
+const MUSIC_MAX_TRACKS = 12;
+const b64ToBytes = (b64) => { const bin = atob(String(b64)); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; };
+const newId = (p) => `${p}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+
+async function callPanelStore(msg) {
+  if (msg.type === 'clip-add') {
+    const bytes = b64ToBytes(msg.b64);
+    const head = new Uint8Array(bytes, 0, 4);
+    if (bytes.byteLength > LIMITS.clipBytes || String.fromCharCode(...head) !== 'RIFF') return { ok: false, error: 'This clip is not a valid saved sound.' };
+    const name = String(msg.name || 'My sound').slice(0, 120);
+    const clipId = newId('c');
+    await MemeDB.putClip({ id: clipId, name, type: 'audio/wav', bytes });
+    const { lines } = await chrome.storage.local.get('lines');
+    const list = Array.isArray(lines) ? lines : MEME.defaultLines();
+    const line = MEME.sanitizeLine({ id: newId('l'), kind: 'clip', clipId, lang: 'en', text: name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim().slice(0, 300) || name, tone: 'normal', category: 'clips', fav: 0 });
+    await chrome.storage.local.set({ lines: [...list, line] });
+    return { ok: true, id: line.id };
+  }
+  const { myMusic } = await chrome.storage.local.get('myMusic');
+  const tracks = Array.isArray(myMusic) ? myMusic : [];
+  if (msg.type === 'music-add') {
+    const bytes = b64ToBytes(msg.b64);
+    if (bytes.byteLength > MUSIC_MAX_BYTES) return { ok: false, error: 'too-big' };
+    if (tracks.length >= MUSIC_MAX_TRACKS) return { ok: false, error: 'too-many' };
+    const mime = /^audio\/[a-z0-9.+-]{1,30}$/i.test(msg.mime) ? msg.mime : 'audio/mpeg';
+    const id = newId('m');
+    await MemeDB.putClip({ id, name: String(msg.name || 'My music').slice(0, 120), type: mime, bytes });
+    await chrome.storage.local.set({ myMusic: [...tracks, { id, name: String(msg.name || 'My music').replace(/\.[^.]+$/, '').slice(0, 60), size: bytes.byteLength }] });
+    return { ok: true, id };
+  }
+  // music-del
+  const id = String(msg.id || '');
+  if (!/^m-[a-z0-9]+$/i.test(id)) return { ok: false, error: 'bad id' };
+  await MemeDB.deleteClip(id).catch(() => {});
+  await chrome.storage.local.set({ myMusic: tracks.filter((x) => x.id !== id) });
+  return { ok: true };
+}
+
+async function playMine(tabId, { frameId, id, volume }) {
+  const clip = /^m-[a-z0-9]+$/i.test(String(id)) ? await MemeDB.getClip(String(id)) : null;
+  if (!clip) throw new Error('That track was not found.');
+  sendToTab(tabId, { type: 'hook', cmd: { type: 'music-bytes', mid: String(id), b64: toBase64(clip.bytes), volume: Number.isFinite(Number(volume)) ? Number(volume) : 0.5 } }, frameId);
+}
+
 // ---------- which tabs are in a call (for the popup) ----------
 // Kept in storage.session so it survives the service worker going to sleep.
 // { [tabId]: { frames: { [frameId]: true }, since, tabAudioFrom } }
@@ -308,6 +356,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (!sender.tab) return;
   const tabId = sender.tab.id;
+
+  // Added from inside the call (the panel): a sound clip, or a whole music track. Saved at once, the panel updates live.
+  if (msg.type === 'clip-add' || msg.type === 'music-add' || msg.type === 'music-del') {
+    callPanelStore(msg).then((r) => sendResponse(r), (err) => sendResponse({ ok: false, error: String((err && err.message) || err) }));
+    return true; // async response
+  }
+  if (msg.type === 'play-mine' && Number.isInteger(msg.frameId)) {
+    playMine(tabId, msg).catch((err) => sendToTab(tabId, { type: 'music-state', id: '', error: String(err.message || err) }, 0));
+    return;
+  }
 
   switch (msg.type) {
     // A frame's mic hook reported something -> tell the UI in the top frame.

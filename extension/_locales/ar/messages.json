@@ -1266,5 +1266,83 @@
   },
   "fx_away_tip": {
     "message": "يبحث الحيوان عنك ثم يرقص وتحتفل الأضواء. ويرحّبان بك عند عودتك."
+  },
+  "fx_presets": {
+    "message": "إطلالات سريعة"
+  },
+  "fx_pre_party": {
+    "message": "🎉 حفلة"
+  },
+  "fx_pre_studio": {
+    "message": "😎 استوديو"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 ديسكو"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 دافئ"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 سينما"
+  },
+  "fx_pre_live": {
+    "message": "🎤 مباشر"
+  },
+  "fx_studio": {
+    "message": "أضئ غرفتي المظلمة تلقائيًا"
+  },
+  "fx_studio_tip": {
+    "message": "إذا كانت غرفتك مظلمة، يرفع MemeBox سطوع صورتك لتظهر بوضوح حتى بدون مصباح."
+  },
+  "fx_darkprev": {
+    "message": "🌙 معاينة في غرفة مظلمة"
+  },
+  "fx_pat_auto": {
+    "message": "تتبّع الموسيقى"
+  },
+  "fx_pat_party": {
+    "message": "رؤوس متحركة"
+  },
+  "fx_pat_equalizer": {
+    "message": "معادل صوت"
+  },
+  "fx_pat_club": {
+    "message": "نادي"
+  },
+  "as_btn": {
+    "message": "أضف صوتًا من ملف (صوت أو فيديو)"
+  },
+  "as_working": {
+    "message": "جارٍ إضافة $1…"
+  },
+  "as_added": {
+    "message": "أُضيف: $1"
+  },
+  "as_added_cut": {
+    "message": "أُضيف: $1 (تناسب أول $2 ثانية)"
+  },
+  "as_fail": {
+    "message": "تعذّرت إضافة $1"
+  },
+  "as_bad": {
+    "message": "$1 ليس ملف صوت أو فيديو، أو أنه كبير جدًا"
+  },
+  "mu_add": {
+    "message": "＋ أضف موسيقاي"
+  },
+  "mu_mine": {
+    "message": "موسيقاي"
+  },
+  "mu_join": {
+    "message": "انضم إلى مكالمة أولًا ثم شغّل موسيقاك"
+  },
+  "mu_big": {
+    "message": "الملف أكبر من 8 ميغابايت"
+  },
+  "mu_many": {
+    "message": "الحد الأقصى 12 مسارًا. احذف واحدًا أولًا."
+  },
+  "mu_del": {
+    "message": "حذف"
   }
 }

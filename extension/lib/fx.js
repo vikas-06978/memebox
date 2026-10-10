@@ -25,7 +25,7 @@
   const FREE_COLORS = ['warm', 'white', 'blue'];
   const LAMP_ANIMS = ['still', 'swing', 'drop', 'flicker', 'sway', 'bounce', 'pendulum', 'beat'];
   const FIXTURES = ['lamp', 'discoball', 'lantern', 'fairy', 'chandelier', 'moon', 'star', 'spotlight']; // what hangs (only the lamp is free)        // "still" is free, the rest are Pro
-  const PATTERNS = ['steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle', 'aurora', 'fire', 'laser', 'neonframe', 'police', 'heart']; // corner light shows (Pro)
+  const PATTERNS = ['auto', 'steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle', 'aurora', 'fire', 'laser', 'neonframe', 'police', 'heart', 'party', 'equalizer', 'club']; // corner light shows (Pro)
   const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow'];
   const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];             // 3 free
   const PRO_FILTERS = ['vintage', 'cool'];                         // + 2 in Pro = 5
@@ -53,6 +53,7 @@
     filter: 'none',
     character: 'none',  // none | cat | dog | bunny | panda | owl | fox | penguin | lion | monkey | frog | unicorn | robot
     follow: false,      // lights and the character follow where YOU are (left, right, standing up, out of the picture)
+    studio: true,       // brighten a dark room automatically (only while Lights is on)
     awayDance: true,    // when you leave the picture the character dances and the lights party
     charPos: 'right',   // left | right (bottom corner)
     intensity: 0.8,
@@ -82,6 +83,7 @@
       charPos: c.charPos === 'left' ? 'left' : 'right',
       follow: c.follow === true,
       awayDance: c.awayDance !== false,
+      studio: c.studio !== false,
       intensity: Number.isFinite(Number(c.intensity)) ? clamp(Number(c.intensity), 0.2, 1) : 0.8,
     };
     if (out.lampAnim !== 'still' && !can('lampAnim')) out.lampAnim = 'still';
@@ -698,15 +700,48 @@
 
     function corner(g, x, y, r, rgb, a) { glow(g, x, y, r, rgb, a); }
 
+    // Moving-head beams hanging from the top edge: they sweep, change colour with the music, and snap on the beat.
+    function drawPartyBeams(g, w, h, I, t, e, hueOff) {
+      const beat = e.beat || 0, bass = e.bass || 0, lvl = e.level || 0;
+      const n = 6;
+      for (let k = 0; k < n; k++) {
+        const x = w * ((k + 0.5) / n);
+        const dir = 0.7 * Math.sin(t * 0.9 + k * 1.1) + (k % 2 ? 0.12 : -0.12) * beat * 2;
+        const col = hexToRgb(hslHex(hueOff + k * (360 / n) + bass * 50));
+        cone(g, x, -h * 0.03, h * 1.2, w * (0.2 + 0.06 * bass), dir, col, (0.3 * I + 0.16 * lvl + 0.22 * beat) * (0.75 + 0.25 * Math.sin(t * 2 + k)));
+        glow(g, x, 0, h * 0.09, col, 0.5 * I + 0.3 * beat);
+      }
+    }
+
+    // A spectrum along the bottom (and up the sides) that jumps with the music: a real equalizer.
+    function drawEqualizer(g, w, h, I, t, e, hueOff) {
+      const spec = e.spec, n = 24, gap = w * 0.006, bw = (w - gap * (n + 1)) / n;
+      for (let k = 0; k < n; k++) {
+        const kk = k < n / 2 ? k : n - 1 - k; // mirrored: low sounds at the edges, high in the middle... the other way round
+        const idx = Math.min(15, Math.floor((1 - kk / (n / 2)) * 15.99));
+        const v = spec ? spec[idx] : 0.25 + 0.2 * Math.sin(t * 3 + k * 0.7) * Math.sin(t * 1.3 + k);
+        const bh = h * (0.03 + 0.34 * clamp(v * 1.5 + (e.beat || 0) * 0.15));
+        const hue = (hueOff + k * 9) % 360;
+        const x = gap + k * (bw + gap);
+        const gr = g.createLinearGradient(0, h, 0, h - bh);
+        gr.addColorStop(0, hsl(hue, 90, 55, 0.85 * Math.min(1, I + 0.25))); gr.addColorStop(1, hsl(hue + 40, 95, 68, 0.15));
+        g.fillStyle = gr;
+        g.beginPath(); if (g.roundRect) g.roundRect(x, h - bh, bw, bh + 2, bw * 0.4); else g.rect(x, h - bh, bw, bh); g.fill();
+      }
+      glow(g, 0, h, w * 0.3, hexToRgb(hslHex(hueOff)), 0.18 * I + 0.2 * (e.bass || 0));
+      glow(g, w, h, w * 0.3, hexToRgb(hslHex(hueOff + 180)), 0.18 * I + 0.2 * (e.bass || 0));
+    }
+
     function drawCorners(g, w, h, pattern, rgb, I, now, e) {
-      const t = now / 1000, r = Math.max(w, h) * 0.58;
+      const t = e.mt || now / 1000, r = Math.max(w, h) * 0.58; // t is "music time": it runs faster with loud, bassy sound
+      const bass = e.bass || 0, hueOff = R.hue || 0;
       const pts = [[0, 0], [w, 0], [0, h], [w, h]];
       g.save();
       g.globalCompositeOperation = 'screen';
       const beat = e.beat || 0;
       const lvl = e.level || 0;
       if (pattern === 'steady') {
-        for (const [x, y] of pts) corner(g, x, y, r, rgb, 0.5 * I + 0.25 * lvl);
+        for (const [x, y] of pts) corner(g, x, y, r * (1 + 0.15 * bass), rgb, 0.5 * I + 0.25 * lvl + 0.3 * bass + 0.25 * beat);
       } else if (pattern === 'pulse') {
         const k = 0.5 + 0.5 * Math.sin(t * (TAU / (e.period || 2.6)));
         for (const [x, y] of pts) corner(g, x, y, r, rgb, (0.2 + 0.4 * k) * I + 0.25 * lvl);
@@ -715,11 +750,11 @@
         pts.forEach(([x, y], i) => corner(g, x, y, r * (0.92 + 0.08 * wobble(t * 2.4, i)), warm, clamp(0.34 + 0.2 * wobble(t * 3.1, i * 3)) * I));
       } else if (pattern === 'rainbow') {
         pts.forEach(([x, y], i) => {
-          const hue = (t * 38 + i * 90) % 360;
+          const hue = (t * 38 + i * 90 + hueOff) % 360;
           glow(g, x, y, r, hexToRgb(hslHex(hue)), (0.5 * I) + 0.3 * lvl + 0.3 * beat);
         });
       } else if (pattern === 'sweep') {
-        const hue = (t * 22) % 360;
+        const hue = (t * 22 + hueOff) % 360;
         const c1 = hexToRgb(hslHex(hue)), c2 = hexToRgb(hslHex(hue + 140));
         const x = (0.5 + 0.5 * Math.sin(t * 0.55)) * w;
         glow(g, x, 0, w * 0.7, c1, 0.45 * I + 0.25 * lvl);
@@ -738,31 +773,33 @@
         glow(g, 0, h, r * 0.5, hexToRgb(hslHex(150)), 0.14 * I); glow(g, w, h, r * 0.5, hexToRgb(hslHex(280)), 0.14 * I);
       } else if (pattern === 'fire') {
         const emb = (R.embers = R.embers || []);
-        if (t - (R.embT || 0) > 0.06 && emb.length < 40) { R.embT = t; const side = Math.random() < 0.5; emb.push({ x: side ? Math.random() * w * 0.25 : w - Math.random() * w * 0.25, y: h, v: 0.12 + Math.random() * 0.2, born: t, life: 1.6 + Math.random() * 1.4, s: h * (0.006 + Math.random() * 0.012) }); }
+        if (t - (R.embT || 0) > 0.06 / (1 + 3 * bass) && emb.length < 70) { R.embT = t; const side = Math.random() < 0.5; emb.push({ x: side ? Math.random() * w * 0.25 : w - Math.random() * w * 0.25, y: h, v: 0.12 + Math.random() * 0.2, born: t, life: 1.6 + Math.random() * 1.4, s: h * (0.006 + Math.random() * 0.012) }); }
         R.embers = emb.filter((m) => t - m.born < m.life);
         for (const [x, y] of [[0, h], [w, h]]) {
           const f = 0.8 + 0.2 * wobble(t * 4.5, x ? 3 : 0);
-          glow(g, x, y, r * 0.95 * f, [255, 90, 20], (0.5 * I + 0.2 * lvl) * f);
+          glow(g, x, y, r * (0.95 + 0.35 * bass) * f, [255, 90, 20], (0.5 * I + 0.2 * lvl + 0.25 * beat) * f);
           glow(g, x, y, r * 0.55 * f, [255, 190, 60], 0.35 * I * f);
         }
         for (const m of R.embers) { const p = (t - m.born) / m.life; g.fillStyle = `rgba(255,${Math.round(190 - 110 * p)},60,${(1 - p) * 0.9 * I})`; g.beginPath(); g.arc(m.x + Math.sin(t * 2 + m.born * 9) * w * 0.012, m.y - p * m.v * h * 5, m.s * (1 - p * 0.5), 0, TAU); g.fill(); }
       } else if (pattern === 'laser') {
         // four thin beams, one from each corner, sweeping slowly across the picture
         const L = Math.hypot(w, h);
-        [[0, 0, 0], [w, 0, Math.PI], [0, h, -0], [w, h, Math.PI]].forEach(([x, y], i) => {
-          const sw = 0.5 + 0.5 * Math.sin(t * 0.6 + i * 1.7), ang = 0.12 + sw * 1.25;
+        const many = e.react && lvl > 0.25; // with loud music a second set of beams joins in
+        [[0, 0, 0], [w, 0, Math.PI], [0, h, -0], [w, h, Math.PI], ...(many ? [[0, 0, 1], [w, 0, 1], [0, h, 1], [w, h, 1]] : [])].forEach(([x, y], i0) => {
+          const i = i0, sw = 0.5 + 0.5 * Math.sin(t * 0.6 + i * 1.7 + (i > 3 ? 2 : 0)), ang = 0.12 + sw * 1.25;
           const a = i === 0 ? ang : i === 1 ? Math.PI - ang : i === 2 ? -ang : Math.PI + ang;
-          const col = [hexToRgb('green'), hexToRgb('cyan'), hexToRgb('rose'), hexToRgb('purple')][i];
+          const col = e.react ? hexToRgb(hslHex(hueOff + i * 47 + bass * 60)) : [hexToRgb('green'), hexToRgb('cyan'), hexToRgb('rose'), hexToRgb('purple')][i % 4];
           g.save(); g.translate(x, y); g.rotate(a);
           const grad = g.createLinearGradient(0, 0, L, 0);
           grad.addColorStop(0, rgba(col, 0.95 * Math.min(1, I + 0.2))); grad.addColorStop(1, rgba(col, 0.15));
-          g.fillStyle = grad; g.fillRect(0, -h * 0.004, L, h * 0.008);
-          g.fillStyle = rgba(col, 0.16 * I); g.fillRect(0, -h * 0.02, L, h * 0.04);
+          const wide = 1 + 1.6 * beat + 0.8 * bass;
+          g.fillStyle = grad; g.fillRect(0, -h * 0.004 * wide, L, h * 0.008 * wide);
+          g.fillStyle = rgba(col, (0.16 + 0.25 * beat) * I); g.fillRect(0, -h * 0.02 * wide, L, h * 0.04 * wide);
           g.restore();
-          glow(g, x, y, r * 0.4, col, 0.45 * I);
+          glow(g, x, y, r * (0.4 + 0.2 * beat), col, 0.45 * I + 0.3 * beat);
         });
       } else if (pattern === 'neonframe') {
-        const lw = Math.max(3, h * 0.012), m = lw * 2.2;
+        const lw = Math.max(3, h * 0.012) * (1 + 0.8 * beat), m = lw * 2.2;
         const hue = e.rainbowFrame ? (t * 40) % 360 : null;
         const col = hue === null ? rgb : hexToRgb(hslHex(hue));
         for (const [wid, a] of [[lw * 6, 0.07], [lw * 3.5, 0.12], [lw * 1.8, 0.3], [lw, 0.95]]) {
@@ -775,7 +812,7 @@
         glow(g, w, 0, r, [50, 90, 255], (0.55 * (1 - k) + 0.05) * I); glow(g, w, h, r * 0.8, [50, 90, 255], 0.4 * (1 - k) * I);
       } else if (pattern === 'heart') {
         const hs = (R.hearts = R.hearts || []);
-        if (t - (R.heartT || 0) > 0.28 && hs.length < 24) { R.heartT = t; const side = Math.random() < 0.5; hs.push({ x: side ? Math.random() * w * 0.2 : w - Math.random() * w * 0.2, born: t, life: 2.4 + Math.random() * 1.6, s: h * (0.025 + Math.random() * 0.03), ph: Math.random() * 6 }); }
+        if (t - (R.heartT || 0) > 0.28 / (1 + 2 * bass) && hs.length < 34) { R.heartT = t; const side = Math.random() < 0.5; hs.push({ x: side ? Math.random() * w * 0.2 : w - Math.random() * w * 0.2, born: t, life: 2.4 + Math.random() * 1.6, s: h * (0.025 + Math.random() * 0.03), ph: Math.random() * 6 }); }
         R.hearts = hs.filter((m) => t - m.born < m.life);
         glow(g, 0, h, r * 0.6, [255, 90, 150], 0.22 * I); glow(g, w, h, r * 0.6, [255, 90, 150], 0.22 * I);
         for (const m of R.hearts) {
@@ -783,6 +820,23 @@
           g.fillStyle = `rgba(255,${Math.round(90 + 80 * Math.sin(m.ph))},150,${Math.sin(Math.PI * p) * 0.9 * I})`;
           g.beginPath(); g.moveTo(x, y + s * 0.35); g.bezierCurveTo(x - s, y - s * 0.4, x - s * 0.35, y - s * 1.1, x, y - s * 0.45); g.bezierCurveTo(x + s * 0.35, y - s * 1.1, x + s, y - s * 0.4, x, y + s * 0.35); g.fill();
         }
+      } else if (pattern === 'party' || pattern === 'club') {
+        drawPartyBeams(g, w, h, I, t, e, hueOff);
+        if (pattern === 'club') {
+          // lasers from the corners and a pulsing floor, on top of the moving heads
+          const L = Math.hypot(w, h);
+          [[0, h, -1], [w, h, 1]].forEach(([x, y, dir], i) => {
+            const a = dir * (0.35 + 0.5 * Math.abs(Math.sin(t * 0.9 + i * 2)));
+            const col = hexToRgb(hslHex(hueOff + 120 + i * 90));
+            g.save(); g.translate(x, y); g.rotate(-Math.PI / 2 + a);
+            g.fillStyle = rgba(col, 0.9 * Math.min(1, I + 0.2)); g.fillRect(0, -h * 0.004 * (1 + beat), L, h * 0.008 * (1 + beat));
+            g.restore();
+          });
+        }
+        glow(g, 0, h, r * (0.55 + 0.3 * bass), hexToRgb(hslHex(hueOff + 200)), 0.3 * I + 0.3 * beat);
+        glow(g, w, h, r * (0.55 + 0.3 * bass), hexToRgb(hslHex(hueOff + 320)), 0.3 * I + 0.3 * beat);
+      } else if (pattern === 'equalizer') {
+        drawEqualizer(g, w, h, I, t, e, hueOff);
       } else if (pattern === 'disco') {
         const sway = e.safe ? 0.5 : 0.9;
         for (let side = 0; side < 2; side++) {
@@ -867,6 +921,23 @@
       }
       R.dark = lerp(R.dark || 0, R.darkTarget || 0, 0.12);
       return R.dark;
+    }
+
+    // A dark room: the whole picture is lifted (more the darker it is) so you can be seen with no lamp at all.
+    function studioLift(g, w, h, dark) {
+      const k = clamp((dark - 0.1) / 0.9);
+      if (k < 0.03 || !('filter' in g) || !g.canvas) return 0;
+      if (!R.sl || R.sl.width !== w || R.sl.height !== h) R.sl = makeScratch(w, h);
+      const sg = R.sl.getContext('2d');
+      sg.globalCompositeOperation = 'copy';
+      sg.filter = `brightness(${(1 + 2.4 * k).toFixed(2)}) contrast(${(1 - 0.12 * k).toFixed(2)}) saturate(${(1 + 0.25 * k).toFixed(2)})${k > 0.5 ? ' blur(0.8px)' : ''}`;
+      sg.drawImage(g.canvas, 0, 0, w, h);
+      sg.filter = 'none';
+      g.save();
+      g.globalAlpha = clamp(0.35 + 0.65 * k);
+      g.drawImage(R.sl, 0, 0, w, h);
+      g.restore();
+      return k;
     }
 
     // Brightens the real picture around your face and tints it with the light's colour, so the lamp
@@ -1421,9 +1492,31 @@
     }
 
     // The effective look right now: the settings, nudged by the mood of the sound that is playing.
+    // Which corner show suits each tune when the pattern is "Auto" (follow the music).
+    const TUNE_SHOW = { chill: 'aurora', funky: 'party', party: 'party', suspense: 'pulse', retro: 'equalizer', jazz: 'candle', epic: 'aurora',
+      tropical: 'sparkle', disco: 'disco', club: 'club', bass: 'equalizer', desi: 'party', house: 'sweep', mine: 'club' };
+
     function effective(cfg, audio, now) {
       const e = { rgb: hexToRgb(cfg.color), pattern: cfg.pattern, corners: cfg.corners, focus: cfg.focus ? 0.4 : 0,
-        dim: 1, level: 0, beat: 0, period: 2.6, safe: cfg.safe, swing: 0, swingPeriod: 3.4 };
+        dim: 1, level: 0, bass: 0, mid: 0, high: 0, spec: null, beat: 0, period: 2.6, safe: cfg.safe, swing: 0, swingPeriod: 3.4, react: false, mt: 0 };
+      // "music time": it runs faster the louder and bassier the sound is, so every show speeds up with the music
+      const dtms = R.mtAt && now - R.mtAt < 250 ? now - R.mtAt : 33;
+      R.mtAt = now;
+      let speed = 1;
+      if (cfg.sync && audio) {
+        e.bass = clamp(audio.bass || 0); e.mid = clamp(audio.mid || 0); e.high = clamp(audio.high || 0); e.spec = audio.spec || null;
+        const playing = (audio.level || 0) > 0.03 || !!audio.tune;
+        if (playing) {
+          e.react = true; e.corners = true;
+          speed = 1 + 1.8 * clamp(audio.level || 0) + 1.4 * e.bass;
+          if (cfg.pattern === 'auto' || cfg.pattern === 'steady') e.pattern = TUNE_SHOW[audio.tune] || 'sweep';
+          // the colours drift with the music, bass pushes them
+          R.hue = ((R.hue || 0) + dtms * 0.012 * speed) % 360;
+        }
+      }
+      if (e.pattern === 'auto') e.pattern = 'sweep';
+      R.mt = (R.mt || 0) + (dtms / 1000) * speed;
+      e.mt = R.mt;
       if (cfg.sync && audio) {
         e.level = clamp(audio.level || 0);
         const mood = MOODS.includes(audio.mood) ? audio.mood : '';
@@ -1435,18 +1528,17 @@
           const m = MOOD[R.mood], k = R.moodBlend;
           if (m.rgb) e.rgb = mixRgb(e.rgb, m.rgb, k);
           e.corners = true;
-          if (k > 0.45) e.pattern = m.pattern;
+          if (k > 0.45 && (cfg.pattern === 'steady' || cfg.pattern === 'auto') && !audio.tune) e.pattern = m.pattern;
           if (m.period > 1) e.period = m.period;
           e.focus = lerp(e.focus, e.focus + m.focus, k);
           e.dim = lerp(1, m.dim, k);
           if (m.swing) { e.swing = m.swing * k; e.swingPeriod = 4.2; }
-          if (m.beats && !cfg.safe) e.beat = R.beat;
-          if (m.beats && cfg.safe) e.beat = R.beat * 0.45;
         }
         // one gentle beat pulse at most about 3 times a second (never a strobe)
         const b = clamp(audio.beat || 0);
         if (b > 0.5 && now - R.lastBeat > 330) { R.lastBeat = now; R.beat = 1; }
         R.beat *= 0.86;
+        if (e.react || (R.mood && MOOD[R.mood] && MOOD[R.mood].beats)) e.beat = R.beat * (cfg.safe ? 0.45 : 1);
       } else {
         R.moodBlend = 0; R.mood = ''; R.beat = 0;
       }
@@ -1483,10 +1575,11 @@
         const ls = lampState(cfg, h, now, e, audio);
         if (party) { ls.angle += 0.2 * Math.sin(t * 2.7); ls.dy += h * 0.012 * Math.sin(t * 5.4); }
         const focus = e.focus * ls.focusRamp;
-        const dark = measureDark(g, w, h, now);
+        const dark = measureDark(g, w, h, now);          // measured on the plain picture, before any lifting
+        const lifted = cfg.studio !== false ? studioLift(g, w, h, dark) : 0;
         const faceX = w * fx, faceY = h * fy;
         // The lamp (any hanging light) lights your face; with no lamp there is still a soft light on you.
-        relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp, follow ? faceX : w / 2 + ls.angle * w * 0.5, follow ? faceY : h * 0.48, dark);
+        relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp, follow ? faceX : w / 2 + ls.angle * w * 0.5, follow ? faceY : h * 0.48, dark * (1 - 0.5 * lifted));
 
         g.save();
         if (focus > 0.01) { // darker edges, light on you

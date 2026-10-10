@@ -1266,5 +1266,83 @@
   },
   "fx_away_tip": {
     "message": "जानवर आपको ढूँढता है, फिर नाचता है और लाइटें पार्टी करती हैं। वापस आने पर स्वागत करते हैं।"
+  },
+  "fx_presets": {
+    "message": "क्विक लुक"
+  },
+  "fx_pre_party": {
+    "message": "🎉 पार्टी"
+  },
+  "fx_pre_studio": {
+    "message": "😎 स्टूडियो"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 डिस्को"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 कोज़ी"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 सिनेमा"
+  },
+  "fx_pre_live": {
+    "message": "🎤 लाइव"
+  },
+  "fx_studio": {
+    "message": "अँधेरे कमरे को अपने आप रोशन करें"
+  },
+  "fx_studio_tip": {
+    "message": "अगर कमरा अँधेरा है, MemeBox आपकी तस्वीर को उजला कर देता है ताकि लैंप के बिना भी आप साफ़ दिखें।"
+  },
+  "fx_darkprev": {
+    "message": "🌙 अँधेरे कमरे में प्रिव्यू"
+  },
+  "fx_pat_auto": {
+    "message": "म्यूज़िक के साथ चलें"
+  },
+  "fx_pat_party": {
+    "message": "मूविंग हेड"
+  },
+  "fx_pat_equalizer": {
+    "message": "इक्वलाइज़र"
+  },
+  "fx_pat_club": {
+    "message": "क्लब"
+  },
+  "as_btn": {
+    "message": "फ़ाइल से साउंड जोड़ें (ऑडियो या वीडियो)"
+  },
+  "as_working": {
+    "message": "$1 जोड़ रहे हैं…"
+  },
+  "as_added": {
+    "message": "जुड़ गया: $1"
+  },
+  "as_added_cut": {
+    "message": "जुड़ गया: $1 (पहले $2 सेकंड आए)"
+  },
+  "as_fail": {
+    "message": "$1 नहीं जुड़ पाया"
+  },
+  "as_bad": {
+    "message": "$1 साउंड या वीडियो फ़ाइल नहीं है, या बहुत बड़ी है"
+  },
+  "mu_add": {
+    "message": "＋ मेरा म्यूज़िक जोड़ें"
+  },
+  "mu_mine": {
+    "message": "मेरा म्यूज़िक"
+  },
+  "mu_join": {
+    "message": "पहले कॉल में आएँ, फिर अपना म्यूज़िक बजाएँ"
+  },
+  "mu_big": {
+    "message": "यह फ़ाइल 8 MB से बड़ी है"
+  },
+  "mu_many": {
+    "message": "ज़्यादा से ज़्यादा 12 ट्रैक। पहले एक हटाएँ।"
+  },
+  "mu_del": {
+    "message": "हटाएँ"
   }
 }

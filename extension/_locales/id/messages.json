@@ -1266,5 +1266,83 @@
   },
   "fx_away_tip": {
     "message": "Hewan mencarimu, lalu menari dan lampu berpesta. Mereka menyambutmu saat kembali."
+  },
+  "fx_presets": {
+    "message": "Tampilan cepat"
+  },
+  "fx_pre_party": {
+    "message": "🎉 Pesta"
+  },
+  "fx_pre_studio": {
+    "message": "😎 Studio"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 Disko"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 Nyaman"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 Bioskop"
+  },
+  "fx_pre_live": {
+    "message": "🎤 Live"
+  },
+  "fx_studio": {
+    "message": "Terangi kamar gelapku otomatis"
+  },
+  "fx_studio_tip": {
+    "message": "Jika kamarmu gelap, MemeBox mencerahkan gambarmu agar terlihat jelas, bahkan tanpa lampu."
+  },
+  "fx_darkprev": {
+    "message": "🌙 Pratinjau di kamar gelap"
+  },
+  "fx_pat_auto": {
+    "message": "Ikuti musik"
+  },
+  "fx_pat_party": {
+    "message": "Moving head"
+  },
+  "fx_pat_equalizer": {
+    "message": "Equalizer"
+  },
+  "fx_pat_club": {
+    "message": "Klub"
+  },
+  "as_btn": {
+    "message": "Tambah suara dari file (audio atau video)"
+  },
+  "as_working": {
+    "message": "Menambahkan $1…"
+  },
+  "as_added": {
+    "message": "Ditambahkan: $1"
+  },
+  "as_added_cut": {
+    "message": "Ditambahkan: $1 ($2 detik pertama muat)"
+  },
+  "as_fail": {
+    "message": "Tidak bisa menambahkan $1"
+  },
+  "as_bad": {
+    "message": "$1 bukan file suara atau video, atau terlalu besar"
+  },
+  "mu_add": {
+    "message": "＋ Tambah musikku"
+  },
+  "mu_mine": {
+    "message": "Musikku"
+  },
+  "mu_join": {
+    "message": "Gabung panggilan dulu, lalu putar musikmu"
+  },
+  "mu_big": {
+    "message": "File lebih dari 8 MB"
+  },
+  "mu_many": {
+    "message": "Maksimal 12 lagu. Hapus satu dulu."
+  },
+  "mu_del": {
+    "message": "Hapus"
   }
 }

@@ -1266,5 +1266,83 @@
   },
   "fx_away_tip": {
     "message": "The animal looks for you, then dances and the lights party. They welcome you back."
+  },
+  "fx_presets": {
+    "message": "Quick looks"
+  },
+  "fx_pre_party": {
+    "message": "🎉 Party"
+  },
+  "fx_pre_studio": {
+    "message": "😎 Studio"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 Disco"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 Cozy"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 Cinema"
+  },
+  "fx_pre_live": {
+    "message": "🎤 Live"
+  },
+  "fx_studio": {
+    "message": "Brighten my dark room automatically"
+  },
+  "fx_studio_tip": {
+    "message": "If your room is dark, MemeBox lifts your picture so you are clearly seen, even with no lamp."
+  },
+  "fx_darkprev": {
+    "message": "🌙 Preview in a dark room"
+  },
+  "fx_pat_auto": {
+    "message": "Follow the music"
+  },
+  "fx_pat_party": {
+    "message": "Moving heads"
+  },
+  "fx_pat_equalizer": {
+    "message": "Equalizer"
+  },
+  "fx_pat_club": {
+    "message": "Club"
+  },
+  "as_btn": {
+    "message": "Add a sound from a file (audio or video)"
+  },
+  "as_working": {
+    "message": "Adding $1…"
+  },
+  "as_added": {
+    "message": "Added: $1"
+  },
+  "as_added_cut": {
+    "message": "Added: $1 (the first $2 seconds fit)"
+  },
+  "as_fail": {
+    "message": "Could not add $1"
+  },
+  "as_bad": {
+    "message": "$1 is not a sound or video file, or it is too big"
+  },
+  "mu_add": {
+    "message": "＋ Add my music"
+  },
+  "mu_mine": {
+    "message": "My music"
+  },
+  "mu_join": {
+    "message": "Join a call first, then play your music"
+  },
+  "mu_big": {
+    "message": "That file is over 8 MB"
+  },
+  "mu_many": {
+    "message": "12 tracks is the most. Remove one first."
+  },
+  "mu_del": {
+    "message": "Remove"
   }
 }

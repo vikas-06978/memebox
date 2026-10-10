@@ -537,6 +537,10 @@
     .fx-prev { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--p-line); background: #23253a; display: block; }
     .fx-body.fx-off .fx-prev { opacity: .75; }
     .fx-main { font-size: 14px; }
+    .fx-pair { display: inline-flex; gap: 2px; }
+    .chip.del { padding-left: 8px; padding-right: 8px; opacity: .7; }
+    .chip.preset { font-weight: 800; }
+    .icon.add { font-size: 20px; font-weight: 700; }
     .fx-group { display: grid; gap: 6px; }
     .fx-label { font-weight: 700; font-size: 12px; color: var(--p-muted); text-transform: none; }
     .fx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -686,6 +690,11 @@
     panelIsOpen: () => panelOpen,
     openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
     inCall: () => !!activeFrame(),
+    frameId: () => { const f = activeFrame(); return f ? f.id : null; },
+    ask: (msg) => bridge.ask(msg),
+    clipCount: () => state.lines.filter((l) => l.kind === 'clip').length,
+    LIMITS: MEME.LIMITS,
+    toast: (text, ms) => toast(text, ms),
     sendToHook: (cmd) => sendToHook(cmd),
     send: (msg) => bridge.toRuntime(msg),
     onPanelToggle: (fn) => panelToggleCbs.push(fn),

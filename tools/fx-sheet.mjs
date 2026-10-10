@@ -38,6 +38,10 @@ await page.evaluate((only) => {
   }
   add('follow me: lamp and cat go with you (centre, left, right, standing up, gone, back)', [1500, 5200, 7500, 12000, 15500, 17600].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, character: 'cat', charPos: 'left' }, sim: ms })));
   add('follow me: disco ball and frog', [1500, 5200, 7500, 12000, 15500, 17600].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, fixture: 'discoball', character: 'frog', charPos: 'right' }, sim: ms })));
+  const spec = [0.8, 0.9, 0.75, 0.6, 0.55, 0.5, 0.4, 0.45, 0.35, 0.3, 0.3, 0.25, 0.2, 0.2, 0.15, 0.1];
+  const loud = { level: 0.8, bass: 0.85, mid: 0.5, high: 0.4, spec, beat: 1, mood: '', tune: 'club' };
+  add('music reactive (sync on, loud music with a beat): laser, party, club, equalizer, disco, fire, aurora', ['laser', 'party', 'club', 'equalizer', 'disco', 'fire', 'aurora'].map((p) => ({ label: p, cfg: { ...base, sync: true, corners: true, pattern: p, lamp: false }, at: 2500, audio: loud })));
+  add('pattern Auto follows the tune: club, disco, bass, desi, suspense, jazz', ['club', 'disco', 'bass', 'desi', 'suspense', 'jazz'].map((tn) => ({ label: 'auto + ' + tn, cfg: { ...base, sync: true, pattern: 'auto', lamp: false }, at: 2500, audio: { ...loud, tune: tn } })));
   add('lamp drop (0.4s, 1.2s, 2.0s, 2.8s, 3.3s, 5s)', [0.4, 1.2, 2.0, 2.8, 3.3, 5].map((s) => ({ label: s + 's', cfg: { ...base, lampAnim: 'drop' }, at: s * 1000, anim: true })));
   add('free: still lamp (warm, white, blue) + swing + flicker + no lamp', [
     { label: 'warm', cfg: { ...base } }, { label: 'white', cfg: { ...base, color: 'white' } }, { label: 'blue', cfg: { ...base, color: 'blue' } },

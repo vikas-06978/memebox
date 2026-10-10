@@ -72,9 +72,11 @@
         "defaults.js",
         "lib/fx-ui.js",
         "lib/music-ui.js",
+        "lib/trim.js",
         "bridge.js",
         "lights-ui.js",
         "music-section.js",
+        "add-sound.js",
         "ui.js"
       ],
       "run_at": "document_start",

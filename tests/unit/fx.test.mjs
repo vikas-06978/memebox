@@ -27,10 +27,10 @@ test('lockedParts names what a free person is only previewing', () => {
   assert.deepEqual([...fx.lockedParts({ fixture: 'lamp' }, free)], []);
 });
 
-test('there are 8 things that hang, 8 animations, 13 corner shows, 20 filters (the ones in the price list)', () => {
+test('there are 8 things that hang, 8 animations, 17 corner shows (13 + auto, party, equalizer, club), 20 filters (the ones in the price list)', () => {
   assert.equal(fx.FIXTURES.length, 8);
   assert.equal(fx.LAMP_ANIMS.length, 8);
-  assert.equal(fx.PATTERNS.length, 13);
+  assert.equal(fx.PATTERNS.length, 17);
   assert.equal(fx.FILTERS.length, 21); // 20 + "none"
   assert.equal(fx.FREE_FILTERS.length, 4); // 3 + "none"
 });
