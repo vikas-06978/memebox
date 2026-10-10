@@ -38,6 +38,15 @@
   const SFX = ['airhorn', 'sad-trombone', 'rimshot', 'drumroll', 'wrong-buzzer', 'tada', 'boing',
     'slide-whistle', 'crickets', 'applause', 'evil-laugh', 'dramatic', 'record-scratch'];
 
+  // How the lights feel for each sound (Lights sync): suspense, excited, surprise, sad, fun, awkward.
+  const SFX_MOOD = {
+    airhorn: 'excited', 'sad-trombone': 'sad', rimshot: 'surprise', drumroll: 'suspense', 'wrong-buzzer': 'sad', tada: 'surprise',
+    boing: 'fun', 'slide-whistle': 'fun', crickets: 'awkward', applause: 'excited', 'evil-laugh': 'suspense', dramatic: 'suspense',
+    'record-scratch': 'surprise',
+  };
+  const TONE_MOOD = { normal: '', chipmunk: 'fun', villain: 'suspense', robot: '', slowmo: 'suspense', excited: 'excited' };
+  const moodFor = (line) => (line && (SFX_MOOD[line.sfx] || TONE_MOOD[line.tone])) || '';
+
   // Live voice changer for YOUR voice (applied in mic-hook.js).
   const VOICES = {
     off:      { emoji: '🎙️' },
@@ -66,6 +75,7 @@
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
     theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)
+    fx: {},               // Lights & looks (lib/fx.js): lamp, colours, light show, filter. {} = the defaults
     timersEnabled: false, // master switch for timed lines (off by default)
     timers: [],           // { id, lineId, mode: 'clock'|'interval', time: 'HH:MM', minutes, enabled }
   };
@@ -145,7 +155,7 @@
   }
 
   globalThis.MEME = Object.freeze({
-    TONES, VOICES, THEMES, LINES, SFX, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, THEMES, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

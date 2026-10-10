@@ -34,6 +34,12 @@
   let monitorOn = false;
   let voiceFx = 'off';      // live voice changer on YOUR voice
   let camCaptions = false;  // draw meme text onto your own camera (set from settings by the bridge)
+  let fxCfg = null;         // Lights & looks (lib/fx.js), already limited to what this person may use; null = never set
+  let fxMeter = null;       // listens to the sounds being played, so the lights can follow them
+  let fxMood = '';          // the mood of the sound that played last (suspense, excited, ...)
+  let fxMoodAt = 0;
+  let fxLevel = 0;
+  let fxAvg = 0;
   const sessions = new Set();
   const mixedTracks = new WeakSet(); // tracks we produced (and their clones)
   const playing = new Set();
@@ -84,6 +90,7 @@
       case 'tab-audio-volume': setTabVolume(d.value); break;
       case 'voice': setVoice(String(d.value), d.url); break;
       case 'cam-captions': camCaptions = d.value === true; break;
+      case 'fx-config': fxCfg = globalThis.MemeFx ? globalThis.MemeFx.sanitize(d.value) : null; break;
     }
   });
 
@@ -94,6 +101,9 @@
       ctx = new AudioContext({ latencyHint: 'interactive' });
       board = ctx.createGain();
       board.gain.value = volume;
+      fxMeter = ctx.createAnalyser(); // reads the level of what is played (not your voice)
+      fxMeter.fftSize = 512;
+      board.connect(fxMeter);
       ctx.addEventListener('statechange', announce);
       setMonitor(monitorOn);
     }
@@ -200,7 +210,7 @@
     const wrapped = function getUserMedia(constraints) {
       const p = original.call(this, constraints);
       const audio = !!(constraints && constraints.audio);
-      const video = !!(constraints && constraints.video) && camCaptions;
+      const video = !!(constraints && constraints.video) && camWanted();
       if (!audio && !video) return p;
       return p.then((stream) => {
         let out = stream;
@@ -215,9 +225,9 @@
         }
         if (video) {
           try {
-            out = withCaptionVideo(out);
+            out = withEffectsVideo(out);
           } catch (err) {
-            console.warn(LOG, 'could not add camera captions, using the plain camera', err);
+            console.warn(LOG, 'could not add camera effects, using the plain camera', err);
           }
         }
         return out;
@@ -313,6 +323,8 @@
 
   // WAV/MP3/OGG bytes -> BufferSource (not started) wired into the soundboard.
   function playAudio(d) {
+    fxMood = typeof d.mood === 'string' ? d.mood : '';
+    fxMoodAt = performance.now();
     play(d.reqId, async () => {
       if (!(d.bytes instanceof ArrayBuffer)) throw new Error('No audio data');
       const buffer = await ctx.decodeAudioData(d.bytes);
@@ -721,44 +733,118 @@
     g.restore();
   }
 
-  function captionVideo(real) {
-    const video = document.createElement('video');
-    video.muted = true;
-    video.playsInline = true;
-    video.srcObject = new MediaStream([real]);
-    video.play().catch(() => {});
-    const st = real.getSettings();
-    const canvas = document.createElement('canvas');
-    canvas.width = st.width || 640;
-    canvas.height = st.height || 480;
-    const g = canvas.getContext('2d', { alpha: false });
-    const out = canvas.captureStream(30).getVideoTracks()[0];
-    const s = { tracks: new Set() };
+  // ---------- Lights & looks, and captions: one pipeline for the camera you send ----------
 
-    const timer = setInterval(() => {
-      if (real.readyState !== 'live') { finish(); return; }
-      const vw = video.videoWidth;
-      const vh = video.videoHeight;
-      if (vw && vh && (canvas.width !== vw || canvas.height !== vh)) { canvas.width = vw; canvas.height = vh; }
-      if (video.readyState >= 2) g.drawImage(video, 0, 0, canvas.width, canvas.height);
-      if (performance.now() < camTextUntil) {
-        if (camPicture) drawCamPicture(g, canvas.width, canvas.height);
-        if (camText) drawCamCaption(g, canvas.width, canvas.height);
-      }
-    }, 1000 / 30);
+  const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.filter !== 'none');
+  const camWanted = () => camCaptions || (!!fxCfg && (fxCfg.on || fxCfg.armed || fxCfg.filter !== 'none'));
+  const needsPaint = () => fxActive() || performance.now() < camTextUntil;
+  const meterBuf = new Float32Array(512);
+
+  // What the lights listen to: how loud the sound is, a beat now and then, and its mood.
+  function audioInfo() {
+    const now = performance.now();
+    let rms = 0;
+    if (fxMeter) {
+      fxMeter.getFloatTimeDomainData(meterBuf);
+      let sum = 0;
+      for (let i = 0; i < meterBuf.length; i++) sum += meterBuf[i] * meterBuf[i];
+      rms = Math.sqrt(sum / meterBuf.length);
+    }
+    fxLevel = Math.max(Math.min(1, rms * 3.4), fxLevel * 0.9);
+    const beat = rms > fxAvg * 1.55 + 0.02 ? 1 : 0;
+    fxAvg = fxAvg * 0.93 + rms * 0.07;
+    const mood = fxMood && now - fxMoodAt < 12000 ? fxMood : '';
+    return { level: fxLevel, beat, mood };
+  }
+
+  function paintCamera(R, g, src, w, h) {
+    const now = performance.now();
+    if (fxActive() && R) R.render(g, src, w, h, fxCfg, now, audioInfo(), {});
+    else g.drawImage(src, 0, 0, w, h);
+    if (now < camTextUntil) {
+      if (camPicture) drawCamPicture(g, w, h);
+      if (camText) drawCamCaption(g, w, h);
+    }
+  }
+
+  const insertableStreams = () => typeof MediaStreamTrackProcessor === 'function' && typeof MediaStreamTrackGenerator === 'function'
+    && typeof VideoFrame === 'function' && typeof OffscreenCanvas === 'function';
+
+  function effectsVideo(real) {
+    const R = globalThis.MemeFx ? globalThis.MemeFx.createRenderer() : null;
+    const s = { tracks: new Set() };
+    let out;
+    let stopPipeline;
+
+    if (insertableStreams()) {
+      // Frames come straight from the camera, so it keeps its speed in a background tab. A frame passes
+      // through untouched when nothing is switched on.
+      const processor = new MediaStreamTrackProcessor({ track: real });
+      const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+      let canvas = null;
+      let g = null;
+      const transform = new TransformStream({
+        transform(frame, controller) {
+          let done = false;
+          try {
+            if (needsPaint()) {
+              const w = frame.displayWidth;
+              const h = frame.displayHeight;
+              if (!canvas || canvas.width !== w || canvas.height !== h) {
+                canvas = new OffscreenCanvas(w, h);
+                g = canvas.getContext('2d', { alpha: false });
+              }
+              paintCamera(R, g, frame, w, h);
+              const framed = new VideoFrame(canvas, { timestamp: frame.timestamp, duration: frame.duration || undefined });
+              frame.close();
+              done = true;
+              controller.enqueue(framed);
+              return;
+            }
+          } catch (err) {
+            if (!done) console.warn(LOG, 'camera effects skipped for one frame', err);
+          }
+          if (!done) controller.enqueue(frame);
+        },
+      });
+      processor.readable.pipeThrough(transform).pipeTo(generator.writable).catch(() => {});
+      out = generator;
+      stopPipeline = () => { try { processor.readable.cancel(); } catch {} };
+    } else {
+      // Older browsers: a hidden <video> drawn onto a canvas 30 times a second.
+      const video = document.createElement('video');
+      video.muted = true;
+      video.playsInline = true;
+      video.srcObject = new MediaStream([real]);
+      video.play().catch(() => {});
+      const st = real.getSettings();
+      const canvas = document.createElement('canvas');
+      canvas.width = st.width || 640;
+      canvas.height = st.height || 480;
+      const g = canvas.getContext('2d', { alpha: false });
+      out = canvas.captureStream(30).getVideoTracks()[0];
+      const timer = setInterval(() => {
+        if (real.readyState !== 'live') { finish(); return; }
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        if (vw && vh && (canvas.width !== vw || canvas.height !== vh)) { canvas.width = vw; canvas.height = vh; }
+        if (video.readyState >= 2) paintCamera(R, g, video, canvas.width, canvas.height);
+      }, 1000 / 30);
+      stopPipeline = () => { clearInterval(timer); video.srcObject = null; };
+    }
 
     function finish() {
-      clearInterval(timer);
-      video.srcObject = null;
+      stopPipeline();
       if (real.readyState === 'live') origStop.call(real);
       for (const t of s.tracks) {
         if (t.readyState === 'live') { origStop.call(t); t.dispatchEvent(new Event('ended')); }
       }
       s.tracks.clear();
+      post({ type: 'fx-status', active: false });
     }
     real.addEventListener('ended', finish);
 
-    // Same idea as the mic: the canvas track stands in for the real camera.
+    // Same idea as the mic: our track stands in for the real camera.
     const wrap = (t) => {
       s.tracks.add(t);
       captionedTracks.add(t);
@@ -792,14 +878,15 @@
     };
     wrap(out);
     enabledDesc.set.call(out, real.enabled);
-    console.log(LOG, 'camera captions on for', real.label);
+    post({ type: 'fx-status', active: true });
+    console.log(LOG, 'camera effects ready for', real.label, insertableStreams() ? '(frame by frame)' : '(canvas)');
     return out;
   }
 
-  function withCaptionVideo(stream) {
+  function withEffectsVideo(stream) {
     const videos = stream.getVideoTracks();
     if (!videos.length || videos.some((t) => captionedTracks.has(t))) return stream;
-    return new MediaStream([...stream.getAudioTracks(), ...videos.map(captionVideo)]);
+    return new MediaStream([...stream.getAudioTracks(), ...videos.map(effectsVideo)]);
   }
 
   window.addEventListener('pagehide', () => post({ type: 'status', active: false, muted: false, ctxState: 'closed' }));

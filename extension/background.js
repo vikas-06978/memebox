@@ -152,7 +152,7 @@ async function handlePlay(tabId, { frameId, reqId, item }) {
       type: 'hook',
       cmd: {
         type: 'play-audio', reqId, b64, playbackRate: t.playbackRate, gain: t.gain * lineVolume, effect: t.effect || '',
-        text: String(item.text || '').slice(0, LIMITS.textChars),
+        text: String(item.text || '').slice(0, LIMITS.textChars), mood: MEME.moodFor(item),
         ...(picture ? { picture: picture.b64, pictureType: picture.type } : {}),
       },
     }, frameId);
@@ -261,6 +261,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   switch (msg.type) {
     // A frame's mic hook reported something -> tell the UI in the top frame.
+    case 'fx-status':
+      sendToTab(tabId, { type: 'fx-status', active: msg.active === true, frameId: sender.frameId }, 0);
+      break;
+
     case 'frame-status':
       updateCallTab(tabId, (e) => {
         const had = Object.keys(e.frames).length > 0;

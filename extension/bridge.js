@@ -45,6 +45,8 @@
       toRuntime({ type: 'frame-status', active: d.active === true, muted: d.muted === true, ctxState: String(d.ctxState) });
     } else if (d.type === 'played') {
       toRuntime({ type: 'play-result', reqId: d.reqId, ok: d.ok === true, muted: d.muted === true, reason: d.reason ? String(d.reason) : '' });
+    } else if (d.type === 'fx-status') {
+      toRuntime({ type: 'fx-status', active: d.active === true });
     } else if (d.type === 'tab-audio') {
       toRuntime({ type: 'tab-audio-state', on: d.on === true, error: d.error ? String(d.error) : '' });
     }
@@ -65,7 +67,7 @@
         toHook({
           type: 'play-audio', reqId: cmd.reqId, bytes,
           playbackRate: num(cmd.playbackRate, 1), gain: num(cmd.gain, 1), effect: String(cmd.effect || ''),
-          text: String(cmd.text || '').slice(0, 300),
+          text: String(cmd.text || '').slice(0, 300), mood: String(cmd.mood || '').slice(0, 20),
           ...(picture ? { picture, pictureType: String(cmd.pictureType || '') } : {}),
         }, picture ? [bytes, picture] : [bytes]);
       } else if (cmd.type === 'voice') {
@@ -87,6 +89,20 @@
     chrome.storage.local.get('settings').then((r) => sendCam(r.settings)).catch(() => {});
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && changes.settings) sendCam(changes.settings.newValue);
+    });
+  } catch { /* orphaned */ }
+
+  // Lights & looks: the settings reach the hook limited to what this person may use (the hook never decides).
+  try {
+    const sendFx = (settings) => {
+      if (!globalThis.MemeFx) return;
+      const can = (f) => (globalThis.MemePlan ? globalThis.MemePlan.canFx(f) : true);
+      toHook({ type: 'fx-config', value: globalThis.MemeFx.sanitize(settings && settings.fx, can) });
+    };
+    chrome.storage.local.get('settings').then((r) => sendFx(r.settings)).catch(() => {});
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.settings) sendFx(changes.settings.newValue);
+      if (area === 'local' && changes.license) chrome.storage.local.get('settings').then((r) => sendFx(r.settings)).catch(() => {});
     });
   } catch { /* orphaned */ }
 

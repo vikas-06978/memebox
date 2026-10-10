@@ -39,6 +39,8 @@
       unlimited: l.unlimited === true,
       pictureSlots: Number.isInteger(l.pictureSlots) && l.pictureSlots > 0 ? Math.min(l.pictureSlots, 10000) : 0,
       checkedAt: Number(l.checkedAt) || 0,
+      // Add-ons bought one by one (a character, a filter): [{ id, until }] with until in ms since 1970
+      addons: Array.isArray(l.addons) ? l.addons.slice(0, 60).filter((a) => a && typeof a.id === 'string').map((a) => ({ id: a.id.slice(0, 40), until: Number(a.until) || 0 })) : [],
     };
   }
 
@@ -64,6 +66,19 @@
     return isPro(now);
   }
 
+  // Is this add-on (a filter or a character) bought and still running? With Pro switched off everything is free.
+  function hasAddon(id, now = Date.now()) {
+    if (config().PRO_ENABLED !== true) return true;
+    const l = validLicense(now);
+    return !!l && l.addons.some((a) => a.id === id && (!a.until || a.until > now));
+  }
+
+  // Lights & looks. 'filter:neon' is one add-on filter. Everything else is part of Pro.
+  function canFx(feature, now) {
+    if (feature.startsWith('filter:')) return hasAddon(feature, now);
+    return isPro(now);
+  }
+
   // How many picture memes this user may have: unlimited with Pro, otherwise the free
   // one plus any picture slots bought with a license key.
   function pictureLimit(now) {
@@ -85,7 +100,7 @@
 
   globalThis.MemePlan = Object.freeze({
     PRO_FEATURES, FREE_LIMITS, LICENSE_MAX_AGE_MS,
-    isPro, can, pictureLimit, hasLicense, setLicense, validLicense,
+    isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, validLicense,
     get ready() { return ready; },
     get license() { return license; },
   });

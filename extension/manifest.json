@@ -50,6 +50,7 @@
       ],
       "js": [
         "lib/pitch-shift.js",
+        "lib/fx.js",
         "mic-hook.js"
       ],
       "world": "MAIN",
@@ -68,6 +69,7 @@
         "config.js",
         "lib/plan.js",
         "defaults.js",
+        "lib/fx-ui.js",
         "bridge.js",
         "ui.js"
       ],
