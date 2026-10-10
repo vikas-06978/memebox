@@ -34,8 +34,49 @@ function toBase64(buf) {
   return btoa(s);
 }
 
+// ---- face finding for "Follow me" (a small bundled face model, MediaPipe BlazeFace; runs here, on this computer) ----
+let faceDetector = null, faceLoading = null;
+function loadFace() {
+  if (faceDetector) return Promise.resolve(faceDetector);
+  if (!faceLoading) {
+    faceLoading = (async () => {
+      const wasm = await (await fetch(chrome.runtime.getURL('ml/vision-wasm.wasm'))).arrayBuffer();
+      const model = new Uint8Array(await (await fetch(chrome.runtime.getURL('ml/face-detector.tflite'))).arrayBuffer());
+      globalThis.Module = { wasmBinary: wasm }; // the loader script is already on this page, so give it the bytes directly
+      faceDetector = await globalThis.MemeVision.FaceDetector.createFromOptions(
+        { wasmLoaderPath: '', wasmBinaryPath: 'vision-wasm.wasm' },
+        { baseOptions: { modelAssetBuffer: model, delegate: 'CPU' }, runningMode: 'IMAGE', minDetectionConfidence: 0.5 });
+      return faceDetector;
+    })().catch((e) => { faceLoading = null; throw e; });
+  }
+  return faceLoading;
+}
+
+// A small JPEG of the camera picture in, the biggest face out (position and size, 0..1), or null for an empty picture.
+async function findFace(b64) {
+  const det = await loadFace();
+  const bin = atob(b64), u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  const bm = await createImageBitmap(new Blob([u], { type: 'image/jpeg' }));
+  try {
+    let best = null;
+    for (const d of det.detect(bm).detections || []) {
+      const b = d.boundingBox;
+      if (b && (!best || b.width * b.height > best.w * best.h)) best = { w: b.width, h: b.height, ox: b.originX, oy: b.originY };
+    }
+    const W = bm.width, H = bm.height;
+    return best ? { x: (best.ox + best.w / 2) / W, y: (best.oy + best.h / 2) / H, w: best.w / W, h: best.h / H } : null;
+  } finally { bm.close(); }
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (sender.id !== chrome.runtime.id || !msg || msg.target !== 'offscreen') return;
+  if (msg.type === 'face') {
+    findFace(String(msg.b64 || ''))
+      .then((face) => sendResponse({ ok: true, face }))
+      .catch((err) => sendResponse({ ok: false, error: String((err && err.message) || err) }));
+    return true; // async response
+  }
   if (msg.type === 'ping') {
     sendResponse({ ok: true });
     return;

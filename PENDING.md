@@ -9,7 +9,7 @@
 - Test the latest zips on a real Google Meet call: camera quality, lamp follow, animals, own music, adding sounds in a call.
 
 ## Me (after your go-ahead)
-- ML tracking with MediaPipe (face landmarks: tongue out, mouth, smile; hands: real wave; accurate follow). Bundled locally, with the old tracker as fallback. Must be tested in real Meet (page CSP/wasm).
+- ML tracking, part 1 is done (face position for Follow me, bundled BlazeFace). Part 2: Face Landmarker (tongue out, mouth, smile) and Hand Landmarker (real wave), the same way. Test everything in a real Meet call.
 - Razorpay in test mode first: signed webhooks, server-side prices, secrets via wrangler; card payment for dollars.
 - Server-signed pass sessions (anti-cheat for the time passes).
 - Live Lights demo on the website.

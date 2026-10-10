@@ -131,7 +131,7 @@ async function ensureOffscreen() {
     creatingOffscreen = chrome.offscreen.createDocument({
       url: 'offscreen.html',
       reasons: ['WORKERS'],
-      justification: 'Runs the bundled eSpeak-NG speech engine (WebAssembly) in a Web Worker to turn meme text into audio.',
+      justification: 'Runs the bundled eSpeak-NG speech engine (WebAssembly) in a Web Worker to turn meme text into audio, and the bundled face-finding model (WebAssembly) for the optional Follow me.',
     }).finally(() => { creatingOffscreen = null; });
   }
   await creatingOffscreen;
@@ -356,6 +356,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (!sender.tab) return;
   const tabId = sender.tab.id;
+
+  // "Follow me": a small camera picture from the call tab, answered with where the face is (the face model lives in the offscreen document).
+  if (msg.type === 'face-detect' && typeof msg.b64 === 'string' && msg.b64.length < 200000) {
+    ensureOffscreen()
+      .then(() => chrome.runtime.sendMessage({ target: 'offscreen', type: 'face', b64: msg.b64 }))
+      .then((r) => sendResponse(r && r.ok ? { ok: true, face: r.face } : { ok: false }), () => sendResponse({ ok: false }));
+    return true; // async response
+  }
 
   // Added from inside the call (the panel): a sound clip, or a whole music track. Saved at once, the panel updates live.
   if (msg.type === 'clip-add' || msg.type === 'music-add' || msg.type === 'music-del') {

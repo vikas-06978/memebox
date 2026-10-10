@@ -40,8 +40,9 @@ await page.evaluate((only) => {
       { label: kind + ': dance (2)', cfg: { ...base, lamp: false, character: kind, charPos: 'left' }, at: 2500, opts: { charAct: 'dance', charT: 0.62 } }];
     add('animal ' + kind + ': its own things, then its dance', tiles);
   }
-  add('follow me: lamp and cat go with you (centre, left, right, standing up, gone, back)', [3000, 7200, 10500, 14600, 17500, 19500, 21500, 23000].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, character: 'cat', charPos: 'left' }, sim: ms })));
+  add('follow me: lamp and cat go with you (centre, left, right, standing up, gone, back)', [3000, 14600, 17500, 20000, 23000, 28000, 29800, 30600, 31500, 33500].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, character: 'cat', charPos: 'left' }, sim: ms })));
   add('light colours: warm, white, blue, rose, purple, green, red, cyan, gold', ['warm', 'white', 'blue', 'rose', 'purple', 'green', 'red', 'cyan', 'gold'].map((c) => ({ label: c, cfg: { ...base, color: c, follow: false } })));
+  add('emotions: every animal can cry, wipe its tears, break its heart and feel its heart beat', ['cat', 'dog', 'frog', 'robot', 'panda', 'owl'].flatMap((k) => ['cry', 'wipe', 'heartbreak', 'heartbeat'].map((a) => ({ label: k + ': ' + a, cfg: { ...base, lamp: false, character: k, charPos: 'left' }, at: 2500, opts: { charAct: a, charT: 1.3, charU: 0.4 } }))));
   add('light angle: auto, 90, 60, 45, 30 (lamp left of you / right of you)', [['auto', 'left'], [90, 'left'], [60, 'left'], [45, 'left'], [30, 'left'], [45, 'right'], [30, 'right']].map(([a, p]) => ({ label: a + ' / ' + p, cfg: { ...base, lightAngle: a, lampPos: p, follow: false } })));
   add('follow me: disco ball and frog', [1200, 3000, 5000, 7200, 10500, 14600, 18000, 21000, 23000].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, fixture: 'discoball', character: 'frog', charPos: 'right' }, sim: ms })));
   const spec = [0.8, 0.9, 0.75, 0.6, 0.55, 0.5, 0.4, 0.45, 0.35, 0.3, 0.3, 0.25, 0.2, 0.2, 0.15, 0.1];
@@ -78,9 +79,9 @@ await page.evaluate((only) => {
       const sample = t.dark ? (t.cheap ? (() => { const d2 = document.createElement('canvas'); d2.width = W; d2.height = H; const x2 = d2.getContext('2d'); x2.drawImage(cheap, 0, 0); x2.fillStyle = 'rgba(0,0,0,0.78)'; x2.fillRect(0, 0, W, H); return d2; })() : dim) : (t.cheap ? cheap : lit);
       const start = 100000;
       if (t.sim != null) {
-        const c0 = 24000 * 40; // a whole number of cycles later, so the history before the first frame is "previous cycle"
+        const c0 = 34000 * 30; // a whole number of cycles later, so the history before the first frame is "previous cycle"
         const frame = document.createElement('canvas'); frame.width = W; frame.height = H;
-        for (let ms = Math.max(0, t.sim - 6000); ms <= t.sim; ms += 50) {
+        for (let ms = Math.max(0, t.sim - 18000); ms <= t.sim; ms += 50) {
           const sm = FX.simulate(c0 + ms);
           FX.drawSample(frame.getContext('2d'), W, H, ms, sm.person);
           r.render(g, frame, W, H, cfg, c0 + ms, { level: 0, voice: sm.voice }, { track: sm.track });

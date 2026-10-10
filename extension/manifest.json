@@ -73,6 +73,7 @@
         "lib/fx-ui.js",
         "lib/music-ui.js",
         "lib/trim.js",
+        "face-ml.js",
         "bridge.js",
         "lights-ui.js",
         "music-section.js",
