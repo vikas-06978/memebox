@@ -1377,5 +1377,17 @@
   },
   "st_ok": {
     "message": "Compris"
+  },
+  "fx_angle": {
+    "message": "Angle de la lumière (de la lampe vers vous)"
+  },
+  "fx_angle_auto": {
+    "message": "Auto"
+  },
+  "fx_mirror": {
+    "message": "Gauche / droite comme je me vois"
+  },
+  "fx_mirror_tip": {
+    "message": "Comme un miroir : votre gauche est celle de votre propre vidéo. Décochez si c'est à l'envers."
   }
 }

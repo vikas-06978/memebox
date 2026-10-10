@@ -41,7 +41,7 @@ If you open a video in another tab (for example YouTube or Instagram) and click 
 
 ## Lights & looks
 
-Lights & looks is optional and off until you switch it on. It draws lights, filters, characters and music onto your own camera picture and microphone inside your browser tab. With **Follow me** switched on, MemeBox also looks at a tiny copy of your camera picture (about 15 times a second) to know where you are: left, right, standing up, or out of the picture. This happens only on your computer. The picture is never saved, recorded or sent anywhere, and nothing is learned about who you are.
+Lights & looks is optional and off until you switch it on. It draws lights, filters, characters and music onto your own camera picture and microphone inside your browser tab. With **Follow me** switched on, MemeBox also looks at a small copy of your camera picture (about 10 times a second) and runs small face and hand models that are bundled inside the extension (MediaPipe), to know where your face is (left, right, standing up, out of the picture) and how it looks (smile, blink, tongue out), and whether a hand is raised (a wave, thumbs up). This happens only on your computer; it needs no download and no internet. Nothing is recorded, saved or sent, and nobody is recognised or identified. The picture is never saved, recorded or sent anywhere, and nothing is learned about who you are.
 
 ## Voice changer and camera captions
 

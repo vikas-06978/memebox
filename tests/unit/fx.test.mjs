@@ -34,3 +34,11 @@ test('there are 8 things that hang, 8 animations, 17 corner shows (13 + auto, pa
   assert.equal(fx.FILTERS.length, 21); // 20 + "none"
   assert.equal(fx.FREE_FILTERS.length, 4); // 3 + "none"
 });
+
+test('light angle: only auto / 90 / 60 / 45 / 30 are kept', () => {
+  const can = () => true;
+  assert.equal(fx.sanitize({}, can).lightAngle, 'auto');
+  for (const a of [90, 60, 45, 30]) assert.equal(fx.sanitize({ lightAngle: a }, can).lightAngle, a);
+  assert.equal(fx.sanitize({ lightAngle: '45' }, can).lightAngle, 45);
+  assert.equal(fx.sanitize({ lightAngle: 77 }, can).lightAngle, 'auto');
+});

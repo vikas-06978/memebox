@@ -21,6 +21,13 @@
 - License: MIT. Copyright © 2009 Kazuhiko Arase. https://github.com/kazuhikoarase/qrcode-generator
 - "QR Code" is a registered trademark of DENSO WAVE INCORPORATED.
 
+## MediaPipe Tasks Vision, Face Landmarker and Hand Landmarker (face and hand finding for "Follow me")
+
+- Files: `extension/ml/vision-bundle.js` (the library, wrapped as a classic script), `extension/ml/vision-wasm.js` and `extension/ml/vision-wasm.wasm` (its WebAssembly runtime), `extension/ml/face-landmarker.task` (face position, 478 face points and 52 expression scores such as smile, blink, mouth open, tongue out) and `extension/ml/hand-landmarker.task` (21 points per hand).
+- Version: `@mediapipe/tasks-vision` 0.10.21 from npm, unchanged apart from the wrapper. The models are Google's `face_landmarker` and `hand_landmarker` float16 models from the MediaPipe model collection, unchanged.
+- License: Apache License 2.0. Copyright © Google LLC. https://github.com/google-ai-edge/mediapipe
+- They run in the extension's offscreen document on the person's own computer. Camera pictures are not uploaded or stored.
+
 ## Everything else
 
 Everything else is original work for MemeBox, licensed GPL-3.0-or-later: the icons, the default meme lines, and all other code.

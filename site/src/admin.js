@@ -1,6 +1,7 @@
 // MemeBox site: admin dashboard data, HTML and CSV.
 import { escapeHtml as h } from './http.js';
 import { FEATURES, REASONS, PLATFORMS, DEVICES } from './validate.js';
+import { PRODUCTS } from './shop.js';
 
 export const RATING_FACES = { 1: '😞', 2: '😐', 3: '🙂', 4: '😍' };
 const REASON_TEXT = {
@@ -57,6 +58,84 @@ export async function loadStats(db) {
   const byPlatform = await countBy(db, 'platform', PLATFORMS);
   const byDevice = await countBy(db, 'device', DEVICES);
   return { total: Number(total?.n || 0), byRating, byReason, byPlatform, byDevice, requests, used, latest };
+}
+
+// ---- activity: what people do, counted from the data we already keep (no tracking in the extension) ----
+const DAYS = 30;
+const dayList = () => Array.from({ length: DAYS }, (_, i) => new Date(Date.now() - (DAYS - 1 - i) * 86400000).toISOString().slice(0, 10));
+
+export async function loadActivity(db) {
+  const days = dayList(), since = days[0];
+  const safe = async (fn, fallback) => { try { return await fn(); } catch { return fallback; } };
+  const perDay = async (sql, ...args) => {
+    const rows = await safe(async () => (await db.prepare(sql).bind(...args).all()).results, []);
+    const m = Object.fromEntries(rows.map((r) => [r.d, Number(r.n)]));
+    return days.map((d) => ({ d, n: m[d] || 0 }));
+  };
+  const orders = await perDay('SELECT substr(created_at, 1, 10) AS d, COUNT(*) AS n FROM orders WHERE created_at >= ? GROUP BY d', since);
+  const revenue = await perDay("SELECT substr(decided_at, 1, 10) AS d, SUM(amount_inr) AS n FROM orders WHERE status = 'approved' AND decided_at >= ? GROUP BY d", since);
+  const feedback = await perDay('SELECT substr(created_at, 1, 10) AS d, COUNT(*) AS n FROM feedback WHERE created_at >= ? GROUP BY d', since);
+  const checkins = await perDay("SELECT last_seen AS d, COUNT(*) AS n FROM licenses WHERE last_seen >= ? AND status = 'active' GROUP BY last_seen", since);
+  const count = async (sql, ...args) => safe(async () => Number((await db.prepare(sql).bind(...args).first()).n), 0);
+  const funnel = {
+    started: await count('SELECT COUNT(*) AS n FROM orders WHERE created_at >= ?', since),
+    paid: await count("SELECT COUNT(*) AS n FROM orders WHERE created_at >= ? AND status IN ('waiting', 'approved', 'rejected')", since),
+    approved: await count("SELECT COUNT(*) AS n FROM orders WHERE created_at >= ? AND status = 'approved'", since),
+  };
+  const byProduct = await safe(async () => (await db.prepare("SELECT product, COUNT(*) AS n, SUM(amount_inr) AS inr FROM orders WHERE status = 'approved' GROUP BY product ORDER BY inr DESC").all()).results, []);
+  const left = await safe(async () => await db.prepare("SELECT COALESCE(SUM(pro_seconds), 0) AS p, COALESCE(SUM(max_seconds), 0) AS m FROM licenses WHERE kind = 'paid'").first(), { p: 0, m: 0 });
+  let soldPro = 0, soldMax = 0;
+  for (const r of byProduct) { const p = PRODUCTS[r.product]; if (p) { soldPro += p.proSeconds * Number(r.n); soldMax += p.maxSeconds * Number(r.n); } }
+  const group = async (col) => safe(async () => (await db.prepare(`SELECT ${col} AS v, COUNT(*) AS n FROM feedback WHERE ${col} <> '' GROUP BY ${col} ORDER BY n DESC LIMIT 6`).all()).results.map((r) => [r.v, Number(r.n)]), []);
+  const keys = await safe(async () => await db.prepare("SELECT COUNT(*) AS n, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS a FROM licenses WHERE status = 'active'").bind(days[DAYS - 7]).first(), { n: 0, a: 0 });
+  return {
+    days, orders, revenue, feedback, checkins, funnel, byProduct,
+    time: { soldPro, soldMax, leftPro: Number(left?.p || 0), leftMax: Number(left?.m || 0) },
+    byVersion: await group('version'), byLang: await group('lang'),
+    keys: { total: Number(keys?.n || 0), active7: Number(keys?.a || 0) },
+  };
+}
+
+// A small bar chart as inline SVG (the admin page's CSP allows attributes, not inline styles).
+function chart(series, label) {
+  const max = Math.max(1, ...series.map((x) => x.n)), W = 300, H = 56, bw = W / series.length;
+  const bars = series.map((x, i) => {
+    const bh = x.n ? Math.max(2, (x.n / max) * (H - 4)) : 1;
+    return `<rect class="bar${x.n ? '' : ' zero'}" x="${(i * bw + 1).toFixed(1)}" y="${(H - bh).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${bh.toFixed(1)}" rx="1.5"><title>${h(x.d)}: ${x.n}</title></rect>`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${h(label)}">${bars}</svg><div class="chart-axis"><span>${h(series[0].d.slice(5))}</span><span>${h(series[series.length - 1].d.slice(5))}</span></div>`;
+}
+const sum = (s) => s.reduce((a, x) => a + x.n, 0);
+const hours = (sec) => (sec / 3600).toFixed(1);
+
+export function activitySection(a) {
+  const pct = (x, y) => (y ? Math.round((x / y) * 100) + '%' : 'n/a');
+  const usedPro = Math.max(0, a.time.soldPro - a.time.leftPro), usedMax = Math.max(0, a.time.soldMax - a.time.leftMax);
+  return `
+<h2 class="section-title">Activity, last ${DAYS} days</h2>
+<p class="muted">Counted from orders, keys and feedback only. The extension sends nothing about what people do in their calls.</p>
+<div class="tiles">
+  <div class="tile"><b>₹${sum(a.revenue)}</b><span>earned</span></div>
+  <div class="tile"><b>${a.funnel.approved}</b><span>approved orders</span></div>
+  <div class="tile"><b>${a.funnel.started}</b><span>checkouts started</span></div>
+  <div class="tile"><b>${pct(a.funnel.approved, a.funnel.started)}</b><span>started → approved</span></div>
+  <div class="tile"><b>${a.keys.active7}/${a.keys.total}</b><span>keys used this week</span></div>
+  <div class="tile"><b>${sum(a.feedback)}</b><span>feedback answers</span></div>
+</div>
+<div class="grid">
+  <section class="card"><h2>Earned per day (₹)</h2>${chart(a.revenue, 'Rupees earned per day')}</section>
+  <section class="card"><h2>Checkouts started per day</h2>${chart(a.orders, 'Checkouts started per day')}</section>
+  <section class="card"><h2>Keys checked per day</h2>${chart(a.checkins, 'License keys that checked in per day')}<p class="muted">Each key counts on the day of its last check.</p></section>
+  <section class="card"><h2>Feedback per day</h2>${chart(a.feedback, 'Feedback answers per day')}</section>
+  <section class="card"><h2>Checkout funnel</h2>${bars([['Started', a.funnel.started], ['Paid (UTR sent)', a.funnel.paid], ['Approved', a.funnel.approved]])}</section>
+  <section class="card"><h2>What sells</h2>${a.byProduct.length ? bars(a.byProduct.map((r) => [(PRODUCTS[r.product] || { name: r.product }).name + ` (₹${Number(r.inr)})`, Number(r.n)])) : '<p class="muted">No approved orders yet.</p>'}</section>
+  <section class="card"><h2>Pass time</h2>
+    <p>Pro: <b>${hours(a.time.soldPro)} h</b> sold, <b>${hours(usedPro)} h</b> used, ${hours(a.time.leftPro)} h left</p>
+    <p>Pro Max: <b>${hours(a.time.soldMax)} h</b> sold, <b>${hours(usedMax)} h</b> used, ${hours(a.time.leftMax)} h left</p>
+    <p class="muted">Used = sold minus left on paid keys (top-ups by hand are not counted as sold).</p></section>
+  <section class="card"><h2>Extension versions (feedback)</h2>${a.byVersion.length ? bars(a.byVersion) : '<p class="muted">No data yet.</p>'}</section>
+  <section class="card"><h2>Languages (feedback)</h2>${a.byLang.length ? bars(a.byLang) : '<p class="muted">No data yet.</p>'}</section>
+</div>`;
 }
 
 function page(title, body) {

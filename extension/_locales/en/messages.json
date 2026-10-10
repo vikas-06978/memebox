@@ -1377,5 +1377,17 @@
   },
   "st_ok": {
     "message": "Got it"
+  },
+  "fx_angle": {
+    "message": "Light angle (from the lamp onto you)"
+  },
+  "fx_angle_auto": {
+    "message": "Auto"
+  },
+  "fx_mirror": {
+    "message": "Left / Right as I see myself"
+  },
+  "fx_mirror_tip": {
+    "message": "Like a mirror: your Left is the left of your own video. Untick if it looks the wrong way round."
   }
 }

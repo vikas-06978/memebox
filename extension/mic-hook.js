@@ -46,8 +46,8 @@
 
   // ---------- messaging ----------
 
-  function post(msg) {
-    window.postMessage({ ...msg, source: HOOK }, '*');
+  function post(msg, transfer) {
+    window.postMessage({ ...msg, source: HOOK }, '*', transfer || []);
   }
 
   function isActive() {
@@ -94,6 +94,13 @@
       case 'tab-audio-volume': setTabVolume(d.value); break;
       case 'voice': setVoice(String(d.value), d.url); break;
       case 'cam-captions': camCaptions = d.value === true; break;
+      case 'face-result': { // where the face is, how it looks (blendshapes 0..1), and raised hands (every other result)
+        faceBusy = 0;
+        const n = performance.now(), prev = faceMl, num = (v) => (Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0);
+        const bs = d.bs && typeof d.bs === 'object' ? Object.fromEntries(['blinkL', 'blinkR', 'jaw', 'smile', 'tongue', 'brow', 'pucker', 'wide'].map((k) => [k, num(d.bs[k])])) : null;
+        const hands = Array.isArray(d.hands) ? d.hands.slice(0, 2).map((h) => ({ x: num(h.x), y: num(h.y), s: num(h.s), n: Number(h.n) || 0, open: h.open === true, thumbUp: h.thumbUp === true, peace: h.peace === true })) : null;
+        faceMl = { at: n, face: d.face && Number.isFinite(d.face.x) && Number.isFinite(d.face.y) ? { x: d.face.x, y: d.face.y, w: Number(d.face.w) || 0, h: Number(d.face.h) || 0 } : null, bs, hands: hands || (prev ? prev.hands : null), handsAt: hands ? n : (prev ? prev.handsAt : -1e9) };
+        break; }
       case 'fx-config': fxCfg = globalThis.MemeFx ? globalThis.MemeFx.sanitize(d.value) : null; break;
     }
   });
@@ -844,9 +851,25 @@
     return { level: fxLevel, bass: Math.min(1, bass * 1.4), mid: Math.min(1, mid * 1.8), high: Math.min(1, high * 3), spec: fxSpec, beat, mood, tune, voice: Math.min(1, voiceLevel() * 4) };
   }
 
+  // Face finding for "Follow me": a small copy of the frame goes to the bridge (same page, never leaves the computer),
+  // which runs a small face model and sends the face position back. One frame at a time, about 10 a second.
+  let faceMl = null, faceBusy = 0, faceLast = 0, faceN = 0;
+  function sendFace(src, w, h, now) {
+    if (now - faceLast < 70 || (faceBusy && now - faceBusy < 1000) || typeof createImageBitmap !== 'function') return;
+    faceLast = now; faceBusy = now; faceN++;
+    const fw = 384, fh = Math.max(16, Math.round(256 * h / w));
+    createImageBitmap(src, { resizeWidth: fw, resizeHeight: fh, resizeQuality: 'low' })
+      .then((bm) => { try { post({ type: 'face-frame', bitmap: bm, w: fw, h: fh, hands: faceN % 2 === 0 }, [bm]); } catch { faceBusy = 0; } })
+      .catch(() => { faceBusy = 0; });
+  }
+
   function paintCamera(R, g, src, w, h) {
     const now = performance.now();
-    if (fxActive() && R) R.render(g, src, w, h, fxCfg, now, audioInfo(), {});
+    if (fxActive() && R) {
+      R.ml = faceMl;
+      R.render(g, src, w, h, fxCfg, now, audioInfo(), {});
+      if (R.followOn && now - R.followOn < 300) sendFace(src, w, h, now);
+    }
     else g.drawImage(src, 0, 0, w, h);
     if (now < camTextUntil) {
       if (camPicture) drawCamPicture(g, w, h);

@@ -104,7 +104,7 @@ test('a character (cat) sits in the corner for Pro, not for a free person', asyn
   const [sw] = context.serviceWorkers();
   await sw.evaluate(() => chrome.storage.local.remove('license'));
   await callPage.evaluate(helpers);
-  await setFx(context, { armed: true, on: true, lamp: false, focus: false, character: 'cat', charPos: 'right' });
+  await setFx(context, { armed: true, on: true, lamp: false, focus: false, character: 'cat', charPos: 'right', mirror: false });
   await callPage.evaluate(() => window.openCam());
   await callPage.waitForTimeout(1800);
   const free = await callPage.evaluate(() => window.avg(0.78, 0.68, 0.88, 0.8));
