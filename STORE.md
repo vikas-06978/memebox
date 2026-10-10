@@ -39,7 +39,8 @@ In Chrome or Edge, on the web versions of Google Meet, Zoom, Microsoft Teams and
 • A big meme caption appears on your screen for 3 seconds.
 • Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They're ignored while you type.
 • Auto-duck lowers the meme sounds while you're talking.
-• Your own sound effects: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
+• Add your own sounds: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
+• A Sound effects pack: airhorn, rimshot, sad trombone, drumroll, applause, crickets and more. Real effects that everyone hears clearly.
 • The College pack of friendly roasts. Share your own packs as a file.
 • Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
 • One picture meme: give a line a picture (a monkey, a reaction face, anything) and it flashes on your screen while the line plays.

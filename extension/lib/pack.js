@@ -4,8 +4,8 @@
 // {
 //   "format": "memebox-pack", "version": 1,
 //   "name": "College memes", "description": "optional",
-//   "lines": [ { "id", "kind": "tts"|"clip", "text", "say"?, "lang", "tone", "category",
-//                "fav"?, "volume"?, "star"?, "clipId"? } ],
+//   "lines": [ { "id", "kind": "tts"|"clip"|"sfx", "text", "say"?, "lang", "tone", "category",
+//                "fav"?, "volume"?, "star"?, "clipId"?, "sfx"? } ],
 //   "clips": [ { "id", "name", "type": "audio/wav", "data": "<base64 WAV>" } ]
 // }
 (() => {
@@ -16,7 +16,7 @@
   const LIMITS = { name: 60, description: 200, lines: 500, clips: 50, text: 300, category: 30, clipName: 120, clipBytes: 1024 * 1024 };
   const ID = /^[A-Za-z0-9_-]{1,64}$/;
   const TOP_KEYS = new Set(['format', 'version', 'name', 'description', 'lines', 'clips']);
-  const LINE_KEYS = new Set(['id', 'kind', 'text', 'say', 'lang', 'tone', 'category', 'fav', 'volume', 'star', 'clipId']);
+  const LINE_KEYS = new Set(['id', 'kind', 'text', 'say', 'lang', 'tone', 'category', 'fav', 'volume', 'star', 'clipId', 'sfx']);
   const CLIP_KEYS = new Set(['id', 'name', 'type', 'data']);
   const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 
@@ -86,7 +86,7 @@
         if (!isStr(l.id, 64) || !ID.test(l.id)) err(`${p}.id`, 'letters, digits, - or _ (max 64)');
         else if (ids.has(l.id)) err(`${p}.id`, 'duplicate');
         ids.add(l.id);
-        if (l.kind !== 'tts' && l.kind !== 'clip') err(`${p}.kind`, 'must be "tts" or "clip"');
+        if (l.kind !== 'tts' && l.kind !== 'clip' && l.kind !== 'sfx') err(`${p}.kind`, 'must be "tts", "clip" or "sfx"');
         if (!isStr(l.text, LIMITS.text, 1) || !l.text.trim() || !noControl(l.text)) err(`${p}.text`, `1-${LIMITS.text} characters`);
         if (l.say !== undefined && (!isStr(l.say, LIMITS.text) || !noControl(l.say))) err(`${p}.say`, `up to ${LIMITS.text} characters`);
         if (l.lang !== 'hi' && l.lang !== 'en') err(`${p}.lang`, 'must be "hi" or "en"');
@@ -98,6 +98,9 @@
         if (l.kind === 'clip') {
           if (!isStr(l.clipId, 64) || !clips.has(l.clipId)) err(`${p}.clipId`, 'must match a clip in "clips"');
         } else if (l.clipId !== undefined) err(`${p}.clipId`, 'only for clip lines');
+        if (l.kind === 'sfx') {
+          if (!globalThis.MEME.SFX.includes(l.sfx)) err(`${p}.sfx`, `one of ${globalThis.MEME.SFX.join(', ')}`);
+        } else if (l.sfx !== undefined) err(`${p}.sfx`, 'only for sfx lines');
         if (!errors.length) lines.push(globalThis.MEME.sanitizeLine(l));
       });
     }
@@ -114,12 +117,13 @@
       version: VERSION,
       name: String(name).slice(0, LIMITS.name) || 'MemeBox pack',
       lines: lines.map((l) => {
-        const o = { id: l.id, kind: l.kind === 'clip' ? 'clip' : 'tts', text: l.text, lang: l.lang, tone: l.tone, category: l.category || 'general' };
+        const o = { id: l.id, kind: l.kind === 'clip' ? 'clip' : l.kind === 'sfx' ? 'sfx' : 'tts', text: l.text, lang: l.lang, tone: l.tone, category: l.category || 'general' };
         if (l.say) o.say = l.say;
         if (l.fav) o.fav = l.fav;
         if (l.volume !== undefined && l.volume !== 1) o.volume = l.volume;
         if (l.star) o.star = true;
         if (o.kind === 'clip') o.clipId = l.clipId;
+        if (o.kind === 'sfx') o.sfx = l.sfx;
         return o;
       }),
       clips: clips.filter((c) => used.has(c.id)).map((c) => ({ id: c.id, name: String(c.name || c.id).slice(0, LIMITS.clipName), type: 'audio/wav', data: bytesToBase64(c.bytes) })),

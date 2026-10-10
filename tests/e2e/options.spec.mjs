@@ -33,9 +33,9 @@ test('first install has the general pack + College, Cricket, Office, Party', asy
   const page = await openOptions(context, extensionId);
   const { lines } = await page.store('lines');
   const cats = new Set(lines.map((l) => l.category));
-  for (const c of ['general', 'college', 'cricket', 'office', 'party']) expect(cats.has(c)).toBe(true);
+  for (const c of ['general', 'effects', 'college', 'cricket', 'office', 'party']) expect(cats.has(c)).toBe(true);
   expect(lines.length).toBeGreaterThanOrEqual(46);
-  await expect(page.locator('#builtin-packs li')).toHaveCount(5);
+  await expect(page.locator('#builtin-packs li')).toHaveCount(6);
 });
 
 test('upload a WAV, trim it, save as a clip, and it plays into the call', async ({ context, extensionId, callPage }) => {

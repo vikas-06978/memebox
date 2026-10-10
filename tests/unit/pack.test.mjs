@@ -84,8 +84,8 @@ test('non-objects are rejected cleanly', () => {
   for (const x of [null, 42, 'pack', [], true]) assert.equal(P.validate(x).ok, false);
 });
 
-test('built-in packs: College, Cricket, Office, Party + general, all valid', () => {
-  assert.deepEqual([...MEME_PACKS.ids], ['general', 'college', 'cricket', 'office', 'party']);
+test('built-in packs: Sound effects, College, Cricket, Office, Party + general, all valid', () => {
+  assert.deepEqual([...MEME_PACKS.ids], ['general', 'effects', 'college', 'cricket', 'office', 'party']);
   const all = MEME_PACKS.all();
   assert.equal(new Set(all.map((l) => l.id)).size, all.length, 'unique ids');
   for (const id of MEME_PACKS.ids) {
@@ -94,6 +94,7 @@ test('built-in packs: College, Cricket, Office, Party + general, all valid', () 
     for (const l of lines) {
       assert.deepEqual(G.MEME.sanitizeLine(l), l, `${l.id} is a clean line`);
       if (id !== 'general') assert.equal(l.category, id);
+      if (l.kind === 'sfx') assert.ok(G.MEME.SFX.includes(l.sfx), `${l.id} uses a known effect`);
       if (l.lang === 'hi') assert.match(l.say || l.text, /[ऀ-ॿ]/, `${l.id} has a Devanagari pronunciation`);
     }
   }
@@ -107,4 +108,16 @@ test('built-in packs: College, Cricket, Office, Party + general, all valid', () 
 test('built-in packs stay friendly: no words about religion, caste, gender, looks, disability', () => {
   const banned = /\b(religions?|hindus?|muslims?|christians?|sikhs?|castes?|dalits?|gay|lesbians?|trans|girls?|boys?|women|woman|men|fat|ugly|black|white|dark|pagal|andha|langda|mota|kaala|kali)\b/i;
   for (const l of MEME_PACKS.all()) assert.doesNotMatch(`${l.text} ${l.say || ''}`, banned, l.id);
+});
+
+test('updating adds only what is missing: from 1.2.x just the Sound effects, from before packs every pack, never touching my lines', () => {
+  const mine = { id: 'mine-1', kind: 'tts', text: 'My own line', lang: 'en', tone: 'normal', fav: 3, category: 'mine', volume: 1 };
+  const fromEffects = MEME_PACKS.missing([mine], 1);
+  assert.equal(fromEffects.length, 13);
+  assert.ok(fromEffects.every((l) => l.kind === 'sfx' && l.fav === 0 && l.category === 'effects'));
+  const fromOld = MEME_PACKS.missing([mine], 0);
+  assert.equal(fromOld.length, MEME_PACKS.all().length);
+  assert.equal(MEME_PACKS.missing([mine, ...fromEffects], 1).length, 0, 'nothing is added twice');
+  const someDeleted = fromEffects.slice(0, 5); // the user deleted 8 effects: they come back only on the one-time update, not on every start
+  assert.equal(MEME_PACKS.missing([mine, ...someDeleted], 1).length, 8);
 });

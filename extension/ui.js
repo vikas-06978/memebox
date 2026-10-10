@@ -749,7 +749,7 @@
     for (const line of items) {
       const tone = TONES[line.tone] || TONES.normal;
       const tags = el('span', { className: 'tags' },
-        line.kind === 'clip' ? el('span', { className: 'tag', title: t('tag_clip') }, '🎵')
+        line.kind !== 'tts' ? el('span', { className: 'tag', title: t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip') }, '🎵')
           : el('span', { className: 'tag', title: t('tag_lang') }, line.lang.toUpperCase()),
         el('span', { title: tone.label }, tone.emoji));
       if (line.fav) tags.append(el('span', { className: 'tag', title: t('tag_shortcut') }, 'Alt+' + line.fav));

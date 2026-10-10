@@ -4,6 +4,16 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-10-10
+
+### Added
+- A **Sound effects** pack, free for everyone: airhorn, rimshot (ba-dum-tss), sad trombone, drumroll, wrong buzzer, ta-da, applause, crickets, evil laugh, dun-dun-DUNNN, record scratch, boing and slide whistle. They are real sound effects, not speech: loud, short and easy to recognise on a call. Synthesized in plain code (`npm run sfx`, `tools/lib/sfx.mjs`), so there are no samples and no licences. New installs get the pack; people updating from 1.2.x get it added once, and their own lines are never touched. Packs can be exported and imported with these lines too (`kind: "sfx"`).
+- The tutorial video now shows how to **add your own sound** (Options → Add a clip → choose, trim, name, save) and then plays it in the call.
+
+### Changed
+- The Normal, Chipmunk and Excited voices speak a little slower, so the words are easier to understand.
+- The tutorial plays the new effects, so you can really hear what everyone in the call hears.
+
 ## [1.2.4] - 2026-10-10
 
 ### Changed

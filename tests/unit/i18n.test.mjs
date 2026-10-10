@@ -46,7 +46,7 @@ test('every t("key") used in scripts exists', () => {
 
 test('dynamic keys (status, categories, voices, themes) exist', () => {
   for (const s of ['none', 'suspended', 'muted', 'live']) assert.ok(en['st_' + s], `st_${s}`);
-  for (const c of ['general', 'college', 'cricket', 'office', 'party', 'clips', 'mine']) assert.ok(en['cat_' + c], `cat_${c}`);
+  for (const c of ['general', 'effects', 'college', 'cricket', 'office', 'party', 'clips', 'mine']) assert.ok(en['cat_' + c], `cat_${c}`);
   for (const v of ['off', 'chipmunk', 'deep', 'robot', 'echo', 'radio']) assert.ok(en['voice_' + v], `voice_${v}`);
   for (const th of ['auto', 'light', 'dark', 'sunny', 'neon', 'candy']) assert.ok(en['theme_' + th], `theme_${th}`);
 });

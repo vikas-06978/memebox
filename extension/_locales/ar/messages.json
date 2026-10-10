@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "كريكيت"
   },
+  "cat_effects": {
+    "message": "مؤثرات صوتية"
+  },
   "cat_office": {
     "message": "المكتب"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "مقطع مرفوع"
+  },
+  "tag_sfx": {
+    "message": "مؤثر"
   },
   "tag_lang": {
     "message": "اللغة"

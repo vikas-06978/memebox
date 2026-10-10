@@ -109,6 +109,7 @@ function synth(text, lang, tone) {
 
 // Bytes (WAV/MP3/…) for a line: synthesized speech or the stored clip.
 async function lineBytes(line) {
+  if (line.kind === 'sfx') return (await fetch(chrome.runtime.getURL(`sfx/${line.sfx}.wav`))).arrayBuffer();
   if (line.kind === 'clip') {
     const clip = await MemeDB.getClip(line.clipId);
     if (!clip) throw new Error(t('op_err_clip_missing'));
@@ -258,7 +259,7 @@ function renderLines() {
     wa.addEventListener('click', () => shareWhatsApp(line));
     const vol = Math.round((line.volume ?? 1) * 100);
     const about = el('td', { className: 'about' },
-      el('span', { className: 'tag' }, line.kind === 'clip' ? '🎵 ' + t('tag_clip') : line.lang),
+      el('span', { className: 'tag' }, line.kind === 'tts' ? line.lang : '🎵 ' + t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip')),
       ' ', el('span', { className: 'tag', title: tone.label }, `${tone.emoji} ${tone.label}`),
       ' ', el('span', { className: 'tag' }, categoryLabel(line.category)),
       vol !== 100 ? el('span', { className: 'tag' }, `🔊 ${vol}%`) : '',

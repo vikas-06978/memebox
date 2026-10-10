@@ -6,7 +6,25 @@
   const hi = (id, text, say, tone, fav = 0) => ({ id, kind: 'tts', lang: 'hi', text, say, tone, fav });
   const en = (id, text, tone, fav = 0) => ({ id, kind: 'tts', lang: 'en', text, tone, fav });
 
+  const fx = (id, sfx, text) => ({ id, kind: 'sfx', sfx, lang: 'en', text, tone: 'normal', fav: 0 });
+
   const PACKS = {
+    // Real sound effects, not speech: loud, clear and funny (synthesized, see tools/lib/sfx.mjs).
+    effects: [
+      fx('p-fx-airhorn', 'airhorn', 'AIRHORN!'),
+      fx('p-fx-rimshot', 'rimshot', 'Ba-dum-tss!'),
+      fx('p-fx-sad-trombone', 'sad-trombone', 'Sad trombone: wah wah wah waaah'),
+      fx('p-fx-drumroll', 'drumroll', 'Drumroll...'),
+      fx('p-fx-wrong-buzzer', 'wrong-buzzer', 'WRONG!'),
+      fx('p-fx-tada', 'tada', 'Ta-da!'),
+      fx('p-fx-applause', 'applause', 'Applause!'),
+      fx('p-fx-crickets', 'crickets', 'Crickets... awkward silence'),
+      fx('p-fx-evil-laugh', 'evil-laugh', 'Mwahaha!'),
+      fx('p-fx-dramatic', 'dramatic', 'Dun dun DUNNN!'),
+      fx('p-fx-record-scratch', 'record-scratch', 'Record scratch... wait, what?'),
+      fx('p-fx-boing', 'boing', 'BOING!'),
+      fx('p-fx-slide-whistle', 'slide-whistle', 'Slide whistle'),
+    ],
     college: [
       hi('p-college-1', 'Attendance 75% nahi hai? Medical certificate ready rakh', 'अटेंडेंस पचहत्तर परसेंट नहीं है? मेडिकल सर्टिफ़िकेट रेडी रख', 'villain'),
       hi('p-college-2', 'Assignment kal submit hai? Aaj raat ka plan: panic', 'असाइनमेंट कल सबमिट है? आज रात का प्लान: पैनिक', 'excited'),
@@ -54,11 +72,18 @@
   }
 
   globalThis.MEME_PACKS = Object.freeze({
-    ids: ['general', ...Object.keys(PACKS)],
+    ids: ['general', 'effects', 'college', 'cricket', 'office', 'party'],
     // Lines of one built-in pack (fresh copies).
     lines(id) {
       if (id === 'general') return globalThis.MEME.defaultLines();
       return (PACKS[id] || []).map((l) => ({ ...l }));
+    },
+    // Built-in lines a stored library doesn't have yet, for people who updated (own lines are never touched).
+    // seeded: 0 = from before packs existed (every pack), 1 = from before sound effects (just that pack).
+    missing(lines, seeded) {
+      const have = new Set(lines.map((l) => l && l.id));
+      const wanted = seeded < 1 ? this.all() : this.lines('effects');
+      return wanted.filter((l) => !have.has(l.id)).map((l) => ({ ...l, fav: 0 }));
     },
     // Every built-in line, for the first install.
     all() {

@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "Críquet"
   },
+  "cat_effects": {
+    "message": "Efectos de sonido"
+  },
   "cat_office": {
     "message": "Oficina"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "Clip subido"
+  },
+  "tag_sfx": {
+    "message": "Efecto"
   },
   "tag_lang": {
     "message": "Idioma"

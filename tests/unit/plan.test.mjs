@@ -58,7 +58,7 @@ test('with PRO_ENABLED but no license yet, only Pro features lock', () => {
   for (const f of Object.keys(plan.PRO_FEATURES)) assert.equal(plan.can(f), false, f);
   assert.equal(plan.can('soundboard'), true);
   assert.equal(plan.FREE_LIMITS.clips, 10);
-  assert.deepEqual([...plan.FREE_LIMITS.packs], ['general', 'college']);
+  assert.deepEqual([...plan.FREE_LIMITS.packs], ['general', 'effects', 'college']);
 });
 
 test('only an explicit true turns Pro on', () => {

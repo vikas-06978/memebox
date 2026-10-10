@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "கிரிக்கெட்"
   },
+  "cat_effects": {
+    "message": "ஒலி விளைவுகள்"
+  },
   "cat_office": {
     "message": "அலுவலகம்"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "பதிவேற்றிய கிளிப்"
+  },
+  "tag_sfx": {
+    "message": "விளைவு"
   },
   "tag_lang": {
     "message": "மொழி"

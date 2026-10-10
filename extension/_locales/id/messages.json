@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "Kriket"
   },
+  "cat_effects": {
+    "message": "Efek suara"
+  },
   "cat_office": {
     "message": "Kantor"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "Klip unggahan"
+  },
+  "tag_sfx": {
+    "message": "Efek"
   },
   "tag_lang": {
     "message": "Bahasa"

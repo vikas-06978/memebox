@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "क्रिकेट"
   },
+  "cat_effects": {
+    "message": "साउंड इफेक्ट्स"
+  },
   "cat_office": {
     "message": "ऑफिस"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "अपलोड केलेली क्लिप"
+  },
+  "tag_sfx": {
+    "message": "इफेक्ट"
   },
   "tag_lang": {
     "message": "भाषा"

@@ -9,7 +9,7 @@ const { TONES, LIMITS } = globalThis.MEME;
 
 // First install: the general pack + every built-in pack. Updates from before packs existed
 // get the new packs added once (their own lines are kept).
-const PACKS_SEEDED = 1;
+const PACKS_SEEDED = 2; // 2: the Sound effects pack
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') chrome.tabs.create({ url: 'onboarding.html' }).catch(() => {});
   const { lines, settings, seeded } = await chrome.storage.local.get(['lines', 'settings', 'seeded']);
@@ -17,8 +17,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (!Array.isArray(lines)) {
     patch.lines = MEME_PACKS.all();
   } else if ((seeded || 0) < PACKS_SEEDED) {
-    const have = new Set(lines.map((l) => l && l.id));
-    patch.lines = [...lines, ...MEME_PACKS.all().filter((l) => !have.has(l.id)).map((l) => ({ ...l, fav: 0 }))];
+    patch.lines = [...lines, ...MEME_PACKS.missing(lines, seeded || 0)];
   }
   patch.seeded = PACKS_SEEDED;
   if (!settings || typeof settings !== 'object') patch.settings = MEME.defaultSettings();
@@ -122,6 +121,11 @@ function toBase64(buf) {
 async function audioFor(item) {
   if (!item || typeof item !== 'object') throw new Error('Nothing to play');
   const tone = Object.prototype.hasOwnProperty.call(TONES, item.tone) ? item.tone : 'normal';
+  if (item.kind === 'sfx') {
+    if (!MEME.SFX.includes(item.sfx)) throw new Error('Unknown sound effect');
+    const res = await fetch(chrome.runtime.getURL(`sfx/${item.sfx}.wav`));
+    return { b64: toBase64(await res.arrayBuffer()), tone };
+  }
   if (item.kind === 'clip') {
     const clip = await MemeDB.getClip(String(item.clipId));
     if (!clip) throw new Error('Clip not found. Re-upload it in Options.');

@@ -22,7 +22,7 @@
   // What the free plan includes once Pro is switched on.
   const FREE_LIMITS = Object.freeze({
     clips: 10,
-    packs: Object.freeze(['general', 'college']),
+    packs: Object.freeze(['general', 'effects', 'college']),
     pictures: 1,
   });
 

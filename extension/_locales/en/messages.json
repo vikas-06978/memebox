@@ -182,6 +182,9 @@
   "cat_cricket": {
     "message": "Cricket"
   },
+  "cat_effects": {
+    "message": "Sound effects"
+  },
   "cat_office": {
     "message": "Office"
   },
@@ -205,6 +208,9 @@
   },
   "tag_clip": {
     "message": "Uploaded clip"
+  },
+  "tag_sfx": {
+    "message": "Effect"
   },
   "tag_lang": {
     "message": "Language"
