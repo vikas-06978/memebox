@@ -83,7 +83,7 @@ function appLd(base, url, t, lang) {
     softwareHelp: `${base}/feedback`,
     offers: [
       { '@type': 'Offer', name: t('plan_free'), price: '0', priceCurrency: 'INR' },
-      { '@type': 'Offer', name: 'Pro', price: '99', priceCurrency: 'INR', url: `${base}/buy` },
+      { '@type': 'Offer', name: 'Pro pass (30 minutes)', price: '19', priceCurrency: 'INR', url: `${base}/pricing` },
     ],
   };
 }
@@ -120,7 +120,7 @@ function landing(template, lang, base) {
   html = html.replace(/<html[^>]*>/, `<html lang="${lang}" dir="${RTL.has(lang) ? 'rtl' : 'ltr'}" data-prerendered="${lang}">`);
   html = html.replace(/(data-t="([a-z0-9_]+)"[^>]*>)([^<]*)(<)/g, (m, open, key, text, lt) => (d[key] ? open + esc(d[key]) + lt : m));
   // Keep visitors in their language when they go on to buy or give feedback.
-  html = html.replace(/href="\/(buy|feedback)"/g, `href="/$1?lang=${lang}"`);
+  html = html.replace(/href="\/(buy|feedback|pricing)"/g, `href="/$1?lang=${lang}"`);
   html = html.replace(/<a href="\/" class="brand">/g, `<a href="/${lang}/" class="brand">`);
   return html;
 }
@@ -258,6 +258,7 @@ ${faq.map(([q, a]) => `      <details class="card"><summary>${esc(q)}</summary><
   <footer class="wrap site-foot">
     <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="26" height="26"> MemeBox</a>
     <a href="/feedback">Feedback</a>
+    <a href="/pricing">Pricing</a>
     <a href="/buy">Buy Pro</a>
     <a href="/privacy">Privacy</a>
     <a href="/terms">Terms</a>
@@ -277,7 +278,7 @@ function sitemap(base) {
   const urls = [
     ...LANGS.map((l) => `  <url>\n    <loc>${pageUrl(base, l)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${l === 'en' ? '1.0' : '0.9'}</priority>\n${alt}\n  </url>`),
     ...PLATFORMS.map((p) => `  <url>\n    <loc>${base}/${p.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`),
-    ...[['buy', '0.6'], ['feedback', '0.4'], ['privacy', '0.3'], ['terms', '0.3']].map(([p, pr]) => `  <url>\n    <loc>${base}/${p}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>${pr}</priority>\n  </url>`),
+    ...[['pricing', '0.8'], ['buy', '0.6'], ['feedback', '0.4'], ['privacy', '0.3'], ['terms', '0.3']].map(([p, pr]) => `  <url>\n    <loc>${base}/${p}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>${pr}</priority>\n  </url>`),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Written by npm run seo from SITE_URL in extension/config.js. -->

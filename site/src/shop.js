@@ -3,10 +3,17 @@
 // order after seeing the money arrive, and that creates (or tops up) a license key.
 
 // Prices in rupees. Change them here and deploy again.
+// `usd` is shown on the pricing page (card payment comes with the payment gateway). `proSeconds` / `maxSeconds`
+// are the hours of use a time pass gives (see extension/lib/plan.js). `closed`: not sold any more (existing keys keep working).
 export const PRODUCTS = Object.freeze({
-  pictures5: Object.freeze({ name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false }),
-  pro: Object.freeze({ name: 'MemeBox Pro (lifetime): everything unlimited', inr: 99, pictureSlots: 0, unlimited: true }),
+  pass_pro_30: Object.freeze({ name: 'Pro pass: 30 minutes', inr: 19, usd: 1.99, pictureSlots: 0, unlimited: false, proSeconds: 1800, maxSeconds: 0 }),
+  pass_pro_60: Object.freeze({ name: 'Pro pass: 1 hour', inr: 29, usd: 3.99, pictureSlots: 0, unlimited: false, proSeconds: 3600, maxSeconds: 0 }),
+  pass_pro_120: Object.freeze({ name: 'Pro pass: 2 hours', inr: 49, usd: 5.99, pictureSlots: 0, unlimited: false, proSeconds: 7200, maxSeconds: 0 }),
+  pass_max_180: Object.freeze({ name: 'Pro Max pass: 3 hours', inr: 69, usd: 8.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 10800 }),
+  pictures5: Object.freeze({ name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false, proSeconds: 0, maxSeconds: 0, closed: true }),
+  pro: Object.freeze({ name: 'MemeBox Pro (lifetime): everything unlimited', inr: 99, pictureSlots: 0, unlimited: true, proSeconds: 0, maxSeconds: 0, closed: true }),
 });
+export const forSale = () => Object.entries(PRODUCTS).filter(([, p]) => !p.closed);
 
 // No 0/O or 1/I, so keys are easy to read out and type. 32 symbols: unbiased from a byte.
 const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -95,7 +102,7 @@ export async function setLicenseStatus(db, key, status) {
 
 export async function createOrder(db, { product, forKey = '' }) {
   const p = PRODUCTS[product];
-  if (!p) throw new Error('Unknown product');
+  if (!p || p.closed) throw new Error('Unknown product');
   // Unclaimed orders don't need to live long.
   await db.prepare("DELETE FROM orders WHERE status = 'new' AND created_at < ?")
     .bind(new Date(Date.now() - 2 * 86400000).toISOString()).run();
@@ -131,9 +138,10 @@ export async function approveOrder(db, id) {
   if (existing && existing.status === 'active') {
     await db.prepare('UPDATE licenses SET picture_slots = picture_slots + ?, unlimited = MAX(unlimited, ?) WHERE key = ?')
       .bind(p.pictureSlots, p.unlimited ? 1 : 0, existing.key).run();
+    if (p.proSeconds || p.maxSeconds) await addPassTime(db, existing.key, { proSeconds: p.proSeconds, maxSeconds: p.maxSeconds });
     key = existing.key;
   } else {
-    key = await createLicense(db, { kind: 'paid', unlimited: p.unlimited, pictureSlots: p.pictureSlots, note: `order ${order.id}` });
+    key = await createLicense(db, { kind: 'paid', unlimited: p.unlimited, pictureSlots: p.pictureSlots, proSeconds: p.proSeconds, maxSeconds: p.maxSeconds, note: `order ${order.id}` });
   }
   await db.prepare("UPDATE orders SET status = 'approved', license_key = ?, decided_at = ? WHERE id = ?").bind(key, now(), id).run();
   return key;

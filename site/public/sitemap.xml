@@ -254,6 +254,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://memebox.pages.dev/pricing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://memebox.pages.dev/buy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

@@ -12,6 +12,8 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 - Ten more filters (Pro Max): VHS, Cyber, Comic, Matrix, Glam, Night vision, Old film, Synthwave, Thermal, Snow.
 - Six more corner light shows (Pro): Aurora, Fire, Lasers, Neon frame, Police (slow fade, never a flash), Hearts.
 - **Things that hang like the lamp** (Pro): a mirror ball that turns and throws spots of light around the room, a paper lantern (kandil), fairy lights, a chandelier, a moon, a star and a stage spotlight. Four more animations (Pro): Sway, Bounce, Pendulum and "To the beat" (kicks with the sound). The plain still lamp stays free.
+- **The camera is always ready for Lights**: switching Lights on needs no camera restart any more (the frames pass through untouched until something is on).
+- **Pricing page** (`/pricing`): Free, Pro and Pro Max, passes of ₹19 / 29 / 49 / 69 (and $1.99 / 3.99 / 5.99 / 8.99), in rupees for India and dollars elsewhere. `/buy` sells the passes by UPI for now (approved by hand); the old ₹99 lifetime Pro and the picture packs are closed to new buyers (existing keys keep working). Card payment in dollars comes with the payment gateway.
 - Free choices stay free; Pro and add-on choices can be previewed on your own screen (20 s, "PREVIEW" mark) and are not sent to the call.
 
 ## [1.2.6] - 2026-10-10

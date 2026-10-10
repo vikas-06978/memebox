@@ -145,3 +145,18 @@ test('a hanging disco ball (Pro) is drawn on the camera in the call', async ({ c
   await callPage.screenshot({ path: 'tests/.tmp/discoball-in-call.png' });
   expect(after.r + after.b, 'the silver ball and its glow are where the plain camera was').toBeGreaterThan(before.r + before.b + 40);
 });
+
+test('Lights can be switched on AFTER the camera is already running: no camera restart needed', async ({ context, callPage }) => {
+  await callPage.evaluate(helpers);
+  await callPage.evaluate(() => window.openCam()); // nothing about Lights has ever been set
+  await callPage.waitForTimeout(900);
+  const plain = await callPage.evaluate(() => window.avg(0.1, 0.1, 0.9, 0.9));
+  await setFx(context, { on: true, fixture: 'discoball', corners: true, pattern: 'aurora', character: 'cat' }); // not even "armed"
+  await callPage.waitForTimeout(1500);
+  const lit = await callPage.evaluate(() => window.avg(0.1, 0.1, 0.9, 0.9));
+  expect(JSON.stringify(lit), 'the picture changed while the same camera kept running').not.toBe(JSON.stringify(plain));
+  await setFx(context, {});
+  await callPage.waitForTimeout(1200);
+  const back = await callPage.evaluate(() => window.avg(0.1, 0.1, 0.9, 0.9));
+  expect(Math.abs(back.r - plain.r) + Math.abs(back.g - plain.g) + Math.abs(back.b - plain.b), 'switching off gives the plain camera back').toBeLessThan(18);
+});

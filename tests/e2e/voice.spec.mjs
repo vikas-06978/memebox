@@ -51,7 +51,7 @@ test('Deep lowers my voice; Robot, Echo and Radio keep it flowing; memes still m
   expect(Math.abs((await settledHz(callPage)) - 200)).toBeLessThan(15);
 });
 
-test('camera captions: off by default; when on, my camera goes through a canvas that stops the real camera', async ({ context, callPage }) => {
+test('camera captions: off by default; when on, my camera goes through the frame pipeline (canvas fallback) that stops the real camera', async ({ context, callPage }) => {
   const plain = await callPage.evaluate(async () => {
     const s = await navigator.mediaDevices.getUserMedia({ video: true });
     const t = s.getVideoTracks()[0];
@@ -82,13 +82,13 @@ test('camera captions: off by default; when on, my camera goes through a canvas 
     out.stopped = v.readyState;
     return out;
   });
-  expect(r.kind).toBe('CanvasCaptureMediaStreamTrack');
+  expect(['MediaStreamTrackGenerator', 'CanvasCaptureMediaStreamTrack']).toContain(r.kind); // frame pipeline, or the canvas fallback in older browsers
   expect(r.label).toBeTruthy(); // mirrors the real camera's label
   expect(r.w).toBeGreaterThan(0);
   expect(r.h).toBeGreaterThan(0);
   expect(r.audio).toBe(true);
   expect(r.stopped).toBe('ended');
-  await expect.poll(() => callPage.logs.some((l) => l.includes('camera captions on'))).toBe(true);
+  await expect.poll(() => callPage.logs.some((l) => l.includes('camera effects ready'))).toBe(true);
 });
 
 test('tab-sound volume slider in the popup is saved (shared with the panel slider)', async ({ context, extensionId, callPage }) => {

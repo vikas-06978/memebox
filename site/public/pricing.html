@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemeBox plans and prices</title>
+  <meta name="description" content="MemeBox is free. Buy hours of Pro or Pro Max only when you want the lights, characters, filters and music. No subscription, no expiry date.">
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/prefs.js"></script>
+</head>
+<body class="page-bg">
+  <main class="wrap">
+    <header class="page-head">
+      <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
+      <h1 data-t="pr_title">Plans and prices</h1>
+      <p class="muted" data-t="pr_intro">MemeBox is free to use. Pay only when you want the extras, and only for the hours you use. No subscription and no expiry date.</p>
+      <div class="seg" role="group" aria-label="Currency">
+        <button type="button" class="seg-btn" data-cur="inr" data-t="pr_for_in">India (₹)</button>
+        <button type="button" class="seg-btn" data-cur="usd" data-t="pr_for_world">Other countries ($)</button>
+      </div>
+    </header>
+
+    <section class="plans" aria-label="Plans">
+      <article class="card plan">
+        <h2 data-t="pr_free">Free</h2>
+        <p class="muted" data-t="pr_free_tag">Always free</p>
+        <p class="plan-price">₹0 / $0</p>
+        <ul class="ticks">
+          <li data-t="pr_free_1">All memes, voices and the optional Sound effects pack</li>
+          <li data-t="pr_free_2">A still hanging lamp, 3 colours and 3 filters</li>
+          <li data-t="pr_free_3">2 music tunes: Chill and Funky</li>
+          <li data-t="pr_free_4">Preview everything paid for 20 seconds on your own screen</li>
+        </ul>
+      </article>
+
+      <article class="card plan">
+        <h2 data-t="pr_pro">Pro</h2>
+        <p class="muted" data-t="pr_pro_tag">Lights, looks and more</p>
+        <div class="passes" id="passes-pro"></div>
+        <ul class="ticks">
+          <li data-t="pr_pro_1">Disco ball, lantern, fairy lights, chandelier, moon, star and spotlight</li>
+          <li data-t="pr_pro_2">All lamp animations, 9 colours and 13 corner light shows</li>
+          <li data-t="pr_pro_3">Lights and characters that follow the sounds</li>
+          <li data-t="pr_pro_4">Voice changer, camera captions and party mode</li>
+          <li data-t="pr_pro_5">5 filters, 11 music tunes and one character (cat, dog or bunny)</li>
+        </ul>
+      </article>
+
+      <article class="card plan best">
+        <span class="badge" data-t="pr_best">Best value</span>
+        <h2 data-t="pr_max">Pro Max</h2>
+        <p class="muted" data-t="pr_max_tag">Everything</p>
+        <div class="passes" id="passes-max"></div>
+        <ul class="ticks">
+          <li data-t="pr_max_1">Everything in Pro</li>
+          <li data-t="pr_max_2">All 12 characters</li>
+          <li data-t="pr_max_3">All 20 filters</li>
+          <li data-t="pr_max_4">Lowest price per hour</li>
+        </ul>
+      </article>
+    </section>
+    <p id="usd-note" class="muted" hidden data-t="pr_card_soon">Card payment is coming soon</p>
+
+    <section class="card">
+      <h2 data-t="pr_how_title">How the hours work</h2>
+      <ol>
+        <li data-t="pr_how_1">Buy hours. They never expire.</li>
+        <li data-t="pr_how_2">Switch your pass on in the 😂 panel when you want it.</li>
+        <li data-t="pr_how_3">The clock only runs while you are in a call with your pass on. Pause any time.</li>
+        <li data-t="pr_how_4">When the hours are used up, the extras switch off. Everything free stays free.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2 data-t="pr_try_title">Try before you pay</h2>
+      <p data-t="pr_try_text">Every paid item can be previewed on your own screen for 20 seconds, with a PREVIEW mark. It goes into your call only while you have a pass.</p>
+      <p class="muted small" data-t="pr_final">All sales are final. There are no refunds, and unused hours stay on your key.</p>
+      <p class="muted small"><a href="/buy" data-t="pr_have_key">Already have a key? Add hours to it on the buy page.</a></p>
+    </section>
+
+    <footer class="foot"><a href="/terms" data-t="foot_terms">Terms</a> · <a href="/privacy" data-t="foot_privacy">Privacy</a> <div class="prefs" data-prefs></div></footer>
+  </main>
+  <script src="/assets/pricing.js"></script>
+</body>
+</html>

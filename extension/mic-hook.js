@@ -768,7 +768,11 @@
   // ---------- Lights & looks, and captions: one pipeline for the camera you send ----------
 
   const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.filter !== 'none');
-  const camWanted = () => camCaptions || (!!fxCfg && (fxCfg.on || fxCfg.armed || fxCfg.filter !== 'none'));
+  // The camera is always routed through the frame pipeline when the browser has it (frames pass through
+  // untouched while nothing is on), so Lights can be switched on at any moment without restarting the camera.
+  // Without that support (old browsers) it is only done once Lights has been used, because the fallback
+  // costs a little power.
+  const camWanted = () => insertableStreams() || camCaptions || (!!fxCfg && (fxCfg.on || fxCfg.armed || fxCfg.filter !== 'none'));
   const needsPaint = () => fxActive() || performance.now() < camTextUntil;
   const meterBuf = new Float32Array(512);
 

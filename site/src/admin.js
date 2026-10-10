@@ -93,7 +93,7 @@ function bars(entries) {
     <li><span class="label">${h(label)}</span><progress max="${max}" value="${n}"></progress><b>${n}</b></li>`).join('')}</ul>`;
 }
 
-const PRODUCT_TEXT = { pictures5: '5 more pictures', pro: 'Pro (unlimited)' };
+const PRODUCT_TEXT = { pictures5: '5 more pictures', pro: 'Pro (unlimited)', pass_pro_30: 'Pro pass 30 min', pass_pro_60: 'Pro pass 1 h', pass_pro_120: 'Pro pass 2 h', pass_max_180: 'Pro Max pass 3 h' };
 
 function licenseText(l) {
   if (l.unlimited) return 'Pro, unlimited';

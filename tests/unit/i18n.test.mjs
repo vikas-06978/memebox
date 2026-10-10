@@ -107,14 +107,15 @@ test('every data-t key on the site exists, and the English in the HTML matches e
 });
 
 test('keys the site scripts ask for exist', () => {
-  for (const f of ['form.js', 'buy.js', 'demo.js', 'prefs.js']) {
+  for (const f of ['form.js', 'buy.js', 'demo.js', 'prefs.js', 'pricing.js']) {
     const src = fs.readFileSync(path.join(SITE, 'assets', f), 'utf8');
     for (const [, key] of src.matchAll(/\bT?t\('([a-z0-9_]+)'/g)) {
       if (key.endsWith('_') || key === 'key') continue; // dynamic prefix, or the usage example in a comment
       assert.ok(key in siteEn, `${f}: missing "${key}"`);
     }
   }
-  for (const p of ['pro', 'pictures5']) assert.ok(siteEn['buy_name_' + p]);
+  for (const p of ['pro', 'pictures5', 'pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_180']) assert.ok(siteEn['buy_name_' + p]);
+  for (const k of ['pr_dur_30', 'pr_dur_60', 'pr_dur_120', 'pr_dur_180']) assert.ok(siteEn[k]);
   for (const th of ['auto', 'light', 'dark', 'sunny', 'neon', 'candy']) assert.ok(siteEn['theme_' + th]);
 });
 

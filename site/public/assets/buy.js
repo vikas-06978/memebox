@@ -7,6 +7,7 @@
   const params = new URLSearchParams(location.search);
   let orderId = /^MB[A-HJ-NP-Z2-9]{10}$/.test(params.get('order') || '') ? params.get('order') : '';
   let pollTimer = 0;
+  const wanted = /^pass_[a-z0-9_]{3,20}$/.test(params.get('product') || '') ? params.get('product') : '';
 
   function showError(text) {
     $('error').textContent = text;
@@ -135,6 +136,7 @@
     if (!c.payments) { $('closed').hidden = false; $('choose').hidden = true; return; }
     const box = $('products');
     for (const [id, p] of Object.entries(c.products || {})) {
+      const isPass = p.proSeconds > 0 || p.maxSeconds > 0;
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'primary';
@@ -142,14 +144,13 @@
       b.dataset.product = id;
       b.addEventListener('click', () => buy(id));
       const card = document.createElement('article');
-      card.className = 'card product' + (p.unlimited ? ' best' : '');
+      card.className = 'card product' + (p.unlimited || p.maxSeconds ? ' best' : '');
       const h = document.createElement('h2');
-      h.textContent = p.unlimited ? 'MemeBox Pro' : T('buy_more_pics', p.pictureSlots);
+      h.textContent = isPass ? T('buy_name_' + id) : p.unlimited ? 'MemeBox Pro' : T('buy_more_pics', p.pictureSlots);
       const d = document.createElement('p');
       d.className = 'muted';
-      d.textContent = p.unlimited
-        ? T('buy_pro_desc')
-        : T('buy_pics_desc', p.pictureSlots);
+      d.textContent = isPass ? T(p.maxSeconds ? 'buy_pass_desc_max' : 'buy_pass_desc_pro')
+        : p.unlimited ? T('buy_pro_desc') : T('buy_pics_desc', p.pictureSlots);
       const price = document.createElement('p');
       price.className = 'price';
       price.textContent = `₹${p.inr}`;
@@ -157,5 +158,6 @@
       box.append(card);
     }
     if (orderId) refresh();
+    else if (wanted && (c.products || {})[wanted]) buy(wanted); // came from a Buy button on /pricing
   }).catch(() => alertBox(T('buy_err_load')));
 })();
