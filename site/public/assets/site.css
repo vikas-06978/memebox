@@ -142,6 +142,12 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--f
 .frame .dots i { width: 10px; height: 10px; border-radius: 50%; background: #ff6b6b; display: block; }
 .frame .dots i:nth-child(2) { background: #fcc419; } .frame .dots i:nth-child(3) { background: #51cf66; }
 .frame img, .frame video { display: block; width: 100%; height: auto; }
+.frame { position: relative; }
+.soundon { position: absolute; top: 4px; right: 10px; z-index: 2; border: 0; border-radius: 999px; padding: 6px 12px; font: 700 13px/1 inherit; cursor: pointer;
+  background: #ffd43b; color: #3d2c00; box-shadow: 0 4px 14px rgba(0, 0, 0, .35); animation: soundpulse 1.6s ease-in-out infinite; }
+.soundon[hidden] { display: none; }
+@keyframes soundpulse { 50% { box-shadow: 0 0 0 7px rgba(255, 212, 59, .45), 0 4px 14px rgba(0, 0, 0, .35); } }
+@media (prefers-reduced-motion: reduce) { .soundon { animation: none; } }
 .float { position: absolute; font-size: 38px; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .2)); animation: bob 3.2s ease-in-out infinite; z-index: 2; }
 .float.f1 { top: -18px; left: -14px; }
 .float.f2 { top: 30%; right: -22px; animation-delay: .8s; font-size: 32px; }

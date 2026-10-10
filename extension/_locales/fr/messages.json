@@ -749,6 +749,9 @@
   "ob_reload_btn": {
     "message": "Recharger cet onglet"
   },
+  "ob_sound": {
+    "message": "🔊 Activer le son"
+  },
   "ob_settings": {
     "message": "⚙️ Ouvrir les réglages"
   },

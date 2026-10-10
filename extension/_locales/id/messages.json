@@ -749,6 +749,9 @@
   "ob_reload_btn": {
     "message": "Muat ulang tab ini"
   },
+  "ob_sound": {
+    "message": "🔊 Nyalakan suara"
+  },
   "ob_settings": {
     "message": "⚙️ Buka pengaturan"
   },

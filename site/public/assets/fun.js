@@ -6,6 +6,13 @@
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   // The tutorial video autoplays (muted). People who asked for less motion get it paused, with its controls.
   if (reduce.matches) for (const v of document.querySelectorAll('.frame video')) v.pause();
+  // Browsers only autoplay muted video, so a button turns the sound on (and restarts from the top).
+  for (const btn of document.querySelectorAll('.soundon')) {
+    const v = btn.closest('.frame').querySelector('video');
+    if (!v) { btn.hidden = true; continue; }
+    btn.addEventListener('click', () => { v.muted = false; v.currentTime = 0; v.play().catch(() => {}); });
+    v.addEventListener('volumechange', () => { btn.hidden = !v.muted; });
+  }
 
   function burst(x, y, count = 10, extra = []) {
     if (reduce.matches) return;

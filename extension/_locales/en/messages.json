@@ -749,6 +749,9 @@
   "ob_reload_btn": {
     "message": "Reload this tab"
   },
+  "ob_sound": {
+    "message": "🔊 Sound on"
+  },
   "ob_settings": {
     "message": "⚙️ Open settings"
   },

@@ -2,6 +2,9 @@
 // running against a D1 stand-in (node:sqlite with site/db/schema.sql).
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { ROOT } from './helpers.mjs';
 import { validateSubmission, FEATURES } from '../../site/src/validate.js';
 import {
   rateLimit, makeSession, checkSession, safeEqual, readCookie, SESSION_MS, TURNSTILE_VERIFY, sha256Hex,
@@ -308,4 +311,14 @@ test('an un-migrated database still saves the answer (without platform and devic
   const row = await db.prepare('SELECT * FROM feedback').first();
   assert.equal(row.reason, 'too-hard');
   assert.equal(row.platform, undefined);
+});
+
+test('the tutorial video has a sound track (and the copy in the extension is the same file)', () => {
+  const assets = path.join(ROOT, 'site', 'public', 'assets');
+  const mp4 = fs.readFileSync(path.join(assets, 'tutorial.mp4'));
+  const webm = fs.readFileSync(path.join(assets, 'tutorial.webm'));
+  assert.ok(mp4.includes('mp4a'), 'mp4 has an AAC audio track');
+  assert.ok(webm.includes('A_OPUS'), 'webm has an Opus audio track');
+  assert.ok(mp4.length < 2e6 && webm.length < 2e6, 'small enough to autoplay on a phone');
+  assert.ok(webm.equals(fs.readFileSync(path.join(ROOT, 'extension', 'tutorial.webm'))), 'extension/tutorial.webm is the same file');
 });

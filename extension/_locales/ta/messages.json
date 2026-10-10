@@ -749,6 +749,9 @@
   "ob_reload_btn": {
     "message": "இந்தத் தாவலை மீண்டும் ஏற்று"
   },
+  "ob_sound": {
+    "message": "🔊 ஒலியை இயக்கு"
+  },
   "ob_settings": {
     "message": "⚙️ அமைப்புகளைத் திற"
   },

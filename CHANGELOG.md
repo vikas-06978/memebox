@@ -4,6 +4,13 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-10-10
+
+### Changed
+- The tutorial video now has **real sound**: it is the actual microphone mix the call hears (the memes, and silence while muted), recorded from the extension. The muted step plays a meme on purpose to show that nobody hears it.
+- Tutorial captions sit higher, clear of the video player's control bar.
+- A **🔊 Sound on** button (12 languages) on the website and the welcome page, because browsers only autoplay muted video. It restarts the video with sound.
+
 ## [1.2.3] - 2026-10-10
 
 ### Added

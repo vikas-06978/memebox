@@ -1,6 +1,7 @@
 // npm run tutorial: records a short "how to use MemeBox" video from the real extension running in
 // Chromium, on a neutral mock call (coloured tiles, first names, no logos or real people).
-// Silent on purpose (it autoplays on the landing page): big captions say what to do.
+// The sound is real: it is the mixed microphone the call would receive (memes, and silence while muted).
+// It autoplays muted on the landing page; big captions say what to do.
 // Output: site/public/assets/tutorial.mp4 and tutorial.webm, plus tutorial-poster.png. Needs ffmpeg.
 import { chromium } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
@@ -14,6 +15,15 @@ const OUT = path.join(ROOT, 'site', 'public', 'assets');
 const W = 1280, H = 800;
 const FAB = { x: 16 + 26, y: H - 120 - 26 }; // centre of the 😂 button at its default spot
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'memebox-tutorial-'));
+// The fake microphone must be silent: Chromium's default fake device beeps, and only the memes should be heard.
+const silence = path.join(tmp, 'silence.wav');
+{
+  const sr = 48000, n = sr * 5, b = Buffer.alloc(44 + n * 2);
+  b.write('RIFF', 0); b.writeUInt32LE(36 + n * 2, 4); b.write('WAVEfmt ', 8); b.writeUInt32LE(16, 16);
+  b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(sr, 24); b.writeUInt32LE(sr * 2, 28);
+  b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write('data', 36); b.writeUInt32LE(n * 2, 40);
+  fs.writeFileSync(silence, b);
+}
 
 const CALL_SCENE = `<!doctype html><html><head><title>Team call</title><style>
   * { box-sizing: border-box; } html, body { margin: 0; height: 100%; }
@@ -26,7 +36,7 @@ const CALL_SCENE = `<!doctype html><html><head><title>Team call</title><style>
   .bar i { width: 48px; height: 48px; border-radius: 50%; background: #3c4043; display: block; }
   .bar i.end { background: #d93025; width: 64px; border-radius: 24px; }
   /* Tutorial overlay: caption on top, a visible mouse pointer, and title / end cards. */
-  #cap { position: fixed; bottom: 24px; left: 860px; transform: translateX(-50%); z-index: 2147483000; display: flex; gap: 16px; align-items: center;
+  #cap { position: fixed; bottom: 130px; left: 860px; transform: translateX(-50%); z-index: 2147483000; display: flex; gap: 16px; align-items: center;
     width: max-content; max-width: 790px; background: rgba(20,20,26,.92); color: #fff; padding: 16px 30px 16px 18px; border-radius: 22px; box-shadow: 0 10px 40px rgba(0,0,0,.45);
     font: 700 30px/1.2 system-ui, "Segoe UI", sans-serif; transition: opacity .35s; opacity: 0; pointer-events: none; }
   #cap .n { flex: none; width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; color: #3d2c00;
@@ -65,6 +75,23 @@ const CALL_SCENE = `<!doctype html><html><head><title>Team call</title><style>
       c.style.opacity = text ? 1 : 0;
       if (text) c.innerHTML = '<span class="n">' + n + '</span><span>' + text + (sub ? '<small>' + sub + '</small>' : '') + '</span>';
     };
+    // Records what the call would send: the mixed mic stream (the memes, and silence while muted).
+    window.startRec = async () => {
+      const ac = new AudioContext(); await ac.resume();
+      const dest = ac.createMediaStreamDestination();
+      ac.createMediaStreamSource(window.s).connect(dest);
+      window.chunks = [];
+      window.rec = new MediaRecorder(dest.stream, { mimeType: 'audio/webm;codecs=opus' });
+      window.rec.ondataavailable = (e) => window.chunks.push(e.data);
+      window.rec.start(100);
+      return Date.now();
+    };
+    window.stopRec = async () => {
+      await new Promise((r) => { window.rec.onstop = r; window.rec.stop(); });
+      const buf = new Uint8Array(await new Blob(window.chunks).arrayBuffer());
+      let bin = ''; for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+      return btoa(bin);
+    };
     window.card = (html) => {
       const c = document.getElementById('card');
       c.style.opacity = html ? 1 : 0;
@@ -79,6 +106,7 @@ const context = await chromium.launchPersistentContext('', {
   args: [
     `--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`, '--lang=en-US',
     '--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream',
+    `--use-file-for-fake-audio-capture=${silence}`,
   ],
 });
 let [sw] = context.serviceWorkers();
@@ -91,6 +119,7 @@ const call = await context.newPage();
 const t0 = Date.now(); // the video starts when the page is created
 await call.goto('https://meet.google.com/abc-defg-hij');
 await call.evaluate(() => window.joinCall());
+const recStart = await call.evaluate(() => window.startRec()); // wall-clock ms when the audio recording began
 await call.mouse.move(640, 400);
 const wait = (ms) => call.waitForTimeout(ms);
 const caption = (n, text, sub = '') => call.evaluate(([a, b, c]) => window.caption(a, b, c), [n, text, sub]);
@@ -134,7 +163,9 @@ await wait(3600);
 // 4. Muted.
 await caption('!', 'Muted? Memes are silent too', 'Unmute your mic in the call first');
 await call.evaluate(() => { window.s.getAudioTracks()[0].enabled = false; }); // the call's mute button
-await wait(4200);
+await wait(2800); // the panel notices and turns amber
+await call.keyboard.press('Enter'); // plays "Chai break!" again: nobody hears it now
+await wait(3600);
 await call.evaluate(() => { window.s.getAudioTracks()[0].enabled = true; });
 await wait(800);
 
@@ -148,15 +179,26 @@ await wait(500);
 await card('<div class="big">😂</div><h1>Free for Chrome and Edge</h1><p>Optional Pro: voice changer, camera captions, more packs</p><div class="url">memebox.pages.dev</div>');
 await wait(3600);
 await call.screenshot({ path: path.join(tmp, 'poster-source.png') });
+const audioFile = path.join(tmp, 'call-audio.webm');
+fs.writeFileSync(audioFile, Buffer.from(await call.evaluate(() => window.stopRec()), 'base64'));
 const video = call.video();
 await context.close(); // finishes the recording
 const webm = await video.path();
 
 fs.mkdirSync(OUT, { recursive: true });
-const trim = ['-ss', String(Math.max(0, startAt - 0.3).toFixed(2))];
+const ss = Math.max(0, startAt - 0.3);
 const run = (args) => execFileSync('ffmpeg', ['-y', '-loglevel', 'error', ...args], { stdio: 'inherit' });
-run([...trim, '-i', webm, '-an', '-c:v', 'libx264', '-preset', 'slow', '-crf', '30', '-pix_fmt', 'yuv420p', '-r', '25', '-movflags', '+faststart', path.join(OUT, 'tutorial.mp4')]);
-run([...trim, '-i', webm, '-an', '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '38', '-r', '25', path.join(OUT, 'tutorial.webm')]);
+// Line the audio up with the picture: both started at known wall-clock times.
+const audioDelay = (recStart - t0) / 1000 - ss; // seconds the audio starts after the trimmed picture
+const audioIn = audioDelay >= 0 ? ['-itsoffset', audioDelay.toFixed(3), '-i', audioFile] : ['-ss', (-audioDelay).toFixed(3), '-i', audioFile];
+// Gain so the loudest meme peaks near -3 dB (the mic level of the fake call is low).
+const peak = /max_volume: (-?[\d.]+) dB/.exec(execFileSync('ffmpeg', ['-hide_banner', '-i', audioFile, '-af', 'volumedetect', '-f', 'null', '-'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) || '');
+const gain = peak ? Math.min(24, -3 - Number(peak[1])) : 0;
+const af = `volume=${gain.toFixed(1)}dB,alimiter=limit=0.9`;
+const common = ['-ss', ss.toFixed(2), '-i', webm, ...audioIn, '-map', '0:v', '-map', '1:a', '-af', af, '-shortest', '-r', '25'];
+run([...common, '-c:v', 'libx264', '-preset', 'slow', '-crf', '30', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '64k', '-ac', '1', '-movflags', '+faststart', path.join(OUT, 'tutorial.mp4')]);
+run([...common, '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '38', '-c:a', 'libopus', '-b:a', '48k', '-ac', '1', path.join(OUT, 'tutorial.webm')]);
+console.log(`audio: starts ${audioDelay.toFixed(2)} s after the picture, gain ${gain.toFixed(1)} dB`);
 // Poster: a frame from the moment a meme caption is on screen (what shows before the video loads).
 run(['-ss', posterAt.toFixed(2), '-i', path.join(OUT, 'tutorial.mp4'), '-frames:v', '1', path.join(OUT, 'tutorial-poster.png')]);
 for (const f of ['tutorial.mp4', 'tutorial.webm', 'tutorial-poster.png']) {

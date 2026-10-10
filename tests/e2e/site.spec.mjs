@@ -166,6 +166,11 @@ test('landing page: the tutorial video autoplays muted, loops, has controls, and
   await expect(video).toHaveAttribute('controls', '');
   await expect.poll(() => video.evaluate((v) => v.currentTime), { timeout: 15000 }).toBeGreaterThan(1);
   expect(await video.evaluate((v) => ({ paused: v.paused, muted: v.muted, h: v.videoHeight, d: v.duration }))).toMatchObject({ paused: false, muted: true, h: 800 });
+  // The button turns the sound on, restarts the video, and the audio track really decodes.
+  await page.locator('.soundon').click();
+  await expect(page.locator('.soundon')).toBeHidden();
+  await expect.poll(() => video.evaluate((v) => v.muted)).toBe(false);
+  await expect.poll(() => video.evaluate((v) => v.webkitAudioDecodedByteCount), { timeout: 15000 }).toBeGreaterThan(5000);
   await page.screenshot({ path: 'tests/.tmp/landing-hero.png' });
   expect(page.cspErrors).toEqual([]);
 });

@@ -749,6 +749,9 @@
   "ob_reload_btn": {
     "message": "Recargar esta pestaña"
   },
+  "ob_sound": {
+    "message": "🔊 Activar sonido"
+  },
   "ob_settings": {
     "message": "⚙️ Abrir ajustes"
   },

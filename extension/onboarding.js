@@ -140,3 +140,10 @@ showOpenCallTabs().catch(() => {});
 
 // People who asked their system for less motion get the tutorial paused (its controls still work).
 if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelector('.tutorial video').pause();
+
+// Chrome only autoplays muted video, so this button turns the sound on (and restarts from the top).
+{
+  const v = document.querySelector('.tutorial video');
+  $('sound-on').addEventListener('click', () => { v.muted = false; v.currentTime = 0; v.play().catch(() => {}); });
+  v.addEventListener('volumechange', () => { $('sound-on').hidden = !v.muted; });
+}

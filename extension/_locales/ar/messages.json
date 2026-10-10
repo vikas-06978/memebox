@@ -749,6 +749,9 @@
   "ob_reload_btn": {
     "message": "إعادة تحميل علامة التبويب هذه"
   },
+  "ob_sound": {
+    "message": "🔊 تشغيل الصوت"
+  },
   "ob_settings": {
     "message": "⚙️ افتح الإعدادات"
   },

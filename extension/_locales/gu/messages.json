@@ -749,6 +749,9 @@
   "ob_reload_btn": {
     "message": "આ ટૅબ રીલોડ કરો"
   },
+  "ob_sound": {
+    "message": "🔊 અવાજ ચાલુ કરો"
+  },
   "ob_settings": {
     "message": "⚙️ સેટિંગ્સ ખોલો"
   },
