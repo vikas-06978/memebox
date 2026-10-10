@@ -15,6 +15,7 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 - **The camera is always ready for Lights**: switching Lights on needs no camera restart any more (the frames pass through untouched until something is on).
 - **Pricing page** (`/pricing`): Free, Pro and Pro Max, passes of ₹19 / 29 / 49 / 69 (and $1.99 / 3.99 / 5.99 / 8.99), in rupees for India and dollars elsewhere. `/buy` sells the passes by UPI for now (approved by hand); the old ₹99 lifetime Pro and the picture packs are closed to new buyers (existing keys keep working). Card payment in dollars comes with the payment gateway.
 - **Lights are better in a dark room**: the lamp now relights your actual face (a stronger lift the darker the room), and hangs higher so your face and the lamp both show. All hanging fixtures moved up the same way.
+- **Dollar prices lowered**: $0.99 / 1.49 / 2.49 / 3.99 (rupees unchanged at ₹9 / 15 / 25 / 35).
 - **Prices lowered**: Pro 30 min ₹9 / 1 h ₹15 / 2 h ₹25, Pro Max 3 h ₹35 (dollars $1.49 / 2.49 / 3.99 / 5.49).
 - **Search and sharing**: the landing page, FAQ, structured data (prices in ₹ and $), platform pages and the pricing page (canonical, Open Graph, sitemap) describe the lights, characters, filters, music and the new prices.
 - Options shows what your key gives (unlimited Pro Max, or the pass time left).

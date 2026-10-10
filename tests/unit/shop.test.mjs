@@ -43,10 +43,10 @@ test('UPI link has the payee, amount in rupees, INR and the order code as the no
   assert.throws(() => upiLink({ upiId: 'not a vpa', amount: 1, orderId: 'x' }));
 });
 
-test('prices: time passes ₹9 / 15 / 25 / 35 and $1.49 / 2.49 / 3.99 / 5.49; the old lifetime Pro and picture packs are closed', () => {
+test('prices: time passes ₹9 / 15 / 25 / 35 and $0.99 / 1.49 / 2.49 / 3.99; the old lifetime Pro and picture packs are closed', () => {
   const p = PRODUCTS;
   assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_180.inr], [9, 15, 25, 35]);
-  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_180.usd], [1.49, 2.49, 3.99, 5.49]);
+  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_180.usd], [0.99, 1.49, 2.49, 3.99]);
   assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_max_180.maxSeconds], [1800, 3600, 7200, 10800]);
   assert.equal(p.pro.closed, true);
   assert.equal(p.pictures5.closed, true);
@@ -61,7 +61,7 @@ test('/api/config tells the buy page the products and whether payments are open'
   const on = await (await call(configApi, req('/api/config'))).json();
   assert.equal(on.payments, true);
   assert.equal(on.products.pass_max_180.inr, 35);
-  assert.equal(on.products.pass_max_180.usd, 5.49);
+  assert.equal(on.products.pass_max_180.usd, 3.99);
   assert.equal(on.products.pro, undefined, 'the old lifetime Pro is not for sale');
   const off = await (await call(configApi, req('/api/config'), { DB: db })).json();
   assert.equal(off.payments, false);
