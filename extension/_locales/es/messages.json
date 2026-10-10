@@ -1344,5 +1344,23 @@
   },
   "mu_del": {
     "message": "Quitar"
+  },
+  "fx_drag": {
+    "message": "Arrastra en la vista previa para colgar la lámpara justo donde quieras."
+  },
+  "fx_lampsize": {
+    "message": "Tamaño de la lámpara"
+  },
+  "fx_lampreset": {
+    "message": "Restablecer"
+  },
+  "fx_hd": {
+    "message": "✨ Mejora HD (más nítido, claro y piel suave)"
+  },
+  "fx_hd_tip": {
+    "message": "Limpia el grano, suaviza la piel pero mantiene ojos y pelo nítidos, añade claridad y color natural y aclara un cuarto oscuro. Se ejecuta en tu tarjeta gráfica."
+  },
+  "fx_hd_amt": {
+    "message": "Intensidad de la mejora HD"
   }
 }

@@ -1344,5 +1344,23 @@
   },
   "mu_del": {
     "message": "Hapus"
+  },
+  "fx_drag": {
+    "message": "Seret di pratinjau untuk menggantung lampu tepat di tempat yang kamu mau."
+  },
+  "fx_lampsize": {
+    "message": "Ukuran lampu"
+  },
+  "fx_lampreset": {
+    "message": "Atur ulang"
+  },
+  "fx_hd": {
+    "message": "✨ Peningkatan HD (lebih tajam, jernih, kulit halus)"
+  },
+  "fx_hd_tip": {
+    "message": "Membersihkan bintik, menghaluskan kulit tetapi menjaga mata dan rambut tetap tajam, menambah kejernihan dan warna alami, dan mencerahkan kamar gelap. Berjalan di kartu grafismu."
+  },
+  "fx_hd_amt": {
+    "message": "Kekuatan peningkatan HD"
   }
 }

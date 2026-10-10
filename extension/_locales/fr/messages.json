@@ -1344,5 +1344,23 @@
   },
   "mu_del": {
     "message": "Supprimer"
+  },
+  "fx_drag": {
+    "message": "Faites glisser dans l’aperçu pour accrocher la lampe exactement où vous voulez."
+  },
+  "fx_lampsize": {
+    "message": "Taille de la lampe"
+  },
+  "fx_lampreset": {
+    "message": "Réinitialiser"
+  },
+  "fx_hd": {
+    "message": "✨ Amélioration HD (plus net, plus clair, peau lisse)"
+  },
+  "fx_hd_tip": {
+    "message": "Nettoie le grain, lisse la peau tout en gardant yeux et cheveux nets, ajoute de la clarté et des couleurs naturelles et éclaircit une pièce sombre. Tourne sur votre carte graphique."
+  },
+  "fx_hd_amt": {
+    "message": "Intensité de l’amélioration HD"
   }
 }

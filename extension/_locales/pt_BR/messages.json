@@ -1344,5 +1344,23 @@
   },
   "mu_del": {
     "message": "Remover"
+  },
+  "fx_drag": {
+    "message": "Arraste na prévia para pendurar a luminária exatamente onde quiser."
+  },
+  "fx_lampsize": {
+    "message": "Tamanho da luminária"
+  },
+  "fx_lampreset": {
+    "message": "Redefinir"
+  },
+  "fx_hd": {
+    "message": "✨ Melhoria HD (mais nítido, claro e pele suave)"
+  },
+  "fx_hd_tip": {
+    "message": "Limpa o ruído, suaviza a pele mas mantém olhos e cabelo nítidos, dá clareza e cor natural e clareia um quarto escuro. Roda na sua placa de vídeo."
+  },
+  "fx_hd_amt": {
+    "message": "Intensidade da melhoria HD"
   }
 }

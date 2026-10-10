@@ -803,7 +803,7 @@
 
   // ---------- Lights & looks, and captions: one pipeline for the camera you send ----------
 
-  const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.filter !== 'none');
+  const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.filter !== 'none' || fxCfg.enhance > 0);
   // The camera is always routed through the frame pipeline when the browser has it (frames pass through
   // untouched while nothing is on), so Lights can be switched on at any moment without restarting the camera.
   // Without that support (old browsers) it is only done once Lights has been used, because the fallback
@@ -841,7 +841,7 @@
     fxAvg = fxAvg * 0.93 + rms * 0.07;
     const mood = fxMood && now - fxMoodAt < 12000 ? fxMood : '';
     const tune = musicPlayer && musicPlayer.playing ? musicPlayer.id : mineSrc ? 'mine' : '';
-    return { level: fxLevel, bass: Math.min(1, bass * 1.4), mid: Math.min(1, mid * 1.8), high: Math.min(1, high * 3), spec: fxSpec, beat, mood, tune };
+    return { level: fxLevel, bass: Math.min(1, bass * 1.4), mid: Math.min(1, mid * 1.8), high: Math.min(1, high * 3), spec: fxSpec, beat, mood, tune, voice: Math.min(1, voiceLevel() * 4) };
   }
 
   function paintCamera(R, g, src, w, h) {

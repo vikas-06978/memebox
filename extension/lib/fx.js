@@ -42,6 +42,10 @@
     armed: false,       // the camera is prepared in the next call (set once Lights has been used)
     lamp: true,         // the hanging lamp
     lampPos: 'center',  // center | left | right (so it does not cover your face)
+    lampX: null,        // where the lamp hangs, 0..1 across the picture (null = the Left / Centre / Right choice)
+    lampHang: 0,        // how much lower it hangs, as a share of the picture height (0..0.4)
+    lampSize: 1,        // 0.6..1.6
+    enhance: 0,         // HD enhance: sharper, clearer, smoother skin (0 = off, up to 1)
     lampAnim: 'still',  // still | swing | drop | flicker | sway | bounce | pendulum | beat
     fixture: 'lamp',    // lamp | discoball | lantern | fairy | chandelier | moon | star | spotlight
     color: 'warm',      // a name from COLORS or '#rrggbb'
@@ -70,6 +74,10 @@
       armed: c.armed === true,
       lamp: c.lamp !== false,
       lampPos: ['center', 'left', 'right'].includes(c.lampPos) ? c.lampPos : 'center',
+      lampX: Number.isFinite(Number(c.lampX)) && c.lampX !== null ? clamp(Number(c.lampX), 0.06, 0.94) : null,
+      lampHang: Number.isFinite(Number(c.lampHang)) ? clamp(Number(c.lampHang), 0, 0.4) : 0,
+      lampSize: Number.isFinite(Number(c.lampSize)) ? clamp(Number(c.lampSize), 0.6, 1.6) : 1,
+      enhance: Number.isFinite(Number(c.enhance)) ? clamp(Number(c.enhance), 0, 1) : 0,
       lampAnim: LAMP_ANIMS.includes(c.lampAnim) ? c.lampAnim : 'still',
       fixture: FIXTURES.includes(c.fixture) ? c.fixture : 'lamp',
       color: Object.prototype.hasOwnProperty.call(COLORS, c.color) || isHex(c.color) ? c.color : 'warm',
@@ -96,6 +104,7 @@
     if (ADDON_FILTERS.includes(out.filter) && !can('filter:' + out.filter)) out.filter = 'none';
     if (out.character !== 'none' && !can('character:' + out.character)) out.character = 'none';
     if (out.follow && !can('follow')) out.follow = false;
+    if (out.enhance > 0 && !can('enhance')) out.enhance = 0;
     return out;
   }
 
@@ -104,7 +113,7 @@
     const want = sanitize(cfg, () => true);
     const have = sanitize(cfg, can);
     const locked = [];
-    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character', 'follow']) if (want[k] !== have[k]) locked.push(k);
+    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character', 'follow', 'enhance']) if (want[k] !== have[k]) locked.push(k);
     return locked;
   }
 
@@ -401,6 +410,103 @@
     robot:   ['scan', 'beep', 'popping'],
   };
 
+  // ---------- HD enhance: a small GPU shader that makes the camera picture look better ----------
+  // One pass over the picture: edge-aware smoothing (strongest on skin, so noise goes but eyes and hair stay sharp),
+  // an unsharp mask, a touch of clarity (local contrast), natural vibrance, and an exposure lift for dark rooms.
+  // It runs on the graphics card at the camera's own size; if WebGL is not available the picture is simply left as it is.
+  const ENH_VS = 'attribute vec2 p; varying vec2 uv; void main(){ uv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }';
+  const ENH_FS = `precision mediump float;
+varying vec2 uv; uniform sampler2D tex; uniform vec2 px;
+uniform float sharp, smoothAmt, clarity, vib, lift, nz;
+vec3 S(vec2 o){ return texture2D(tex, uv + o * px).rgb; }
+float L(vec3 c){ return dot(c, vec3(0.299, 0.587, 0.114)); }
+float skinMask(vec3 c){
+  float cb = -0.1687 * c.r - 0.3313 * c.g + 0.5 * c.b + 0.5, cr = 0.5 * c.r - 0.4187 * c.g - 0.0813 * c.b + 0.5;
+  return smoothstep(0.0, 1.0, 1.0 - (abs(cb - 0.42) / 0.12 + abs(cr - 0.58) / 0.12) * 0.5) * step(0.12, L(c));
+}
+void main(){
+  vec3 c = S(vec2(0.0));
+  vec3 blur = c * 0.25 + (S(vec2(1.,0.)) + S(vec2(-1.,0.)) + S(vec2(0.,1.)) + S(vec2(0.,-1.))) * 0.125
+            + (S(vec2(1.,1.)) + S(vec2(-1.,1.)) + S(vec2(1.,-1.)) + S(vec2(-1.,-1.))) * 0.0625;
+  // edge-aware smoothing: neighbours that look like the centre count, edges do not
+  float rng = 26.0 / (1.0 + nz * 8.0), rad = 1.0 + nz * 0.7; // a dark, grainy picture gets a wider and stronger clean-up
+  vec3 sum = c; float ws = 1.0;
+  for (int i = 0; i < 8; i++) {
+    float a = float(i) * 0.7853982;
+    vec2 dir = vec2(cos(a), sin(a));
+    vec3 n1 = S(dir * 1.7 * rad); vec3 d1 = n1 - c;
+    float w1 = exp(-dot(d1, d1) * rng);
+    vec3 n2 = S(dir * 3.4 * rad); vec3 d2 = n2 - c;
+    float w2 = 0.6 * exp(-dot(d2, d2) * rng);
+    sum += n1 * w1 + n2 * w2; ws += w1 + w2;
+  }
+  vec3 sm = sum / ws;
+  float sk = skinMask(c);
+  vec3 o = mix(c, sm, clamp(smoothAmt * (0.35 + 0.65 * sk) * (1.0 + nz * 0.9), 0.0, 0.95));
+  o += (sm - blur) * sharp * (1.0 - 0.5 * nz) * 2.2 * (1.0 - 0.5 * sk);            // sharpen, a bit less on skin
+  o = mix(o, o * o * (3.0 - 2.0 * o), clarity * 0.5);            // midtone contrast
+  float l = L(o);
+  float sat = max(max(o.r, o.g), o.b) - min(min(o.r, o.g), o.b);
+  o = mix(vec3(l), o, 1.0 + vib * (1.0 - sat));                  // vibrance: lifts dull colours, not loud ones
+  o = pow(max(o, vec3(0.0)), vec3(1.0 - 0.6 * lift)) * (1.0 + 1.0 * lift); // dark room: brighter, shadows lifted
+  gl_FragColor = vec4(clamp(o, 0.0, 1.0), 1.0);
+}`;
+
+  function createEnhancer() {
+    const E = { ok: null, canvas: null, gl: null, w: 0, h: 0 };
+    function init(w, h) {
+      try {
+        const canvas = typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
+        const gl = canvas.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: true });
+        if (!gl) return false;
+        const sh = (type, src) => { const x = gl.createShader(type); gl.shaderSource(x, src); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(x)); return x; };
+        const prog = gl.createProgram();
+        gl.attachShader(prog, sh(gl.VERTEX_SHADER, ENH_VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, ENH_FS));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+        gl.useProgram(prog);
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        const tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        const u = {};
+        for (const n of ['px', 'sharp', 'smoothAmt', 'clarity', 'vib', 'lift', 'nz']) u[n] = gl.getUniformLocation(prog, n);
+        E.canvas = canvas; E.gl = gl; E.u = u; E.w = w; E.h = h;
+        return true;
+      } catch { return false; }
+    }
+    // Returns a canvas with the enhanced picture, or null (use the plain picture).
+    E.apply = (src, w, h, k, dark) => {
+      if (E.ok === false || k <= 0.01) return null;
+      if (!E.canvas || E.w !== w || E.h !== h) { E.ok = init(w, h); if (!E.ok) return null; }
+      const { gl, u } = E;
+      try {
+        if (gl.isContextLost()) { E.ok = false; return null; }
+        gl.viewport(0, 0, w, h);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, src);
+        gl.uniform2f(u.px, 1 / w, 1 / h);
+        gl.uniform1f(u.sharp, 0.75 * k);
+        gl.uniform1f(u.smoothAmt, 0.6 * k);
+        gl.uniform1f(u.clarity, 0.7 * k);
+        gl.uniform1f(u.vib, 0.55 * k);
+        gl.uniform1f(u.nz, clamp(dark * 1.6));
+        gl.uniform1f(u.lift, clamp(dark * 1.3) * Math.min(1, k * 1.3));
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        return E.canvas;
+      } catch { E.ok = false; return null; }
+    };
+    return E;
+  }
+
   function createRenderer() {
     const R = {
       dropStart: -1, lastKey: '', mood: '', moodBlend: 0, moodStart: 0, lastSeen: 0,
@@ -411,7 +517,7 @@
     // Lamp: drawn around (0,0) = the point where the cord hangs.
     function drawLamp(g, w, h, st) {
       const { cx, rgb, bright, angle, dy } = st;
-      const lampW = h * 0.23, lampH = h * 0.14, cord = h * 0.035 + dy;
+      const lampW = h * 0.23, lampH = h * 0.14, cord = h * 0.035 + dy + (st.hang || 0);
       g.save();
       g.translate(cx, 0);
       g.rotate(angle);
@@ -466,7 +572,7 @@
     }
 
     function drawDiscoBall(g, w, h, st) {
-      const r = h * 0.088, cord = h * 0.05, t = st.now / 1000;
+      const r = h * 0.088, cord = h * 0.05 + (st.hang || 0), t = st.now / 1000;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy + r);
@@ -494,7 +600,7 @@
     }
 
     function drawLantern(g, w, h, st) {
-      const cord = h * 0.04, hh = h * 0.17, ww = h * 0.11;
+      const cord = h * 0.04 + (st.hang || 0), hh = h * 0.17, ww = h * 0.11;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy);
@@ -537,7 +643,7 @@
     }
 
     function drawChandelier(g, w, h, st) {
-      const cord = h * 0.03, t = st.now / 1000, ww = h * 0.3;
+      const cord = h * 0.03 + (st.hang || 0), t = st.now / 1000, ww = h * 0.3;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy);
@@ -562,7 +668,7 @@
     }
 
     function drawMoon(g, w, h, st) {
-      const R0 = h * 0.075, cord = h * 0.04, t = st.now / 1000;
+      const R0 = h * 0.075, cord = h * 0.04 + (st.hang || 0), t = st.now / 1000;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy + R0 * 1.05);
@@ -581,7 +687,7 @@
     }
 
     function drawStar(g, w, h, st) {
-      const R0 = h * 0.07, cord = h * 0.04, t = st.now / 1000;
+      const R0 = h * 0.07, cord = h * 0.04 + (st.hang || 0), t = st.now / 1000;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy + R0 * 0.95);
@@ -907,12 +1013,12 @@
 
     // ---- the light on YOUR face: works in a dark room too ----
     // How dark is the room? A tiny copy of the picture is measured about twice a second.
-    function measureDark(g, w, h, now) {
+    function measureDark(source, w, h, now) {
       if (now - (R.darkAt || -1e9) > 450) {
         R.darkAt = now;
         try {
           if (!R.dk) { R.dk = makeScratch(24, 14); R.dkg = R.dk.getContext('2d', { willReadFrequently: true }); }
-          R.dkg.drawImage(g.canvas, w * 0.25, h * 0.2, w * 0.5, h * 0.55, 0, 0, 24, 14); // the middle, where your face is
+          R.dkg.drawImage(source, w * 0.25, h * 0.2, w * 0.5, h * 0.55, 0, 0, 24, 14); // the middle, where your face is
           const d = R.dkg.getImageData(0, 0, 24, 14).data;
           let sum = 0;
           for (let i = 0; i < d.length; i += 4) sum += 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2];
@@ -930,7 +1036,7 @@
       if (!R.sl || R.sl.width !== w || R.sl.height !== h) R.sl = makeScratch(w, h);
       const sg = R.sl.getContext('2d');
       sg.globalCompositeOperation = 'copy';
-      sg.filter = `brightness(${(1 + 2.4 * k).toFixed(2)}) contrast(${(1 - 0.12 * k).toFixed(2)}) saturate(${(1 + 0.25 * k).toFixed(2)})${k > 0.5 ? ' blur(0.8px)' : ''}`;
+      sg.filter = `brightness(${(1 + 2.4 * k).toFixed(2)}) contrast(${(1 - 0.12 * k).toFixed(2)}) saturate(${(1 + 0.25 * k).toFixed(2)})`;
       sg.drawImage(g.canvas, 0, 0, w, h);
       sg.filter = 'none';
       g.save();
@@ -947,7 +1053,7 @@
       if (!R.rl || R.rl.width !== w || R.rl.height !== h) R.rl = makeScratch(w, h);
       const rg = R.rl.getContext('2d');
       rg.globalCompositeOperation = 'copy';
-      rg.filter = `brightness(${(1.7 + 2.4 * dark).toFixed(2)}) contrast(0.9) saturate(1.1)`;
+      rg.filter = `brightness(${(1.3 + 2.6 * dark).toFixed(2)}) contrast(0.92) saturate(1.1)`;
       rg.drawImage(g.canvas, 0, 0, w, h);
       rg.filter = 'none';
       rg.globalCompositeOperation = 'multiply';
@@ -969,7 +1075,7 @@
     // About 15 times a second a 64x36 copy of YOUR camera picture is looked at (it never leaves the page and is not
     // stored): skin colour gives your face position, the difference between two frames gives how much you move.
     // That is enough to know: left / right, standing up, moving a lot, and out of the picture. No model, no download.
-    const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, live: false });
+    const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, waveAt: -1e9, live: false });
 
     function trackFrame(src, now) {
       const T = R.tr || (R.tr = { ...IDLE_TRACK, live: true, at: -1e9, prev: null, lastSeen: now, wasPresent: true, px: 0.5, py: 0.45, calm: 0 });
@@ -992,6 +1098,19 @@
           if (T.prev && Math.abs(Y - T.prev[p]) > 22) { mv++; mx += x; }
         }
         T.prev = luma;
+        // waving "hi": the moving part of the picture swings left and right a few times, quickly
+        const hist = T.mh || (T.mh = []);
+        if (mv > 10 && mv / n < 0.4) hist.push({ t: now, x: mx / mv });
+        while (hist.length && now - hist[0].t > 1400) hist.shift();
+        if (hist.length > 7 && now - (T.waveAt || -1e9) > 3500) {
+          let turns = 0, dir = 0, last = hist[0].x, lo = last, hi = last;
+          for (const q of hist) {
+            const d = q.x - last;
+            if (Math.abs(d) > 1.2) { const nd = Math.sign(d); if (dir && nd !== dir) turns++; dir = nd; last = q.x; }
+            lo = Math.min(lo, q.x); hi = Math.max(hi, q.x);
+          }
+          if (turns >= 3 && hi - lo > 4) { T.waveAt = now; T.mh = []; }
+        }
         // refine: look again only near the first centre, so a wooden shelf far away does not pull it
         let cx = sk ? sx / sk : 32, cy = sk ? sy / sk : 18;
         if (sk > 12) {
@@ -1010,10 +1129,10 @@
         if (seen) T.lastSeen = now;
         const present = now - T.lastSeen < 1400;
         if (seen && skinFrac > 0.012) {
-          const nx = cx / 64, ny = cy / 36;
+          const nx = clamp(0.5 + (cx / 64 - 0.5) * 1.25, 0, 1), ny = cy / 36; // your face at the side of the picture reads as the very edge
           T.vx = lerp(T.vx, (nx - T.px) / dt, 0.4); T.vy = lerp(T.vy, (ny - T.py) / dt, 0.4);
           T.px = nx; T.py = ny;
-          T.x = lerp(T.x, nx, 0.3); T.y = lerp(T.y, ny, 0.3);
+          T.x = lerp(T.x, nx, 0.45); T.y = lerp(T.y, ny, 0.35);
         } else { T.vx *= 0.8; T.vy *= 0.8; }
         T.energy = lerp(T.energy, energy, 0.35);
         T.rise = lerp(T.rise, clamp((0.4 - T.y) / 0.2), 0.2);
@@ -1050,7 +1169,7 @@
       robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
     };
 
-    const ACT_LEN = { dance: 5, search: 2.2, cheer: 2, wave: 2, jump: 1.1 };
+    const ACT_LEN = { dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
     const pulse = (u, a, b) => smooth((u - a) / Math.max(1e-3, (b - a))) * (1 - smooth((u - b) / Math.max(1e-3, (1 - b))));
     const bump = (u) => Math.sin(Math.PI * clamp(u)); // 0 -> 1 -> 0
 
@@ -1061,7 +1180,10 @@
       const bounce = (f, h) => { const k = Math.abs(Math.sin(t * f)); p.hop = k * h; p.sy = 1 - 0.12 * (1 - k) ** 3; p.sx = 1 + 0.08 * (1 - k) ** 3; };
       switch (act) {
         // ---------- shared ----------
-        case 'wave': p.armR = 2.2 + 0.5 * Math.sin(t * 9); p.ex = 'happy'; p.mouth = 0.5; break;
+        case 'wave': p.armR = 2.2 + 0.5 * Math.sin(t * 9); p.ex = 'happy'; p.mouth = 0.5; p.lookX = 0; break;
+        case 'walk': p.armL = 0.45 + 0.5 * Math.sin(tt * 13); p.armR = 0.45 - 0.5 * Math.sin(tt * 13); p.hop = 1.5 * Math.abs(Math.sin(tt * 13)); break;
+        case 'listen': p.head = 0.09 * Math.sin(t * 3.4); p.ear = 0.7; p.armL = p.armR = 0.3; p.lookX = 0; p.sy = 1.015; break;   // all ears, nodding
+        case 'reply': p.mouth = 0.55 * Math.abs(Math.sin(t * 9)); p.head = 0.08 * Math.sin(t * 4.5); p.armR = 0.9 + 0.5 * Math.sin(t * 6); p.ex = 'happy'; p.lookX = 0; break;
         case 'cheer': p.armL = p.armR = 2.7 + 0.25 * Math.sin(t * 10); bounce(7, 14); p.ex = 'happy'; p.mouth = 0.8; break;
         case 'jump': p.hop = bump(u) * 26; p.armL = p.armR = 2.5 * bump(u); p.ex = 'wow'; break;
         case 'search': // hand over the eyes, looking for you
@@ -1142,28 +1264,84 @@
       return { mood: m, lvl, since: (now - R.cStart) / 1000 };
     }
 
+    // ---- the stage: where the animal is, and whether it stands (with legs) or only peeks in from the bottom ----
+    // Normally it peeks from a bottom corner. With "Follow me" it comes out, walks, searches and welcomes you.
+    function stageUpdate(cfg, tr, audio, now, pos, S, w) {
+      const T = R.stg || (R.stg = { x: null, s: 0, dir: 1, ph: 0, mode: 'peek', tx: 0, until: 0, moving: false, bubble: '', bubbleUntil: 0, last: now,
+        crossAt: now + 18000, patrol: 0, patrolAt: 0, sawExit: -1e9, sawEnter: -1e9, sawRise: -1e9, sawWave: -1e9, home: null, homePos: null });
+      const dt = clamp((now - T.last) / 1000, 0, 0.1); T.last = now;
+      const corner = pos === 'left' ? (S * 0.6) / w : 1 - (S * 0.6) / w;
+      if (T.homePos !== pos) { T.homePos = pos; T.home = corner; if (T.x == null) T.x = corner; }
+      const follow = cfg.follow === true && tr && tr.live;
+      const say = (glyph, ms) => { T.bubble = glyph; T.bubbleUntil = now + ms; };
+      if (!follow) { T.mode = 'peek'; T.tx = T.home = corner; }
+      else {
+        if (tr.exitAt > T.sawExit) { T.sawExit = tr.exitAt; T.mode = 'search'; T.patrol = -1; T.patrolAt = 0; say('?', 2400); }
+        if (tr.enterAt > T.sawEnter) { T.sawEnter = tr.enterAt; T.mode = 'welcome'; T.until = now + 3400; say('❤', 2800); }
+        if (tr.riseAt > T.sawRise) { T.sawRise = tr.riseAt; if (T.mode !== 'search' && T.mode !== 'party') { T.mode = 'out'; T.until = now + 5200; say('!', 1800); } }
+        if (tr.waveAt > T.sawWave) { T.sawWave = tr.waveAt; say('👋', 2400); }
+        const beside = clamp(tr.x < 0.5 ? tr.x + 0.3 : tr.x - 0.3, 0.12, 0.88);
+        if (T.mode === 'search') {
+          const P = [0.5, 0.17, 0.83, 0.5, 0.3, 0.7];
+          if (now >= T.patrolAt) { T.patrol = (T.patrol + 1) % P.length; T.patrolAt = now + 2600 + Math.random() * 1200; say(Math.random() < 0.55 ? '?' : '…', 1900); }
+          T.tx = P[Math.max(0, T.patrol)];
+          if (cfg.awayDance && tr.away > 4.5) { T.mode = 'party'; say('♪', 4200); }
+          if (tr.present) T.mode = 'welcome';
+        } else if (T.mode === 'party') {
+          T.tx = 0.5; if (now > (T.bubbleUntil - 200)) say('♪', 4200);
+          if (tr.present) T.mode = 'welcome';
+        } else if (T.mode === 'welcome') {
+          T.tx = beside; if (now > T.until) { T.mode = tr.rise > 0.3 ? 'out' : 'return'; T.until = now + 3000; }
+        } else if (T.mode === 'out') {
+          T.tx = beside; if (now > T.until && tr.rise < 0.25) T.mode = 'return';
+        } else if (T.mode === 'return') {
+          T.tx = T.home; if (Math.abs(T.x - T.home) < 0.025) T.mode = 'peek';
+        } else if (T.mode === 'cross') {
+          if (Math.abs(T.x - T.tx) < 0.02) { T.mode = 'peek'; T.home = T.tx; T.crossAt = now + 20000 + Math.random() * 15000; }
+        } else { // peek: now and then it sneaks along the bottom to the other corner
+          T.tx = T.home;
+          if (now >= T.crossAt && tr.present) { const cL = (S * 0.6) / w; T.mode = 'cross'; T.tx = T.home < 0.5 ? 1 - cL : cL; }
+        }
+      }
+      const standing = T.mode === 'search' || T.mode === 'party' || T.mode === 'welcome' || T.mode === 'out' || (T.mode === 'return' && Math.abs(T.x - T.home) > 0.03);
+      T.s += ((standing ? 1 : 0) - T.s) * Math.min(1, dt * 4.5);
+      const wantMove = Math.abs(T.tx - T.x) > 0.012 && (T.s > 0.7 || T.mode === 'cross' || (T.s < 0.05 && T.mode === 'peek'));
+      const speed = T.mode === 'cross' ? 0.1 : T.mode === 'party' ? 0.5 : 0.34;
+      T.moving = wantMove;
+      if (wantMove) { const d = T.tx - T.x; T.dir = Math.sign(d) || 1; T.x += Math.sign(d) * Math.min(Math.abs(d), speed * dt); T.ph += dt * (T.mode === 'cross' ? 6 : 13); }
+      else if (!follow) T.x += (corner - T.x) * Math.min(1, dt * 6);
+      if (now > T.bubbleUntil) T.bubble = '';
+      return T;
+    }
+
     // What the animal does next: it reacts to YOU first (you left, came back, stood up), then to the sound, then
     // it does one of its own things now and then.
-    function chooseAct(kind, cfg, tr, mood, now) {
+    function chooseAct(kind, cfg, tr, mood, now, st, audio) {
       const A = R.cAct || (R.cAct = { name: '', start: now, dur: 0, next: now + 2500 });
       const follow = cfg.follow && tr && tr.live;
-      const begin = (name, dur) => { A.name = name; A.start = now; A.dur = dur || ACT_LEN[name] || 2.4; };
+      const begin = (name, dur) => { if (A.name !== name) { A.name = name; A.start = now; } A.dur = dur || ACT_LEN[name] || 2.4; };
       const done = A.name && now - A.start > A.dur * 1000;
-      if (follow) {
-        if (tr.exitAt > R.cSawExit) { R.cSawExit = tr.exitAt; begin('search'); return A; }
-        if (tr.enterAt > R.cSawEnter) { R.cSawEnter = tr.enterAt; begin('wave'); return A; }
-        if (tr.riseAt > R.cSawRise) { R.cSawRise = tr.riseAt; begin('jump'); return A; }
-        if (!tr.present) {
-          if (A.name === 'search' && !done) return A;
-          if (cfg.awayDance) { if (A.name !== 'dance' || done) begin('dance', 4 + Math.random() * 2); return A; }
-          if (!A.name || done) begin('search', 2.2);
-          return A;
-        }
-        // moving a lot: join in (the longer you move, the longer it dances)
+      if (follow && st) {
+        // where it is decides first: searching, partying, welcoming you back, coming out when you stand up
+        if (st.mode === 'search') { begin(st.moving ? 'walk' : 'search', 30); return A; }
+        if (st.mode === 'party') { begin('dance', 30); return A; }
+        if (st.mode === 'welcome') { begin(st.moving ? 'walk' : 'wave', 30); return A; }
+        if (st.moving && (st.s > 0.5)) { begin('walk', 30); return A; }
+        if (st.mode === 'out' && A.name !== 'cheer' && A.name !== 'dance' && now - (R.cOutAt || 0) > 9000) { R.cOutAt = now; begin('cheer', 2.2); return A; }
+        // "hi": you wave, it waves back
+        if (tr.waveAt > (R.cSawWave || -1e9)) { R.cSawWave = tr.waveAt; begin('wave', 2.6); return A; }
+        // you talk, it listens (ears up, nodding); when you stop, it answers
+        const v = audio ? clamp(audio.voice || 0) : 0;
+        const T = R.talk || (R.talk = { on: false, since: 0, last: 0, sawReply: -1e9, replyAt: -1e9 });
+        if (v > 0.2) { if (!T.on) { T.on = true; T.since = now; } T.last = now; }
+        else if (T.on && now - T.last > 800) { T.on = false; if (T.last - T.since > 1600) T.replyAt = now; }
+        if (T.on && now - T.since > 450) { begin('listen', 30); return A; }
+        if (T.replyAt > T.sawReply) { T.sawReply = T.replyAt; begin('reply', 2.2); return A; }
+        if (A.name === 'listen' || A.name === 'walk' || A.name === 'search') { A.name = ''; A.next = now + 1500; }
         if (tr.energy > 0.5 && (A.name !== 'dance' || done)) { begin('dance', 3.5); return A; }
       }
       if ((mood === 'excited' || mood === 'fun') && (A.name !== 'dance' || done)) { begin('dance', 4); return A; }
-      if (done) { A.name = ''; A.next = now + 2500 + Math.random() * 4500; }
+      if (A.name && done) { A.name = ''; A.next = now + 2500 + Math.random() * 4500; }
       if (!A.name && now >= A.next) { const list = ACTIONS[kind]; begin(list[Math.floor(Math.random() * list.length)], 2.2 + Math.random() * 1.2); }
       return A;
     }
@@ -1200,6 +1378,8 @@
     // The character is drawn in a 100-unit box: the ground is y = 0, the head is around y = -62.
     function drawCharacter(g, w, h, kind, pos, now, audio, cfg, tr, o = {}) {
       const P = FUR[kind];
+      const stage = o.stage || { x: pos === 'left' ? (h * 0.24) / w : 1 - (h * 0.24) / w, s: o.charStand || 0, dir: 1, ph: (o.charT || 0) * 13, moving: !!o.charWalk, mode: 'peek', bubble: o.charBubble || '' };
+      const sS = clamp(stage.s);
       const t = now / 1000;
       const S = h * 0.4, u = S / 100;
       const { mood, lvl, since } = characterMood(audio, now);
@@ -1207,7 +1387,7 @@
       let act, at, au;
       if (o.charAct) { act = o.charAct; at = o.charT || 0; au = o.charU == null ? ((at % 3) / 3) : o.charU; }
       else {
-        const A = chooseAct(kind, cfg, tr, mood, now);
+        const A = chooseAct(kind, cfg, tr, mood, now, stage, audio);
         act = A.name; at = (now - A.start) / 1000; au = A.dur ? clamp(at / A.dur) : 0;
       }
       const pz = actPose(kind, act, at, au, t);
@@ -1231,14 +1411,15 @@
         tilt += clamp(tr.vx * 0.25, -0.12, 0.12);
         shift = clamp((tr.x - 0.5) * (pos === 'left' ? 1 : -1) * 0.0, -0.3, 0.3);
       }
+      if (stage.moving && sS > 0.5) { tilt += stage.dir * 0.06; if (lookX == null) lookX = stage.dir * 0.8; }
       const blink = (now % 3600) < 130 && ex !== 'happy';
       const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2) * pz.tail);
-      const x = pos === 'left' ? S * 0.6 : w - S * 0.6;
       const dark = '#23222b';
       const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin';
 
       // The animal is drawn on its own small canvas so it can be lit by your light and get a soft shadow.
-      const cw = Math.ceil(S * 1.7), ch = Math.ceil(S * 1.75);
+      const cw = Math.ceil(S * 1.7), ch = Math.ceil(S * 1.95);
+      const groundIn = ch + 2 * u - 8 * u * sS; // where the feet are inside the little canvas
       if (!R.cv || R.cv.width !== cw || R.cv.height !== ch) { R.cv = makeScratch(cw, ch); R.cvg = R.cv.getContext('2d'); }
       const cg0 = g;
       g = R.cvg;
@@ -1246,13 +1427,32 @@
       g.globalCompositeOperation = 'source-over';
       g.clearRect(0, 0, cw, ch);
       g.save();
-      g.translate(cw / 2, ch + 2 * u + rise * u);
-      g.scale(u, u);
-      g.translate(0, bob - lift);
+      g.translate(cw / 2, groundIn + rise * u * (1 - sS));
+      g.scale(u * (1 - 0.2 * sS), u * (1 - 0.2 * sS));
+      const legL = 44 * sS;
+      g.translate(0, -legL + bob - lift);
       g.rotate(tilt);
       g.scale(pz.sx, pz.sy);
       g.lineCap = 'round'; g.lineJoin = 'round';
 
+      // legs: when it stands, you see them (and they walk)
+      if (sS > 0.03) {
+        const swing = stage.moving ? Math.sin(stage.ph) * 0.55 : 0;
+        const LEG = { cat: ['#f4a259', '#fff0dc', 11, 6], dog: ['#c98d5c', '#f5dfc3', 11, 6], bunny: ['#f6f1ee', '#ffffff', 15, 6], panda: ['#26262b', '#26262b', 12, 6.5], owl: ['#f2a33a', '#f2a33a', 11, 3.5],
+          fox: ['#ee7b30', '#3a2418', 11, 6], penguin: ['#f2a33a', '#f2a33a', 14, 4], lion: ['#f2b96b', '#ffe9c6', 12, 6], monkey: ['#8d5b3d', '#f1cfa6', 12, 6], frog: ['#6cc24a', '#d9f5b8', 16, 5], unicorn: ['#fbeaff', '#ffd54a', 10, 5.5], robot: ['#5d6b7c', '#b4bfcc', 14, 5] }[kind];
+        for (const sg of [-1, 1]) {
+          g.save();
+          g.translate(sg * 14, 4); g.rotate(sg * swing);
+          const len = legL + 4;
+          if (isRobot) { rrect(g, -6, 0, 12, len - 6, 5, LEG[0]); ell(g, 0, len * 0.55, 6.5, 6.5, '#8a96a6'); rrect(g, -LEG[2] / 2 - 2, len - 10, LEG[2] + 4, 9, 4, LEG[1]); }
+          else {
+            rrect(g, -6.5, 0, 13, len, 6.5, LEG[0]);
+            if (isFrog) { ell(g, sg * 5, len - 3, LEG[2], LEG[3], LEG[0]); for (const dx of [-8, 0, 8]) ell(g, sg * 5 + dx, len - 1, 3.4, 3.4, LEG[1]); }
+            else ell(g, 0, len - 2, LEG[2], LEG[3], LEG[1]);
+          }
+          g.restore();
+        }
+      }
       // tails and things behind the body
       if (kind === 'cat' || kind === 'dog' || kind === 'fox' || kind === 'lion' || kind === 'monkey') {
         g.save(); g.translate(28, -18); g.rotate(-0.5 + wag * (kind === 'monkey' ? 0.2 : 0.35));
@@ -1474,6 +1674,20 @@
       g.restore(); // the head
       g.restore(); // the whole animal
 
+      // a speech bubble: ? when it looks for you, ! when you stand up, 👋 when you wave, ❤ when you are back, ♪ when it dances
+      if (stage.bubble) {
+        g.save();
+        g.translate(cw / 2 + 30 * u, groundIn - (legL + 128) * u * (1 - 0.2 * sS));
+        const bu = u * 1.5, bwid = 26 * bu, bhgt = 20 * bu;
+        g.fillStyle = 'rgba(255,255,255,0.96)'; g.strokeStyle = 'rgba(0,0,0,0.2)'; g.lineWidth = Math.max(1, u * 0.6);
+        g.beginPath(); if (g.roundRect) g.roundRect(-bwid / 2, -bhgt, bwid, bhgt, 10 * bu * 0.6); else g.rect(-bwid / 2, -bhgt, bwid, bhgt); g.fill(); g.stroke();
+        g.beginPath(); g.moveTo(-6 * bu, 0); g.lineTo(-12 * bu, 8 * bu); g.lineTo(2 * bu, 0); g.closePath(); g.fill();
+        g.fillStyle = '#23222b'; g.font = `700 ${Math.round(14 * bu)}px system-ui, "Segoe UI Emoji", sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.translate(0, Math.sin(now / 220) * u * 1.2);
+        g.fillText(stage.bubble, 0, -bhgt / 2 + 1);
+        g.restore();
+      }
+
       // lit by your light: the colour of the lamp tints the animal a little, brighter on top
       const L = o.lightRgb;
       if (L) {
@@ -1487,7 +1701,8 @@
       // onto the picture, with a soft shadow
       cg0.save();
       cg0.shadowColor = 'rgba(0,0,0,0.38)'; cg0.shadowBlur = Math.max(4, h * 0.02); cg0.shadowOffsetY = h * 0.006;
-      cg0.drawImage(R.cv, x - cw / 2 + shift * S, h - ch + 2 * u);
+      const gAbs = (h + 4 * u) + ((h - 0.012 * h) - (h + 4 * u)) * sS; // the feet: below the picture when peeking, on the floor when standing
+      cg0.drawImage(R.cv, w * stage.x - cw / 2, gAbs - (ch + 2 * u - 8 * u * sS));
       cg0.restore();
     }
 
@@ -1547,7 +1762,12 @@
 
     R.render = function render(g, src, w, h, cfgIn, now, audio, opts = {}) {
       const cfg = cfgIn;
-      drawFiltered(R, g, src, w, h, cfg.filter, now);
+      // HD enhance first: everything else (filters, lights, characters) is drawn on the better picture
+      const darkRaw = measureDark(src, w, h, now);
+      const enhK = Math.max(cfg.enhance || 0, cfg.on ? 0.3 : 0); // lights always get a little sharpening, so the glow never makes the picture look soft
+      const enhanced = enhK > 0 ? (R.enh || (R.enh = createEnhancer())).apply(src, w, h, enhK, darkRaw) : null;
+      const base = enhanced || src;
+      drawFiltered(R, g, base, w, h, cfg.filter, now);
       if (cfg.on) {
         // restart the lamp's drop each time Lights is switched on or "Slow drop" is picked
         const key = cfg.lampAnim + '|' + cfg.fixture + '|' + (cfg.on ? 1 : 0);
@@ -1561,7 +1781,7 @@
         const party = follow && !tr.present && cfg.awayDance;
         if (follow) {
           const tx = tr.present ? tr.x : 0.5, ty = tr.present ? clamp(tr.y, 0.28, 0.62) : 0.46;
-          R.followX = lerp(R.followX, tx, 0.14); R.followY = lerp(R.followY, ty, 0.14);
+          R.followX = lerp(R.followX, tx, 0.3); R.followY = lerp(R.followY, ty, 0.22);
           const ev = Math.max(tr.riseAt, tr.enterAt);
           if (ev > (R.evSeen || -1e9)) { R.evSeen = ev; R.evAt = now; R.burstAt = now; } // a burst of light when you stand up or come back
         } else { R.followX = lerp(R.followX, 0.5, 0.2); R.followY = lerp(R.followY, 0.46, 0.2); }
@@ -1569,14 +1789,15 @@
         const pulseK = clamp(1 - (now - (R.evAt || -1e9)) / 1500);
         if (party) { e.corners = true; e.pattern = 'rainbow'; } // nobody there: the lights throw a party
 
-        const I = cfg.intensity * e.dim * (1 + 0.45 * pulseK);
-        const base = cfg.lampPos === 'left' ? 0.22 : cfg.lampPos === 'right' ? 0.78 : 0.5;
-        const lampPos = { cx: follow ? clamp(w * (base + (fx - 0.5) * 0.9), w * 0.1, w * 0.9) : w * base };
+        const I = cfg.intensity * e.dim * (1 + 0.45 * pulseK) * (0.78 + 0.22 * clamp(darkRaw * 2)); // a little softer in a bright room, full strength in a dark one
+        const base = cfg.lampX != null ? cfg.lampX : cfg.lampPos === 'left' ? 0.22 : cfg.lampPos === 'right' ? 0.78 : 0.5;
+        const lsz = cfg.lampSize || 1, hang = h * (cfg.lampHang || 0);
+        const lampPos = { cx: follow ? clamp(w * (0.5 + (fx - 0.5) * 1.3), w * 0.03, w * 0.97) : w * base }; // follows you all the way to the edges
         const ls = lampState(cfg, h, now, e, audio);
         if (party) { ls.angle += 0.2 * Math.sin(t * 2.7); ls.dy += h * 0.012 * Math.sin(t * 5.4); }
         const focus = e.focus * ls.focusRamp;
-        const dark = measureDark(g, w, h, now);          // measured on the plain picture, before any lifting
-        const lifted = cfg.studio !== false ? studioLift(g, w, h, dark) : 0;
+        const dark = darkRaw;                             // measured on the plain camera picture
+        const lifted = cfg.studio !== false && !enhanced ? studioLift(g, w, h, dark) : (enhanced ? clamp(dark) * enhK : 0);
         const faceX = w * fx, faceY = h * fy;
         // The lamp (any hanging light) lights your face; with no lamp there is still a soft light on you.
         relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp, follow ? faceX : w / 2 + ls.angle * w * 0.5, follow ? faceY : h * 0.48, dark * (1 - 0.5 * lifted));
@@ -1594,7 +1815,7 @@
         if (e.corners) drawCorners(g, w, h, e.pattern, e.rgb, I, now, e);
         g.globalCompositeOperation = 'screen';
         const fixture = cfg.fixture || 'lamp';
-        const drop = h * (FIX_OFF[fixture] || 0.26);
+        const drop = (h * (FIX_OFF[fixture] || 0.26) + hang) * lsz;
         const bulbY = drop + ls.dy;
         const sway = ls.angle * 1.2;
         const bx = lampPos.cx + Math.sin(ls.angle) * drop;
@@ -1612,13 +1833,17 @@
 
         if (R.mood && MOOD[R.mood] && MOOD[R.mood].burst && R.burstAt >= 0) drawBurst(g, w, h, now);
         else if (follow && pulseK > 0.01) drawBurst(g, w, h, now);
-        const body = { cx: lampPos.cx, rgb: e.rgb, bright: ls.bright * clamp(0.55 + I), angle: ls.angle, dy: ls.dy, now };
+        const body = { cx: lampPos.cx, rgb: e.rgb, bright: ls.bright * clamp(0.55 + I), angle: ls.angle, dy: ls.dy, now, hang };
+        g.save(); // the lamp can be made bigger or smaller: it grows from the point on the ceiling where it hangs
+        g.translate(lampPos.cx, 0); g.scale(lsz, lsz); g.translate(-lampPos.cx, 0);
         if (cfg.lamp && fixture !== 'lamp') drawFixtureBody(g, w, h, fixture, { ...body, aim: follow ? [faceX, faceY] : null });
         else if (cfg.lamp) drawLamp(g, w, h, body);
+        g.restore();
         if (cfg.character !== 'none') {
           const ck = cfg.character + '|' + cfg.charPos;
           if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; R.cAct = null; }
-          drawCharacter(g, w, h, cfg.character, cfg.charPos, now, audio, cfg, tr, { charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright) });
+          const stg = stageUpdate(cfg, tr, audio, now, cfg.charPos, h * 0.4, w);
+          drawCharacter(g, w, h, cfg.character, cfg.charPos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright) });
         } else R.charKey = '';
       }
       if (opts.preview) {
@@ -1665,40 +1890,47 @@
     g.beginPath(); g.arc(cx - w * 0.04, cy + h * 0.01 + bob, h * 0.014, 0, TAU); g.arc(cx + w * 0.04, cy + h * 0.01 + bob, h * 0.014, 0, TAU); g.fill();
     g.strokeStyle = '#2b2b33'; g.lineWidth = Math.max(1.5, h * 0.008); g.lineCap = 'round';
     g.beginPath(); g.arc(cx, cy + h * 0.055 + bob, w * 0.04, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
+    if (p.wave) { // a raised hand, waving
+      const sw = Math.sin(p.wave / 90) * w * 0.03;
+      g.fillStyle = '#6b7aa8'; g.save(); g.translate(cx + w * 0.22, cy + h * 0.28); g.rotate(-0.25); g.fillRect(-w * 0.03, -h * 0.3, w * 0.06, h * 0.32); g.restore();
+      g.fillStyle = '#d9b99b'; g.beginPath(); g.ellipse(cx + w * 0.2 + sw, cy - h * 0.04, w * 0.04, h * 0.065, 0, 0, TAU); g.fill();
+    }
   }
 
-  // A scripted "you" for the preview: you move left, right, stand up, leave and come back (18 s, then again).
-  // Returns the person's position for drawSample and a tracker answer shaped like the real one.
-  const CYCLE = 18000;
+  // A scripted "you" for the preview: you wave hi, talk, move left and right, stand up, leave and come back
+  // (24 s, then again). Returns the person for drawSample and a tracker answer shaped like the real one.
+  const CYCLE = 24000;
   function simulate(now) {
     const ms = ((now % CYCLE) + CYCLE) % CYCLE, c0 = now - ms;
     const where = (m) => { // x, y, visible at m ms into the cycle
       const ease = (a, b, k) => lerp(a, b, smooth(k));
-      if (m < 3000) return [0.5, 0.45, true];
-      if (m < 4500) return [ease(0.5, 0.2, (m - 3000) / 1500), 0.45, true];
-      if (m < 6000) return [0.2, 0.45, true];
-      if (m < 8000) return [ease(0.2, 0.8, (m - 6000) / 2000), 0.45, true];
-      if (m < 9000) return [0.8, 0.45, true];
-      if (m < 10500) return [ease(0.8, 0.5, (m - 9000) / 1500), 0.45, true];
-      if (m < 11500) return [0.5, 0.45, true];
-      if (m < 12300) return [0.5, ease(0.45, 0.2, (m - 11500) / 800), true];   // standing up
-      if (m < 13300) return [0.5, ease(0.2, 0.45, (m - 12300) / 1000), true];
-      if (m < 13900) return [ease(0.5, 0.95, (m - 13300) / 600), 0.45, true];  // walking out to the right
-      if (m < 17000) return [1.2, 0.45, false];
-      return [ease(1.0, 0.5, (m - 17000) / 1000), 0.45, true];                  // coming back
+      if (m < 6000) return [0.5, 0.45, true];                                   // hello (wave), then talking
+      if (m < 7500) return [ease(0.5, 0.18, (m - 6000) / 1500), 0.45, true];   // to the far left
+      if (m < 8500) return [0.18, 0.45, true];
+      if (m < 11000) return [ease(0.18, 0.84, (m - 8500) / 2500), 0.45, true];  // all the way to the right
+      if (m < 12000) return [0.84, 0.45, true];
+      if (m < 13500) return [ease(0.84, 0.5, (m - 12000) / 1500), 0.45, true];
+      if (m < 14000) return [0.5, 0.45, true];
+      if (m < 14800) return [0.5, ease(0.45, 0.2, (m - 14000) / 800), true];   // standing up
+      if (m < 15800) return [0.5, ease(0.2, 0.45, (m - 14800) / 1000), true];
+      if (m < 16400) return [ease(0.5, 0.97, (m - 15800) / 600), 0.45, true];  // walking out to the right
+      if (m < 22000) return [1.2, 0.45, false];                                 // gone
+      return [ease(1.0, 0.5, (m - 22000) / 1200), 0.45, true];                  // coming back
     };
     const [x, y, visible] = where(ms), [x0, y0] = where(Math.max(0, ms - 120));
     const at = (o) => (ms >= o ? c0 + o : c0 - CYCLE + o);
-    const energy = (ms > 3000 && ms < 11500) || (ms > 13300 && ms < 14000) ? 0.75 : 0.1;
+    const moving = (ms > 6000 && ms < 14000) || (ms > 15800 && ms < 16600);
+    const waving = ms > 2000 && ms < 3600, talking = ms > 3600 && ms < 6000;
     return {
-      person: { dx: clamp(x, -0.3, 1.1) - 0.5, dy: y - 0.45, visible },
-      track: { present: visible, x: clamp(x, 0, 1), y, energy, side: clamp((x - 0.5) * 2, -1, 1), rise: clamp((0.4 - y) / 0.2), away: visible ? 0 : 1, vx: (x - x0) / 0.12, vy: (y - y0) / 0.12,
-        enterAt: at(17000), exitAt: at(13900), exitSide: 1, riseAt: at(11800), live: true },
+      person: { dx: clamp(x, -0.3, 1.1) - 0.5, dy: y - 0.45, visible, wave: waving ? ms : 0 },
+      voice: talking ? 0.4 + 0.3 * Math.abs(Math.sin(ms / 170)) : 0,
+      track: { present: visible, x: clamp(x, 0, 1), y, energy: moving || waving ? 0.75 : 0.1, side: clamp((x - 0.5) * 2, -1, 1), rise: clamp((0.4 - y) / 0.2), away: visible ? 0 : 1, vx: (x - x0) / 0.12, vy: (y - y0) / 0.12,
+        enterAt: at(22000), exitAt: at(16400), exitSide: 1, riseAt: at(14400), waveAt: at(2400), live: true },
     };
   }
 
   globalThis.MemeFx = Object.freeze({
     COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
-    sanitize, lockedParts, createRenderer, drawSample, simulate, ACTIONS,
+    sanitize, lockedParts, createRenderer, drawSample, simulate, ACTIONS, FIX_OFF: { lamp: 0.175, discoball: 0.14, lantern: 0.13, chandelier: 0.13, moon: 0.12, star: 0.11, fairy: 0.06, spotlight: 0.07 },
   });
 })();

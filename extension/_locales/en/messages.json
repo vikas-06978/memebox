@@ -1344,5 +1344,23 @@
   },
   "mu_del": {
     "message": "Remove"
+  },
+  "fx_drag": {
+    "message": "Drag in the preview to hang the lamp exactly where you want it."
+  },
+  "fx_lampsize": {
+    "message": "Lamp size"
+  },
+  "fx_lampreset": {
+    "message": "Reset"
+  },
+  "fx_hd": {
+    "message": "✨ HD enhance (sharper, clearer, smoother skin)"
+  },
+  "fx_hd_tip": {
+    "message": "Cleans grain, smooths skin but keeps eyes and hair sharp, adds clarity and natural colour, and lifts a dark room. Runs on your graphics card."
+  },
+  "fx_hd_amt": {
+    "message": "HD enhance strength"
   }
 }

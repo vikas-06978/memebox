@@ -21,6 +21,10 @@ await page.evaluate((only) => {
   const sample = lit;
   const dim = document.createElement('canvas'); dim.width = W; dim.height = H; // the same picture in a dark room
   { const dg = dim.getContext('2d'); dg.drawImage(sample, 0, 0); dg.fillStyle = 'rgba(0,0,0,0.82)'; dg.fillRect(0, 0, W, H); }
+  // a soft, grainy, slightly dim camera picture (what a cheap webcam gives), to see what HD enhance does
+  const cheap = document.createElement('canvas'); cheap.width = W; cheap.height = H;
+  { const cg = cheap.getContext('2d'); cg.filter = 'blur(1.3px) brightness(0.8) saturate(0.8)'; cg.drawImage(lit, 0, 0); cg.filter = 'none';
+    const id = cg.getImageData(0, 0, W, H); for (let i = 0; i < id.data.length; i += 4) { const n = (Math.random() - 0.5) * 34; id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n; } cg.putImageData(id, 0, 0); }
   const add = (title, tiles) => rows.push({ title, tiles });
   add('dark room: plain, lamp, disco ball, lantern, moon, no lamp (the light must show on the face)', [
     { label: 'plain dark room', cfg: { ...base, on: false }, dark: true },
@@ -36,12 +40,18 @@ await page.evaluate((only) => {
       { label: kind + ': dance (2)', cfg: { ...base, lamp: false, character: kind, charPos: 'left' }, at: 2500, opts: { charAct: 'dance', charT: 0.62 } }];
     add('animal ' + kind + ': its own things, then its dance', tiles);
   }
-  add('follow me: lamp and cat go with you (centre, left, right, standing up, gone, back)', [1500, 5200, 7500, 12000, 15500, 17600].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, character: 'cat', charPos: 'left' }, sim: ms })));
-  add('follow me: disco ball and frog', [1500, 5200, 7500, 12000, 15500, 17600].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, fixture: 'discoball', character: 'frog', charPos: 'right' }, sim: ms })));
+  add('follow me: lamp and cat go with you (centre, left, right, standing up, gone, back)', [1200, 3000, 5000, 7200, 10500, 14600, 18000, 21000, 23000].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, character: 'cat', charPos: 'left' }, sim: ms })));
+  add('follow me: disco ball and frog', [1200, 3000, 5000, 7200, 10500, 14600, 18000, 21000, 23000].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, fixture: 'discoball', character: 'frog', charPos: 'right' }, sim: ms })));
   const spec = [0.8, 0.9, 0.75, 0.6, 0.55, 0.5, 0.4, 0.45, 0.35, 0.3, 0.3, 0.25, 0.2, 0.2, 0.15, 0.1];
   const loud = { level: 0.8, bass: 0.85, mid: 0.5, high: 0.4, spec, beat: 1, mood: '', tune: 'club' };
   add('music reactive (sync on, loud music with a beat): laser, party, club, equalizer, disco, fire, aurora', ['laser', 'party', 'club', 'equalizer', 'disco', 'fire', 'aurora'].map((p) => ({ label: p, cfg: { ...base, sync: true, corners: true, pattern: p, lamp: false }, at: 2500, audio: loud })));
   add('pattern Auto follows the tune: club, disco, bass, desi, suspense, jazz', ['club', 'disco', 'bass', 'desi', 'suspense', 'jazz'].map((tn) => ({ label: 'auto + ' + tn, cfg: { ...base, sync: true, pattern: 'auto', lamp: false }, at: 2500, audio: { ...loud, tune: tn } })));
+  add('camera quality: a cheap webcam picture, then HD enhance 40 %, 70 %, 100 %, and in a dark room', [
+    { label: 'cheap webcam (plain)', cfg: { ...base, on: false }, cheap: true },
+    { label: 'HD enhance 40%', cfg: { ...base, on: false, enhance: 0.4 }, cheap: true, at: 1500 },
+    { label: 'HD enhance 70%', cfg: { ...base, on: false, enhance: 0.7 }, cheap: true, at: 1500 },
+    { label: 'HD enhance 100%', cfg: { ...base, on: false, enhance: 1 }, cheap: true, at: 1500 },
+    { label: 'dark room + HD enhance 70%', cfg: { ...base, on: false, enhance: 0.7 }, dark: true, cheap: true, at: 2500 }]);
   add('lamp drop (0.4s, 1.2s, 2.0s, 2.8s, 3.3s, 5s)', [0.4, 1.2, 2.0, 2.8, 3.3, 5].map((s) => ({ label: s + 's', cfg: { ...base, lampAnim: 'drop' }, at: s * 1000, anim: true })));
   add('free: still lamp (warm, white, blue) + swing + flicker + no lamp', [
     { label: 'warm', cfg: { ...base } }, { label: 'white', cfg: { ...base, color: 'white' } }, { label: 'blue', cfg: { ...base, color: 'blue' } },
@@ -63,15 +73,15 @@ await page.evaluate((only) => {
       const wrap = document.createElement('div'); const c = document.createElement('canvas'); c.width = W; c.height = H;
       const g = c.getContext('2d'); const r = FX.createRenderer();
       const cfg = FX.sanitize(t.cfg);
-      const sample = t.dark ? dim : lit;
+      const sample = t.dark ? (t.cheap ? (() => { const d2 = document.createElement('canvas'); d2.width = W; d2.height = H; const x2 = d2.getContext('2d'); x2.drawImage(cheap, 0, 0); x2.fillStyle = 'rgba(0,0,0,0.78)'; x2.fillRect(0, 0, W, H); return d2; })() : dim) : (t.cheap ? cheap : lit);
       const start = 100000;
       if (t.sim != null) {
-        const c0 = 18000 * 40; // a whole number of cycles later, so the history before the first frame is "previous cycle"
+        const c0 = 24000 * 40; // a whole number of cycles later, so the history before the first frame is "previous cycle"
         const frame = document.createElement('canvas'); frame.width = W; frame.height = H;
-        for (let ms = Math.max(0, t.sim - 2500); ms <= t.sim; ms += 33) {
+        for (let ms = Math.max(0, t.sim - 6000); ms <= t.sim; ms += 50) {
           const sm = FX.simulate(c0 + ms);
           FX.drawSample(frame.getContext('2d'), W, H, ms, sm.person);
-          r.render(g, frame, W, H, cfg, c0 + ms, null, { track: sm.track });
+          r.render(g, frame, W, H, cfg, c0 + ms, { level: 0, voice: sm.voice }, { track: sm.track });
         }
       } else if (t.anim) { for (let ms = 0; ms <= t.at; ms += 33) r.render(g, sample, W, H, cfg, start + ms, null, t.opts || {}); }
       else { const steps = t.at ? Math.round(t.at / 33) : 3; for (let i = 0; i <= steps; i++) r.render(g, sample, W, H, cfg, start + i * 33, t.audio || null, t.opts || {}); }

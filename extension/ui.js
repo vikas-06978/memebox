@@ -537,6 +537,8 @@
     .fx-prev { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--p-line); background: #23253a; display: block; }
     .fx-body.fx-off .fx-prev { opacity: .75; }
     .fx-main { font-size: 14px; }
+    .fx-prev.fx-drag { cursor: grab; touch-action: none; }
+    .fx-prev.fx-drag:active { cursor: grabbing; }
     .fx-pair { display: inline-flex; gap: 2px; }
     .chip.del { padding-left: 8px; padding-right: 8px; opacity: .7; }
     .chip.preset { font-weight: 800; }
