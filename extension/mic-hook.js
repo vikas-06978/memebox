@@ -94,7 +94,13 @@
       case 'tab-audio-volume': setTabVolume(d.value); break;
       case 'voice': setVoice(String(d.value), d.url); break;
       case 'cam-captions': camCaptions = d.value === true; break;
-      case 'face-result': faceBusy = 0; faceMl = { at: performance.now(), face: d.face && Number.isFinite(d.face.x) && Number.isFinite(d.face.y) ? { x: d.face.x, y: d.face.y, w: Number(d.face.w) || 0, h: Number(d.face.h) || 0 } : null }; break;
+      case 'face-result': { // where the face is, how it looks (blendshapes 0..1), and raised hands (every other result)
+        faceBusy = 0;
+        const n = performance.now(), prev = faceMl, num = (v) => (Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0);
+        const bs = d.bs && typeof d.bs === 'object' ? Object.fromEntries(['blinkL', 'blinkR', 'jaw', 'smile', 'tongue', 'brow', 'pucker', 'wide'].map((k) => [k, num(d.bs[k])])) : null;
+        const hands = Array.isArray(d.hands) ? d.hands.slice(0, 2).map((h) => ({ x: num(h.x), y: num(h.y), s: num(h.s), n: Number(h.n) || 0, open: h.open === true, thumbUp: h.thumbUp === true, peace: h.peace === true })) : null;
+        faceMl = { at: n, face: d.face && Number.isFinite(d.face.x) && Number.isFinite(d.face.y) ? { x: d.face.x, y: d.face.y, w: Number(d.face.w) || 0, h: Number(d.face.h) || 0 } : null, bs, hands: hands || (prev ? prev.hands : null), handsAt: hands ? n : (prev ? prev.handsAt : -1e9) };
+        break; }
       case 'fx-config': fxCfg = globalThis.MemeFx ? globalThis.MemeFx.sanitize(d.value) : null; break;
     }
   });
@@ -847,13 +853,13 @@
 
   // Face finding for "Follow me": a small copy of the frame goes to the bridge (same page, never leaves the computer),
   // which runs a small face model and sends the face position back. One frame at a time, about 10 a second.
-  let faceMl = null, faceBusy = 0, faceLast = 0;
+  let faceMl = null, faceBusy = 0, faceLast = 0, faceN = 0;
   function sendFace(src, w, h, now) {
-    if (now - faceLast < 90 || (faceBusy && now - faceBusy < 1000) || typeof createImageBitmap !== 'function') return;
-    faceLast = now; faceBusy = now;
-    const fw = 256, fh = Math.max(16, Math.round(256 * h / w));
+    if (now - faceLast < 70 || (faceBusy && now - faceBusy < 1000) || typeof createImageBitmap !== 'function') return;
+    faceLast = now; faceBusy = now; faceN++;
+    const fw = 384, fh = Math.max(16, Math.round(256 * h / w));
     createImageBitmap(src, { resizeWidth: fw, resizeHeight: fh, resizeQuality: 'low' })
-      .then((bm) => { try { post({ type: 'face-frame', bitmap: bm, w: fw, h: fh }, [bm]); } catch { faceBusy = 0; } })
+      .then((bm) => { try { post({ type: 'face-frame', bitmap: bm, w: fw, h: fh, hands: faceN % 2 === 0 }, [bm]); } catch { faceBusy = 0; } })
       .catch(() => { faceBusy = 0; });
   }
 

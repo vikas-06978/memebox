@@ -1131,7 +1131,7 @@ void main(){
     // That is enough to know: left / right, standing up, moving a lot, and out of the picture. No model, no download.
     // Skin, but not a bright orange or yellow wall: skin is paler (less saturated) and has some blue in it.
     const skinPx = (r, g2, b, Y, cb, cr) => Y > 35 && cb > 77 && cb < 127 && cr > 135 && cr < 173 && r > g2 && g2 > b * 0.8 && b > r * 0.38 && (r - b) < r * 0.62;
-    const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, waveAt: -1e9, live: false });
+    const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, waveAt: -1e9, thumbAt: -1e9, peaceAt: -1e9, kissAt: -1e9, tongueAt: -1e9, tongue: false, bs: null, live: false });
 
     function trackFrame(src, now) {
       const T = R.tr || (R.tr = { ...IDLE_TRACK, live: true, at: -1e9, prev: null, lastSeen: now, wasPresent: true, px: 0.5, py: 0.45, calm: 0 });
@@ -1165,7 +1165,8 @@ void main(){
             if (Math.abs(d) > 1.2) { const nd = Math.sign(d); if (dir && nd !== dir) turns++; dir = nd; last = q.x; }
             lo = Math.min(lo, q.x); hi = Math.max(hi, q.x);
           }
-          if (turns >= 4 && hi - lo > 5) { T.waveAt = now; T.mh = []; }
+          // with the hand model running, a wave needs a raised open hand; without it, the motion alone decides
+          if (turns >= 4 && hi - lo > 5 && (!T.handsOk || now - (T.openAt || -1e9) < 1500)) { T.waveAt = now; T.mh = []; }
         }
         // refine: look again only near the first centre, so a wooden shelf far away does not pull it
         let cx = sk ? sx / sk : 32, cy = sk ? sy / sk : 18;
@@ -1186,6 +1187,38 @@ void main(){
         const mlOk = !!R.ml && now - R.ml.at < 1800;
         T.ml = mlOk;
         const faceNow = mlOk && R.ml.face;
+        if (mlOk && R.ml.at !== T.mlSeen) { // a new answer from the models (about 10 a second)
+          T.mlSeen = R.ml.at;
+          const bs = R.ml.bs;
+          if (bs && faceNow) {
+            const B = T.bs || (T.bs = { blinkL: 0, blinkR: 0, jaw: 0, smile: 0, tongue: 0, brow: 0, pucker: 0, wide: 0 });
+            for (const k of Object.keys(B)) B[k] = lerp(B[k], bs[k] || 0, k.startsWith('blink') ? 0.9 : 0.6);
+            T.tongueN = bs.tongue > 0.5 ? (T.tongueN || 0) + 1 : 0;
+            T.puckerN = bs.pucker > 0.6 ? (T.puckerN || 0) + 1 : 0;
+            const tongueNow = T.tongueN >= 2;
+            if (tongueNow && !T.tongue) T.tongueAt = now;
+            T.tongue = tongueNow;
+            if (T.puckerN === 3 && now - T.kissAt > 3000) T.kissAt = now; // a kiss: lips pushed forward for a moment
+          } else { T.bs = null; T.tongue = false; T.tongueN = 0; T.puckerN = 0; }
+          if (R.ml.hands && R.ml.handsAt !== T.handsSeen) { // raised hands (the hand model answers every other time)
+            T.handsSeen = R.ml.handsAt;
+            const hs = R.ml.hands, open = hs.find((h) => h.open);
+            if (open) {
+              T.openAt = now;
+              const hh = T.hh || (T.hh = []);
+              hh.push({ t: now, x: open.x });
+              while (hh.length && now - hh[0].t > 1800) hh.shift();
+              let turns = 0, dir = 0, last = hh[0].x, lo = last, hi = last;
+              for (const q of hh) { const dx = q.x - last; if (Math.abs(dx) > 0.02) { const nd = Math.sign(dx); if (dir && nd !== dir) turns++; dir = nd; last = q.x; } lo = Math.min(lo, q.x); hi = Math.max(hi, q.x); }
+              if (turns >= 2 && hi - lo > 0.07 && now - (T.waveAt || -1e9) > 3500) { T.waveAt = now; T.hh = []; }
+            }
+            T.thumbN = hs.some((h) => h.thumbUp) ? (T.thumbN || 0) + 1 : 0;
+            T.peaceN = hs.some((h) => h.peace) ? (T.peaceN || 0) + 1 : 0;
+            if (T.thumbN === 2 && now - T.thumbAt > 3000) T.thumbAt = now;
+            if (T.peaceN === 2 && now - T.peaceAt > 3000) T.peaceAt = now;
+          }
+        }
+        T.handsOk = mlOk && now - (R.ml.handsAt || -1e9) < 2500;
         const wallLike = !mlOk && skinFrac > 0.28; // a skin-coloured wall fills the picture: the colour says nothing about where you are
         const seen = mlOk ? !!faceNow : wallLike || skinFrac > 0.012 || energy > 0.05;
         if (seen) T.lastSeen = now;
@@ -1231,7 +1264,7 @@ void main(){
       robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
     };
 
-    const ACT_LEN = { cry: 30, wipe: 2, heartbreak: 3.2, heartbeat: 3.5, miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
+    const ACT_LEN = { raspberry: 30, cry: 30, wipe: 2, heartbreak: 3.2, heartbeat: 3.5, miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
     const pulse = (u, a, b) => smooth((u - a) / Math.max(1e-3, (b - a))) * (1 - smooth((u - b) / Math.max(1e-3, (1 - b))));
     const bump = (u) => Math.sin(Math.PI * clamp(u)); // 0 -> 1 -> 0
 
@@ -1243,6 +1276,8 @@ void main(){
       switch (act) {
         // ---------- shared ----------
         case 'wave': p.armR = 2.2 + 0.5 * Math.sin(t * 9); p.ex = 'happy'; p.mouth = 0.5; p.lookX = 0; break;
+        case 'raspberry': // tongue out, like yours
+          p.tongue = 0.95 + 0.05 * Math.sin(t * 12); p.mouth = 0.3; p.ex = 'happy'; p.head = 0.06 * Math.sin(t * 9); p.lookX = 0; p.armL = p.armR = 0.4; break;
         case 'cry': // sobbing: eyes squeezed shut, mouth wide open, shoulders shaking
           p.ex = 'cry'; p.mouth = 0.85 + 0.1 * Math.sin(t * 9); p.head = 0.05 * Math.sin(t * 6); p.sy = 1 + 0.025 * Math.sin(t * 13); p.hop = Math.abs(Math.sin(t * 6.5)) * 1.6;
           p.armL = 0.45 + 0.1 * Math.sin(t * 6); p.armR = 0.45 - 0.1 * Math.sin(t * 6); p.lookX = 0; break;
@@ -1344,7 +1379,7 @@ void main(){
     // Normally it peeks from a bottom corner. With "Follow me" it comes out, walks, searches and welcomes you.
     function stageUpdate(cfg, tr, audio, now, pos, S, w) {
       const T = R.stg || (R.stg = { x: null, s: 0, dir: 1, ph: 0, mode: 'peek', tx: 0, until: 0, moving: false, bubble: '', bubbleUntil: 0, last: now,
-        crossAt: now + 18000, patrol: 0, patrolAt: 0, sawExit: -1e9, sawEnter: -1e9, sawRise: -1e9, sawWave: -1e9, home: null, homePos: null, tear: 0, welcomeAt: -1e9, wipeUntil: 0, cryAt: 0 });
+        crossAt: now + 18000, patrol: 0, patrolAt: 0, sawExit: -1e9, sawEnter: -1e9, sawRise: -1e9, sawWave: -1e9, sawThumb: -1e9, sawPeace: -1e9, sawKiss: -1e9, sawTongue: -1e9, home: null, homePos: null, tear: 0, welcomeAt: -1e9, wipeUntil: 0, cryAt: 0 });
       const dt = clamp((now - T.last) / 1000, 0, 0.1); T.last = now;
       const corner = pos === 'left' ? (S * 0.6) / w : 1 - (S * 0.6) / w;
       if (T.homePos !== pos) { T.homePos = pos; T.home = corner; if (T.x == null) T.x = corner; }
@@ -1357,6 +1392,10 @@ void main(){
         if (tr.enterAt > T.sawEnter) { T.sawEnter = tr.enterAt; welcome(); say('❤', 3000); }
         if (tr.riseAt > T.sawRise) { T.sawRise = tr.riseAt; if (T.mode !== 'search' && T.mode !== 'party') { T.mode = 'out'; T.until = now + 5200; say('!', 1800); } }
         if (tr.waveAt > T.sawWave) { T.sawWave = tr.waveAt; say('👋', 2400); } // it only waves when YOU wave
+        if (tr.thumbAt > T.sawThumb) { T.sawThumb = tr.thumbAt; say('👍', 2200); }
+        if (tr.peaceAt > T.sawPeace) { T.sawPeace = tr.peaceAt; say('✌️', 2200); }
+        if (tr.kissAt > T.sawKiss) { T.sawKiss = tr.kissAt; say('😘', 2400); }
+        if (tr.tongueAt > T.sawTongue) { T.sawTongue = tr.tongueAt; say('😛', 2000); }
         const beside = clamp(tr.x < 0.5 ? tr.x + 0.3 : tr.x - 0.3, 0.12, 0.88);
         if (T.mode === 'search') {
           const P = [0.5, 0.17, 0.83, 0.5, 0.3, 0.7];
@@ -1430,6 +1469,12 @@ void main(){
         if (st.mode === 'out' && A.name !== 'cheer' && A.name !== 'dance' && now - (R.cOutAt || 0) > 9000) { R.cOutAt = now; begin('cheer', 2.2); return A; }
         // "hi": you wave, it waves back
         if (tr.waveAt > (R.cSawWave || -1e9)) { R.cSawWave = tr.waveAt; begin('wave', 2.6); return A; }
+        // what your face and hands do, it does back: thumbs up -> it cheers, peace -> it jumps, a kiss -> its heart beats, tongue out -> tongue out
+        if (tr.thumbAt > (R.cSawThumb || -1e9)) { R.cSawThumb = tr.thumbAt; begin('cheer', 2.4); return A; }
+        if (tr.peaceAt > (R.cSawPeace || -1e9)) { R.cSawPeace = tr.peaceAt; begin('jump', 1.1); return A; }
+        if (tr.kissAt > (R.cSawKiss || -1e9)) { R.cSawKiss = tr.kissAt; begin('heartbeat', 3); return A; }
+        if (tr.tongue) { begin('raspberry', 30); return A; }
+        if (A.name === 'raspberry') { A.name = ''; A.next = now + 1200; }
         // you talk, it listens (ears up, nodding); when you stop, it answers
         const v = audio ? clamp(audio.voice || 0) : 0;
         const T = R.talk || (R.talk = { on: false, since: 0, last: 0, sawReply: -1e9, replyAt: -1e9 });
@@ -1499,6 +1544,12 @@ void main(){
         act = A.name; at = (now - A.start) / 1000; au = A.dur ? clamp(at / A.dur) : 0;
       }
       const pz = actPose(kind, act, at, au, t);
+      // your face, mirrored: when nothing else is going on it opens its mouth when you do, smiles when you smile, is amazed when you are
+      const bsv = (cfg.follow && tr && tr.live && tr.present && tr.bs) || o.mimic || null;
+      if (bsv && !act) {
+        if (!pz.mouth) pz.mouth = clamp(bsv.jaw * 0.9);
+        if (!pz.ex) { if (bsv.jaw > 0.5 && bsv.brow > 0.35) pz.ex = 'wow'; else if (bsv.smile > 0.55) pz.ex = 'happy'; }
+      }
       let ex = mood === 'excited' || mood === 'fun' ? 'happy' : mood === 'surprise' ? 'wow' : mood === 'sad' ? 'sad'
         : mood === 'suspense' ? 'wary' : mood === 'awkward' ? 'awk' : 'idle';
       if (pz.ex) ex = pz.ex;
@@ -1522,7 +1573,7 @@ void main(){
         shift = clamp((tr.x - 0.5) * (pos === 'left' ? 1 : -1) * 0.0, -0.3, 0.3);
       }
       if (stage.moving && sS > 0.5) { tilt += stage.dir * 0.06; if (lookX == null) lookX = stage.dir * 0.8; }
-      const blink = (now % 3600) < 130 && ex !== 'happy';
+      const blink = (now % 3600) < 130 && ex !== 'happy' && !(cfg.follow && tr && tr.live && tr.bs); // it blinks by itself, unless it is copying your blinks
       const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2) * pz.tail);
       const dark = '#23222b';
       const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin';
@@ -1705,19 +1756,20 @@ void main(){
       const look = (lookX != null ? lookX * 3.2 : 0) + (ex === 'awk' ? 3 * Math.sign(Math.sin(t * 0.8)) : 0);
       for (const s of [-1, 1]) {
         const cx = s * ed;
+        const closedE = blink || (bsv && (s > 0 ? bsv.blinkL : bsv.blinkR) > 0.55); // your blinks and winks, on the same side of the picture
         if (kind === 'panda') { g.save(); g.translate(cx, ey); g.rotate(s * 0.5); ell(g, 0, 0, 7.5, 10, P.dark); g.restore(); }
         if (kind === 'owl') ell(g, cx, ey, 12, 12, '#fffdf5');
         if (isFrog) ell(g, cx, ey, 11, 11, '#ffffff');
         if (isRobot) { // LED eyes: they change shape with the feeling
           const c = ex === 'sad' || ex === 'miss' || ex === 'cry' ? '#7aa8ff' : ex === 'love' ? '#ff6f9c' : ex === 'wary' ? '#ffb347' : ex === 'wow' ? '#ffffff' : '#5de1ff';
-          if (blink) rrect(g, cx - 8, ey - 1.5, 16, 3, 1.5, c);
+          if (closedE) rrect(g, cx - 8, ey - 1.5, 16, 3, 1.5, c);
           else if (ex === 'happy') { g.strokeStyle = c; g.lineWidth = 4; g.beginPath(); g.arc(cx, ey + 4, 7, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
           else rrect(g, cx - 8 + look, ey - (ex === 'wow' || ex === 'miss' ? 10 : ex === 'wary' ? 3 : 7), 16, ex === 'wow' || ex === 'miss' ? 20 : ex === 'wary' ? 6 : 14, 5, c);
           continue;
         }
         if (ex === 'cry') { g.strokeStyle = eyeInk; g.lineWidth = 3; g.beginPath(); g.moveTo(cx + s * 6, ey - 5); g.lineTo(cx - s * 4, ey); g.lineTo(cx + s * 6, ey + 5); g.stroke(); continue; }
         if (ex === 'love') { heart(g, cx + look, ey, 7.5 * (1 + 0.12 * Math.max(0, Math.sin(t * 7.5)) ** 4), '#ff3d6e'); ell(g, cx + look - 2.5, ey - 2.5, 1.6, 1.6, 'rgba(255,255,255,0.85)'); continue; }
-        if (blink) { g.strokeStyle = eyeInk; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 5, ey); g.lineTo(cx + 5, ey); g.stroke(); continue; }
+        if (closedE) { g.strokeStyle = eyeInk; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 5, ey); g.lineTo(cx + 5, ey); g.stroke(); continue; }
         if (ex === 'happy') { g.strokeStyle = eyeInk; g.lineWidth = 3; g.beginPath(); g.arc(cx, ey + 2, 5.5, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); continue; }
         const r = ex === 'wow' ? 8 : ex === 'miss' ? 8.6 : kind === 'owl' || isFrog ? 6.5 : 5.5;
         if (kind !== 'panda' && kind !== 'owl' && !isFrog) ell(g, cx, ey, r + 1.5, r + 2, '#ffffff');
@@ -1807,9 +1859,9 @@ void main(){
         }
       }
       // the tongue (frogs shoot theirs at the fly)
-      if (!isRobot && !(kind === 'owl' || isPeng)) {
+      if (!isRobot && (!(kind === 'owl' || isPeng) || pz.tongue > 0.5)) { // (a bird shows it only when copying yours)
         const tx = (kind === 'cat' && act === 'lick') ? 5 : 0;
-        drawTongue(g, kind, pz.tongue, tx, isFrog ? -46 : my + 4 + (open > 0.15 ? 4 : 0), pz.flyAt || null);
+        drawTongue(g, kind, pz.tongue, tx, isFrog ? -46 : (kind === 'owl' || isPeng) ? -41 : my + 4 + (open > 0.15 ? 4 : 0), pz.flyAt || null);
       }
       // cheeks
       if (!isRobot && (ex === 'happy' || ex === 'love' || ex === 'awk' || kind === 'bunny' || isPeng || kind === 'unicorn')) for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');
@@ -2000,7 +2052,7 @@ void main(){
           const ck = cfg.character + '|' + cpos;
           if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; R.cAct = null; }
           const stg = stageUpdate(cfg, tr, audio, now, cpos, h * 0.4, w);
-          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright) });
+          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic });
           if (opts.charAct === 'cry') drawTears(g, w, h, 0.7, now);
           else if (!opts.charAct && stg.tear > 0.01) drawTears(g, w, h, stg.tear, now);
         } else R.charKey = '';

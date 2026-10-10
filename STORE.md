@@ -77,7 +77,7 @@ MemeBox is a soundboard for browser video calls. It plays meme lines, sound effe
 Saves the user's lines, favourite shortcuts, volumes and settings, the button position, and the play count for a one-time feedback question. Stored on the device with chrome.storage.local. Uploaded clips are kept in the extension's IndexedDB. Nothing is synced or sent anywhere.
 
 **offscreen**
-Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG text-to-speech engine, compiled to WebAssembly, in a Web Worker. It turns meme text into audio. A service worker can't run it, and running it in the call page would slow the call down.
+Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG text-to-speech engine, compiled to WebAssembly, in a Web Worker. It turns meme text into audio. It also runs the bundled face and hand models for the optional Follow me. A service worker can't run them, and running them in the call page would slow the call down.
 
 **tabCapture**
 Used only when the user opens the toolbar popup on a tab (for example a YouTube video) and clicks "Send this tab's sound to my call". The extension gets a stream ID for that tab (chrome.tabCapture.getMediaStreamId, with the user's call tab as the consumer). The call tab mixes that audio live into the outgoing microphone and plays it back to the user. Nothing is recorded, saved, downloaded or transmitted. It stops when the user presses Stop or closes either tab.
@@ -86,7 +86,7 @@ Used only when the user opens the toolbar popup on a tab (for example a YouTube 
 Only the 5 call websites MemeBox works on: meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com. There the extension:
 1. Wraps getUserMedia so the microphone the site receives is the real microphone mixed with the meme audio the user plays.
 2. Shows the floating 😂 button, panel and captions.
-3. Only if the user turns them on: applies the voice changer to the user's own microphone, draws meme captions, lights, filters and characters on the user's own camera, and (with "Follow me") looks at a small copy of the user's own camera picture and runs a small face-finding model bundled in the extension, on their computer only, to know where they are. Nothing is saved or sent.
+3. Only if the user turns them on: applies the voice changer to the user's own microphone, draws meme captions, lights, filters and characters on the user's own camera, and (with "Follow me") runs small bundled face and hand models on the user's own camera picture, on their computer only, to see where they are, a smile or a raised hand. Nobody is identified. Nothing is saved or sent.
 4. In the popup, checks whether the current tab is one of these sites, to say "reload this tab" after install or update.
 Audio and video are processed only locally with Web Audio and Canvas. They are never recorded, stored or sent anywhere. No other sites are accessed.
 
