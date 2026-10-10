@@ -72,6 +72,9 @@
           text: String(cmd.text || '').slice(0, 300), mood: String(cmd.mood || '').slice(0, 20),
           ...(picture ? { picture, pictureType: String(cmd.pictureType || '') } : {}),
         }, picture ? [bytes, picture] : [bytes]);
+      } else if (cmd.type === 'music-bytes' && typeof cmd.b64 === 'string') {
+        const bytes = base64ToBuffer(cmd.b64);
+        toHook({ type: 'music-bytes', bytes, mid: String(cmd.mid || '').slice(0, 40), volume: num(cmd.volume, 0.5) }, [bytes]);
       } else if (cmd.type === 'voice') {
         // The hook (page world) can't look up extension URLs itself.
         toHook({ type: 'voice', value: String(cmd.value), url: chrome.runtime.getURL('voice-worklet.js') });
@@ -108,5 +111,10 @@
     });
   } catch { /* orphaned */ }
 
-  globalThis.MemeBridge = { toRuntime, onUiMessage: null };
+  // Like toRuntime, but resolves with the service worker's answer (for "add a sound from the panel").
+  function ask(msg) {
+    try { return chrome.runtime.sendMessage(msg); } catch { return Promise.resolve(undefined); }
+  }
+
+  globalThis.MemeBridge = { toRuntime, ask, onUiMessage: null };
 })();

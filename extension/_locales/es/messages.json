@@ -813,7 +813,7 @@
     "message": "MemeBox Pro"
   },
   "op_pro_off": {
-    "message": "Pro está desactivado ahora, así que todas las funciones son gratis para todos."
+    "message": "Pro está desactivado en esta versión, así que todo está desbloqueado para todos y no hace falta clave."
   },
   "op_pro_active": {
     "message": "✅ MemeBox Pro está activo en este navegador."
@@ -846,7 +846,7 @@
     "message": "La clave $1 no se ha podido comprobar en mucho tiempo. Conéctate para que MemeBox la compruebe."
   },
   "op_license_pro": {
-    "message": "Clave $1: Pro, ilimitado."
+    "message": "Clave $1: Pro Max ilimitado. Todas las luces, personajes, filtros y melodías están desbloqueados."
   },
   "op_license_slots": {
     "message": "Clave $1: $2 memes con imagen extra."
@@ -1251,5 +1251,131 @@
   },
   "fx_anim_beat": {
     "message": "Al ritmo"
+  },
+  "op_license_pass": {
+    "message": "Clave $1: quedan $2 de pase."
+  },
+  "fx_follow": {
+    "message": "Seguirme (las luces y el animal se mueven conmigo)"
+  },
+  "fx_follow_tip": {
+    "message": "Usa la imagen de tu cámara solo en tu propio ordenador. No se guarda ni se envía nada. Funciona mejor con buena luz."
+  },
+  "fx_away": {
+    "message": "Fiesta cuando salgo de la imagen"
+  },
+  "fx_away_tip": {
+    "message": "El animal te busca, luego baila y las luces hacen fiesta. Te dan la bienvenida al volver."
+  },
+  "fx_presets": {
+    "message": "Looks rápidos"
+  },
+  "fx_pre_party": {
+    "message": "🎉 Fiesta"
+  },
+  "fx_pre_studio": {
+    "message": "😎 Estudio"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 Disco"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 Acogedor"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 Cine"
+  },
+  "fx_pre_live": {
+    "message": "🎤 En vivo"
+  },
+  "fx_studio": {
+    "message": "Iluminar mi cuarto oscuro automáticamente"
+  },
+  "fx_studio_tip": {
+    "message": "Si tu cuarto está oscuro, MemeBox aclara tu imagen para que se te vea bien, incluso sin lámpara."
+  },
+  "fx_darkprev": {
+    "message": "🌙 Vista previa en cuarto oscuro"
+  },
+  "fx_pat_auto": {
+    "message": "Seguir la música"
+  },
+  "fx_pat_party": {
+    "message": "Cabezas móviles"
+  },
+  "fx_pat_equalizer": {
+    "message": "Ecualizador"
+  },
+  "fx_pat_club": {
+    "message": "Club"
+  },
+  "as_btn": {
+    "message": "Añadir un sonido desde un archivo (audio o vídeo)"
+  },
+  "as_working": {
+    "message": "Añadiendo $1…"
+  },
+  "as_added": {
+    "message": "Añadido: $1"
+  },
+  "as_added_cut": {
+    "message": "Añadido: $1 (caben los primeros $2 segundos)"
+  },
+  "as_fail": {
+    "message": "No se pudo añadir $1"
+  },
+  "as_bad": {
+    "message": "$1 no es un archivo de sonido o vídeo, o es demasiado grande"
+  },
+  "mu_add": {
+    "message": "＋ Añadir mi música"
+  },
+  "mu_mine": {
+    "message": "Mi música"
+  },
+  "mu_join": {
+    "message": "Primero únete a una llamada y luego pon tu música"
+  },
+  "mu_big": {
+    "message": "El archivo supera 8 MB"
+  },
+  "mu_many": {
+    "message": "Máximo 12 pistas. Quita una primero."
+  },
+  "mu_del": {
+    "message": "Quitar"
+  },
+  "fx_drag": {
+    "message": "Arrastra en la vista previa para colgar la lámpara justo donde quieras."
+  },
+  "fx_lampsize": {
+    "message": "Tamaño de la lámpara"
+  },
+  "fx_lampreset": {
+    "message": "Restablecer"
+  },
+  "fx_hd": {
+    "message": "✨ Mejora HD (más nítido, claro y piel suave)"
+  },
+  "fx_hd_tip": {
+    "message": "Limpia el grano, suaviza la piel pero mantiene ojos y pelo nítidos, añade claridad y color natural y aclara un cuarto oscuro. Se ejecuta en tu tarjeta gráfica."
+  },
+  "fx_hd_amt": {
+    "message": "Intensidad de la mejora HD"
+  },
+  "st_title": {
+    "message": "Empieza aquí"
+  },
+  "st_1": {
+    "message": "1. Entra a tu llamada en el navegador y activa tu micro."
+  },
+  "st_2": {
+    "message": "2. Toca cualquier meme: todos en la llamada lo oyen."
+  },
+  "st_3": {
+    "message": "3. ¿Luces, lámpara o un animal en tu cámara? Abre Luces abajo."
+  },
+  "st_ok": {
+    "message": "Entendido"
   }
 }

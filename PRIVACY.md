@@ -39,6 +39,10 @@ Meme lines are turned into speech by eSpeak-NG. This engine is bundled inside th
 
 If you open a video in another tab (for example YouTube or Instagram) and click **Send this tab's sound into my call** in the MemeBox toolbar popup, MemeBox mixes that one tab's sound live into your call microphone. This happens only for the tab you chose, only after that click, and only until you press Stop or close the tab. The sound isn't recorded, saved or uploaded by MemeBox, and nothing is downloaded.
 
+## Lights & looks
+
+Lights & looks is optional and off until you switch it on. It draws lights, filters, characters and music onto your own camera picture and microphone inside your browser tab. With **Follow me** switched on, MemeBox also looks at a tiny copy of your camera picture (about 15 times a second) to know where you are: left, right, standing up, or out of the picture. This happens only on your computer. The picture is never saved, recorded or sent anywhere, and nothing is learned about who you are.
+
 ## Voice changer and camera captions
 
 The **voice changer** (Chipmunk, Deep, Robot, Echo, Radio) changes your live microphone sound inside your browser tab before the call website receives it. It is always off when a call page opens, and "Off" gives your plain voice back at once. Nothing is recorded or uploaded.

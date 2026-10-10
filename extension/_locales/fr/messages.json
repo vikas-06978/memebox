@@ -813,7 +813,7 @@
     "message": "MemeBox Pro"
   },
   "op_pro_off": {
-    "message": "Pro est désactivé pour l'instant, donc toutes les fonctions sont gratuites pour tout le monde."
+    "message": "Pro est désactivé dans cette version : tout est débloqué pour tout le monde, aucune clé n’est nécessaire."
   },
   "op_pro_active": {
     "message": "✅ MemeBox Pro est actif dans ce navigateur."
@@ -846,7 +846,7 @@
     "message": "La clé $1 n'a pas pu être vérifiée depuis longtemps. Connectez-vous pour que MemeBox la vérifie."
   },
   "op_license_pro": {
-    "message": "Clé $1 : Pro, illimité."
+    "message": "Clé $1 : Pro Max illimité. Toutes les lumières, personnages, filtres et morceaux sont débloqués."
   },
   "op_license_slots": {
     "message": "Clé $1 : $2 mèmes avec image en plus."
@@ -1251,5 +1251,131 @@
   },
   "fx_anim_beat": {
     "message": "Au rythme"
+  },
+  "op_license_pass": {
+    "message": "Clé $1 : il reste $2 de pass."
+  },
+  "fx_follow": {
+    "message": "Me suivre (les lumières et l’animal bougent avec moi)"
+  },
+  "fx_follow_tip": {
+    "message": "Utilise l’image de votre caméra sur votre ordinateur seulement. Rien n’est enregistré ni envoyé. Fonctionne mieux avec une bonne lumière."
+  },
+  "fx_away": {
+    "message": "Fête quand je sors de l’image"
+  },
+  "fx_away_tip": {
+    "message": "L’animal vous cherche, puis danse et les lumières font la fête. Ils vous accueillent à votre retour."
+  },
+  "fx_presets": {
+    "message": "Looks rapides"
+  },
+  "fx_pre_party": {
+    "message": "🎉 Fête"
+  },
+  "fx_pre_studio": {
+    "message": "😎 Studio"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 Disco"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 Cosy"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 Cinéma"
+  },
+  "fx_pre_live": {
+    "message": "🎤 Live"
+  },
+  "fx_studio": {
+    "message": "Éclairer ma pièce sombre automatiquement"
+  },
+  "fx_studio_tip": {
+    "message": "Si votre pièce est sombre, MemeBox éclaircit votre image pour qu’on vous voie bien, même sans lampe."
+  },
+  "fx_darkprev": {
+    "message": "🌙 Aperçu dans une pièce sombre"
+  },
+  "fx_pat_auto": {
+    "message": "Suivre la musique"
+  },
+  "fx_pat_party": {
+    "message": "Lyres mobiles"
+  },
+  "fx_pat_equalizer": {
+    "message": "Égaliseur"
+  },
+  "fx_pat_club": {
+    "message": "Club"
+  },
+  "as_btn": {
+    "message": "Ajouter un son depuis un fichier (audio ou vidéo)"
+  },
+  "as_working": {
+    "message": "Ajout de $1…"
+  },
+  "as_added": {
+    "message": "Ajouté : $1"
+  },
+  "as_added_cut": {
+    "message": "Ajouté : $1 (les $2 premières secondes tiennent)"
+  },
+  "as_fail": {
+    "message": "Impossible d’ajouter $1"
+  },
+  "as_bad": {
+    "message": "$1 n’est pas un fichier son ou vidéo, ou il est trop gros"
+  },
+  "mu_add": {
+    "message": "＋ Ajouter ma musique"
+  },
+  "mu_mine": {
+    "message": "Ma musique"
+  },
+  "mu_join": {
+    "message": "Rejoignez d’abord un appel, puis lancez votre musique"
+  },
+  "mu_big": {
+    "message": "Le fichier dépasse 8 Mo"
+  },
+  "mu_many": {
+    "message": "12 pistes au maximum. Supprimez-en une d’abord."
+  },
+  "mu_del": {
+    "message": "Supprimer"
+  },
+  "fx_drag": {
+    "message": "Faites glisser dans l’aperçu pour accrocher la lampe exactement où vous voulez."
+  },
+  "fx_lampsize": {
+    "message": "Taille de la lampe"
+  },
+  "fx_lampreset": {
+    "message": "Réinitialiser"
+  },
+  "fx_hd": {
+    "message": "✨ Amélioration HD (plus net, plus clair, peau lisse)"
+  },
+  "fx_hd_tip": {
+    "message": "Nettoie le grain, lisse la peau tout en gardant yeux et cheveux nets, ajoute de la clarté et des couleurs naturelles et éclaircit une pièce sombre. Tourne sur votre carte graphique."
+  },
+  "fx_hd_amt": {
+    "message": "Intensité de l’amélioration HD"
+  },
+  "st_title": {
+    "message": "Commencez ici"
+  },
+  "st_1": {
+    "message": "1. Rejoignez votre appel dans le navigateur et activez votre micro."
+  },
+  "st_2": {
+    "message": "2. Touchez un mème : tout le monde l'entend."
+  },
+  "st_3": {
+    "message": "3. Des lumières, une lampe ou un animal sur votre caméra ? Ouvrez Lumières ci-dessous."
+  },
+  "st_ok": {
+    "message": "Compris"
   }
 }

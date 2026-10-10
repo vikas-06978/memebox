@@ -813,7 +813,7 @@
     "message": "MemeBox Pro"
   },
   "op_pro_off": {
-    "message": "O Pro está desligado agora, então todos os recursos são grátis para todos."
+    "message": "O Pro está desligado nesta versão, então tudo está liberado para todos e não precisa de chave."
   },
   "op_pro_active": {
     "message": "✅ O MemeBox Pro está ativo neste navegador."
@@ -846,7 +846,7 @@
     "message": "A chave $1 não pôde ser verificada há muito tempo. Fique online para o MemeBox verificar de novo."
   },
   "op_license_pro": {
-    "message": "Chave $1: Pro, ilimitado."
+    "message": "Chave $1: Pro Max ilimitado. Todas as luzes, personagens, filtros e músicas estão liberados."
   },
   "op_license_slots": {
     "message": "Chave $1: $2 memes com imagem extras."
@@ -1251,5 +1251,131 @@
   },
   "fx_anim_beat": {
     "message": "No ritmo"
+  },
+  "op_license_pass": {
+    "message": "Chave $1: restam $2 de passe."
+  },
+  "fx_follow": {
+    "message": "Me seguir (as luzes e o bicho se movem comigo)"
+  },
+  "fx_follow_tip": {
+    "message": "Usa a imagem da câmera só no seu computador. Nada é salvo nem enviado. Funciona melhor com boa luz."
+  },
+  "fx_away": {
+    "message": "Festa quando eu sair da imagem"
+  },
+  "fx_away_tip": {
+    "message": "O bicho procura você, depois dança e as luzes fazem festa. Eles dão boas-vindas quando você volta."
+  },
+  "fx_presets": {
+    "message": "Looks rápidos"
+  },
+  "fx_pre_party": {
+    "message": "🎉 Festa"
+  },
+  "fx_pre_studio": {
+    "message": "😎 Estúdio"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 Disco"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 Aconchegante"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 Cinema"
+  },
+  "fx_pre_live": {
+    "message": "🎤 Ao vivo"
+  },
+  "fx_studio": {
+    "message": "Iluminar meu quarto escuro automaticamente"
+  },
+  "fx_studio_tip": {
+    "message": "Se o quarto está escuro, o MemeBox clareia sua imagem para você aparecer bem, mesmo sem luminária."
+  },
+  "fx_darkprev": {
+    "message": "🌙 Prévia em quarto escuro"
+  },
+  "fx_pat_auto": {
+    "message": "Seguir a música"
+  },
+  "fx_pat_party": {
+    "message": "Cabeças móveis"
+  },
+  "fx_pat_equalizer": {
+    "message": "Equalizador"
+  },
+  "fx_pat_club": {
+    "message": "Club"
+  },
+  "as_btn": {
+    "message": "Adicionar um som de um arquivo (áudio ou vídeo)"
+  },
+  "as_working": {
+    "message": "Adicionando $1…"
+  },
+  "as_added": {
+    "message": "Adicionado: $1"
+  },
+  "as_added_cut": {
+    "message": "Adicionado: $1 (cabem os primeiros $2 segundos)"
+  },
+  "as_fail": {
+    "message": "Não foi possível adicionar $1"
+  },
+  "as_bad": {
+    "message": "$1 não é um arquivo de som ou vídeo, ou é grande demais"
+  },
+  "mu_add": {
+    "message": "＋ Adicionar minha música"
+  },
+  "mu_mine": {
+    "message": "Minha música"
+  },
+  "mu_join": {
+    "message": "Entre numa chamada primeiro e depois toque sua música"
+  },
+  "mu_big": {
+    "message": "O arquivo passa de 8 MB"
+  },
+  "mu_many": {
+    "message": "No máximo 12 faixas. Remova uma antes."
+  },
+  "mu_del": {
+    "message": "Remover"
+  },
+  "fx_drag": {
+    "message": "Arraste na prévia para pendurar a luminária exatamente onde quiser."
+  },
+  "fx_lampsize": {
+    "message": "Tamanho da luminária"
+  },
+  "fx_lampreset": {
+    "message": "Redefinir"
+  },
+  "fx_hd": {
+    "message": "✨ Melhoria HD (mais nítido, claro e pele suave)"
+  },
+  "fx_hd_tip": {
+    "message": "Limpa o ruído, suaviza a pele mas mantém olhos e cabelo nítidos, dá clareza e cor natural e clareia um quarto escuro. Roda na sua placa de vídeo."
+  },
+  "fx_hd_amt": {
+    "message": "Intensidade da melhoria HD"
+  },
+  "st_title": {
+    "message": "Comece aqui"
+  },
+  "st_1": {
+    "message": "1. Entre na chamada pelo navegador e ligue o microfone."
+  },
+  "st_2": {
+    "message": "2. Toque em qualquer meme: todos na chamada ouvem."
+  },
+  "st_3": {
+    "message": "3. Quer luzes, abajur ou um bichinho na câmera? Abra Luzes abaixo."
+  },
+  "st_ok": {
+    "message": "Entendi"
   }
 }

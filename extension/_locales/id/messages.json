@@ -813,7 +813,7 @@
     "message": "MemeBox Pro"
   },
   "op_pro_off": {
-    "message": "Pro sedang dimatikan, jadi semua fitur gratis untuk semua orang."
+    "message": "Pro dimatikan di versi ini, jadi semua fitur terbuka untuk semua dan tidak perlu kunci."
   },
   "op_pro_active": {
     "message": "✅ MemeBox Pro aktif di browser ini."
@@ -846,7 +846,7 @@
     "message": "Kunci $1 sudah lama tidak bisa diperiksa. Sambungkan ke internet agar MemeBox bisa memeriksanya lagi."
   },
   "op_license_pro": {
-    "message": "Kunci $1: Pro, tanpa batas."
+    "message": "Kunci $1: Pro Max tanpa batas. Semua lampu, karakter, filter, dan lagu terbuka."
   },
   "op_license_slots": {
     "message": "Kunci $1: $2 meme bergambar tambahan."
@@ -1251,5 +1251,131 @@
   },
   "fx_anim_beat": {
     "message": "Mengikuti beat"
+  },
+  "op_license_pass": {
+    "message": "Kunci $1: sisa $2 waktu pass."
+  },
+  "fx_follow": {
+    "message": "Ikuti aku (lampu dan hewan bergerak bersamaku)"
+  },
+  "fx_follow_tip": {
+    "message": "Hanya memakai gambar kameramu di komputermu sendiri. Tidak ada yang disimpan atau dikirim. Paling baik di cahaya yang cukup."
+  },
+  "fx_away": {
+    "message": "Pesta saat aku keluar dari gambar"
+  },
+  "fx_away_tip": {
+    "message": "Hewan mencarimu, lalu menari dan lampu berpesta. Mereka menyambutmu saat kembali."
+  },
+  "fx_presets": {
+    "message": "Tampilan cepat"
+  },
+  "fx_pre_party": {
+    "message": "🎉 Pesta"
+  },
+  "fx_pre_studio": {
+    "message": "😎 Studio"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 Disko"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 Nyaman"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 Bioskop"
+  },
+  "fx_pre_live": {
+    "message": "🎤 Live"
+  },
+  "fx_studio": {
+    "message": "Terangi kamar gelapku otomatis"
+  },
+  "fx_studio_tip": {
+    "message": "Jika kamarmu gelap, MemeBox mencerahkan gambarmu agar terlihat jelas, bahkan tanpa lampu."
+  },
+  "fx_darkprev": {
+    "message": "🌙 Pratinjau di kamar gelap"
+  },
+  "fx_pat_auto": {
+    "message": "Ikuti musik"
+  },
+  "fx_pat_party": {
+    "message": "Moving head"
+  },
+  "fx_pat_equalizer": {
+    "message": "Equalizer"
+  },
+  "fx_pat_club": {
+    "message": "Klub"
+  },
+  "as_btn": {
+    "message": "Tambah suara dari file (audio atau video)"
+  },
+  "as_working": {
+    "message": "Menambahkan $1…"
+  },
+  "as_added": {
+    "message": "Ditambahkan: $1"
+  },
+  "as_added_cut": {
+    "message": "Ditambahkan: $1 ($2 detik pertama muat)"
+  },
+  "as_fail": {
+    "message": "Tidak bisa menambahkan $1"
+  },
+  "as_bad": {
+    "message": "$1 bukan file suara atau video, atau terlalu besar"
+  },
+  "mu_add": {
+    "message": "＋ Tambah musikku"
+  },
+  "mu_mine": {
+    "message": "Musikku"
+  },
+  "mu_join": {
+    "message": "Gabung panggilan dulu, lalu putar musikmu"
+  },
+  "mu_big": {
+    "message": "File lebih dari 8 MB"
+  },
+  "mu_many": {
+    "message": "Maksimal 12 lagu. Hapus satu dulu."
+  },
+  "mu_del": {
+    "message": "Hapus"
+  },
+  "fx_drag": {
+    "message": "Seret di pratinjau untuk menggantung lampu tepat di tempat yang kamu mau."
+  },
+  "fx_lampsize": {
+    "message": "Ukuran lampu"
+  },
+  "fx_lampreset": {
+    "message": "Atur ulang"
+  },
+  "fx_hd": {
+    "message": "✨ Peningkatan HD (lebih tajam, jernih, kulit halus)"
+  },
+  "fx_hd_tip": {
+    "message": "Membersihkan bintik, menghaluskan kulit tetapi menjaga mata dan rambut tetap tajam, menambah kejernihan dan warna alami, dan mencerahkan kamar gelap. Berjalan di kartu grafismu."
+  },
+  "fx_hd_amt": {
+    "message": "Kekuatan peningkatan HD"
+  },
+  "st_title": {
+    "message": "Mulai di sini"
+  },
+  "st_1": {
+    "message": "1. Masuk ke panggilan di browser dan aktifkan mikrofon."
+  },
+  "st_2": {
+    "message": "2. Ketuk meme mana saja: semua orang di panggilan mendengarnya."
+  },
+  "st_3": {
+    "message": "3. Mau lampu, lampu gantung, atau hewan di kamera? Buka Lampu di bawah."
+  },
+  "st_ok": {
+    "message": "Mengerti"
   }
 }

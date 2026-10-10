@@ -20,6 +20,14 @@
     };
 
     const how = el('div', { className: 'fx-how' }, t('mu_how'));
+    // ---- my own music: added right here, played into the call on repeat ----
+    let mine = [];
+    const mineBox = el('div', { className: 'fx-group' });
+    const mineChips = el('div', { className: 'fx-chips' });
+    const addInput = el('input', { type: 'file', accept: 'audio/*' });
+    addInput.hidden = true;
+    const addBtn = el('button', { className: 'chip add-music', type: 'button' }, t('mu_add'));
+    mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });
     const status = el('div', { className: 'fx-status' });
     const stopBtn = el('button', { className: 'btn stop small', type: 'button' }, t('mu_stop'));
@@ -29,7 +37,7 @@
     const plansBtn = el('button', { className: 'btn small', type: 'button' }, t('fx_plans'));
     plansBtn.addEventListener('click', () => api.openSite('/buy'));
     lock.append(el('span', {}, t('mu_locked')), plansBtn);
-    const body = el('div', { className: 'settings-body fx-body' }, how, chips, status, lock,
+    const body = el('div', { className: 'settings-body fx-body' }, how, chips, mineBox, status, lock,
       el('div', { className: 'row' }, el('span', {}, '\u{1F50A}'), vol, stopBtn));
     const sum = el('span', { className: 'sum' });
     const details = el('details', { className: 'settings fx' }, el('summary', {}, el('span', {}, t('mu_title')), sum), body);
@@ -51,7 +59,52 @@
       localId = '';
     }
 
+    const toBase64 = (buf) => {
+      const bytes = new Uint8Array(buf);
+      let s2 = '';
+      for (let i = 0; i < bytes.length; i += 0x8000) s2 += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+      return btoa(s2);
+    };
+    const MAX_MUSIC = 8 * 1024 * 1024;
+    addBtn.addEventListener('click', () => {
+      if (!can('own')) { lock.hidden = false; api.toast(t('mu_locked'), 3500); return; }
+      addInput.click();
+    });
+    addInput.addEventListener('change', async () => {
+      const file = addInput.files[0];
+      addInput.value = '';
+      if (!file) return;
+      if (file.size > MAX_MUSIC) { api.toast(t('mu_big'), 4200); return; }
+      api.toast(t('as_working', file.name), 6000);
+      const res = await api.ask({ type: 'music-add', name: file.name, mime: file.type, b64: toBase64(await file.arrayBuffer()) }).catch(() => null);
+      if (res && res.ok) api.toast(t('as_added', file.name), 3500);
+      else api.toast(res && res.error === 'too-many' ? t('mu_many') : res && res.error === 'too-big' ? t('mu_big') : t('as_fail', file.name), 4200);
+    });
+    function renderMine() {
+      mineChips.replaceChildren(...mine.map((m) => {
+        const on = callId === 'mine:' + m.id;
+        const b = el('button', { className: 'chip' + (on ? ' on' : ''), type: 'button', title: m.name }, (on ? '▶ ' : '🎵 ') + (m.name.length > 16 ? m.name.slice(0, 15) + '…' : m.name));
+        b.addEventListener('click', () => playMine(m.id));
+        const x = el('button', { className: 'chip del', type: 'button', title: t('mu_del') }, '✕');
+        x.addEventListener('click', async () => { if (callId === 'mine:' + m.id) stopAll(); await api.ask({ type: 'music-del', id: m.id }).catch(() => {}); });
+        return el('span', { className: 'fx-pair' }, b, x);
+      }), addBtn);
+    }
+    function playMine(id) {
+      if (callId === 'mine:' + id) { stopAll(); return; }
+      if (!can('own')) { lock.hidden = false; return; }
+      const f = api.frameId();
+      if (f == null) { api.toast(t('mu_join'), 3500); return; }
+      stopAll();
+      api.send({ type: 'play-mine', frameId: f, id, volume: volume() });
+    }
+    try {
+      chrome.storage.local.get('myMusic').then((r) => { mine = Array.isArray(r.myMusic) ? r.myMusic : []; renderMine(); }).catch(() => {});
+      chrome.storage.onChanged.addListener((changes, area) => { if (area === 'local' && changes.myMusic) { mine = Array.isArray(changes.myMusic.newValue) ? changes.myMusic.newValue : []; renderMine(); } });
+    } catch { /* orphaned */ }
+
     function render() {
+      renderMine();
       chips.replaceChildren(...Music.IDS.map((id) => {
         const locked = !can(id);
         const on = id === callId || id === localId;
@@ -62,13 +115,14 @@
       }));
       const locked = localId && !can(localId);
       lock.hidden = !locked;
-      status.textContent = callId ? t('mu_in_call', t('mu_t_' + callId))
+      const callName = callId.startsWith('mine:') ? ((mine.find((m) => 'mine:' + m.id === callId) || {}).name || t('mu_mine')) : callId ? t('mu_t_' + callId) : '';
+      status.textContent = callId ? t('mu_in_call', callName)
         : localId ? t('mu_preview', t('mu_t_' + localId), String(PREVIEW_SECONDS))
         : t(api.inCall() ? 'mu_idle_call' : 'mu_idle');
       status.className = 'fx-status' + (callId ? ' ok' : '');
       stopBtn.hidden = !callId && !localId;
       vol.value = Math.round(volume() * 100);
-      sum.textContent = callId ? t('mu_t_' + callId) : localId ? t('mu_t_' + localId) : '';
+      sum.textContent = callId ? callName : localId ? t('mu_t_' + localId) : '';
       if (api.panelIsOpen()) api.placePanel();
     }
 

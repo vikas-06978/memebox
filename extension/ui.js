@@ -474,6 +474,10 @@
     .status.warn { background: #fff3cd; color: #5c3d00; border: 1px solid #f9ab00; font-size: 13px; line-height: 1.35; }
     :host([data-theme="dark"]) .status.warn, :host([data-theme="neon"]) .status.warn { background: #4a3a00; color: #ffe08a; }
     @media (prefers-color-scheme: dark) { :host(:not([data-theme])) .status.warn, :host([data-theme="auto"]) .status.warn { background: #4a3a00; color: #ffe08a; } }
+    .start { background: var(--p-soft); border-radius: 12px; padding: 8px 12px; font-size: 12px; line-height: 1.35; display: flex; flex-direction: column; gap: 4px; }
+    .start[hidden] { display: none; }
+    .start p { margin: 0; }
+    .start .btn { align-self: flex-start; margin-top: 4px; }
     .status .dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #9aa0a6; box-shadow: 0 0 0 3px rgba(127,127,127,.15); }
     .search { width: 100%; padding: 10px 14px; border: 1px solid var(--p-line); border-radius: 12px; font: inherit; color: inherit; background: var(--p-field);
       transition: border-color .1s, box-shadow .1s; }
@@ -537,6 +541,12 @@
     .fx-prev { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--p-line); background: #23253a; display: block; }
     .fx-body.fx-off .fx-prev { opacity: .75; }
     .fx-main { font-size: 14px; }
+    .fx-prev.fx-drag { cursor: grab; touch-action: none; }
+    .fx-prev.fx-drag:active { cursor: grabbing; }
+    .fx-pair { display: inline-flex; gap: 2px; }
+    .chip.del { padding-left: 8px; padding-right: 8px; opacity: .7; }
+    .chip.preset { font-weight: 800; }
+    .icon.add { font-size: 20px; font-weight: 700; }
     .fx-group { display: grid; gap: 6px; }
     .fx-label { font-weight: 700; font-size: 12px; color: var(--p-muted); text-transform: none; }
     .fx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -644,9 +654,20 @@
     }
     if (panelOpen) placePanel();
   });
+  // First-use help: three plain steps, shown until the person taps "Got it".
+  const startOk = el('button', { className: 'btn', type: 'button' }, t('st_ok'));
+  const startCard = el('div', { className: 'start', hidden: true },
+    el('strong', {}, t('st_title')), el('p', {}, t('st_1')), el('p', {}, t('st_2')), el('p', {}, t('st_3')), startOk);
+  startOk.addEventListener('click', () => {
+    startCard.hidden = true;
+    try { chrome.storage.local.set({ startDone: true }); } catch { /* orphaned */ }
+    if (panelOpen) placePanel();
+  });
+  try { chrome.storage.local.get('startDone').then((r) => { startCard.hidden = r.startDone === true; }).catch(() => { startCard.hidden = false; }); } catch { startCard.hidden = false; }
   const panel = el('div', { className: 'panel' },
     el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), feedbackBtn, optionsBtn, closeBtn),
     statusBox,
+    startCard,
     tabBar,
     search,
     chips,
@@ -686,6 +707,11 @@
     panelIsOpen: () => panelOpen,
     openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
     inCall: () => !!activeFrame(),
+    frameId: () => { const f = activeFrame(); return f ? f.id : null; },
+    ask: (msg) => bridge.ask(msg),
+    clipCount: () => state.lines.filter((l) => l.kind === 'clip').length,
+    LIMITS: MEME.LIMITS,
+    toast: (text, ms) => toast(text, ms),
     sendToHook: (cmd) => sendToHook(cmd),
     send: (msg) => bridge.toRuntime(msg),
     onPanelToggle: (fn) => panelToggleCbs.push(fn),

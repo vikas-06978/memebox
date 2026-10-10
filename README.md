@@ -100,7 +100,7 @@ Each Pro feature is marked in the code with `// PRO:` next to a `MemePlan.can(..
 | All packs | General and College | `options.js` |
 | Party mode / timed lines | playing by hand | `options.js`, `ui.js` |
 
-Prices are in `site/src/shop.js`: **5 more pictures for ₹29** and **Pro (lifetime, everything) for ₹99**. Change them there and deploy again.
+Prices are in `site/src/shop.js` (the one place): time passes **Pro 30 min ₹9 / 1 h ₹15 / 2 h ₹25** and **Pro Max 3 h ₹35** (dollars: $1.49 / 2.49 / 3.99 / 5.49). Hours never expire. The old lifetime Pro and the picture packs are marked `closed`. Change a price there, run `npm run seo` (the structured data repeats it) and deploy again; a test checks both agree.
 
 ### How buying works (UPI straight to your bank)
 

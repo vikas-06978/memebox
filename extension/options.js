@@ -871,6 +871,12 @@ chrome.storage.onChanged.addListener((changes, area) => {
 // The key is checked with the MemeBox site. The answer is saved as `license` and read by
 // lib/plan.js everywhere (the service worker checks it again once a day).
 
+// 4500 s -> "1 h 15 min"
+function passClock(seconds) {
+  const m = Math.round(seconds / 60);
+  return m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`;
+}
+
 function renderPro() {
   const l = plan.license;
   let text;
@@ -880,7 +886,9 @@ function renderPro() {
   if (l) {
     if (l.status !== 'active') text += ' ' + t('op_license_revoked', l.key);
     else if (!plan.validLicense()) text += ' ' + t('op_license_stale', l.key);
-    else text += ' ' + (l.unlimited ? t('op_license_pro', l.key) : t('op_license_slots', l.key, l.pictureSlots));
+    else if (l.unlimited) text += ' ' + t('op_license_pro', l.key);
+    else if (plan.passLeft() > 0) text += ' ' + t('op_license_pass', l.key, passClock(plan.passLeft()));
+    else text += ' ' + t('op_license_slots', l.key, l.pictureSlots);
   }
   $('pro-status').textContent = text;
   $('license-remove').hidden = !l;

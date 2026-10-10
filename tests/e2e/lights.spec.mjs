@@ -160,3 +160,29 @@ test('Lights can be switched on AFTER the camera is already running: no camera r
   const back = await callPage.evaluate(() => window.avg(0.1, 0.1, 0.9, 0.9));
   expect(Math.abs(back.r - plain.r) + Math.abs(back.g - plain.g) + Math.abs(back.b - plain.b), 'switching off gives the plain camera back').toBeLessThan(18);
 });
+
+test('with "Lights follow the sounds" the corner show moves with the music (and is steady without it)', async ({ context, callPage }) => {
+  await callPage.evaluate(helpers);
+  await callPage.evaluate(async () => { await window.joinCall(); await window.noDuck(); });
+  await setFx(context, { armed: true, on: true, lamp: false, focus: false, corners: true, pattern: 'laser', sync: true });
+  await callPage.evaluate(() => window.openCam());
+  const motion = async () => { // how much the picture changes over 8 looks, 150 ms apart
+    let prev = null, total = 0;
+    for (let i = 0; i < 8; i++) {
+      const a = await callPage.evaluate(() => window.avg(0, 0, 1, 1));
+      const b = await callPage.evaluate(() => window.avg(0, 0, 0.5, 0.5));
+      const cur = [a.r, a.g, a.b, b.r, b.g, b.b];
+      if (prev) total += cur.reduce((s, v, k) => s + Math.abs(v - prev[k]), 0);
+      prev = cur;
+      await callPage.waitForTimeout(150);
+    }
+    return total;
+  };
+  await callPage.waitForTimeout(800);
+  const still = await motion();
+  await callPage.evaluate(() => window.postMessage({ source: 'memebox-bridge-9c1e', type: 'music-play', value: 'club', volume: 0.9 }, '*'));
+  await callPage.waitForTimeout(2500);
+  const moving = await motion();
+  await callPage.screenshot({ path: 'tests/.tmp/laser-with-music.png' });
+  expect(moving, 'the lasers move with the music').toBeGreaterThan(still + 8);
+});

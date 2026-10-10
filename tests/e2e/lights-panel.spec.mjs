@@ -16,7 +16,7 @@ test('Lights section opens, shows the preview, and switching it on is saved', as
   await callPage.waitForTimeout(800);
   await callPage.mouse.click(FAB.x, FAB.y, { button: 'right' });
   await callPage.waitForTimeout(400);
-  await callPage.mouse.click(250, 632); // "Lights & looks"
+  await callPage.mouse.click(250, 586); // "Lights & looks"
   await callPage.waitForTimeout(900);
   await callPage.screenshot({ path: 'tests/.tmp/lights-panel1.png' });
   await callPage.mouse.move(250, 500);

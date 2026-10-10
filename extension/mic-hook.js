@@ -82,8 +82,9 @@
       case 'play-audio': playAudio(d); break;
       case 'stop': stopAll(); stopMusic(); break;
       case 'music-play': startMusic(String(d.value), d.volume); break;
+      case 'music-bytes': startMine(d); break;
       case 'music-stop': stopMusic(); break;
-      case 'music-volume': if (musicPlayer) musicPlayer.setVolume(d.value); musicVolume = clamp(d.value, 0, 1, 0.5); break;
+      case 'music-volume': if (musicPlayer) musicPlayer.setVolume(d.value); musicVolume = clamp(d.value, 0, 1, 0.5); if (mineGain) mineGain.gain.setTargetAtTime(musicVolume, ctx.currentTime, 0.05); break;
       case 'volume': setVolume(d.value); break;
       case 'duck': setDuck(d.value !== false); break;
       case 'monitor': setMonitor(d.value === true); break;
@@ -419,7 +420,42 @@
 
   function stopMusic() {
     clearInterval(musicMoodTimer);
-    if (musicPlayer && musicPlayer.playing) { musicPlayer.stop(); post({ type: 'music-state', id: '' }); }
+    let was = false;
+    if (musicPlayer && musicPlayer.playing) { musicPlayer.stop(); was = true; }
+    if (mineSrc) {
+      try { mineSrc.stop(); } catch { /* already stopped */ }
+      try { mineSrc.disconnect(); mineGain.disconnect(); } catch { /* already gone */ }
+      mineSrc = null; mineGain = null; was = true;
+    }
+    if (was) post({ type: 'music-state', id: '' });
+  }
+
+  // The person's own music (added from the panel): a whole track, repeated until stopped. Same soundboard,
+  // so auto-duck, "Stop all", the lights and the characters all work with it.
+  let mineSrc = null;
+  let mineGain = null;
+  async function startMine(d) {
+    if (!isActive() || !ctx || !(d.bytes instanceof ArrayBuffer)) { post({ type: 'music-state', id: '' }); return; }
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
+    try {
+      const buffer = await ctx.decodeAudioData(d.bytes);
+      stopMusic();
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+      const gain = ctx.createGain();
+      musicVolume = clamp(d.volume, 0, 1, musicVolume);
+      gain.gain.value = musicVolume;
+      src.connect(gain).connect(board);
+      src.start();
+      mineSrc = src; mineGain = gain;
+      duckTick(true);
+      startDuckWatch();
+      post({ type: 'music-state', id: 'mine:' + String(d.mid || '') });
+    } catch (err) {
+      console.warn(LOG, 'could not play the music file', err);
+      post({ type: 'music-state', id: '', error: 'decode' });
+    }
   }
 
   // ---------- auto-duck: memes get quieter while YOU are talking ----------
@@ -452,7 +488,7 @@
   }
 
   function duckTick(atStart = false) {
-    const busy = playing.size > 0 || !!tabAudio || !!(musicPlayer && musicPlayer.playing);
+    const busy = playing.size > 0 || !!tabAudio || !!(musicPlayer && musicPlayer.playing) || !!mineSrc;
     if (!busy || !duckEnabled) {
       if (ducked) { ducked = false; applyBoardGain(0.15); }
       if (!busy) { clearInterval(duckTimer); duckTimer = 0; }
@@ -767,7 +803,7 @@
 
   // ---------- Lights & looks, and captions: one pipeline for the camera you send ----------
 
-  const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.filter !== 'none');
+  const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.filter !== 'none' || fxCfg.enhance > 0);
   // The camera is always routed through the frame pipeline when the browser has it (frames pass through
   // untouched while nothing is on), so Lights can be switched on at any moment without restarting the camera.
   // Without that support (old browsers) it is only done once Lights has been used, because the fallback
@@ -776,21 +812,36 @@
   const needsPaint = () => fxActive() || performance.now() < camTextUntil;
   const meterBuf = new Float32Array(512);
 
-  // What the lights listen to: how loud the sound is, a beat now and then, and its mood.
+  // What the lights listen to: how loud the sound is, its bass / middle / treble, a 16-band spectrum, a beat now and
+  // then, its mood, and which tune is playing. (Only the sounds MemeBox plays, never your voice or the others.)
+  const fxFreq = new Uint8Array(256);
+  const SPEC_EDGES = [0, 1, 2, 3, 4, 6, 8, 11, 15, 20, 27, 36, 48, 64, 85, 115, 160];
+  let fxBassAvg = 0;
+  let fxLastBeat = 0;
+  const fxSpec = new Array(16).fill(0);
   function audioInfo() {
     const now = performance.now();
-    let rms = 0;
+    let rms = 0, bass = 0, mid = 0, high = 0;
     if (fxMeter) {
       fxMeter.getFloatTimeDomainData(meterBuf);
       let sum = 0;
       for (let i = 0; i < meterBuf.length; i++) sum += meterBuf[i] * meterBuf[i];
       rms = Math.sqrt(sum / meterBuf.length);
+      fxMeter.getByteFrequencyData(fxFreq);
+      const avg = (a, b) => { let s = 0; for (let i = a; i < b; i++) s += fxFreq[i]; return s / (b - a) / 255; };
+      bass = avg(0, 4); mid = avg(4, 21); high = avg(21, 90);
+      for (let k = 0; k < 16; k++) fxSpec[k] = fxSpec[k] * 0.55 + 0.45 * avg(SPEC_EDGES[k], SPEC_EDGES[k + 1]);
     }
     fxLevel = Math.max(Math.min(1, rms * 3.4), fxLevel * 0.9);
-    const beat = rms > fxAvg * 1.55 + 0.02 ? 1 : 0;
+    // a beat: the bass jumps above its recent average (at most about 3 per second)
+    const kick = bass > fxBassAvg * 1.3 + 0.08 && now - fxLastBeat > 280;
+    if (kick) fxLastBeat = now;
+    fxBassAvg = fxBassAvg * 0.92 + bass * 0.08;
+    const beat = kick || rms > fxAvg * 1.55 + 0.02 ? 1 : 0;
     fxAvg = fxAvg * 0.93 + rms * 0.07;
     const mood = fxMood && now - fxMoodAt < 12000 ? fxMood : '';
-    return { level: fxLevel, beat, mood };
+    const tune = musicPlayer && musicPlayer.playing ? musicPlayer.id : mineSrc ? 'mine' : '';
+    return { level: fxLevel, bass: Math.min(1, bass * 1.4), mid: Math.min(1, mid * 1.8), high: Math.min(1, high * 3), spec: fxSpec, beat, mood, tune, voice: Math.min(1, voiceLevel() * 4) };
   }
 
   function paintCamera(R, g, src, w, h) {
