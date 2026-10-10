@@ -4,6 +4,10 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### Added (work towards 1.3.0, not released yet)
+- **Lights & looks** on your own camera: a hanging lamp, a spotlight on you, coloured corner lights and light shows, five filters, lights that follow the memes you play, and a no-flashing option. A live preview in the panel shows exactly what the call will see. Works in the background tab too (frame-by-frame camera pipeline).
+- Free choices stay free; Pro and add-on choices can be previewed on your own screen (20 s, "PREVIEW" mark) and are not sent to the call.
+
 ## [1.2.6] - 2026-10-10
 
 ### Changed

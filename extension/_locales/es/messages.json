@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "Idioma cambiado. Recarga esta pestaña de la llamada para ver MemeBox en él."
+  },
+  "fx_title": {
+    "message": "💡 Luces y estilos"
+  },
+  "fx_state_on": {
+    "message": "Sí"
+  },
+  "fx_state_off": {
+    "message": "No"
+  },
+  "fx_how": {
+    "message": "Una lámpara y luces de colores en TU cámara. Los demás en la llamada las ven. Prueba todo en la vista previa de abajo."
+  },
+  "fx_on": {
+    "message": "Iluminar mi cámara"
+  },
+  "fx_hint_off": {
+    "message": "Actívalo para probar. Únete o vuelve a unirte a la llamada para usarlo."
+  },
+  "fx_restart": {
+    "message": "Apaga y enciende tu cámara una vez en la llamada para iniciar las luces."
+  },
+  "fx_active": {
+    "message": "✓ Las luces están en tu cámara"
+  },
+  "fx_locked": {
+    "message": "🔒 Solo vista previa: no se envía a tu llamada."
+  },
+  "fx_plans": {
+    "message": "Ver planes"
+  },
+  "fx_watermark": {
+    "message": "VISTA PREVIA"
+  },
+  "fx_lamp": {
+    "message": "Lámpara colgante"
+  },
+  "fx_lamp_show": {
+    "message": "Mostrar la lámpara"
+  },
+  "fx_pos_center": {
+    "message": "Centro"
+  },
+  "fx_pos_left": {
+    "message": "Izquierda"
+  },
+  "fx_pos_right": {
+    "message": "Derecha"
+  },
+  "fx_anim_still": {
+    "message": "Quieta"
+  },
+  "fx_anim_swing": {
+    "message": "Balanceo"
+  },
+  "fx_anim_drop": {
+    "message": "Caída"
+  },
+  "fx_anim_flicker": {
+    "message": "Parpadeo"
+  },
+  "fx_colors": {
+    "message": "Color de la luz"
+  },
+  "fx_corners": {
+    "message": "Luces de esquina"
+  },
+  "fx_corners_show": {
+    "message": "Mostrar luces de esquina"
+  },
+  "fx_looks": {
+    "message": "Estilos (filtros)"
+  },
+  "fx_pat_steady": {
+    "message": "Fija"
+  },
+  "fx_pat_pulse": {
+    "message": "Pulso"
+  },
+  "fx_pat_candle": {
+    "message": "Vela"
+  },
+  "fx_pat_rainbow": {
+    "message": "Arcoíris"
+  },
+  "fx_pat_disco": {
+    "message": "Disco"
+  },
+  "fx_pat_sweep": {
+    "message": "Barrido"
+  },
+  "fx_pat_sparkle": {
+    "message": "Destellos"
+  },
+  "fx_filter_none": {
+    "message": "Ninguno"
+  },
+  "fx_filter_warm": {
+    "message": "Cálido"
+  },
+  "fx_filter_bw": {
+    "message": "Blanco y negro"
+  },
+  "fx_filter_glow": {
+    "message": "Resplandor"
+  },
+  "fx_filter_vintage": {
+    "message": "Vintage"
+  },
+  "fx_filter_cool": {
+    "message": "Frío"
+  },
+  "fx_filter_neon": {
+    "message": "Neón"
+  },
+  "fx_filter_noir": {
+    "message": "Noir"
+  },
+  "fx_filter_dream": {
+    "message": "Sueño"
+  },
+  "fx_filter_sunset": {
+    "message": "Atardecer"
+  },
+  "fx_filter_pixel": {
+    "message": "Píxel"
+  },
+  "fx_focus": {
+    "message": "Foco sobre mí (bordes oscuros)"
+  },
+  "fx_focus_tip": {
+    "message": "Bordes más oscuros para que la luz esté en tu cara"
+  },
+  "fx_sync": {
+    "message": "Las luces siguen los sonidos"
+  },
+  "fx_sync_tip": {
+    "message": "Los colores cambian con el meme que reproduces"
+  },
+  "fx_safe": {
+    "message": "Sin destellos (solo cambios suaves)"
+  },
+  "fx_safe_tip": {
+    "message": "Más seguro para personas sensibles a los destellos"
+  },
+  "fx_bright": {
+    "message": "Brillo"
   }
 }

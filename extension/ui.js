@@ -86,7 +86,7 @@
       if ('lines' in r && !Array.isArray(r.lines)) r.lines = MEME.defaultLines();
       applyStored(r);
       renderAll();
-      if ('settings' in r) sendAudioSettings();
+      if ('settings' in r) { sendAudioSettings(); for (const fn of settingsCbs) { try { fn(); } catch { /* ignore */ } } }
     });
   } catch { /* orphaned */ }
 
@@ -274,6 +274,7 @@
   }
 
   bridge.onUiMessage = (msg) => {
+    for (const fn of messageCbs) { try { fn(msg); } catch { /* ignore */ } }
     if (msg.type === 'frame-status') onFrameStatus(msg);
     else if (msg.type === 'play-result') onPlayResult(msg);
     else if (msg.type === 'tab-audio-start' && typeof msg.streamId === 'string') {
@@ -527,6 +528,22 @@
     .settings[open] summary::after { transform: rotate(180deg); }
     .settings summary .sum { flex: 1; text-align: right; color: var(--p-muted); font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .settings-body { display: grid; gap: 10px; padding: 10px 2px 2px; }
+    .panel.fx-open { overflow-y: auto; }
+    .panel.fx-open .list, .panel.fx-open .chips, .panel.fx-open .search { display: none; }
+    .fx-how, .fx-status { color: var(--p-muted); font-size: 12px; line-height: 1.4; }
+    .fx-status.ok { color: #188038; font-weight: 700; }
+    .fx-prev { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--p-line); background: #23253a; display: block; }
+    .fx-body.fx-off .fx-prev { opacity: .75; }
+    .fx-main { font-size: 14px; }
+    .fx-group { display: grid; gap: 6px; }
+    .fx-label { font-weight: 700; font-size: 12px; color: var(--p-muted); text-transform: none; }
+    .fx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .fx-chips .chip.locked { opacity: .8; border-style: dashed; }
+    .fx-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+    .fx-sw { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--p-line); cursor: pointer; padding: 0; }
+    .fx-sw.on { border-color: var(--p-text); box-shadow: 0 0 0 2px var(--p-bg), 0 0 0 4px var(--p-text); }
+    .fx-sw.locked { opacity: .6; }
+    .fx-lock { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--p-blue-bg); color: var(--p-blue-fg); border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 600; }
     .foot { color: var(--p-muted); font-size: 11px; }
 
     .ask { position: fixed; width: 260px; padding: 14px; border-radius: 16px; background: var(--p-bg); color: var(--p-text); border: 1px solid var(--p-line);
@@ -655,6 +672,24 @@
   ask.dir = DIR;
 
   shadow.append(style, fab, monBtn, listBtn, panel, ask, toastEl);
+
+  // Extra panel sections (Lights & looks) live in their own files and plug in here.
+  const panelToggleCbs = [], messageCbs = [], settingsCbs = [];
+  const uiApi = {
+    el, t, settingsDetails: settings, panel,
+    getSettings: () => state.settings,
+    setLocal: (k, v) => { state.settings = { ...state.settings, [k]: v }; },
+    saveSetting: (k, v) => saveSetting(k, v),
+    placePanel: () => placePanel(),
+    panelIsOpen: () => panelOpen,
+    openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
+    onPanelToggle: (fn) => panelToggleCbs.push(fn),
+    onMessage: (fn) => messageCbs.push(fn),
+    onSettings: (fn) => settingsCbs.push(fn),
+  };
+  for (const mount of (globalThis.MemeUiMounts || [])) {
+    try { mount(uiApi); } catch { /* a broken extra section must not break the panel */ }
+  }
 
   // ---------- rendering ----------
 
@@ -909,11 +944,13 @@
     renderAll();
     placePanel();
     search.focus({ preventScroll: true });
+    for (const fn of panelToggleCbs) { try { fn(true); } catch { /* ignore */ } }
   }
 
   function closePanel() {
     panelOpen = false;
     panel.classList.remove('open');
+    for (const fn of panelToggleCbs) { try { fn(false); } catch { /* ignore */ } }
   }
 
   closeBtn.addEventListener('click', closePanel);

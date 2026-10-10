@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "Language changed. Reload this call tab to see MemeBox in it."
+  },
+  "fx_title": {
+    "message": "💡 Lights & looks"
+  },
+  "fx_state_on": {
+    "message": "On"
+  },
+  "fx_state_off": {
+    "message": "Off"
+  },
+  "fx_how": {
+    "message": "A lamp and coloured lights on YOUR camera. Others in the call see them. Try everything on the preview below."
+  },
+  "fx_on": {
+    "message": "Light up my camera"
+  },
+  "fx_hint_off": {
+    "message": "Switch on to try it. Join or rejoin the call to use it."
+  },
+  "fx_restart": {
+    "message": "Turn your camera off and on once in the call to start the lights."
+  },
+  "fx_active": {
+    "message": "✓ Lights are on your camera"
+  },
+  "fx_locked": {
+    "message": "🔒 Preview only: not sent to your call."
+  },
+  "fx_plans": {
+    "message": "See plans"
+  },
+  "fx_watermark": {
+    "message": "PREVIEW"
+  },
+  "fx_lamp": {
+    "message": "Hanging lamp"
+  },
+  "fx_lamp_show": {
+    "message": "Show the lamp"
+  },
+  "fx_pos_center": {
+    "message": "Centre"
+  },
+  "fx_pos_left": {
+    "message": "Left"
+  },
+  "fx_pos_right": {
+    "message": "Right"
+  },
+  "fx_anim_still": {
+    "message": "Still"
+  },
+  "fx_anim_swing": {
+    "message": "Swing"
+  },
+  "fx_anim_drop": {
+    "message": "Drop in"
+  },
+  "fx_anim_flicker": {
+    "message": "Flicker"
+  },
+  "fx_colors": {
+    "message": "Light colour"
+  },
+  "fx_corners": {
+    "message": "Corner lights"
+  },
+  "fx_corners_show": {
+    "message": "Show corner lights"
+  },
+  "fx_looks": {
+    "message": "Looks (filters)"
+  },
+  "fx_pat_steady": {
+    "message": "Steady"
+  },
+  "fx_pat_pulse": {
+    "message": "Pulse"
+  },
+  "fx_pat_candle": {
+    "message": "Candle"
+  },
+  "fx_pat_rainbow": {
+    "message": "Rainbow"
+  },
+  "fx_pat_disco": {
+    "message": "Disco"
+  },
+  "fx_pat_sweep": {
+    "message": "Sweep"
+  },
+  "fx_pat_sparkle": {
+    "message": "Sparkle"
+  },
+  "fx_filter_none": {
+    "message": "None"
+  },
+  "fx_filter_warm": {
+    "message": "Warm"
+  },
+  "fx_filter_bw": {
+    "message": "Black & white"
+  },
+  "fx_filter_glow": {
+    "message": "Glow"
+  },
+  "fx_filter_vintage": {
+    "message": "Vintage"
+  },
+  "fx_filter_cool": {
+    "message": "Cool"
+  },
+  "fx_filter_neon": {
+    "message": "Neon"
+  },
+  "fx_filter_noir": {
+    "message": "Noir"
+  },
+  "fx_filter_dream": {
+    "message": "Dream"
+  },
+  "fx_filter_sunset": {
+    "message": "Sunset"
+  },
+  "fx_filter_pixel": {
+    "message": "Pixel"
+  },
+  "fx_focus": {
+    "message": "Spotlight on me (darker edges)"
+  },
+  "fx_focus_tip": {
+    "message": "Darker edges so the light is on your face"
+  },
+  "fx_sync": {
+    "message": "Lights follow the sounds"
+  },
+  "fx_sync_tip": {
+    "message": "Colours change with the meme you play"
+  },
+  "fx_safe": {
+    "message": "No flashing (gentle changes only)"
+  },
+  "fx_safe_tip": {
+    "message": "Safer for people sensitive to flashing"
+  },
+  "fx_bright": {
+    "message": "Brightness"
   }
 }

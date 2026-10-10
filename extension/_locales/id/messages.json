@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "Bahasa diganti. Muat ulang tab panggilan ini untuk melihat MemeBox dalam bahasa itu."
+  },
+  "fx_title": {
+    "message": "💡 Lampu & tampilan"
+  },
+  "fx_state_on": {
+    "message": "Nyala"
+  },
+  "fx_state_off": {
+    "message": "Mati"
+  },
+  "fx_how": {
+    "message": "Lampu gantung dan lampu warna-warni di kameramu. Peserta lain di panggilan bisa melihatnya. Coba semuanya di pratinjau di bawah."
+  },
+  "fx_on": {
+    "message": "Terangi kameraku"
+  },
+  "fx_hint_off": {
+    "message": "Nyalakan untuk mencoba. Bergabung atau gabung ulang ke panggilan untuk memakainya."
+  },
+  "fx_restart": {
+    "message": "Matikan lalu nyalakan kamera sekali di panggilan untuk memulai lampu."
+  },
+  "fx_active": {
+    "message": "✓ Lampu aktif di kameramu"
+  },
+  "fx_locked": {
+    "message": "🔒 Hanya pratinjau: tidak dikirim ke panggilanmu."
+  },
+  "fx_plans": {
+    "message": "Lihat paket"
+  },
+  "fx_watermark": {
+    "message": "PRATINJAU"
+  },
+  "fx_lamp": {
+    "message": "Lampu gantung"
+  },
+  "fx_lamp_show": {
+    "message": "Tampilkan lampu"
+  },
+  "fx_pos_center": {
+    "message": "Tengah"
+  },
+  "fx_pos_left": {
+    "message": "Kiri"
+  },
+  "fx_pos_right": {
+    "message": "Kanan"
+  },
+  "fx_anim_still": {
+    "message": "Diam"
+  },
+  "fx_anim_swing": {
+    "message": "Berayun"
+  },
+  "fx_anim_drop": {
+    "message": "Jatuh"
+  },
+  "fx_anim_flicker": {
+    "message": "Berkedip"
+  },
+  "fx_colors": {
+    "message": "Warna cahaya"
+  },
+  "fx_corners": {
+    "message": "Lampu sudut"
+  },
+  "fx_corners_show": {
+    "message": "Tampilkan lampu sudut"
+  },
+  "fx_looks": {
+    "message": "Tampilan (filter)"
+  },
+  "fx_pat_steady": {
+    "message": "Tetap"
+  },
+  "fx_pat_pulse": {
+    "message": "Berdenyut"
+  },
+  "fx_pat_candle": {
+    "message": "Lilin"
+  },
+  "fx_pat_rainbow": {
+    "message": "Pelangi"
+  },
+  "fx_pat_disco": {
+    "message": "Disko"
+  },
+  "fx_pat_sweep": {
+    "message": "Menyapu"
+  },
+  "fx_pat_sparkle": {
+    "message": "Berkilau"
+  },
+  "fx_filter_none": {
+    "message": "Tidak ada"
+  },
+  "fx_filter_warm": {
+    "message": "Hangat"
+  },
+  "fx_filter_bw": {
+    "message": "Hitam putih"
+  },
+  "fx_filter_glow": {
+    "message": "Berpendar"
+  },
+  "fx_filter_vintage": {
+    "message": "Vintage"
+  },
+  "fx_filter_cool": {
+    "message": "Dingin"
+  },
+  "fx_filter_neon": {
+    "message": "Neon"
+  },
+  "fx_filter_noir": {
+    "message": "Noir"
+  },
+  "fx_filter_dream": {
+    "message": "Mimpi"
+  },
+  "fx_filter_sunset": {
+    "message": "Senja"
+  },
+  "fx_filter_pixel": {
+    "message": "Piksel"
+  },
+  "fx_focus": {
+    "message": "Sorot padaku (tepi lebih gelap)"
+  },
+  "fx_focus_tip": {
+    "message": "Tepi lebih gelap agar cahaya ada di wajahmu"
+  },
+  "fx_sync": {
+    "message": "Lampu mengikuti suara"
+  },
+  "fx_sync_tip": {
+    "message": "Warna berubah sesuai meme yang kamu putar"
+  },
+  "fx_safe": {
+    "message": "Tanpa kedip (perubahan lembut saja)"
+  },
+  "fx_safe_tip": {
+    "message": "Lebih aman untuk yang sensitif pada kilatan"
+  },
+  "fx_bright": {
+    "message": "Kecerahan"
   }
 }

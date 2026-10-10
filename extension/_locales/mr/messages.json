@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "भाषा बदलली. MemeBox त्यात पाहण्यासाठी हा कॉल टॅब रीलोड करा."
+  },
+  "fx_title": {
+    "message": "💡 लाइट्स आणि लूक"
+  },
+  "fx_state_on": {
+    "message": "चालू"
+  },
+  "fx_state_off": {
+    "message": "बंद"
+  },
+  "fx_how": {
+    "message": "तुमच्या कॅमेऱ्यावर दिवा आणि रंगीत दिवे. कॉलमधील सर्वांना दिसतील. खालच्या प्रिव्ह्यूमध्ये सर्व करून पाहा."
+  },
+  "fx_on": {
+    "message": "माझा कॅमेरा उजळवा"
+  },
+  "fx_hint_off": {
+    "message": "करून पाहण्यासाठी चालू करा. वापरण्यासाठी कॉलमध्ये सामील व्हा किंवा पुन्हा सामील व्हा."
+  },
+  "fx_restart": {
+    "message": "दिवे सुरू करण्यासाठी कॉलमध्ये कॅमेरा एकदा बंद करून पुन्हा चालू करा."
+  },
+  "fx_active": {
+    "message": "✓ दिवे तुमच्या कॅमेऱ्यावर आहेत"
+  },
+  "fx_locked": {
+    "message": "🔒 फक्त प्रिव्ह्यू: कॉलमध्ये जाणार नाही."
+  },
+  "fx_plans": {
+    "message": "प्लॅन पाहा"
+  },
+  "fx_watermark": {
+    "message": "प्रिव्ह्यू"
+  },
+  "fx_lamp": {
+    "message": "लटकता दिवा"
+  },
+  "fx_lamp_show": {
+    "message": "दिवा दाखवा"
+  },
+  "fx_pos_center": {
+    "message": "मध्यभागी"
+  },
+  "fx_pos_left": {
+    "message": "डावीकडे"
+  },
+  "fx_pos_right": {
+    "message": "उजवीकडे"
+  },
+  "fx_anim_still": {
+    "message": "स्थिर"
+  },
+  "fx_anim_swing": {
+    "message": "झुलणारा"
+  },
+  "fx_anim_drop": {
+    "message": "खाली पडणारा"
+  },
+  "fx_anim_flicker": {
+    "message": "लुकलुकणारा"
+  },
+  "fx_colors": {
+    "message": "दिव्याचा रंग"
+  },
+  "fx_corners": {
+    "message": "कोपऱ्यातील दिवे"
+  },
+  "fx_corners_show": {
+    "message": "कोपऱ्यातील दिवे दाखवा"
+  },
+  "fx_looks": {
+    "message": "लूक (फिल्टर)"
+  },
+  "fx_pat_steady": {
+    "message": "स्थिर"
+  },
+  "fx_pat_pulse": {
+    "message": "स्पंदन"
+  },
+  "fx_pat_candle": {
+    "message": "मेणबत्ती"
+  },
+  "fx_pat_rainbow": {
+    "message": "इंद्रधनुष्य"
+  },
+  "fx_pat_disco": {
+    "message": "डिस्को"
+  },
+  "fx_pat_sweep": {
+    "message": "स्वीप"
+  },
+  "fx_pat_sparkle": {
+    "message": "चमक"
+  },
+  "fx_filter_none": {
+    "message": "काही नाही"
+  },
+  "fx_filter_warm": {
+    "message": "उबदार"
+  },
+  "fx_filter_bw": {
+    "message": "कृष्णधवल"
+  },
+  "fx_filter_glow": {
+    "message": "ग्लो"
+  },
+  "fx_filter_vintage": {
+    "message": "व्हिंटेज"
+  },
+  "fx_filter_cool": {
+    "message": "थंड"
+  },
+  "fx_filter_neon": {
+    "message": "निऑन"
+  },
+  "fx_filter_noir": {
+    "message": "नुआर"
+  },
+  "fx_filter_dream": {
+    "message": "ड्रीम"
+  },
+  "fx_filter_sunset": {
+    "message": "सनसेट"
+  },
+  "fx_filter_pixel": {
+    "message": "पिक्सेल"
+  },
+  "fx_focus": {
+    "message": "माझ्यावर स्पॉटलाइट (कडा गडद)"
+  },
+  "fx_focus_tip": {
+    "message": "कडा गडद, म्हणजे प्रकाश चेहऱ्यावर राहतो"
+  },
+  "fx_sync": {
+    "message": "दिवे आवाजांसोबत चालतात"
+  },
+  "fx_sync_tip": {
+    "message": "तुम्ही लावलेल्या मीमनुसार रंग बदलतात"
+  },
+  "fx_safe": {
+    "message": "फ्लॅश नाही (फक्त हळुवार बदल)"
+  },
+  "fx_safe_tip": {
+    "message": "फ्लॅशमुळे त्रास होणाऱ्यांसाठी सुरक्षित"
+  },
+  "fx_bright": {
+    "message": "तेजस्विता"
   }
 }

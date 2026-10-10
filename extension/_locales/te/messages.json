@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "భాష మారింది. MemeBox ను అందులో చూడటానికి ఈ కాల్ ట్యాబ్‌ను రీలోడ్ చేయండి."
+  },
+  "fx_title": {
+    "message": "💡 లైట్లు & లుక్"
+  },
+  "fx_state_on": {
+    "message": "ఆన్"
+  },
+  "fx_state_off": {
+    "message": "ఆఫ్"
+  },
+  "fx_how": {
+    "message": "మీ కెమెరాపై లాంప్ మరియు రంగుల లైట్లు. కాల్‌లో అందరికీ కనిపిస్తాయి. కింది ప్రివ్యూలో అన్నీ ప్రయత్నించండి."
+  },
+  "fx_on": {
+    "message": "నా కెమెరాను వెలిగించు"
+  },
+  "fx_hint_off": {
+    "message": "ప్రయత్నించడానికి ఆన్ చేయండి. వాడటానికి కాల్‌లో చేరండి లేదా మళ్లీ చేరండి."
+  },
+  "fx_restart": {
+    "message": "లైట్లు మొదలవడానికి కాల్‌లో కెమెరాను ఒకసారి ఆఫ్ చేసి మళ్లీ ఆన్ చేయండి."
+  },
+  "fx_active": {
+    "message": "✓ లైట్లు మీ కెమెరాపై ఉన్నాయి"
+  },
+  "fx_locked": {
+    "message": "🔒 ప్రివ్యూ మాత్రమే: కాల్‌కు వెళ్లదు."
+  },
+  "fx_plans": {
+    "message": "ప్లాన్లు చూడండి"
+  },
+  "fx_watermark": {
+    "message": "ప్రివ్యూ"
+  },
+  "fx_lamp": {
+    "message": "వేలాడే లాంప్"
+  },
+  "fx_lamp_show": {
+    "message": "లాంప్ చూపించు"
+  },
+  "fx_pos_center": {
+    "message": "మధ్య"
+  },
+  "fx_pos_left": {
+    "message": "ఎడమ"
+  },
+  "fx_pos_right": {
+    "message": "కుడి"
+  },
+  "fx_anim_still": {
+    "message": "స్థిరం"
+  },
+  "fx_anim_swing": {
+    "message": "ఊగే"
+  },
+  "fx_anim_drop": {
+    "message": "పడే"
+  },
+  "fx_anim_flicker": {
+    "message": "మినుకుమినుకు"
+  },
+  "fx_colors": {
+    "message": "కాంతి రంగు"
+  },
+  "fx_corners": {
+    "message": "మూల లైట్లు"
+  },
+  "fx_corners_show": {
+    "message": "మూల లైట్లు చూపించు"
+  },
+  "fx_looks": {
+    "message": "లుక్ (ఫిల్టర్లు)"
+  },
+  "fx_pat_steady": {
+    "message": "స్థిరం"
+  },
+  "fx_pat_pulse": {
+    "message": "స్పందన"
+  },
+  "fx_pat_candle": {
+    "message": "కొవ్వొత్తి"
+  },
+  "fx_pat_rainbow": {
+    "message": "ఇంద్రధనస్సు"
+  },
+  "fx_pat_disco": {
+    "message": "డిస్కో"
+  },
+  "fx_pat_sweep": {
+    "message": "స్వీప్"
+  },
+  "fx_pat_sparkle": {
+    "message": "మెరుపు"
+  },
+  "fx_filter_none": {
+    "message": "ఏదీ కాదు"
+  },
+  "fx_filter_warm": {
+    "message": "వెచ్చని"
+  },
+  "fx_filter_bw": {
+    "message": "నలుపు తెలుపు"
+  },
+  "fx_filter_glow": {
+    "message": "గ్లో"
+  },
+  "fx_filter_vintage": {
+    "message": "వింటేజ్"
+  },
+  "fx_filter_cool": {
+    "message": "చల్లని"
+  },
+  "fx_filter_neon": {
+    "message": "నియాన్"
+  },
+  "fx_filter_noir": {
+    "message": "నోయర్"
+  },
+  "fx_filter_dream": {
+    "message": "డ్రీమ్"
+  },
+  "fx_filter_sunset": {
+    "message": "సన్‌సెట్"
+  },
+  "fx_filter_pixel": {
+    "message": "పిక్సెల్"
+  },
+  "fx_focus": {
+    "message": "నాపై స్పాట్‌లైట్ (అంచులు ముదురు)"
+  },
+  "fx_focus_tip": {
+    "message": "అంచులు ముదురు, కాంతి ముఖంపై ఉంటుంది"
+  },
+  "fx_sync": {
+    "message": "లైట్లు శబ్దాలను అనుసరిస్తాయి"
+  },
+  "fx_sync_tip": {
+    "message": "మీరు ప్లే చేసే మీమ్‌కు తగ్గట్టు రంగు మారుతుంది"
+  },
+  "fx_safe": {
+    "message": "ఫ్లాష్ లేదు (మృదువైన మార్పులు మాత్రమే)"
+  },
+  "fx_safe_tip": {
+    "message": "ఫ్లాష్‌కు సున్నితమైన వారికి సురక్షితం"
+  },
+  "fx_bright": {
+    "message": "ప్రకాశం"
   }
 }

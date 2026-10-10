@@ -246,6 +246,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     chrome.runtime.openOptionsPage();
     return;
   }
+  if (msg.type === 'open-site') {
+    // Only our own few pages, never a path the page chose.
+    const path = ['/buy', '/pricing'].includes(msg.path) ? msg.path : '/buy';
+    chrome.tabs.create({ url: SITE_URL + path });
+    return;
+  }
   if (msg.type === 'open-feedback') {
     openFeedback({ site: String(msg.site || ''), rate: msg.rate === true });
     return;

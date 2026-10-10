@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "भाषा बदल गई। MemeBox को इसमें देखने के लिए यह कॉल टैब रीलोड करें।"
+  },
+  "fx_title": {
+    "message": "💡 लाइट्स और लुक"
+  },
+  "fx_state_on": {
+    "message": "चालू"
+  },
+  "fx_state_off": {
+    "message": "बंद"
+  },
+  "fx_how": {
+    "message": "आपके कैमरे पर लैंप और रंगीन लाइटें। कॉल में सबको दिखेंगी। नीचे प्रिव्यू में सब आज़माएँ।"
+  },
+  "fx_on": {
+    "message": "मेरा कैमरा रोशन करो"
+  },
+  "fx_hint_off": {
+    "message": "आज़माने के लिए चालू करें। इस्तेमाल के लिए कॉल में जुड़ें या दोबारा जुड़ें।"
+  },
+  "fx_restart": {
+    "message": "लाइट शुरू करने के लिए कॉल में कैमरा एक बार बंद करके फिर चालू करें।"
+  },
+  "fx_active": {
+    "message": "✓ लाइट आपके कैमरे पर हैं"
+  },
+  "fx_locked": {
+    "message": "🔒 सिर्फ़ प्रिव्यू: कॉल में नहीं जाएगा।"
+  },
+  "fx_plans": {
+    "message": "प्लान देखें"
+  },
+  "fx_watermark": {
+    "message": "प्रिव्यू"
+  },
+  "fx_lamp": {
+    "message": "लटकता लैंप"
+  },
+  "fx_lamp_show": {
+    "message": "लैंप दिखाएँ"
+  },
+  "fx_pos_center": {
+    "message": "बीच में"
+  },
+  "fx_pos_left": {
+    "message": "बाएँ"
+  },
+  "fx_pos_right": {
+    "message": "दाएँ"
+  },
+  "fx_anim_still": {
+    "message": "स्थिर"
+  },
+  "fx_anim_swing": {
+    "message": "झूलता"
+  },
+  "fx_anim_drop": {
+    "message": "गिरता हुआ"
+  },
+  "fx_anim_flicker": {
+    "message": "टिमटिमाता"
+  },
+  "fx_colors": {
+    "message": "लाइट का रंग"
+  },
+  "fx_corners": {
+    "message": "कोने की लाइटें"
+  },
+  "fx_corners_show": {
+    "message": "कोने की लाइटें दिखाएँ"
+  },
+  "fx_looks": {
+    "message": "लुक (फ़िल्टर)"
+  },
+  "fx_pat_steady": {
+    "message": "स्थिर"
+  },
+  "fx_pat_pulse": {
+    "message": "धड़कन"
+  },
+  "fx_pat_candle": {
+    "message": "मोमबत्ती"
+  },
+  "fx_pat_rainbow": {
+    "message": "इंद्रधनुष"
+  },
+  "fx_pat_disco": {
+    "message": "डिस्को"
+  },
+  "fx_pat_sweep": {
+    "message": "स्वीप"
+  },
+  "fx_pat_sparkle": {
+    "message": "चमक"
+  },
+  "fx_filter_none": {
+    "message": "कोई नहीं"
+  },
+  "fx_filter_warm": {
+    "message": "गर्म"
+  },
+  "fx_filter_bw": {
+    "message": "ब्लैक एंड व्हाइट"
+  },
+  "fx_filter_glow": {
+    "message": "ग्लो"
+  },
+  "fx_filter_vintage": {
+    "message": "विंटेज"
+  },
+  "fx_filter_cool": {
+    "message": "ठंडा"
+  },
+  "fx_filter_neon": {
+    "message": "नियॉन"
+  },
+  "fx_filter_noir": {
+    "message": "नोयर"
+  },
+  "fx_filter_dream": {
+    "message": "ड्रीम"
+  },
+  "fx_filter_sunset": {
+    "message": "सनसेट"
+  },
+  "fx_filter_pixel": {
+    "message": "पिक्सल"
+  },
+  "fx_focus": {
+    "message": "मुझ पर स्पॉटलाइट (किनारे गहरे)"
+  },
+  "fx_focus_tip": {
+    "message": "किनारे गहरे ताकि रोशनी आपके चेहरे पर रहे"
+  },
+  "fx_sync": {
+    "message": "लाइट आवाज़ों के साथ चलें"
+  },
+  "fx_sync_tip": {
+    "message": "जो मीम बजाएँ उसके हिसाब से रंग बदलें"
+  },
+  "fx_safe": {
+    "message": "फ़्लैश नहीं (सिर्फ़ हल्के बदलाव)"
+  },
+  "fx_safe_tip": {
+    "message": "फ़्लैश से परेशान होने वालों के लिए सुरक्षित"
+  },
+  "fx_bright": {
+    "message": "चमक"
   }
 }

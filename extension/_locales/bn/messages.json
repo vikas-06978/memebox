@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "ভাষা বদলেছে। MemeBox এতে দেখতে এই কলের ট্যাব রিলোড করুন।"
+  },
+  "fx_title": {
+    "message": "💡 লাইট ও লুক"
+  },
+  "fx_state_on": {
+    "message": "চালু"
+  },
+  "fx_state_off": {
+    "message": "বন্ধ"
+  },
+  "fx_how": {
+    "message": "আপনার ক্যামেরায় ল্যাম্প ও রঙিন আলো। কলের সবাই দেখবে। নিচের প্রিভিউতে সব চেষ্টা করুন।"
+  },
+  "fx_on": {
+    "message": "আমার ক্যামেরায় আলো দাও"
+  },
+  "fx_hint_off": {
+    "message": "চেষ্টা করতে চালু করুন। ব্যবহার করতে কলে যোগ দিন বা আবার যোগ দিন।"
+  },
+  "fx_restart": {
+    "message": "আলো শুরু করতে কলে ক্যামেরা একবার বন্ধ করে আবার চালু করুন।"
+  },
+  "fx_active": {
+    "message": "✓ আলো আপনার ক্যামেরায় আছে"
+  },
+  "fx_locked": {
+    "message": "🔒 শুধু প্রিভিউ: কলে যাবে না।"
+  },
+  "fx_plans": {
+    "message": "প্ল্যান দেখুন"
+  },
+  "fx_watermark": {
+    "message": "প্রিভিউ"
+  },
+  "fx_lamp": {
+    "message": "ঝোলানো ল্যাম্প"
+  },
+  "fx_lamp_show": {
+    "message": "ল্যাম্প দেখান"
+  },
+  "fx_pos_center": {
+    "message": "মাঝে"
+  },
+  "fx_pos_left": {
+    "message": "বাঁয়ে"
+  },
+  "fx_pos_right": {
+    "message": "ডানে"
+  },
+  "fx_anim_still": {
+    "message": "স্থির"
+  },
+  "fx_anim_swing": {
+    "message": "দোলানো"
+  },
+  "fx_anim_drop": {
+    "message": "ঝুলে নামা"
+  },
+  "fx_anim_flicker": {
+    "message": "মিটমিট"
+  },
+  "fx_colors": {
+    "message": "আলোর রঙ"
+  },
+  "fx_corners": {
+    "message": "কোণার আলো"
+  },
+  "fx_corners_show": {
+    "message": "কোণার আলো দেখান"
+  },
+  "fx_looks": {
+    "message": "লুক (ফিল্টার)"
+  },
+  "fx_pat_steady": {
+    "message": "স্থির"
+  },
+  "fx_pat_pulse": {
+    "message": "স্পন্দন"
+  },
+  "fx_pat_candle": {
+    "message": "মোমবাতি"
+  },
+  "fx_pat_rainbow": {
+    "message": "রামধনু"
+  },
+  "fx_pat_disco": {
+    "message": "ডিস্কো"
+  },
+  "fx_pat_sweep": {
+    "message": "স্ইপ"
+  },
+  "fx_pat_sparkle": {
+    "message": "ঝিলিক"
+  },
+  "fx_filter_none": {
+    "message": "কিছু না"
+  },
+  "fx_filter_warm": {
+    "message": "উষ্ণ"
+  },
+  "fx_filter_bw": {
+    "message": "সাদা-কালো"
+  },
+  "fx_filter_glow": {
+    "message": "গ্লো"
+  },
+  "fx_filter_vintage": {
+    "message": "ভিনটেজ"
+  },
+  "fx_filter_cool": {
+    "message": "ঠান্ডা"
+  },
+  "fx_filter_neon": {
+    "message": "নিয়ন"
+  },
+  "fx_filter_noir": {
+    "message": "নোয়ার"
+  },
+  "fx_filter_dream": {
+    "message": "ড্রিম"
+  },
+  "fx_filter_sunset": {
+    "message": "সানসেট"
+  },
+  "fx_filter_pixel": {
+    "message": "পিক্সেল"
+  },
+  "fx_focus": {
+    "message": "আমার ওপর স্পটলাইট (কিনারা গাঢ়)"
+  },
+  "fx_focus_tip": {
+    "message": "কিনারা গাঢ় যাতে আলো মুখে থাকে"
+  },
+  "fx_sync": {
+    "message": "আলো শব্দের সাথে চলে"
+  },
+  "fx_sync_tip": {
+    "message": "যে মিম বাজান তার সাথে রঙ বদলায়"
+  },
+  "fx_safe": {
+    "message": "ঝলকানি নয় (শুধু মৃদু বদল)"
+  },
+  "fx_safe_tip": {
+    "message": "ঝলকানিতে সংবেদনশীলদের জন্য নিরাপদ"
+  },
+  "fx_bright": {
+    "message": "উজ্জ্বলতা"
   }
 }

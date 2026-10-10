@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "ભાષા બદલાઈ. MemeBox તેમાં જોવા આ કૉલ ટૅબ રીલોડ કરો."
+  },
+  "fx_title": {
+    "message": "💡 લાઇટ્સ અને લૂક"
+  },
+  "fx_state_on": {
+    "message": "ચાલુ"
+  },
+  "fx_state_off": {
+    "message": "બંધ"
+  },
+  "fx_how": {
+    "message": "તમારા કેમેરા પર લેમ્પ અને રંગીન લાઇટ. કૉલમાં બધાને દેખાશે. નીચેના પ્રિવ્યૂમાં બધું અજમાવો."
+  },
+  "fx_on": {
+    "message": "મારો કેમેરા ઝગમગાવો"
+  },
+  "fx_hint_off": {
+    "message": "અજમાવવા ચાલુ કરો. વાપરવા કૉલમાં જોડાઓ અથવા ફરી જોડાઓ."
+  },
+  "fx_restart": {
+    "message": "લાઇટ શરૂ કરવા કૉલમાં કેમેરા એક વાર બંધ કરી ફરી ચાલુ કરો."
+  },
+  "fx_active": {
+    "message": "✓ લાઇટ તમારા કેમેરા પર છે"
+  },
+  "fx_locked": {
+    "message": "🔒 માત્ર પ્રિવ્યૂ: કૉલમાં જશે નહીં."
+  },
+  "fx_plans": {
+    "message": "પ્લાન જુઓ"
+  },
+  "fx_watermark": {
+    "message": "પ્રિવ્યૂ"
+  },
+  "fx_lamp": {
+    "message": "લટકતો લેમ્પ"
+  },
+  "fx_lamp_show": {
+    "message": "લેમ્પ બતાવો"
+  },
+  "fx_pos_center": {
+    "message": "વચ્ચે"
+  },
+  "fx_pos_left": {
+    "message": "ડાબે"
+  },
+  "fx_pos_right": {
+    "message": "જમણે"
+  },
+  "fx_anim_still": {
+    "message": "સ્થિર"
+  },
+  "fx_anim_swing": {
+    "message": "ઝૂલતો"
+  },
+  "fx_anim_drop": {
+    "message": "નીચે પડતો"
+  },
+  "fx_anim_flicker": {
+    "message": "ઝબકતો"
+  },
+  "fx_colors": {
+    "message": "લાઇટનો રંગ"
+  },
+  "fx_corners": {
+    "message": "ખૂણાની લાઇટ"
+  },
+  "fx_corners_show": {
+    "message": "ખૂણાની લાઇટ બતાવો"
+  },
+  "fx_looks": {
+    "message": "લૂક (ફિલ્ટર)"
+  },
+  "fx_pat_steady": {
+    "message": "સ્થિર"
+  },
+  "fx_pat_pulse": {
+    "message": "ધબકારા"
+  },
+  "fx_pat_candle": {
+    "message": "મીણબત્તી"
+  },
+  "fx_pat_rainbow": {
+    "message": "મેઘધનુષ"
+  },
+  "fx_pat_disco": {
+    "message": "ડિસ્કો"
+  },
+  "fx_pat_sweep": {
+    "message": "સ્વીપ"
+  },
+  "fx_pat_sparkle": {
+    "message": "ચમક"
+  },
+  "fx_filter_none": {
+    "message": "કંઈ નહીં"
+  },
+  "fx_filter_warm": {
+    "message": "ગરમ"
+  },
+  "fx_filter_bw": {
+    "message": "બ્લેક એન્ડ વ્હાઇટ"
+  },
+  "fx_filter_glow": {
+    "message": "ગ્લો"
+  },
+  "fx_filter_vintage": {
+    "message": "વિન્ટેજ"
+  },
+  "fx_filter_cool": {
+    "message": "ઠંડો"
+  },
+  "fx_filter_neon": {
+    "message": "નિયોન"
+  },
+  "fx_filter_noir": {
+    "message": "નોયર"
+  },
+  "fx_filter_dream": {
+    "message": "ડ્રીમ"
+  },
+  "fx_filter_sunset": {
+    "message": "સનસેટ"
+  },
+  "fx_filter_pixel": {
+    "message": "પિક્સેલ"
+  },
+  "fx_focus": {
+    "message": "મારા પર સ્પોટલાઇટ (કિનારી ઘેરી)"
+  },
+  "fx_focus_tip": {
+    "message": "કિનારી ઘેરી જેથી પ્રકાશ ચહેરા પર રહે"
+  },
+  "fx_sync": {
+    "message": "લાઇટ અવાજ સાથે ચાલે"
+  },
+  "fx_sync_tip": {
+    "message": "તમે વગાડેલા મીમ પ્રમાણે રંગ બદલાય"
+  },
+  "fx_safe": {
+    "message": "ફ્લેશ નહીં (ફક્ત હળવા ફેરફાર)"
+  },
+  "fx_safe_tip": {
+    "message": "ફ્લેશથી તકલીફ થતા લોકો માટે સુરક્ષિત"
+  },
+  "fx_bright": {
+    "message": "તેજ"
   }
 }

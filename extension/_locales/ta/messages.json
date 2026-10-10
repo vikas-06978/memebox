@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "மொழி மாற்றப்பட்டது. MemeBox-ஐ அதில் பார்க்க இந்த அழைப்புத் தாவலை மீண்டும் ஏற்றுங்கள்."
+  },
+  "fx_title": {
+    "message": "💡 விளக்குகள் & தோற்றம்"
+  },
+  "fx_state_on": {
+    "message": "இயக்கம்"
+  },
+  "fx_state_off": {
+    "message": "நிறுத்தம்"
+  },
+  "fx_how": {
+    "message": "உங்கள் கேமராவில் விளக்கும் வண்ண விளக்குகளும். அழைப்பில் அனைவரும் பார்ப்பார்கள். கீழே உள்ள முன்னோட்டத்தில் முயன்று பாருங்கள்."
+  },
+  "fx_on": {
+    "message": "என் கேமராவை ஒளிரச் செய்"
+  },
+  "fx_hint_off": {
+    "message": "முயற்சிக்க இயக்கவும். பயன்படுத்த அழைப்பில் சேருங்கள் அல்லது மீண்டும் சேருங்கள்."
+  },
+  "fx_restart": {
+    "message": "விளக்குகளைத் தொடங்க அழைப்பில் கேமராவை ஒருமுறை அணைத்து மீண்டும் இயக்குங்கள்."
+  },
+  "fx_active": {
+    "message": "✓ விளக்குகள் உங்கள் கேமராவில் உள்ளன"
+  },
+  "fx_locked": {
+    "message": "🔒 முன்னோட்டம் மட்டும்: அழைப்புக்குப் போகாது."
+  },
+  "fx_plans": {
+    "message": "திட்டங்களைப் பார்"
+  },
+  "fx_watermark": {
+    "message": "முன்னோட்டம்"
+  },
+  "fx_lamp": {
+    "message": "தொங்கும் விளக்கு"
+  },
+  "fx_lamp_show": {
+    "message": "விளக்கைக் காட்டு"
+  },
+  "fx_pos_center": {
+    "message": "நடுவில்"
+  },
+  "fx_pos_left": {
+    "message": "இடது"
+  },
+  "fx_pos_right": {
+    "message": "வலது"
+  },
+  "fx_anim_still": {
+    "message": "அசையாது"
+  },
+  "fx_anim_swing": {
+    "message": "ஆடும்"
+  },
+  "fx_anim_drop": {
+    "message": "விழுந்து வரும்"
+  },
+  "fx_anim_flicker": {
+    "message": "மினுங்கும்"
+  },
+  "fx_colors": {
+    "message": "ஒளி நிறம்"
+  },
+  "fx_corners": {
+    "message": "மூலை விளக்குகள்"
+  },
+  "fx_corners_show": {
+    "message": "மூலை விளக்குகளைக் காட்டு"
+  },
+  "fx_looks": {
+    "message": "தோற்றம் (வடிகட்டிகள்)"
+  },
+  "fx_pat_steady": {
+    "message": "நிலையான"
+  },
+  "fx_pat_pulse": {
+    "message": "துடிப்பு"
+  },
+  "fx_pat_candle": {
+    "message": "மெழுகுவர்த்தி"
+  },
+  "fx_pat_rainbow": {
+    "message": "வானவில்"
+  },
+  "fx_pat_disco": {
+    "message": "டிஸ்கோ"
+  },
+  "fx_pat_sweep": {
+    "message": "ஸ்வீப்"
+  },
+  "fx_pat_sparkle": {
+    "message": "மின்னல்"
+  },
+  "fx_filter_none": {
+    "message": "எதுவுமில்லை"
+  },
+  "fx_filter_warm": {
+    "message": "சூடான"
+  },
+  "fx_filter_bw": {
+    "message": "கருப்பு வெள்ளை"
+  },
+  "fx_filter_glow": {
+    "message": "ஒளிர்வு"
+  },
+  "fx_filter_vintage": {
+    "message": "விண்டேஜ்"
+  },
+  "fx_filter_cool": {
+    "message": "குளிர்"
+  },
+  "fx_filter_neon": {
+    "message": "நியான்"
+  },
+  "fx_filter_noir": {
+    "message": "நுவார்"
+  },
+  "fx_filter_dream": {
+    "message": "கனவு"
+  },
+  "fx_filter_sunset": {
+    "message": "சூரிய அஸ்தமனம்"
+  },
+  "fx_filter_pixel": {
+    "message": "பிக்சல்"
+  },
+  "fx_focus": {
+    "message": "என்மேல் ஸ்பாட்லைட் (ஓரங்கள் கருமை)"
+  },
+  "fx_focus_tip": {
+    "message": "ஓரங்கள் கருமை, ஒளி முகத்தில் இருக்கும்"
+  },
+  "fx_sync": {
+    "message": "விளக்குகள் ஒலிகளுடன் நகரும்"
+  },
+  "fx_sync_tip": {
+    "message": "நீங்கள் இயக்கும் மீமுக்கேற்ப நிறம் மாறும்"
+  },
+  "fx_safe": {
+    "message": "ஒளிர்வு இல்லை (மென்மையான மாற்றம் மட்டும்)"
+  },
+  "fx_safe_tip": {
+    "message": "ஒளிர்வுக்கு உணர்திறன் உள்ளவர்களுக்குப் பாதுகாப்பானது"
+  },
+  "fx_bright": {
+    "message": "பிரகாசம்"
   }
 }

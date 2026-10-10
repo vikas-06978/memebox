@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "Idioma alterado. Recarregue esta aba da chamada para ver o MemeBox nele."
+  },
+  "fx_title": {
+    "message": "💡 Luzes e estilos"
+  },
+  "fx_state_on": {
+    "message": "Ligado"
+  },
+  "fx_state_off": {
+    "message": "Desligado"
+  },
+  "fx_how": {
+    "message": "Uma luminária e luzes coloridas na SUA câmera. Os outros na chamada veem. Teste tudo na prévia abaixo."
+  },
+  "fx_on": {
+    "message": "Iluminar minha câmera"
+  },
+  "fx_hint_off": {
+    "message": "Ative para testar. Entre ou volte para a chamada para usar."
+  },
+  "fx_restart": {
+    "message": "Desligue e ligue sua câmera uma vez na chamada para começar as luzes."
+  },
+  "fx_active": {
+    "message": "✓ As luzes estão na sua câmera"
+  },
+  "fx_locked": {
+    "message": "🔒 Só prévia: não vai para a sua chamada."
+  },
+  "fx_plans": {
+    "message": "Ver planos"
+  },
+  "fx_watermark": {
+    "message": "PRÉVIA"
+  },
+  "fx_lamp": {
+    "message": "Luminária pendurada"
+  },
+  "fx_lamp_show": {
+    "message": "Mostrar a luminária"
+  },
+  "fx_pos_center": {
+    "message": "Centro"
+  },
+  "fx_pos_left": {
+    "message": "Esquerda"
+  },
+  "fx_pos_right": {
+    "message": "Direita"
+  },
+  "fx_anim_still": {
+    "message": "Parada"
+  },
+  "fx_anim_swing": {
+    "message": "Balanço"
+  },
+  "fx_anim_drop": {
+    "message": "Queda"
+  },
+  "fx_anim_flicker": {
+    "message": "Pisca"
+  },
+  "fx_colors": {
+    "message": "Cor da luz"
+  },
+  "fx_corners": {
+    "message": "Luzes de canto"
+  },
+  "fx_corners_show": {
+    "message": "Mostrar luzes de canto"
+  },
+  "fx_looks": {
+    "message": "Estilos (filtros)"
+  },
+  "fx_pat_steady": {
+    "message": "Fixa"
+  },
+  "fx_pat_pulse": {
+    "message": "Pulso"
+  },
+  "fx_pat_candle": {
+    "message": "Vela"
+  },
+  "fx_pat_rainbow": {
+    "message": "Arco-íris"
+  },
+  "fx_pat_disco": {
+    "message": "Disco"
+  },
+  "fx_pat_sweep": {
+    "message": "Varredura"
+  },
+  "fx_pat_sparkle": {
+    "message": "Brilhos"
+  },
+  "fx_filter_none": {
+    "message": "Nenhum"
+  },
+  "fx_filter_warm": {
+    "message": "Quente"
+  },
+  "fx_filter_bw": {
+    "message": "Preto e branco"
+  },
+  "fx_filter_glow": {
+    "message": "Brilho suave"
+  },
+  "fx_filter_vintage": {
+    "message": "Vintage"
+  },
+  "fx_filter_cool": {
+    "message": "Frio"
+  },
+  "fx_filter_neon": {
+    "message": "Neon"
+  },
+  "fx_filter_noir": {
+    "message": "Noir"
+  },
+  "fx_filter_dream": {
+    "message": "Sonho"
+  },
+  "fx_filter_sunset": {
+    "message": "Pôr do sol"
+  },
+  "fx_filter_pixel": {
+    "message": "Pixel"
+  },
+  "fx_focus": {
+    "message": "Foco em mim (bordas escuras)"
+  },
+  "fx_focus_tip": {
+    "message": "Bordas mais escuras para a luz ficar no seu rosto"
+  },
+  "fx_sync": {
+    "message": "As luzes seguem os sons"
+  },
+  "fx_sync_tip": {
+    "message": "As cores mudam com o meme que você toca"
+  },
+  "fx_safe": {
+    "message": "Sem piscar (só mudanças suaves)"
+  },
+  "fx_safe_tip": {
+    "message": "Mais seguro para quem é sensível a luzes piscando"
+  },
+  "fx_bright": {
+    "message": "Brilho"
   }
 }

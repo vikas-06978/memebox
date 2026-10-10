@@ -71,6 +71,7 @@
         "defaults.js",
         "lib/fx-ui.js",
         "bridge.js",
+        "lights-ui.js",
         "ui.js"
       ],
       "run_at": "document_start",

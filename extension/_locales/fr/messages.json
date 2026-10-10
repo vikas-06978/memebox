@@ -894,5 +894,152 @@
   },
   "lang_reload": {
     "message": "Langue changée. Rechargez cet onglet d'appel pour voir MemeBox dans cette langue."
+  },
+  "fx_title": {
+    "message": "💡 Lumières et looks"
+  },
+  "fx_state_on": {
+    "message": "Oui"
+  },
+  "fx_state_off": {
+    "message": "Non"
+  },
+  "fx_how": {
+    "message": "Une lampe et des lumières colorées sur VOTRE caméra. Les autres dans l’appel les voient. Essayez tout dans l’aperçu ci-dessous."
+  },
+  "fx_on": {
+    "message": "Éclairer ma caméra"
+  },
+  "fx_hint_off": {
+    "message": "Activez pour essayer. Rejoignez l’appel (ou rejoignez-le à nouveau) pour l’utiliser."
+  },
+  "fx_restart": {
+    "message": "Coupez puis rallumez votre caméra une fois dans l’appel pour lancer les lumières."
+  },
+  "fx_active": {
+    "message": "✓ Les lumières sont sur votre caméra"
+  },
+  "fx_locked": {
+    "message": "🔒 Aperçu seulement : non envoyé dans votre appel."
+  },
+  "fx_plans": {
+    "message": "Voir les offres"
+  },
+  "fx_watermark": {
+    "message": "APERÇU"
+  },
+  "fx_lamp": {
+    "message": "Lampe suspendue"
+  },
+  "fx_lamp_show": {
+    "message": "Afficher la lampe"
+  },
+  "fx_pos_center": {
+    "message": "Centre"
+  },
+  "fx_pos_left": {
+    "message": "Gauche"
+  },
+  "fx_pos_right": {
+    "message": "Droite"
+  },
+  "fx_anim_still": {
+    "message": "Fixe"
+  },
+  "fx_anim_swing": {
+    "message": "Balancement"
+  },
+  "fx_anim_drop": {
+    "message": "Chute"
+  },
+  "fx_anim_flicker": {
+    "message": "Scintillement"
+  },
+  "fx_colors": {
+    "message": "Couleur de la lumière"
+  },
+  "fx_corners": {
+    "message": "Lumières de coin"
+  },
+  "fx_corners_show": {
+    "message": "Afficher les lumières de coin"
+  },
+  "fx_looks": {
+    "message": "Looks (filtres)"
+  },
+  "fx_pat_steady": {
+    "message": "Fixe"
+  },
+  "fx_pat_pulse": {
+    "message": "Pulsation"
+  },
+  "fx_pat_candle": {
+    "message": "Bougie"
+  },
+  "fx_pat_rainbow": {
+    "message": "Arc-en-ciel"
+  },
+  "fx_pat_disco": {
+    "message": "Disco"
+  },
+  "fx_pat_sweep": {
+    "message": "Balayage"
+  },
+  "fx_pat_sparkle": {
+    "message": "Étincelles"
+  },
+  "fx_filter_none": {
+    "message": "Aucun"
+  },
+  "fx_filter_warm": {
+    "message": "Chaud"
+  },
+  "fx_filter_bw": {
+    "message": "Noir et blanc"
+  },
+  "fx_filter_glow": {
+    "message": "Halo"
+  },
+  "fx_filter_vintage": {
+    "message": "Vintage"
+  },
+  "fx_filter_cool": {
+    "message": "Froid"
+  },
+  "fx_filter_neon": {
+    "message": "Néon"
+  },
+  "fx_filter_noir": {
+    "message": "Noir"
+  },
+  "fx_filter_dream": {
+    "message": "Rêve"
+  },
+  "fx_filter_sunset": {
+    "message": "Coucher de soleil"
+  },
+  "fx_filter_pixel": {
+    "message": "Pixel"
+  },
+  "fx_focus": {
+    "message": "Projecteur sur moi (bords sombres)"
+  },
+  "fx_focus_tip": {
+    "message": "Bords plus sombres pour que la lumière soit sur votre visage"
+  },
+  "fx_sync": {
+    "message": "Les lumières suivent les sons"
+  },
+  "fx_sync_tip": {
+    "message": "Les couleurs changent avec le mème joué"
+  },
+  "fx_safe": {
+    "message": "Sans clignotement (changements doux)"
+  },
+  "fx_safe_tip": {
+    "message": "Plus sûr pour les personnes sensibles aux flashs"
+  },
+  "fx_bright": {
+    "message": "Luminosité"
   }
 }
