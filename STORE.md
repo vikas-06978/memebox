@@ -65,7 +65,7 @@ Your microphone, camera and tab audio are only mixed inside your browser. They a
 • After installing or updating, reload an open call tab once.
 • Keep it friendly and follow the rules of your class or workplace.
 
-MemeBox is open source (GPL-3.0-or-later): https://github.com/vikas-06978/memebox. It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.
+MemeBox is free software (GPL-3.0-or-later). The source code is available on request: memebox.help@gmail.com. It uses the eSpeak-NG speech synthesizer. MemeBox is an independent project and isn't affiliated with any of the call services it works on.
 
 ## Single purpose
 

@@ -21,7 +21,12 @@ const OG_LOCALE = {
   en: 'en_US', hi: 'hi_IN', bn: 'bn_IN', mr: 'mr_IN', ta: 'ta_IN', te: 'te_IN', gu: 'gu_IN',
   es: 'es_ES', ar: 'ar_AR', pt: 'pt_BR', fr: 'fr_FR', id: 'id_ID',
 };
-const INSTALL_URL = 'https://github.com/vikas-06978/memebox/releases/latest'; // store link later
+// The "Add to Chrome" button: the store page (STORE_URL in extension/config.js) once it is set, until then a store search.
+const STORE_SEARCH = 'https://chromewebstore.google.com/search/MemeBox';
+const INSTALL_URL = (() => {
+  const m = /STORE_URL:\s*'([^']*)'/.exec(fs.readFileSync(path.join(ROOT, 'extension', 'config.js'), 'utf8'));
+  return m && m[1] ? m[1] : STORE_SEARCH;
+})();
 
 export function siteUrl() {
   const cfg = fs.readFileSync(path.join(ROOT, 'extension', 'config.js'), 'utf8');
