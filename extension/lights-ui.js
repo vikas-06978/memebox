@@ -55,6 +55,7 @@
     const bright = el('input', { className: 'vol', type: 'range', min: 20, max: 100, step: 5 });
     bright.setAttribute('aria-label', t('fx_bright'));
     const lampG = group(t('fx_lamp'));
+    const fixChips = chipRow();
     const animChips = chipRow();
     const posChips = chipRow();
     const colorsG = group(t('fx_colors'));
@@ -68,7 +69,7 @@
     const charPosChips = chipRow();
     const lampLine = el('label', { className: 'check' }, lampBox, t('fx_lamp_show'));
     const cornersLine = el('label', { className: 'check' }, cornersBox, t('fx_corners_show'));
-    lampG.append(lampLine, animChips, posChips);
+    lampG.append(lampLine, fixChips, animChips, posChips);
     colorsG.append(swatches);
     cornersG.append(cornersLine, patChips);
     looksG.append(filterChips);
@@ -139,6 +140,8 @@
     // ---- build the choice lists from what exists ----
     function fill() {
       const c = cfg();
+      fixChips.replaceChildren(...Fx.FIXTURES.map((f) =>
+        chip(t('fx_fix_' + f), c.fixture === f, f !== 'lamp' && !can('fixtures'), () => set({ fixture: f, lamp: true }, true))));
       animChips.replaceChildren(...Fx.LAMP_ANIMS.map((a) =>
         chip(t('fx_anim_' + a), c.lampAnim === a, a !== 'still' && !can('lampAnim'), () => set({ lampAnim: a, lamp: true }, true))));
       posChips.replaceChildren(...['center', 'left', 'right'].map((p) =>
@@ -195,7 +198,7 @@
       Fx.drawSample(sample.getContext('2d'), w, h, now);
       // The preview always shows the lights, even if the switch is off, so people see what they would get.
       const mood = ['suspense', 'excited', 'fun', 'surprise'][Math.floor(now / 3500) % 4];
-      renderer.render(g, sample, w, h, { ...shown, on: true }, now, { level: 0.3 + 0.2 * Math.sin(now / 300), beat: 0, mood: shown.sync || shown.character !== 'none' ? mood : '' },
+      renderer.render(g, sample, w, h, { ...shown, on: true }, now, { level: 0.3 + 0.2 * Math.sin(now / 300), beat: now % 520 < 40 ? 1 : 0, mood: shown.sync || shown.character !== 'none' ? mood : '' },
         { preview: trying && Fx.lockedParts(c, can).length > 0, watermark: t('fx_watermark') });
       if (!trying && trialUntil) { trialUntil = 0; render(); }
       raf = requestAnimationFrame(frame);

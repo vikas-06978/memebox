@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "Hearts"
+  },
+  "fx_fix_lamp": {
+    "message": "Lamp"
+  },
+  "fx_fix_discoball": {
+    "message": "Disco ball"
+  },
+  "fx_fix_lantern": {
+    "message": "Lantern"
+  },
+  "fx_fix_fairy": {
+    "message": "Fairy lights"
+  },
+  "fx_fix_chandelier": {
+    "message": "Chandelier"
+  },
+  "fx_fix_moon": {
+    "message": "Moon"
+  },
+  "fx_fix_star": {
+    "message": "Star"
+  },
+  "fx_fix_spotlight": {
+    "message": "Spotlight"
+  },
+  "fx_anim_sway": {
+    "message": "Sway"
+  },
+  "fx_anim_bounce": {
+    "message": "Bounce"
+  },
+  "fx_anim_pendulum": {
+    "message": "Pendulum"
+  },
+  "fx_anim_beat": {
+    "message": "To the beat"
   }
 }

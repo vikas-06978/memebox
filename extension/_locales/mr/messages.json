@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "हृदय"
+  },
+  "fx_fix_lamp": {
+    "message": "दिवा"
+  },
+  "fx_fix_discoball": {
+    "message": "डिस्को बॉल"
+  },
+  "fx_fix_lantern": {
+    "message": "कंदील"
+  },
+  "fx_fix_fairy": {
+    "message": "परी दिवे"
+  },
+  "fx_fix_chandelier": {
+    "message": "झुंबर"
+  },
+  "fx_fix_moon": {
+    "message": "चंद्र"
+  },
+  "fx_fix_star": {
+    "message": "तारा"
+  },
+  "fx_fix_spotlight": {
+    "message": "स्पॉटलाइट"
+  },
+  "fx_anim_sway": {
+    "message": "डोलतो"
+  },
+  "fx_anim_bounce": {
+    "message": "उडतो"
+  },
+  "fx_anim_pendulum": {
+    "message": "पेंडुलम"
+  },
+  "fx_anim_beat": {
+    "message": "बीटवर"
   }
 }

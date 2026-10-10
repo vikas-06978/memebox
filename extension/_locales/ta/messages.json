@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "இதயங்கள்"
+  },
+  "fx_fix_lamp": {
+    "message": "விளக்கு"
+  },
+  "fx_fix_discoball": {
+    "message": "டிஸ்கோ பந்து"
+  },
+  "fx_fix_lantern": {
+    "message": "விளக்குக் கூடு"
+  },
+  "fx_fix_fairy": {
+    "message": "தேவதை விளக்குகள்"
+  },
+  "fx_fix_chandelier": {
+    "message": "சரவிளக்கு"
+  },
+  "fx_fix_moon": {
+    "message": "நிலா"
+  },
+  "fx_fix_star": {
+    "message": "நட்சத்திரம்"
+  },
+  "fx_fix_spotlight": {
+    "message": "ஸ்பாட்லைட்"
+  },
+  "fx_anim_sway": {
+    "message": "அசையும்"
+  },
+  "fx_anim_bounce": {
+    "message": "துள்ளும்"
+  },
+  "fx_anim_pendulum": {
+    "message": "ஊசல்"
+  },
+  "fx_anim_beat": {
+    "message": "துடிப்புக்கு"
   }
 }

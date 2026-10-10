@@ -11,6 +11,7 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 - **Music**: thirteen original tunes (Chill and Funky are free; the rest are Pro). Disco, Club, Bass (808), Desi (dhol) and House are long, about a minute each, with an intro, a build, a drop with a pumping sub bass, and a break. made by the code itself, so no copyright and nothing to download. They play into your call like a meme, get quieter while you talk, stop with "Stop all", and the lights and characters follow them. A locked tune can be previewed on your own speakers for 20 s.
 - Ten more filters (Pro Max): VHS, Cyber, Comic, Matrix, Glam, Night vision, Old film, Synthwave, Thermal, Snow.
 - Six more corner light shows (Pro): Aurora, Fire, Lasers, Neon frame, Police (slow fade, never a flash), Hearts.
+- **Things that hang like the lamp** (Pro): a mirror ball that turns and throws spots of light around the room, a paper lantern (kandil), fairy lights, a chandelier, a moon, a star and a stage spotlight. Four more animations (Pro): Sway, Bounce, Pendulum and "To the beat" (kicks with the sound). The plain still lamp stays free.
 - Free choices stay free; Pro and add-on choices can be previewed on your own screen (20 s, "PREVIEW" mark) and are not sent to the call.
 
 ## [1.2.6] - 2026-10-10

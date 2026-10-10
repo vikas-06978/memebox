@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "హృదయాలు"
+  },
+  "fx_fix_lamp": {
+    "message": "లాంప్"
+  },
+  "fx_fix_discoball": {
+    "message": "డిస్కో బాల్"
+  },
+  "fx_fix_lantern": {
+    "message": "లాంతరు"
+  },
+  "fx_fix_fairy": {
+    "message": "ఫెయిరీ లైట్లు"
+  },
+  "fx_fix_chandelier": {
+    "message": "షాండ్లియర్"
+  },
+  "fx_fix_moon": {
+    "message": "చంద్రుడు"
+  },
+  "fx_fix_star": {
+    "message": "నక్షత్రం"
+  },
+  "fx_fix_spotlight": {
+    "message": "స్పాట్‌లైట్"
+  },
+  "fx_anim_sway": {
+    "message": "ఊగుతుంది"
+  },
+  "fx_anim_bounce": {
+    "message": "ఎగురుతుంది"
+  },
+  "fx_anim_pendulum": {
+    "message": "లోలకం"
+  },
+  "fx_anim_beat": {
+    "message": "బీట్‌కు"
   }
 }

@@ -127,6 +127,7 @@ test('every Lights filter, character and music tune has a name in every language
     ...['none', ...fx.CHARACTERS].map((c) => 'fx_char_' + c),
     ...fx.LAMP_ANIMS.map((a) => 'fx_anim_' + a),
     ...fx.PATTERNS.map((p) => 'fx_pat_' + p),
+    ...fx.FIXTURES.map((f) => 'fx_fix_' + f),
     ...music.IDS.map((id) => 'mu_t_' + id),
   ];
   for (const [lang, msgs] of Object.entries(all)) for (const k of keys) assert.ok(msgs[k] && msgs[k].message, `${lang} is missing ${k}`);

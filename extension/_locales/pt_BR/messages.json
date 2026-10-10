@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "Corações"
+  },
+  "fx_fix_lamp": {
+    "message": "Luminária"
+  },
+  "fx_fix_discoball": {
+    "message": "Globo de espelhos"
+  },
+  "fx_fix_lantern": {
+    "message": "Lanterna"
+  },
+  "fx_fix_fairy": {
+    "message": "Luzes de fada"
+  },
+  "fx_fix_chandelier": {
+    "message": "Lustre"
+  },
+  "fx_fix_moon": {
+    "message": "Lua"
+  },
+  "fx_fix_star": {
+    "message": "Estrela"
+  },
+  "fx_fix_spotlight": {
+    "message": "Holofote"
+  },
+  "fx_anim_sway": {
+    "message": "Balanço suave"
+  },
+  "fx_anim_bounce": {
+    "message": "Quicar"
+  },
+  "fx_anim_pendulum": {
+    "message": "Pêndulo"
+  },
+  "fx_anim_beat": {
+    "message": "No ritmo"
   }
 }

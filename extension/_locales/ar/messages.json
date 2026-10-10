@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "قلوب"
+  },
+  "fx_fix_lamp": {
+    "message": "مصباح"
+  },
+  "fx_fix_discoball": {
+    "message": "كرة ديسكو"
+  },
+  "fx_fix_lantern": {
+    "message": "فانوس"
+  },
+  "fx_fix_fairy": {
+    "message": "أضواء الجنيات"
+  },
+  "fx_fix_chandelier": {
+    "message": "ثريا"
+  },
+  "fx_fix_moon": {
+    "message": "قمر"
+  },
+  "fx_fix_star": {
+    "message": "نجمة"
+  },
+  "fx_fix_spotlight": {
+    "message": "كشاف"
+  },
+  "fx_anim_sway": {
+    "message": "يتمايل"
+  },
+  "fx_anim_bounce": {
+    "message": "يرتد"
+  },
+  "fx_anim_pendulum": {
+    "message": "بندول"
+  },
+  "fx_anim_beat": {
+    "message": "مع الإيقاع"
   }
 }

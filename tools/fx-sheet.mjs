@@ -23,6 +23,8 @@ await page.evaluate((only) => {
   add('free: still lamp (warm, white, blue) + swing + flicker + no lamp', [
     { label: 'warm', cfg: { ...base } }, { label: 'white', cfg: { ...base, color: 'white' } }, { label: 'blue', cfg: { ...base, color: 'blue' } },
     { label: 'swing', cfg: { ...base, lampAnim: 'swing' }, at: 900 }, { label: 'flicker', cfg: { ...base, lampAnim: 'flicker' }, at: 700 }, { label: 'no lamp', cfg: { ...base, lamp: false } }]);
+  add('fixtures (that hang like the lamp), after the drop', FX.FIXTURES.map((f) => ({ label: f, cfg: { ...base, fixture: f, lampAnim: 'drop' }, at: 4200, anim: true })));
+  add('new animations: sway, pendulum, bounce, beat (two moments each)', [['sway', 700], ['sway', 2600], ['pendulum', 700], ['pendulum', 2300], ['bounce', 300], ['bounce', 900], ['beat', 700], ['beat', 1400]].map(([a, ms]) => ({ label: a + ' ' + ms, cfg: { ...base, lampAnim: a, fixture: 'discoball' }, at: ms, audio: { level: 0.5, beat: ms === 700 ? 1 : 0, mood: '' } })));
   add('patterns (corners on)', FX.PATTERNS.map((p) => ({ label: p, cfg: { ...base, corners: true, pattern: p, color: 'rose' }, at: 3000 })));
   add('filters', FX.FILTERS.map((f) => ({ label: f, cfg: { ...base, on: false, filter: f } })));
   add('moods (sync on)', FX.MOODS.map((m) => ({ label: m, cfg: { ...base, sync: true, corners: true }, at: 4000, audio: { level: 0.6, beat: 0, mood: m } })));

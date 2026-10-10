@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "হৃদয়"
+  },
+  "fx_fix_lamp": {
+    "message": "ল্যাম্প"
+  },
+  "fx_fix_discoball": {
+    "message": "ডিস্কো বল"
+  },
+  "fx_fix_lantern": {
+    "message": "লণ্ঠন"
+  },
+  "fx_fix_fairy": {
+    "message": "ফেয়ারি লাইট"
+  },
+  "fx_fix_chandelier": {
+    "message": "ঝাড়বাতি"
+  },
+  "fx_fix_moon": {
+    "message": "চাঁদ"
+  },
+  "fx_fix_star": {
+    "message": "তারা"
+  },
+  "fx_fix_spotlight": {
+    "message": "স্পটলাইট"
+  },
+  "fx_anim_sway": {
+    "message": "দোলে"
+  },
+  "fx_anim_bounce": {
+    "message": "লাফায়"
+  },
+  "fx_anim_pendulum": {
+    "message": "পেন্ডুলাম"
+  },
+  "fx_anim_beat": {
+    "message": "বিটে"
   }
 }

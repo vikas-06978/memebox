@@ -132,3 +132,16 @@ test('the newer filters (thermal, night vision, matrix, snow) run in the call an
   expect(seen.night.g, 'night vision is green').toBeGreaterThan(seen.night.r + 25);
   expect(seen.heat.r + seen.heat.b, 'thermal: the plain green camera becomes red/blue heat colours').toBeGreaterThan(seen.heat.g);
 });
+
+test('a hanging disco ball (Pro) is drawn on the camera in the call', async ({ context, callPage }) => {
+  await callPage.evaluate(helpers);
+  await setFx(context, { armed: true });
+  await callPage.evaluate(() => window.openCam());
+  await callPage.waitForTimeout(700);
+  const before = await callPage.evaluate(() => window.avg(0.42, 0.12, 0.58, 0.32));
+  await setFx(context, { armed: true, on: true, fixture: 'discoball', lampAnim: 'still', focus: false });
+  await callPage.waitForTimeout(1200);
+  const after = await callPage.evaluate(() => window.avg(0.42, 0.12, 0.58, 0.32));
+  await callPage.screenshot({ path: 'tests/.tmp/discoball-in-call.png' });
+  expect(after.r + after.b, 'the silver ball and its glow are where the plain camera was').toBeGreaterThan(before.r + before.b + 40);
+});

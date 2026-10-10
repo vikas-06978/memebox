@@ -24,7 +24,8 @@
     rose: '#ff7eb6', purple: '#b194ff', green: '#6ee7b7', red: '#ff6b6b', cyan: '#5de1ff', gold: '#ffd54a', // Pro
   };
   const FREE_COLORS = ['warm', 'white', 'blue'];
-  const LAMP_ANIMS = ['still', 'swing', 'drop', 'flicker'];        // "still" is free, the rest are Pro
+  const LAMP_ANIMS = ['still', 'swing', 'drop', 'flicker', 'sway', 'bounce', 'pendulum', 'beat'];
+  const FIXTURES = ['lamp', 'discoball', 'lantern', 'fairy', 'chandelier', 'moon', 'star', 'spotlight']; // what hangs (only the lamp is free)        // "still" is free, the rest are Pro
   const PATTERNS = ['steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle', 'aurora', 'fire', 'laser', 'neonframe', 'police', 'heart']; // corner light shows (Pro)
   const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow'];
   const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];             // 3 free
@@ -42,7 +43,8 @@
     armed: false,       // the camera is prepared in the next call (set once Lights has been used)
     lamp: true,         // the hanging lamp
     lampPos: 'center',  // center | left | right (so it does not cover your face)
-    lampAnim: 'still',  // still | swing | drop | flicker
+    lampAnim: 'still',  // still | swing | drop | flicker | sway | bounce | pendulum | beat
+    fixture: 'lamp',    // lamp | discoball | lantern | fairy | chandelier | moon | star | spotlight
     color: 'warm',      // a name from COLORS or '#rrggbb'
     pattern: 'steady',  // corner light show
     corners: false,     // coloured corner lights
@@ -67,6 +69,7 @@
       lamp: c.lamp !== false,
       lampPos: ['center', 'left', 'right'].includes(c.lampPos) ? c.lampPos : 'center',
       lampAnim: LAMP_ANIMS.includes(c.lampAnim) ? c.lampAnim : 'still',
+      fixture: FIXTURES.includes(c.fixture) ? c.fixture : 'lamp',
       color: Object.prototype.hasOwnProperty.call(COLORS, c.color) || isHex(c.color) ? c.color : 'warm',
       pattern: PATTERNS.includes(c.pattern) ? c.pattern : 'steady',
       corners: c.corners === true,
@@ -79,6 +82,7 @@
       intensity: Number.isFinite(Number(c.intensity)) ? clamp(Number(c.intensity), 0.2, 1) : 0.8,
     };
     if (out.lampAnim !== 'still' && !can('lampAnim')) out.lampAnim = 'still';
+    if (out.fixture !== 'lamp' && !can('fixtures')) out.fixture = 'lamp';
     if (!FREE_COLORS.includes(out.color) && !can('colors')) out.color = 'warm';
     if (out.corners && !can('corners')) out.corners = false;
     if (out.pattern !== 'steady' && !can('corners')) out.pattern = 'steady';
@@ -94,7 +98,7 @@
     const want = sanitize(cfg, () => true);
     const have = sanitize(cfg, can);
     const locked = [];
-    for (const k of ['lampAnim', 'color', 'corners', 'pattern', 'sync', 'filter', 'character']) if (want[k] !== have[k]) locked.push(k);
+    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character']) if (want[k] !== have[k]) locked.push(k);
     return locked;
   }
 
@@ -430,8 +434,210 @@
       g.restore();
     }
 
+    // ---- other things that hang (or shine) like the lamp ----
+    // Where the light comes from, below the point where the cord hangs, as a share of the picture height.
+    const FIX_OFF = { lamp: 0.26, discoball: 0.195, lantern: 0.185, chandelier: 0.165, moon: 0.19, star: 0.19, fairy: 0.06, spotlight: 0.07 };
+
+    function cordTo(g, h, st, len) {
+      g.strokeStyle = '#17171c'; g.lineWidth = Math.max(2, h * 0.0045);
+      g.beginPath(); g.moveTo(0, -h * 0.1 + st.dy); g.lineTo(0, len + st.dy); g.stroke();
+    }
+
+    function drawDiscoBall(g, w, h, st) {
+      const r = h * 0.088, cord = h * 0.12, t = st.now / 1000;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy + r);
+      g.fillStyle = '#2a2b33'; g.fillRect(-r * 0.12, -r * 1.12, r * 0.24, r * 0.18);
+      const base = g.createRadialGradient(-r * 0.35, -r * 0.35, r * 0.1, 0, 0, r);
+      base.addColorStop(0, '#f4f6ff'); base.addColorStop(0.55, '#9aa2c0'); base.addColorStop(1, '#3a3f5a');
+      g.fillStyle = base; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
+      g.save(); g.beginPath(); g.arc(0, 0, r, 0, TAU); g.clip(); // the little mirrors, turning
+      const rows = 9, rot = t * 0.9;
+      for (let i = 0; i < rows; i++) {
+        const lat = -Math.PI / 2 + ((i + 0.5) / rows) * Math.PI, y = Math.sin(lat) * r, ring = Math.cos(lat) * r, cols = Math.max(4, Math.round(rows * 1.8 * Math.cos(lat)));
+        for (let j = 0; j < cols; j++) {
+          const lon = (j / cols) * TAU + rot, vis = Math.cos(lon);
+          if (vis <= 0) continue;
+          const x = Math.sin(lon) * ring, sz = (r * Math.PI / rows) * 0.88 * (0.35 + 0.65 * vis);
+          const shine = 0.25 + 0.75 * Math.max(0, Math.sin(lon * 2.3 + i * 1.7 + t * 2.1));
+          g.fillStyle = `rgba(${Math.round(150 + 105 * shine)},${Math.round(160 + 95 * shine)},${Math.round(190 + 65 * shine)},${0.35 + 0.6 * vis * shine})`;
+          g.fillRect(x - sz / 2, y - (r * Math.PI / rows) * 0.44, sz, (r * Math.PI / rows) * 0.88);
+        }
+      }
+      g.restore();
+      g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = Math.max(1, h * 0.002); g.beginPath(); g.arc(0, 0, r, 0, TAU); g.stroke();
+      glow(g, 0, 0, r * 2.3, st.rgb, 0.3 * st.bright);
+      g.restore();
+    }
+
+    function drawLantern(g, w, h, st) {
+      const cord = h * 0.1, hh = h * 0.17, ww = h * 0.11;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy);
+      g.fillStyle = '#7a1d12'; g.beginPath(); g.moveTo(-ww * 0.14, 0); g.lineTo(ww * 0.14, 0); g.lineTo(ww * 0.34, hh * 0.1); g.lineTo(-ww * 0.34, hh * 0.1); g.closePath(); g.fill();
+      const body = g.createLinearGradient(-ww / 2, 0, ww / 2, 0);
+      body.addColorStop(0, '#a4251a'); body.addColorStop(0.5, rgba(mixRgb([255, 120, 50], st.rgb, 0.35), 1)); body.addColorStop(1, '#a4251a');
+      g.fillStyle = body; g.beginPath();
+      g.moveTo(-ww * 0.34, hh * 0.1); g.bezierCurveTo(-ww * 0.75, hh * 0.3, -ww * 0.62, hh * 0.78, -ww * 0.2, hh * 0.9);
+      g.lineTo(ww * 0.2, hh * 0.9); g.bezierCurveTo(ww * 0.62, hh * 0.78, ww * 0.75, hh * 0.3, ww * 0.34, hh * 0.1); g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(255,220,150,0.5)'; g.lineWidth = Math.max(1, h * 0.003); // paper ribs
+      for (const k of [-0.45, -0.2, 0, 0.2, 0.45]) { g.beginPath(); g.moveTo(k * ww * 0.5, hh * 0.1); g.quadraticCurveTo(k * ww * 1.4, hh * 0.5, k * ww * 0.4, hh * 0.9); g.stroke(); }
+      glow(g, 0, hh * 0.5, hh * 0.75, [255, 200, 120], 0.5 * st.bright);
+      g.fillStyle = '#7a1d12'; g.fillRect(-ww * 0.2, hh * 0.9, ww * 0.4, hh * 0.05);
+      g.strokeStyle = '#f0b23c'; g.lineWidth = Math.max(1.5, h * 0.004); // tassel
+      for (const k of [-1, 0, 1]) { g.beginPath(); g.moveTo(k * ww * 0.08, hh * 0.95); g.lineTo(k * ww * 0.12 + Math.sin(st.now / 700 + k) * ww * 0.03, hh * 1.2); g.stroke(); }
+      g.restore();
+    }
+
+    function fairyPoints(w, h, ls, t) {
+      const pts = [], N = 13, sag = h * (0.13 + 0.01 * Math.sin(t * 0.8));
+      for (let i = 0; i < N; i++) {
+        const u = (i + 0.5) / N;
+        pts.push([u * w + ls.angle * h * 0.5 * Math.sin(u * 3), h * 0.03 + sag * 4 * u * (1 - u) + ls.dy * 0.55 + ls.angle * w * 0.08 * Math.sin(u * TAU)]);
+      }
+      return pts;
+    }
+    function drawFairy(g, w, h, st) {
+      const t = st.now / 1000, pts = fairyPoints(w, h, st, t);
+      g.save();
+      g.strokeStyle = '#1a1a20'; g.lineWidth = Math.max(1.5, h * 0.004); g.beginPath();
+      pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke();
+      pts.forEach(([x, y], i) => {
+        const tw = 0.55 + 0.45 * Math.sin(t * 2.2 + i * 1.7), col = mixRgb(st.rgb, hexToRgb(hslHex(i * 43 + t * 8)), 0.45);
+        g.globalCompositeOperation = 'screen';
+        glow(g, x, y + h * 0.014, h * 0.075, col, 0.5 * tw * st.bright);
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = rgba(mixRgb(col, [255, 255, 255], 0.5), 0.55 + 0.45 * tw); g.beginPath(); g.ellipse(x, y + h * 0.014, h * 0.0085, h * 0.012, 0, 0, TAU); g.fill();
+      });
+      g.restore();
+    }
+
+    function drawChandelier(g, w, h, st) {
+      const cord = h * 0.075, t = st.now / 1000, ww = h * 0.3;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy);
+      g.strokeStyle = '#b8892e'; g.fillStyle = '#b8892e'; g.lineWidth = Math.max(2, h * 0.006); g.lineCap = 'round';
+      g.fillRect(-h * 0.012, 0, h * 0.024, h * 0.05);
+      ell(g, 0, h * 0.06, h * 0.026, h * 0.016, '#d9a843');
+      for (let i = 0; i < 5; i++) { // five arms with a flame each
+        const k = i - 2, x = k * ww * 0.22, y = h * 0.1 + Math.abs(k) * h * 0.012;
+        g.beginPath(); g.moveTo(0, h * 0.07); g.quadraticCurveTo(x * 0.35, h * 0.115, x, y); g.stroke();
+        g.fillStyle = '#d9a843'; g.fillRect(x - h * 0.007, y - h * 0.004, h * 0.014, h * 0.012);
+        const f = 0.85 + 0.15 * wobble(t * 4.2, i * 3);
+        g.globalCompositeOperation = 'screen'; glow(g, x, y - h * 0.016, h * 0.06 * f, [255, 205, 120], 0.6 * st.bright);
+        g.globalCompositeOperation = 'source-over';
+        ell(g, x, y - h * 0.016, h * 0.005, h * 0.011 * f, '#fff6d0');
+      }
+      for (let i = 0; i < 9; i++) { // crystals that catch the light
+        const x = (i - 4) * ww * 0.115, y = h * 0.13 + (i % 2) * h * 0.02, sh = 0.4 + 0.6 * Math.max(0, Math.sin(t * 2.6 + i * 1.9));
+        g.fillStyle = `rgba(215,235,255,${0.45 + 0.5 * sh})`; g.beginPath();
+        g.moveTo(x, y); g.lineTo(x + h * 0.007, y + h * 0.016); g.lineTo(x, y + h * 0.034); g.lineTo(x - h * 0.007, y + h * 0.016); g.closePath(); g.fill();
+      }
+      g.restore();
+    }
+
+    function drawMoon(g, w, h, st) {
+      const R0 = h * 0.075, cord = h * 0.1, t = st.now / 1000;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy + R0 * 1.05);
+      const cool = mixRgb(st.rgb, [200, 222, 255], 0.55);
+      glow(g, 0, 0, R0 * 3, cool, 0.3 * st.bright);
+      g.save(); g.beginPath(); g.arc(0, 0, R0, 0, TAU); g.clip();
+      const mg = g.createLinearGradient(-R0, -R0, R0, R0); mg.addColorStop(0, '#fffbe6'); mg.addColorStop(1, '#f0d98a');
+      g.fillStyle = mg; g.beginPath(); g.rect(-2 * R0, -2 * R0, 4 * R0, 4 * R0); g.arc(R0 * 0.42, -R0 * 0.14, R0 * 0.84, 0, TAU); g.fill('evenodd');
+      g.restore();
+      for (let i = 0; i < 3; i++) { // little stars twinkling nearby
+        const sx = [R0 * 1.4, R0 * 1.9, R0 * 1.1][i], sy = [-R0 * 0.5, R0 * 0.5, R0 * 1.2][i], tw = 0.4 + 0.6 * Math.max(0, Math.sin(t * 2.4 + i * 2));
+        g.fillStyle = `rgba(255,248,210,${tw})`; const s = R0 * (0.12 + 0.05 * i);
+        g.beginPath(); g.moveTo(sx, sy - s); g.lineTo(sx + s * 0.3, sy - s * 0.3); g.lineTo(sx + s, sy); g.lineTo(sx + s * 0.3, sy + s * 0.3); g.lineTo(sx, sy + s); g.lineTo(sx - s * 0.3, sy + s * 0.3); g.lineTo(sx - s, sy); g.lineTo(sx - s * 0.3, sy - s * 0.3); g.closePath(); g.fill();
+      }
+      g.restore();
+    }
+
+    function drawStar(g, w, h, st) {
+      const R0 = h * 0.07, cord = h * 0.1, t = st.now / 1000;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy + R0 * 0.95);
+      g.rotate(Math.sin(t * 0.9) * 0.06);
+      glow(g, 0, 0, R0 * 3.2, st.rgb, 0.35 * st.bright);
+      g.beginPath();
+      for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? R0 * 0.45 : R0; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      g.closePath();
+      const sg = g.createRadialGradient(0, 0, R0 * 0.1, 0, 0, R0); sg.addColorStop(0, '#fffbe0'); sg.addColorStop(1, '#ffc93c');
+      g.fillStyle = sg; g.fill(); g.strokeStyle = 'rgba(255,255,255,0.5)'; g.lineWidth = Math.max(1, h * 0.003); g.stroke();
+      g.restore();
+    }
+
+    function drawSpotlight(g, w, h, st) {
+      const aim = st.aim;
+      g.save(); g.translate(st.cx, h * 0.035 + st.dy);
+      g.rotate(Math.atan2(aim[1] - (h * 0.07 + st.dy), aim[0] - st.cx) - Math.PI / 2);
+      g.fillStyle = '#101014'; g.fillRect(-h * 0.012, -h * 0.05, h * 0.024, h * 0.045); // arm to the ceiling
+      const cg = g.createLinearGradient(-h * 0.04, 0, h * 0.04, 0); cg.addColorStop(0, '#16161c'); cg.addColorStop(0.5, '#3a3b46'); cg.addColorStop(1, '#14141a');
+      g.fillStyle = cg; g.beginPath(); g.moveTo(-h * 0.03, 0); g.lineTo(h * 0.03, 0); g.lineTo(h * 0.045, h * 0.075); g.lineTo(-h * 0.045, h * 0.075); g.closePath(); g.fill();
+      ell(g, 0, h * 0.075, h * 0.045, h * 0.012, rgba(mixRgb(st.rgb, [255, 255, 255], 0.6), 0.9 * st.bright));
+      g.globalCompositeOperation = 'screen'; glow(g, 0, h * 0.08, h * 0.1, st.rgb, 0.7 * st.bright);
+      g.restore();
+    }
+
+    function fixtureAim(w, h, ls, t) { return [w / 2 + ls.angle * w * 1.6 + Math.sin(t * 0.45) * w * 0.02, h * 0.5]; }
+
+    function drawFixtureBody(g, w, h, kind, st) {
+      if (kind === 'discoball') drawDiscoBall(g, w, h, st);
+      else if (kind === 'lantern') drawLantern(g, w, h, st);
+      else if (kind === 'fairy') drawFairy(g, w, h, st);
+      else if (kind === 'chandelier') drawChandelier(g, w, h, st);
+      else if (kind === 'moon') drawMoon(g, w, h, st);
+      else if (kind === 'star') drawStar(g, w, h, st);
+      else if (kind === 'spotlight') drawSpotlight(g, w, h, { ...st, aim: fixtureAim(w, h, st, st.now / 1000) });
+    }
+
+    // The light each of them throws on you (drawn with 'screen', under the body).
+    function fixtureLight(g, w, h, kind, c) {
+      const { bx, by, ls, e, I, now } = c, t = now / 1000, rgb = e.rgb, b = ls.bright;
+      const dir = -ls.angle * 0.9 + (bx - w / 2) / w * 0.55;
+      if (kind === 'discoball') {
+        glow(g, bx, by, h * 0.3, rgb, 0.3 * I * b);
+        const N = 44, rot = t * 0.5, reach = Math.hypot(w, h) * 0.6;
+        for (let k = 0; k < N; k++) { // spots of light turning around the room
+          const a = k * 2.39996 + rot, rho = Math.sqrt((k + 0.5) / N) * reach;
+          const x = bx + Math.cos(a) * rho * 1.15, y = by + Math.sin(a) * rho * 0.8;
+          if (x < -30 || x > w + 30 || y < -30 || y > h + 30) continue;
+          const tw = 0.5 + 0.5 * Math.sin(t * 2.6 + k * 1.9), col = mixRgb(rgb, hexToRgb(hslHex(k * 47 + t * 18)), 0.65);
+          glow(g, x, y, h * (0.04 + 0.04 * ((k * 7) % 5) / 5), col, (0.75 * tw + 0.25) * I * b);
+        }
+        glow(g, w / 2, h * 0.5, h * 0.55, rgb, 0.1 * I * b);
+      } else if (kind === 'lantern') {
+        cone(g, bx, by, h * 0.95, w * 0.62, dir, rgb, 0.32 * I * b);
+        glow(g, bx, by, h * 0.38, rgb, 0.42 * I * b);
+        glow(g, w / 2 + (bx - w / 2) * 0.3, h * 0.5, h * 0.62, rgb, 0.2 * I * b);
+      } else if (kind === 'chandelier') {
+        cone(g, bx, by, h * 1.05, w * 0.95, dir, rgb, 0.26 * I * b);
+        glow(g, w / 2 + (bx - w / 2) * 0.3, h * 0.5, h * 0.66, rgb, 0.24 * I * b);
+      } else if (kind === 'moon' || kind === 'star') {
+        const col = kind === 'moon' ? mixRgb(rgb, [200, 222, 255], 0.55) : rgb;
+        cone(g, bx, by, h, w * 0.66, dir, col, 0.3 * I * b);
+        glow(g, bx, by, h * 0.3, col, 0.38 * I * b);
+        glow(g, w / 2 + (bx - w / 2) * 0.3, h * 0.5, h * 0.6, col, 0.2 * I * b);
+        if (kind === 'star') { g.save(); g.translate(bx, by); g.rotate(t * 0.15); for (let i = 0; i < 8; i++) { g.rotate(Math.PI / 4); const gr = g.createLinearGradient(0, 0, 0, h * 0.18); gr.addColorStop(0, rgba(rgb, 0.4 * I * b)); gr.addColorStop(1, rgba(rgb, 0)); g.fillStyle = gr; g.fillRect(-h * 0.003, 0, h * 0.006, h * 0.18); } g.restore(); }
+      } else if (kind === 'fairy') {
+        const grad = g.createLinearGradient(0, 0, 0, h * 0.5); grad.addColorStop(0, rgba(rgb, 0.22 * I * b)); grad.addColorStop(1, rgba(rgb, 0));
+        g.fillStyle = grad; g.fillRect(0, 0, w, h * 0.5);
+        glow(g, w / 2, h * 0.5, h * 0.62, rgb, 0.16 * I * b);
+      } else if (kind === 'spotlight') {
+        const aim = fixtureAim(w, h, ls, t), sx = c.cx, sy = h * 0.1 + ls.dy, d = Math.atan2(-(aim[0] - sx), aim[1] - sy);
+        cone(g, sx, sy, h * 1.25, w * 0.4, d, mixRgb(rgb, [255, 255, 255], 0.35), 0.62 * I * b);
+        glow(g, aim[0], aim[1], h * 0.5, rgb, 0.3 * I * b);
+      }
+    }
+
     // Where the lamp is, and how it moves, at time `now`.
-    function lampState(cfg, h, now, e) {
+    function lampState(cfg, h, now, e, audio) {
       const anim = cfg.lampAnim;
       let dy = 0, angle = 0, bright = 1, focusRamp = 1;
       const t = now / 1000;
@@ -442,6 +648,17 @@
         angle = 0;
       }
       if (anim === 'flicker') bright = clamp(0.78 + 0.28 * wobble(t * 3.2, 4), 0.35, 1);
+      if (anim === 'sway') angle = 0.07 * Math.sin(t * (TAU / 5.2)) + 0.025 * Math.sin(t * (TAU / 2.3) + 1);       // a breeze
+      if (anim === 'pendulum') angle = 0.3 * Math.sin(t * (TAU / 3.2));                                              // a big, slow, hypnotic swing
+      if (anim === 'bounce') { dy = h * 0.034 * Math.sin(t * (TAU / 1.2)); angle = 0.03 * Math.sin(t * (TAU / 2.4)); } // on a spring
+      if (anim === 'beat') { // kicks to the beat of the sound that is playing
+        const lv = audio ? clamp(audio.level || 0) : 0;
+        if (audio && audio.beat > 0.5 && now - (R.beatAnimAt || 0) > 300) { R.beatAnimAt = now; R.beatAnim = 1; R.beatDir = -(R.beatDir || 1); }
+        R.beatAnim = (R.beatAnim || 0) * 0.93;
+        angle = 0.16 * (R.beatAnim || 0) * (R.beatDir || 1) + 0.02 * Math.sin(t * 1.3);
+        dy = h * 0.022 * (R.beatAnim || 0);
+        bright = clamp(0.7 + 0.5 * lv + 0.3 * (R.beatAnim || 0), 0.4, 1);
+      }
       if (anim === 'drop' && R.dropStart >= 0) {
         const D = 2.8; // seconds: a slow, smooth drop from above
         const tau = (now - R.dropStart) / 1000;
@@ -897,12 +1114,12 @@
       drawFiltered(R, g, src, w, h, cfg.filter, now);
       if (cfg.on) {
         // restart the lamp's drop each time Lights is switched on or "Slow drop" is picked
-        const key = cfg.lampAnim + '|' + (cfg.on ? 1 : 0);
+        const key = cfg.lampAnim + '|' + cfg.fixture + '|' + (cfg.on ? 1 : 0);
         if (key !== R.lastKey) { R.lastKey = key; R.dropStart = now; }
         const e = effective(cfg, audio, now);
         const I = cfg.intensity * e.dim;
         const lampPos = { cx: w * (cfg.lampPos === 'left' ? 0.22 : cfg.lampPos === 'right' ? 0.78 : 0.5) };
-        const ls = lampState(cfg, h, now, e);
+        const ls = lampState(cfg, h, now, e, audio);
         const focus = e.focus * ls.focusRamp;
 
         g.save();
@@ -916,10 +1133,14 @@
         }
         if (e.corners) drawCorners(g, w, h, e.pattern, e.rgb, I, now, e);
         g.globalCompositeOperation = 'screen';
-        const bulbY = h * 0.12 + h * 0.14 + ls.dy;
+        const fixture = cfg.fixture || 'lamp';
+        const drop = h * (FIX_OFF[fixture] || 0.26);
+        const bulbY = drop + (fixture === 'lamp' ? h * 0.0 : 0) + ls.dy;
         const sway = ls.angle * 1.2;
-        const bx = lampPos.cx + Math.sin(ls.angle) * (h * 0.12 + h * 0.14);
-        if (cfg.lamp) {
+        const bx = lampPos.cx + Math.sin(ls.angle) * drop;
+        if (cfg.lamp && fixture !== 'lamp') {
+          fixtureLight(g, w, h, fixture, { cx: lampPos.cx, bx, by: bulbY, ls, e, I, now });
+        } else if (cfg.lamp) {
           cone(g, bx, bulbY, h * 1.05, w * 0.78, -sway * 0.9 + (bx - w / 2) / w * 0.55, e.rgb, 0.46 * I * ls.bright);
           glow(g, w / 2 + (bx - w / 2) * 0.3, h * 0.5, h * 0.62, e.rgb, 0.28 * I * ls.bright); // light on your face
         } else {
@@ -928,7 +1149,8 @@
         g.restore();
 
         if (R.mood && MOOD[R.mood] && MOOD[R.mood].burst && R.burstAt >= 0) drawBurst(g, w, h, now);
-        if (cfg.lamp) drawLamp(g, w, h, { cx: lampPos.cx, rgb: e.rgb, bright: ls.bright * clamp(0.55 + I), angle: ls.angle, dy: ls.dy });
+        if (cfg.lamp && fixture !== 'lamp') drawFixtureBody(g, w, h, fixture, { cx: lampPos.cx, rgb: e.rgb, bright: ls.bright * clamp(0.55 + I), angle: ls.angle, dy: ls.dy, now });
+        else if (cfg.lamp) drawLamp(g, w, h, { cx: lampPos.cx, rgb: e.rgb, bright: ls.bright * clamp(0.55 + I), angle: ls.angle, dy: ls.dy });
         if (cfg.character !== 'none') {
           const ck = cfg.character + '|' + cfg.charPos;
           if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; }
@@ -977,7 +1199,7 @@
   }
 
   globalThis.MemeFx = Object.freeze({
-    COLORS, FREE_COLORS, LAMP_ANIMS, CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
+    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
     sanitize, lockedParts, createRenderer, drawSample,
   });
 })();

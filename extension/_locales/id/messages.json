@@ -1215,5 +1215,41 @@
   },
   "fx_pat_heart": {
     "message": "Hati"
+  },
+  "fx_fix_lamp": {
+    "message": "Lampu"
+  },
+  "fx_fix_discoball": {
+    "message": "Bola disko"
+  },
+  "fx_fix_lantern": {
+    "message": "Lentera"
+  },
+  "fx_fix_fairy": {
+    "message": "Lampu peri"
+  },
+  "fx_fix_chandelier": {
+    "message": "Lampu gantung kristal"
+  },
+  "fx_fix_moon": {
+    "message": "Bulan"
+  },
+  "fx_fix_star": {
+    "message": "Bintang"
+  },
+  "fx_fix_spotlight": {
+    "message": "Lampu sorot"
+  },
+  "fx_anim_sway": {
+    "message": "Bergoyang"
+  },
+  "fx_anim_bounce": {
+    "message": "Memantul"
+  },
+  "fx_anim_pendulum": {
+    "message": "Bandul"
+  },
+  "fx_anim_beat": {
+    "message": "Mengikuti beat"
   }
 }
