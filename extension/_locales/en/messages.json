@@ -1254,5 +1254,17 @@
   },
   "op_license_pass": {
     "message": "Key $1: $2 of pass time left."
+  },
+  "fx_follow": {
+    "message": "Follow me (lights and animal move with me)"
+  },
+  "fx_follow_tip": {
+    "message": "Uses your camera picture on your own computer only. Nothing is saved or sent. Works best in good light."
+  },
+  "fx_away": {
+    "message": "Party when I leave the picture"
+  },
+  "fx_away_tip": {
+    "message": "The animal looks for you, then dances and the lights party. They welcome you back."
   }
 }

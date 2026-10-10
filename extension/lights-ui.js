@@ -52,6 +52,8 @@
     const focusBox = el('input', { type: 'checkbox' });
     const syncBox = el('input', { type: 'checkbox' });
     const safeBox = el('input', { type: 'checkbox' });
+    const followBox = el('input', { type: 'checkbox' });
+    const awayBox = el('input', { type: 'checkbox' });
     const bright = el('input', { className: 'vol', type: 'range', min: 20, max: 100, step: 5 });
     bright.setAttribute('aria-label', t('fx_bright'));
     const lampG = group(t('fx_lamp'));
@@ -78,6 +80,8 @@
       el('label', { className: 'check', title: t('fx_focus_tip') }, focusBox, t('fx_focus')),
       el('label', { className: 'check', title: t('fx_sync_tip') }, syncBox, t('fx_sync')),
       el('label', { className: 'check', title: t('fx_safe_tip') }, safeBox, t('fx_safe')),
+      el('label', { className: 'check', title: t('fx_follow_tip') }, followBox, t('fx_follow')),
+      el('label', { className: 'check', title: t('fx_away_tip') }, awayBox, t('fx_away')),
       el('div', { className: 'row' }, el('span', {}, '☀'), bright));
     const body = el('div', { className: 'settings-body fx-body' },
       el('div', { className: 'fx-how' }, t('fx_how')),
@@ -134,7 +138,7 @@
     api.settingsDetails.after(details);
 
     const wire = (box, key) => box.addEventListener('change', () => set({ [key]: box.checked }, true));
-    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe');
+    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe'); wire(followBox, 'follow'); wire(awayBox, 'awayDance');
     bright.addEventListener('input', () => set({ intensity: Number(bright.value) / 100 }));
 
     // ---- build the choice lists from what exists ----
@@ -171,7 +175,7 @@
     function render() {
       const c = cfg();
       onBox.checked = c.on; lampBox.checked = c.lamp; cornersBox.checked = c.corners;
-      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe;
+      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe; followBox.checked = c.follow; awayBox.checked = c.awayDance;
       bright.value = Math.round(c.intensity * 100);
       body.classList.toggle('fx-off', !c.on);
       sum.textContent = c.on ? t('fx_state_on') : t('fx_state_off');
@@ -195,11 +199,12 @@
       const w = canvas.width, h = canvas.height;
       const sample = frame.src || (frame.src = document.createElement('canvas'));
       sample.width = w; sample.height = h;
-      Fx.drawSample(sample.getContext('2d'), w, h, now);
+      const sim = shown.follow ? Fx.simulate(now) : null; // the preview "you" walks around when Follow me is on
+      Fx.drawSample(sample.getContext('2d'), w, h, now, sim ? sim.person : {});
       // The preview always shows the lights, even if the switch is off, so people see what they would get.
       const mood = ['suspense', 'excited', 'fun', 'surprise'][Math.floor(now / 3500) % 4];
       renderer.render(g, sample, w, h, { ...shown, on: true }, now, { level: 0.3 + 0.2 * Math.sin(now / 300), beat: now % 520 < 40 ? 1 : 0, mood: shown.sync || shown.character !== 'none' ? mood : '' },
-        { preview: trying && Fx.lockedParts(c, can).length > 0, watermark: t('fx_watermark') });
+        { preview: trying && Fx.lockedParts(c, can).length > 0, watermark: t('fx_watermark'), ...(sim ? { track: sim.track } : {}) });
       if (!trying && trialUntil) { trialUntil = 0; render(); }
       raf = requestAnimationFrame(frame);
     }

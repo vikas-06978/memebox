@@ -1254,5 +1254,17 @@
   },
   "op_license_pass": {
     "message": "Chave $1: restam $2 de passe."
+  },
+  "fx_follow": {
+    "message": "Me seguir (as luzes e o bicho se movem comigo)"
+  },
+  "fx_follow_tip": {
+    "message": "Usa a imagem da câmera só no seu computador. Nada é salvo nem enviado. Funciona melhor com boa luz."
+  },
+  "fx_away": {
+    "message": "Festa quando eu sair da imagem"
+  },
+  "fx_away_tip": {
+    "message": "O bicho procura você, depois dança e as luzes fazem festa. Eles dão boas-vindas quando você volta."
   }
 }

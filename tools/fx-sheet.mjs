@@ -29,6 +29,15 @@ await page.evaluate((only) => {
     { label: 'lantern', cfg: { ...base, fixture: 'lantern' }, dark: true, at: 1500 },
     { label: 'moon blue', cfg: { ...base, fixture: 'moon', color: 'blue' }, dark: true, at: 1500 },
     { label: 'no lamp', cfg: { ...base, lamp: false }, dark: true, at: 1500 }]);
+  const ANIM = FX.ACTIONS;
+  for (const kind of FX.CHARACTERS) {
+    const tiles = [...ANIM[kind].map((a) => ({ label: kind + ': ' + a, cfg: { ...base, lamp: false, character: kind, charPos: 'left' }, at: 2500, opts: { charAct: a, charT: 0.9, charU: 0.5 } })),
+      { label: kind + ': dance (1)', cfg: { ...base, lamp: false, character: kind, charPos: 'left' }, at: 2500, opts: { charAct: 'dance', charT: 0.35 } },
+      { label: kind + ': dance (2)', cfg: { ...base, lamp: false, character: kind, charPos: 'left' }, at: 2500, opts: { charAct: 'dance', charT: 0.62 } }];
+    add('animal ' + kind + ': its own things, then its dance', tiles);
+  }
+  add('follow me: lamp and cat go with you (centre, left, right, standing up, gone, back)', [1500, 5200, 7500, 12000, 15500, 17600].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, character: 'cat', charPos: 'left' }, sim: ms })));
+  add('follow me: disco ball and frog', [1500, 5200, 7500, 12000, 15500, 17600].map((ms) => ({ label: 'at ' + ms + ' ms', cfg: { ...base, follow: true, fixture: 'discoball', character: 'frog', charPos: 'right' }, sim: ms })));
   add('lamp drop (0.4s, 1.2s, 2.0s, 2.8s, 3.3s, 5s)', [0.4, 1.2, 2.0, 2.8, 3.3, 5].map((s) => ({ label: s + 's', cfg: { ...base, lampAnim: 'drop' }, at: s * 1000, anim: true })));
   add('free: still lamp (warm, white, blue) + swing + flicker + no lamp', [
     { label: 'warm', cfg: { ...base } }, { label: 'white', cfg: { ...base, color: 'white' } }, { label: 'blue', cfg: { ...base, color: 'blue' } },
@@ -52,8 +61,16 @@ await page.evaluate((only) => {
       const cfg = FX.sanitize(t.cfg);
       const sample = t.dark ? dim : lit;
       const start = 100000;
-      if (t.anim) { for (let ms = 0; ms <= t.at; ms += 33) r.render(g, sample, W, H, cfg, start + ms, null); }
-      else { const steps = t.at ? Math.round(t.at / 33) : 3; for (let i = 0; i <= steps; i++) r.render(g, sample, W, H, cfg, start + i * 33, t.audio || null); }
+      if (t.sim != null) {
+        const c0 = 18000 * 40; // a whole number of cycles later, so the history before the first frame is "previous cycle"
+        const frame = document.createElement('canvas'); frame.width = W; frame.height = H;
+        for (let ms = Math.max(0, t.sim - 2500); ms <= t.sim; ms += 33) {
+          const sm = FX.simulate(c0 + ms);
+          FX.drawSample(frame.getContext('2d'), W, H, ms, sm.person);
+          r.render(g, frame, W, H, cfg, c0 + ms, null, { track: sm.track });
+        }
+      } else if (t.anim) { for (let ms = 0; ms <= t.at; ms += 33) r.render(g, sample, W, H, cfg, start + ms, null, t.opts || {}); }
+      else { const steps = t.at ? Math.round(t.at / 33) : 3; for (let i = 0; i <= steps; i++) r.render(g, sample, W, H, cfg, start + i * 33, t.audio || null, t.opts || {}); }
       wrap.append(c); const l = document.createElement('div'); l.textContent = t.label; wrap.append(l); line.append(wrap);
     }
   }

@@ -1254,5 +1254,17 @@
   },
   "op_license_pass": {
     "message": "Clé $1 : il reste $2 de pass."
+  },
+  "fx_follow": {
+    "message": "Me suivre (les lumières et l’animal bougent avec moi)"
+  },
+  "fx_follow_tip": {
+    "message": "Utilise l’image de votre caméra sur votre ordinateur seulement. Rien n’est enregistré ni envoyé. Fonctionne mieux avec une bonne lumière."
+  },
+  "fx_away": {
+    "message": "Fête quand je sors de l’image"
+  },
+  "fx_away_tip": {
+    "message": "L’animal vous cherche, puis danse et les lumières font la fête. Ils vous accueillent à votre retour."
   }
 }

@@ -69,7 +69,7 @@ MemeBox is free software (GPL-3.0-or-later). The source code is available on req
 
 ## Single purpose
 
-MemeBox is a soundboard for browser video calls. It plays meme lines, sound effects and the user's own clips into the user's outgoing microphone on supported call websites. The voice changer, tab audio and camera captions are part of the same purpose: changing what the user sends into their own call.
+MemeBox is a soundboard for browser video calls. It plays meme lines, sound effects and the user's own clips into the user's outgoing microphone on supported call websites. The voice changer, tab audio, camera captions and Lights & looks (lamp, lights, filters, animated characters and music, optionally following where the user is in the picture) are part of the same purpose: changing what the user sends into their own call.
 
 ## Permission justifications
 
@@ -86,7 +86,7 @@ Used only when the user opens the toolbar popup on a tab (for example a YouTube 
 Only the 5 call websites MemeBox works on: meet.google.com, app.zoom.us/wc, teams.microsoft.com, teams.live.com and discord.com. There the extension:
 1. Wraps getUserMedia so the microphone the site receives is the real microphone mixed with the meme audio the user plays.
 2. Shows the floating 😂 button, panel and captions.
-3. Only if the user turns them on: applies the voice changer to the user's own microphone and draws meme captions on the user's own camera.
+3. Only if the user turns them on: applies the voice changer to the user's own microphone, draws meme captions, lights, filters and characters on the user's own camera, and (with "Follow me") looks at a tiny copy of the user's own camera picture, on their computer only, to know where they are. Nothing is saved or sent.
 4. In the popup, checks whether the current tab is one of these sites, to say "reload this tab" after install or update.
 Audio and video are processed only locally with Web Audio and Canvas. They are never recorded, stored or sent anywhere. No other sites are accessed.
 

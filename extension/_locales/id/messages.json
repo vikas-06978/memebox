@@ -1254,5 +1254,17 @@
   },
   "op_license_pass": {
     "message": "Kunci $1: sisa $2 waktu pass."
+  },
+  "fx_follow": {
+    "message": "Ikuti aku (lampu dan hewan bergerak bersamaku)"
+  },
+  "fx_follow_tip": {
+    "message": "Hanya memakai gambar kameramu di komputermu sendiri. Tidak ada yang disimpan atau dikirim. Paling baik di cahaya yang cukup."
+  },
+  "fx_away": {
+    "message": "Pesta saat aku keluar dari gambar"
+  },
+  "fx_away_tip": {
+    "message": "Hewan mencarimu, lalu menari dan lampu berpesta. Mereka menyambutmu saat kembali."
   }
 }
