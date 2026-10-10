@@ -115,3 +115,20 @@ test('a character (cat) sits in the corner for Pro, not for a free person', asyn
   await callPage.screenshot({ path: 'tests/.tmp/cat-in-call.png' });
   expect(pro.r - free.r, 'orange fur where the plain camera was').toBeGreaterThan(40);
 });
+
+test('the newer filters (thermal, night vision, matrix, snow) run in the call and change the picture', async ({ context, callPage }) => {
+  await callPage.evaluate(helpers);
+  await setFx(context, { armed: true });
+  await callPage.evaluate(() => window.openCam());
+  await callPage.waitForTimeout(700);
+  const plain = await callPage.evaluate(() => window.avg(0.1, 0.1, 0.9, 0.9));
+  const seen = {};
+  for (const filter of ['heat', 'night', 'matrix', 'snow']) {
+    await setFx(context, { armed: true, filter });
+    await callPage.waitForTimeout(900);
+    seen[filter] = await callPage.evaluate(() => window.avg(0.1, 0.1, 0.9, 0.9));
+    expect(JSON.stringify(seen[filter]), filter + ' differs from the plain camera').not.toBe(JSON.stringify(plain));
+  }
+  expect(seen.night.g, 'night vision is green').toBeGreaterThan(seen.night.r + 25);
+  expect(seen.heat.r + seen.heat.b, 'thermal: the plain green camera becomes red/blue heat colours').toBeGreaterThan(seen.heat.g);
+});

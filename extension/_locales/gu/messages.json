@@ -1164,5 +1164,56 @@
   },
   "mu_t_house": {
     "message": "હાઉસ"
+  },
+  "fx_char_penguin": {
+    "message": "પેંગ્વિન"
+  },
+  "fx_char_lion": {
+    "message": "સિંહ"
+  },
+  "fx_char_monkey": {
+    "message": "વાંદરો"
+  },
+  "fx_char_frog": {
+    "message": "દેડકો"
+  },
+  "fx_char_unicorn": {
+    "message": "યુનિકોર્ન"
+  },
+  "fx_char_robot": {
+    "message": "રોબોટ"
+  },
+  "fx_filter_night": {
+    "message": "નાઇટ વિઝન"
+  },
+  "fx_filter_film": {
+    "message": "જૂની ફિલ્મ"
+  },
+  "fx_filter_wave": {
+    "message": "સિન્થવેવ"
+  },
+  "fx_filter_heat": {
+    "message": "થર્મલ"
+  },
+  "fx_filter_snow": {
+    "message": "બરફ"
+  },
+  "fx_pat_aurora": {
+    "message": "ઓરોરા"
+  },
+  "fx_pat_fire": {
+    "message": "આગ"
+  },
+  "fx_pat_laser": {
+    "message": "લેઝર"
+  },
+  "fx_pat_neonframe": {
+    "message": "નિયોન ફ્રેમ"
+  },
+  "fx_pat_police": {
+    "message": "પોલીસ"
+  },
+  "fx_pat_heart": {
+    "message": "હૃદય"
   }
 }

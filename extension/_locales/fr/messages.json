@@ -1164,5 +1164,56 @@
   },
   "mu_t_house": {
     "message": "House"
+  },
+  "fx_char_penguin": {
+    "message": "Manchot"
+  },
+  "fx_char_lion": {
+    "message": "Lion"
+  },
+  "fx_char_monkey": {
+    "message": "Singe"
+  },
+  "fx_char_frog": {
+    "message": "Grenouille"
+  },
+  "fx_char_unicorn": {
+    "message": "Licorne"
+  },
+  "fx_char_robot": {
+    "message": "Robot"
+  },
+  "fx_filter_night": {
+    "message": "Vision nocturne"
+  },
+  "fx_filter_film": {
+    "message": "Vieux film"
+  },
+  "fx_filter_wave": {
+    "message": "Synthwave"
+  },
+  "fx_filter_heat": {
+    "message": "Thermique"
+  },
+  "fx_filter_snow": {
+    "message": "Neige"
+  },
+  "fx_pat_aurora": {
+    "message": "Aurore"
+  },
+  "fx_pat_fire": {
+    "message": "Feu"
+  },
+  "fx_pat_laser": {
+    "message": "Lasers"
+  },
+  "fx_pat_neonframe": {
+    "message": "Cadre néon"
+  },
+  "fx_pat_police": {
+    "message": "Police"
+  },
+  "fx_pat_heart": {
+    "message": "Cœurs"
   }
 }

@@ -28,6 +28,7 @@ await page.evaluate((only) => {
   add('moods (sync on)', FX.MOODS.map((m) => ({ label: m, cfg: { ...base, sync: true, corners: true }, at: 4000, audio: { level: 0.6, beat: 0, mood: m } })));
   add('characters (idle, after the pop-up)', FX.CHARACTERS.map((c) => ({ label: c, cfg: { ...base, lamp: false, character: c }, at: 2500 })));
   add('characters: a cat and a dog feel the sound (excited, fun, surprise, sad, suspense, awkward)', ['excited', 'fun', 'surprise', 'sad', 'suspense', 'awkward'].map((m, i) => ({ label: m, cfg: { ...base, lamp: false, character: i % 2 ? 'dog' : 'cat', charPos: 'left' }, at: 2500, audio: { level: 0.6, beat: 0, mood: m } })));
+  add('new characters: idle and in moods', [['penguin', ''], ['lion', ''], ['monkey', ''], ['frog', ''], ['unicorn', ''], ['robot', ''], ['penguin', 'excited'], ['lion', 'surprise'], ['monkey', 'awkward'], ['frog', 'sad'], ['unicorn', 'fun'], ['robot', 'suspense']].map(([c, m]) => ({ label: c + ' ' + m, cfg: { ...base, lamp: false, character: c }, at: 2500, audio: m ? { level: 0.6, beat: 0, mood: m } : null })));
   add('characters: bunny, panda, owl, fox in moods', [['bunny', 'excited'], ['panda', 'surprise'], ['owl', 'sad'], ['fox', 'awkward'], ['bunny', 'sad'], ['owl', 'suspense']].map(([c, m]) => ({ label: c + ' ' + m, cfg: { ...base, lamp: false, character: c }, at: 2500, audio: { level: 0.6, beat: 0, mood: m } })));
   for (const row of rows) {
     if (only && !row.title.includes(only)) continue;

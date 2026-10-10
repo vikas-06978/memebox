@@ -1164,5 +1164,56 @@
   },
   "mu_t_house": {
     "message": "House"
+  },
+  "fx_char_penguin": {
+    "message": "Pinguim"
+  },
+  "fx_char_lion": {
+    "message": "Leão"
+  },
+  "fx_char_monkey": {
+    "message": "Macaco"
+  },
+  "fx_char_frog": {
+    "message": "Sapo"
+  },
+  "fx_char_unicorn": {
+    "message": "Unicórnio"
+  },
+  "fx_char_robot": {
+    "message": "Robô"
+  },
+  "fx_filter_night": {
+    "message": "Visão noturna"
+  },
+  "fx_filter_film": {
+    "message": "Filme antigo"
+  },
+  "fx_filter_wave": {
+    "message": "Synthwave"
+  },
+  "fx_filter_heat": {
+    "message": "Térmica"
+  },
+  "fx_filter_snow": {
+    "message": "Neve"
+  },
+  "fx_pat_aurora": {
+    "message": "Aurora"
+  },
+  "fx_pat_fire": {
+    "message": "Fogo"
+  },
+  "fx_pat_laser": {
+    "message": "Lasers"
+  },
+  "fx_pat_neonframe": {
+    "message": "Moldura neon"
+  },
+  "fx_pat_police": {
+    "message": "Polícia"
+  },
+  "fx_pat_heart": {
+    "message": "Corações"
   }
 }

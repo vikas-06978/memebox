@@ -1164,5 +1164,56 @@
   },
   "mu_t_house": {
     "message": "House"
+  },
+  "fx_char_penguin": {
+    "message": "Penguin"
+  },
+  "fx_char_lion": {
+    "message": "Singa"
+  },
+  "fx_char_monkey": {
+    "message": "Monyet"
+  },
+  "fx_char_frog": {
+    "message": "Katak"
+  },
+  "fx_char_unicorn": {
+    "message": "Unicorn"
+  },
+  "fx_char_robot": {
+    "message": "Robot"
+  },
+  "fx_filter_night": {
+    "message": "Night vision"
+  },
+  "fx_filter_film": {
+    "message": "Film tua"
+  },
+  "fx_filter_wave": {
+    "message": "Synthwave"
+  },
+  "fx_filter_heat": {
+    "message": "Termal"
+  },
+  "fx_filter_snow": {
+    "message": "Salju"
+  },
+  "fx_pat_aurora": {
+    "message": "Aurora"
+  },
+  "fx_pat_fire": {
+    "message": "Api"
+  },
+  "fx_pat_laser": {
+    "message": "Laser"
+  },
+  "fx_pat_neonframe": {
+    "message": "Bingkai neon"
+  },
+  "fx_pat_police": {
+    "message": "Polisi"
+  },
+  "fx_pat_heart": {
+    "message": "Hati"
   }
 }

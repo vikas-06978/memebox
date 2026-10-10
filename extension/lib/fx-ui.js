@@ -25,15 +25,15 @@
   };
   const FREE_COLORS = ['warm', 'white', 'blue'];
   const LAMP_ANIMS = ['still', 'swing', 'drop', 'flicker'];        // "still" is free, the rest are Pro
-  const PATTERNS = ['steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle']; // corner light shows (Pro)
-  const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam'];
+  const PATTERNS = ['steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle', 'aurora', 'fire', 'laser', 'neonframe', 'police', 'heart']; // corner light shows (Pro)
+  const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow'];
   const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];             // 3 free
   const PRO_FILTERS = ['vintage', 'cool'];                         // + 2 in Pro = 5
-  const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam']; // Pro Max (or one by one)
+  const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow']; // Pro Max (or one by one)
   // Characters that sit in a bottom corner and react to the sounds. Pro: one of the standard three at a time.
   // Pro Max: all six. Every one is drawn with code (no pictures), so they are small and original.
   const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny'];
-  const PREMIUM_CHARACTERS = ['panda', 'owl', 'fox'];
+  const PREMIUM_CHARACTERS = ['panda', 'owl', 'fox', 'penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot'];
   const CHARACTERS = [...STANDARD_CHARACTERS, ...PREMIUM_CHARACTERS];
   const MOODS = ['suspense', 'excited', 'surprise', 'sad', 'fun', 'awkward'];
 
@@ -154,11 +154,50 @@
     cyber: 'saturate(1.5) contrast(1.18) brightness(0.96)',
     comic: 'saturate(1.9) contrast(1.55) brightness(1.02)',
     matrix: 'grayscale(1) contrast(1.35) brightness(0.9)',
+    night: 'grayscale(1) contrast(1.5) brightness(1.3)',
+    film: 'sepia(0.75) contrast(1.15) brightness(0.96)',
+    wave: 'saturate(1.7) contrast(1.15) hue-rotate(-18deg)',
+    snow: 'saturate(0.85) brightness(1.07) hue-rotate(8deg)',
     glam: 'brightness(1.12) contrast(0.92) saturate(1.2) sepia(0.12)',
   };
 
   function makeScratch(w, h) {
     return typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
+  }
+
+  // Thermal camera: the picture is reduced to a small grey image, each brightness gets a heat colour, and it is
+  // blown up smoothly. Only about 14 000 pixels are read per frame, so it is cheap.
+  const HEAT_STOPS = [[0, [20, 8, 70]], [0.28, [40, 60, 215]], [0.5, [214, 36, 110]], [0.72, [255, 138, 26]], [0.9, [255, 240, 74]], [1, [255, 255, 235]]];
+  let HEAT_LUT = null;
+  function heatLut() {
+    if (HEAT_LUT) return HEAT_LUT;
+    HEAT_LUT = new Uint8Array(256 * 3);
+    for (let i = 0; i < 256; i++) {
+      const v = i / 255;
+      let k = 0; while (k < HEAT_STOPS.length - 2 && v > HEAT_STOPS[k + 1][0]) k++;
+      const [a, ca] = HEAT_STOPS[k], [b, cb] = HEAT_STOPS[k + 1];
+      const f = clamp((v - a) / (b - a));
+      for (let c = 0; c < 3; c++) HEAT_LUT[i * 3 + c] = Math.round(lerp(ca[c], cb[c], f));
+    }
+    return HEAT_LUT;
+  }
+  function drawHeat(R, g, src, w, h) {
+    const sw = 160, sh = Math.max(90, Math.round(160 * h / w));
+    if (!R.heat || R.heat.width !== sw || R.heat.height !== sh) { R.heat = makeScratch(sw, sh); R.heatCtx = R.heat.getContext('2d', { willReadFrequently: true }); }
+    const hg = R.heatCtx;
+    hg.drawImage(src, 0, 0, sw, sh);
+    let img;
+    try { img = hg.getImageData(0, 0, sw, sh); } catch { g.drawImage(src, 0, 0, w, h); return; }
+    const d = img.data, lut = heatLut();
+    for (let i = 0; i < d.length; i += 4) {
+      const l = Math.min(255, Math.round((0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]) * 1.25));
+      d[i] = lut[l * 3]; d[i + 1] = lut[l * 3 + 1]; d[i + 2] = lut[l * 3 + 2];
+    }
+    hg.putImageData(img, 0, 0);
+    g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(R.heat, 0, 0, sw, sh, 0, 0, w, h); g.restore();
+    const fs = Math.max(10, Math.round(h * 0.04)); // a little "thermal camera" readout
+    g.save(); g.font = `700 ${fs}px "Courier New", monospace`; g.textBaseline = 'top'; g.fillStyle = 'rgba(255,255,255,0.9)';
+    g.fillText('36.6 \u00B0C', fs * 0.7, fs * 0.6); g.restore();
   }
 
   // The "styled" filters: a base colour grade (FILTER_CSS) plus overlays drawn on top.
@@ -220,6 +259,54 @@
           g.fillText(String.fromCharCode(0x30A0 + ((i * 13 + k * 7 + Math.floor(t * 6)) % 60)), i * fs, y);
         }
       });
+    } else if (filter === 'night') {
+      g.globalCompositeOperation = 'multiply'; g.fillStyle = '#3dff5a'; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'source-over';
+      g.fillStyle = 'rgba(180,255,190,0.07)'; // grain
+      for (let k = 0; k < 90; k++) g.fillRect(Math.random() * w, Math.random() * h, 2, 2);
+      const vg = g.createRadialGradient(w / 2, h / 2, h * 0.28, w / 2, h / 2, Math.hypot(w, h) * 0.5); // binoculars
+      vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(0.7, 'rgba(0,12,0,0.55)'); vg.addColorStop(1, 'rgba(0,0,0,0.95)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
+      const fs = Math.max(11, Math.round(h * 0.045));
+      g.font = `700 ${fs}px "Courier New", monospace`; g.textBaseline = 'top'; g.fillStyle = 'rgba(160,255,170,0.95)';
+      g.fillText('NIGHT VISION', fs * 0.7, fs * 0.6);
+      if (Math.floor(t) % 2 === 0) { g.fillStyle = '#ff3b3b'; g.beginPath(); g.arc(w - fs, fs * 1.1, fs * 0.3, 0, TAU); g.fill(); }
+    } else if (filter === 'film') {
+      g.globalAlpha = 0.9 + 0.1 * Math.sin(t * 23) * Math.sin(t * 7.3); // projector flicker, always gentle
+      g.fillStyle = 'rgba(255,240,210,0.10)';
+      for (let k = 0; k < 120; k++) g.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5);
+      g.globalAlpha = 1;
+      g.strokeStyle = 'rgba(255,255,255,0.18)'; g.lineWidth = 1;
+      for (let k = 0; k < 2; k++) { const sx = ((t * 0.37 + k * 0.51 + Math.floor(t * 2 + k) * 0.19) % 1) * w; if (Math.floor(t * 4 + k * 3) % 3 === 0) { g.beginPath(); g.moveTo(sx, 0); g.lineTo(sx + (k ? 2 : -2), h); g.stroke(); } }
+      const vg = g.createRadialGradient(w / 2, h / 2, h * 0.3, w / 2, h / 2, Math.hypot(w, h) * 0.55);
+      vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(30,15,0,0.6)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#000'; const bar = h * 0.06; g.fillRect(0, 0, w, bar * 0.5); g.fillRect(0, h - bar * 0.5, w, bar * 0.5); // film bars
+    } else if (filter === 'wave') {
+      const gr = g.createLinearGradient(0, 0, 0, h);
+      gr.addColorStop(0, '#2a0a5e'); gr.addColorStop(0.55, '#c2278f'); gr.addColorStop(1, '#ff7a3d');
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.85; g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.5;
+      const horizon = h * 0.74; // a perspective grid on the floor
+      g.strokeStyle = '#ff4fd8'; g.lineWidth = Math.max(1, h * 0.004);
+      for (let k = -8; k <= 8; k++) { g.beginPath(); g.moveTo(w / 2 + k * w * 0.012, horizon); g.lineTo(w / 2 + k * w * 0.14, h); g.stroke(); }
+      for (let k = 0; k < 6; k++) { const yy = horizon + ((k + (t * 0.6) % 1) / 6) ** 2 * (h - horizon); g.beginPath(); g.moveTo(0, yy); g.lineTo(w, yy); g.stroke(); }
+      g.globalAlpha = 0.25; const sun = g.createLinearGradient(0, h * 0.2, 0, horizon); sun.addColorStop(0, '#ffe45e'); sun.addColorStop(1, '#ff3d8b');
+      g.fillStyle = sun; g.beginPath(); g.arc(w / 2, horizon - h * 0.02, h * 0.26, Math.PI, TAU); g.fill();
+    } else if (filter === 'snow') {
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.35; g.fillStyle = '#9fd0ff'; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+      const fs = Math.max(2, h / 130);
+      if (!R.snow) R.snow = Array.from({ length: 70 }, (_, i) => ({ x: ((i * 7919) % 101) / 101, y: ((i * 104729) % 97) / 97, v: 0.05 + ((i * 31) % 17) / 17 * 0.09, r: 0.5 + ((i * 13) % 7) / 7 * 1.6, ph: i }));
+      const dt = Math.min(0.1, R.snowAt ? t - R.snowAt : 0.033); R.snowAt = t;
+      for (const f of R.snow) {
+        f.y += f.v * dt; if (f.y > 1.03) { f.y = -0.03; f.x = Math.random(); }
+        const x = (f.x + Math.sin(t * 0.8 + f.ph) * 0.012) * w;
+        g.fillStyle = `rgba(255,255,255,${0.55 + 0.05 * f.r})`; g.beginPath(); g.arc(x, f.y * h, fs * f.r, 0, TAU); g.fill();
+      }
+      const vg = g.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, Math.hypot(w, h) * 0.55); // a frosty edge
+      vg.addColorStop(0, 'rgba(220,240,255,0)'); vg.addColorStop(1, 'rgba(220,240,255,0.4)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
     } else if (filter === 'glam') {
       g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.42;
       if ('filter' in g) g.filter = `blur(${Math.max(4, Math.round(h / 60))}px) brightness(1.25)`;
@@ -261,7 +348,9 @@
       if ('filter' in g) g.filter = `blur(${Math.max(4, Math.round(h / 60))}px) brightness(1.25)`;
       g.drawImage(src, 0, 0, w, h);
       g.restore();
-    } else if (filter === 'vhs' || filter === 'cyber' || filter === 'comic' || filter === 'matrix' || filter === 'glam') {
+    } else if (filter === 'heat') {
+      drawHeat(R, g, src, w, h);
+    } else if (['vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'snow'].includes(filter)) {
       drawStyled(R, g, src, w, h, filter, now);
     } else if (filter === 'cool' || filter === 'sunset' || filter === 'vintage') {
       g.save();
@@ -402,6 +491,60 @@
       } else if (pattern === 'sparkle') {
         for (const [x, y] of pts) corner(g, x, y, r * 0.8, rgb, 0.22 * I);
         drawSparkles(g, w, h, rgb, I, t, e);
+      } else if (pattern === 'aurora') {
+        for (let k = 0; k < 5; k++) {
+          const x = w * (0.1 + 0.2 * k + 0.07 * Math.sin(t * 0.35 + k * 1.3));
+          const hue = 130 + k * 38 + 22 * Math.sin(t * 0.25 + k);
+          glow(g, x, -h * 0.06, h * (0.75 + 0.1 * Math.sin(t * 0.6 + k)), hexToRgb(hslHex(hue)), 0.3 * I + 0.15 * lvl);
+        }
+        glow(g, 0, h, r * 0.5, hexToRgb(hslHex(150)), 0.14 * I); glow(g, w, h, r * 0.5, hexToRgb(hslHex(280)), 0.14 * I);
+      } else if (pattern === 'fire') {
+        const emb = (R.embers = R.embers || []);
+        if (t - (R.embT || 0) > 0.06 && emb.length < 40) { R.embT = t; const side = Math.random() < 0.5; emb.push({ x: side ? Math.random() * w * 0.25 : w - Math.random() * w * 0.25, y: h, v: 0.12 + Math.random() * 0.2, born: t, life: 1.6 + Math.random() * 1.4, s: h * (0.006 + Math.random() * 0.012) }); }
+        R.embers = emb.filter((m) => t - m.born < m.life);
+        for (const [x, y] of [[0, h], [w, h]]) {
+          const f = 0.8 + 0.2 * wobble(t * 4.5, x ? 3 : 0);
+          glow(g, x, y, r * 0.95 * f, [255, 90, 20], (0.5 * I + 0.2 * lvl) * f);
+          glow(g, x, y, r * 0.55 * f, [255, 190, 60], 0.35 * I * f);
+        }
+        for (const m of R.embers) { const p = (t - m.born) / m.life; g.fillStyle = `rgba(255,${Math.round(190 - 110 * p)},60,${(1 - p) * 0.9 * I})`; g.beginPath(); g.arc(m.x + Math.sin(t * 2 + m.born * 9) * w * 0.012, m.y - p * m.v * h * 5, m.s * (1 - p * 0.5), 0, TAU); g.fill(); }
+      } else if (pattern === 'laser') {
+        // four thin beams, one from each corner, sweeping slowly across the picture
+        const L = Math.hypot(w, h);
+        [[0, 0, 0], [w, 0, Math.PI], [0, h, -0], [w, h, Math.PI]].forEach(([x, y], i) => {
+          const sw = 0.5 + 0.5 * Math.sin(t * 0.6 + i * 1.7), ang = 0.12 + sw * 1.25;
+          const a = i === 0 ? ang : i === 1 ? Math.PI - ang : i === 2 ? -ang : Math.PI + ang;
+          const col = [hexToRgb('green'), hexToRgb('cyan'), hexToRgb('rose'), hexToRgb('purple')][i];
+          g.save(); g.translate(x, y); g.rotate(a);
+          const grad = g.createLinearGradient(0, 0, L, 0);
+          grad.addColorStop(0, rgba(col, 0.95 * Math.min(1, I + 0.2))); grad.addColorStop(1, rgba(col, 0.15));
+          g.fillStyle = grad; g.fillRect(0, -h * 0.004, L, h * 0.008);
+          g.fillStyle = rgba(col, 0.16 * I); g.fillRect(0, -h * 0.02, L, h * 0.04);
+          g.restore();
+          glow(g, x, y, r * 0.4, col, 0.45 * I);
+        });
+      } else if (pattern === 'neonframe') {
+        const lw = Math.max(3, h * 0.012), m = lw * 2.2;
+        const hue = e.rainbowFrame ? (t * 40) % 360 : null;
+        const col = hue === null ? rgb : hexToRgb(hslHex(hue));
+        for (const [wid, a] of [[lw * 6, 0.07], [lw * 3.5, 0.12], [lw * 1.8, 0.3], [lw, 0.95]]) {
+          g.strokeStyle = rgba(col, a * (0.8 + 0.2 * I + 0.3 * lvl)); g.lineWidth = wid;
+          g.beginPath(); if (g.roundRect) g.roundRect(m, m, w - 2 * m, h - 2 * m, h * 0.05); else g.rect(m, m, w - 2 * m, h - 2 * m); g.stroke();
+        }
+      } else if (pattern === 'police') {
+        const k = 0.5 + 0.5 * Math.sin(t * 2.2); // slow crossfade: red and blue take turns, never a flash
+        glow(g, 0, 0, r, [255, 40, 50], (0.55 * k + 0.05) * I); glow(g, 0, h, r * 0.8, [255, 40, 50], 0.4 * k * I);
+        glow(g, w, 0, r, [50, 90, 255], (0.55 * (1 - k) + 0.05) * I); glow(g, w, h, r * 0.8, [50, 90, 255], 0.4 * (1 - k) * I);
+      } else if (pattern === 'heart') {
+        const hs = (R.hearts = R.hearts || []);
+        if (t - (R.heartT || 0) > 0.28 && hs.length < 24) { R.heartT = t; const side = Math.random() < 0.5; hs.push({ x: side ? Math.random() * w * 0.2 : w - Math.random() * w * 0.2, born: t, life: 2.4 + Math.random() * 1.6, s: h * (0.025 + Math.random() * 0.03), ph: Math.random() * 6 }); }
+        R.hearts = hs.filter((m) => t - m.born < m.life);
+        glow(g, 0, h, r * 0.6, [255, 90, 150], 0.22 * I); glow(g, w, h, r * 0.6, [255, 90, 150], 0.22 * I);
+        for (const m of R.hearts) {
+          const p = (t - m.born) / m.life, x = m.x + Math.sin(t * 1.4 + m.ph) * w * 0.02, y = h - p * h * 0.95, s = m.s;
+          g.fillStyle = `rgba(255,${Math.round(90 + 80 * Math.sin(m.ph))},150,${Math.sin(Math.PI * p) * 0.9 * I})`;
+          g.beginPath(); g.moveTo(x, y + s * 0.35); g.bezierCurveTo(x - s, y - s * 0.4, x - s * 0.35, y - s * 1.1, x, y - s * 0.45); g.bezierCurveTo(x + s * 0.35, y - s * 1.1, x + s, y - s * 0.4, x, y + s * 0.35); g.fill();
+        }
       } else if (pattern === 'disco') {
         const sway = e.safe ? 0.5 : 0.9;
         for (let side = 0; side < 2; side++) {
@@ -473,12 +616,18 @@
     // ---- characters ----
     const easeOutBack = (x) => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2; };
     const FUR = {
-      cat:   { fur: '#f4a259', light: '#fff0dc', dark: '#b8651f', ear: '#ff9fb5' },
-      dog:   { fur: '#c98d5c', light: '#f5dfc3', dark: '#7a4a28', ear: '#8a5430' },
-      bunny: { fur: '#f6f1ee', light: '#ffffff', dark: '#cfc3bd', ear: '#ffb3c6' },
-      panda: { fur: '#fbfbfb', light: '#ffffff', dark: '#26262b', ear: '#26262b' },
-      owl:   { fur: '#9a7452', light: '#e8d3b0', dark: '#5f452c', ear: '#7d5b3b' },
-      fox:   { fur: '#ee7b30', light: '#fff4e6', dark: '#3a2418', ear: '#3a2418' },
+      cat:     { fur: '#f4a259', light: '#fff0dc', dark: '#b8651f', ear: '#ff9fb5' },
+      dog:     { fur: '#c98d5c', light: '#f5dfc3', dark: '#7a4a28', ear: '#8a5430' },
+      bunny:   { fur: '#f6f1ee', light: '#ffffff', dark: '#cfc3bd', ear: '#ffb3c6' },
+      panda:   { fur: '#fbfbfb', light: '#ffffff', dark: '#26262b', ear: '#26262b' },
+      owl:     { fur: '#9a7452', light: '#e8d3b0', dark: '#5f452c', ear: '#7d5b3b' },
+      fox:     { fur: '#ee7b30', light: '#fff4e6', dark: '#3a2418', ear: '#3a2418' },
+      penguin: { fur: '#2d3b52', light: '#ffffff', dark: '#1b2434', ear: '#2d3b52' },
+      lion:    { fur: '#f2b96b', light: '#ffe9c6', dark: '#a85d1c', ear: '#d98c3d' },
+      monkey:  { fur: '#8d5b3d', light: '#f1cfa6', dark: '#4e2f1e', ear: '#f1cfa6' },
+      frog:    { fur: '#6cc24a', light: '#d9f5b8', dark: '#3b8a2c', ear: '#6cc24a' },
+      unicorn: { fur: '#fbeaff', light: '#ffffff', dark: '#c9a6e0', ear: '#ffc2e0' },
+      robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
     };
 
     // How the character feels for the sound that is playing (it holds the feeling for 1.6 s).
@@ -497,6 +646,11 @@
     }
     function tri(g, a, b, c, fill) {
       g.fillStyle = fill; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.lineTo(c[0], c[1]); g.closePath(); g.fill();
+    }
+    function rrect(g, x, y, w, h, r, fill) {
+      g.fillStyle = fill; g.beginPath();
+      if (g.roundRect) g.roundRect(x, y, w, h, r); else g.rect(x, y, w, h);
+      g.fill();
     }
 
     // The character is drawn in a 100-unit box: the ground is y = 0, the head is around y = -62.
@@ -517,6 +671,8 @@
       const blink = (now % 3600) < 130 && ex !== 'happy';
       const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2));
       const x = pos === 'left' ? S * 0.6 : w - S * 0.6;
+      const dark = '#23222b';
+      const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin';
       g.save();
       g.translate(x, h + rise * u + 4 * u);
       g.scale(u, u);
@@ -524,31 +680,51 @@
       g.rotate(tilt);
       g.lineCap = 'round'; g.lineJoin = 'round';
 
-      // tail (behind)
-      if (kind === 'cat' || kind === 'dog' || kind === 'fox') {
-        g.save(); g.translate(28, -18); g.rotate(-0.5 + wag * 0.35);
-        g.strokeStyle = P.fur; g.lineWidth = kind === 'fox' ? 17 : 9;
-        g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(26, -8, 24, -38); g.stroke();
+      // tails and things behind the body
+      if (kind === 'cat' || kind === 'dog' || kind === 'fox' || kind === 'lion' || kind === 'monkey') {
+        g.save(); g.translate(28, -18); g.rotate(-0.5 + wag * (kind === 'monkey' ? 0.2 : 0.35));
+        g.strokeStyle = kind === 'lion' ? P.fur : P.fur; g.lineWidth = kind === 'fox' ? 17 : kind === 'monkey' ? 6 : 9;
+        g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(26, -8, kind === 'monkey' ? 20 : 24, -38);
+        if (kind === 'monkey') g.quadraticCurveTo(14, -52, 24, -50);
+        g.stroke();
         if (kind === 'fox') { g.strokeStyle = P.light; g.lineWidth = 12; g.beginPath(); g.moveTo(21, -24); g.quadraticCurveTo(25, -30, 24, -38); g.stroke(); }
+        if (kind === 'lion') ell(g, 24, -42, 7, 9, P.dark);
+        g.restore();
+      }
+      if (kind === 'unicorn') { // a rainbow tail
+        g.save(); g.translate(30, -16); g.rotate(-0.4 + wag * 0.25);
+        ['#ff7eb6', '#ffd54a', '#6ee7b7', '#8ec5ff', '#b194ff'].forEach((c, k) => { g.strokeStyle = c; g.lineWidth = 5; g.beginPath(); g.moveTo(0, k * 3 - 6); g.quadraticCurveTo(24, k * 3 - 14, 20 + k * 2, -34 + k * 2); g.stroke(); });
         g.restore();
       }
       // body
-      ell(g, 0, -14, 37, 36, P.fur);
-      if (kind === 'owl') ell(g, 0, -12, 25, 28, P.light);
-      else if (kind !== 'panda' || true) ell(g, 0, -6, 21, 24, kind === 'panda' ? P.fur : P.light);
+      if (isRobot) {
+        rrect(g, -34, -50, 68, 56, 12, P.fur);
+        rrect(g, -22, -38, 44, 30, 8, P.dark);
+        for (let k = 0; k < 3; k++) ell(g, -12 + k * 12, -23, 3.4, 3.4, ['#5de1ff', '#ffd54a', '#ff7eb6'][k] + (Math.sin(t * 3 + k * 2) > 0 ? '' : '88'));
+      } else {
+        ell(g, 0, -14, 37, 36, isPeng ? P.fur : P.fur);
+        if (kind === 'owl') ell(g, 0, -12, 25, 28, P.light);
+        else if (isPeng) ell(g, 0, -10, 26, 29, P.light);
+        else ell(g, 0, -6, 21, 24, kind === 'panda' ? P.fur : P.light);
+      }
       // arms: they wave when the sound is fun
       const wave = ex === 'happy' ? Math.sin(t * 9) * 0.5 : 0;
       for (const s of [-1, 1]) {
-        g.save(); g.translate(s * 30, -20); g.rotate(s * (0.35 + (ex === 'happy' ? 0.9 + wave * s : 0)));
-        ell(g, 0, 8, 9, 17, kind === 'panda' ? P.dark : P.fur);
+        g.save(); g.translate(s * (isRobot ? 38 : 30), -20); g.rotate(s * (0.35 + (ex === 'happy' ? 0.9 + wave * s : 0)));
+        if (isRobot) rrect(g, -6, -2, 12, 28, 6, P.dark);
+        else ell(g, 0, 8, isPeng ? 7 : 9, 17, kind === 'panda' || isPeng ? P.dark : P.fur);
         g.restore();
       }
-      // ears that sit behind the head
+      // things that sit behind the head
       const earY = -86;
-      if (kind === 'cat' || kind === 'fox') {
+      if (kind === 'lion') { // a big mane
+        ell(g, 0, -62, 52, 49, '#c97a2b');
+        for (let k = 0; k < 14; k++) { const a = (k / 14) * TAU; ell(g, Math.cos(a) * 46, -62 + Math.sin(a) * 43, 11, 11, k % 2 ? '#c97a2b' : '#b86a1f'); }
+        for (const s of [-1, 1]) ell(g, s * 28, -88, 11, 11, P.fur);
+      } else if (kind === 'cat' || kind === 'fox') {
         for (const s of [-1, 1]) {
           const d = ex === 'sad' ? 8 : 0;
-          tri(g, [s * 8, earY + 8], [s * 30, earY - 14 + d], [s * 31, earY + 14], kind === 'fox' ? P.fur : P.fur);
+          tri(g, [s * 8, earY + 8], [s * 30, earY - 14 + d], [s * 31, earY + 14], P.fur);
           tri(g, [s * 14, earY + 8], [s * 27, earY - 6 + d], [s * 28, earY + 11], P.ear);
           if (kind === 'fox') tri(g, [s * 22, earY - 4 + d], [s * 30, earY - 14 + d], [s * 31, earY + 6], P.dark);
         }
@@ -563,65 +739,101 @@
         for (const s of [-1, 1]) ell(g, s * 27, -88, 12, 12, P.ear);
       } else if (kind === 'owl') {
         for (const s of [-1, 1]) tri(g, [s * 12, -90], [s * 30, -108], [s * 32, -80], P.dark);
+      } else if (kind === 'monkey') {
+        for (const s of [-1, 1]) { ell(g, s * 36, -64, 14, 14, P.fur); ell(g, s * 36, -64, 8, 8, P.light); }
+      } else if (kind === 'unicorn') {
+        ['#ff7eb6', '#ffd54a', '#6ee7b7', '#8ec5ff'].forEach((c, k) => ell(g, -31 - (k % 2) * 2, -78 + k * 9, 8, 13, c, 0.15 + Math.sin(t * 2 + k) * 0.08));
+        for (const s of [-1, 1]) tri(g, [s * 12, -88], [s * 24, -108], [s * 30, -84], P.fur);
+      } else if (isRobot) {
+        g.strokeStyle = P.dark; g.lineWidth = 3; g.beginPath(); g.moveTo(0, -92); g.lineTo(0, -108); g.stroke();
+        ell(g, 0, -111, 5.5, 5.5, Math.sin(t * 4) > 0 ? '#ff5a5a' : '#8a2a2a');
+        for (const s of [-1, 1]) rrect(g, s * 40 - 4, -72, 8, 20, 4, P.dark);
       }
 
       // head
-      ell(g, 0, -62, 36, 33, P.fur);
+      if (isRobot) {
+        rrect(g, -36, -92, 72, 60, 16, P.fur);
+        rrect(g, -30, -86, 60, 34, 10, '#2a3340');
+      } else if (isFrog) {
+        ell(g, 0, -58, 40, 29, P.fur);
+        for (const s of [-1, 1]) ell(g, s * 21, -84, 15, 15, P.fur); // eyes bulge on top of the head
+      } else if (isPeng) {
+        ell(g, 0, -62, 36, 33, P.fur);
+        ell(g, -14, -58, 17, 21, P.light); ell(g, 14, -58, 17, 21, P.light); ell(g, 0, -50, 16, 14, P.light);
+      } else {
+        ell(g, 0, -62, 36, 33, P.fur);
+      }
       if (kind === 'owl') { ell(g, 0, -58, 30, 26, P.light); }
       if (kind === 'dog') { for (const s of [-1, 1]) { g.save(); g.translate(s * 31, -74); g.rotate(s * (ex === 'sad' ? 0.1 : -0.15) + wag * 0.04 * s); ell(g, 0, 12, 11, 24, P.ear); g.restore(); } }
       if (kind === 'panda') for (const s of [-1, 1]) { g.save(); g.translate(s * 14, -64); g.rotate(s * 0.45); ell(g, 0, 0, 8, 11, P.dark); g.restore(); }
       if (kind === 'fox') { for (const s of [-1, 1]) tri(g, [s * 36, -62], [s * 12, -42], [s * 30, -42], P.light); ell(g, 0, -44, 15, 10, P.light); }
-      if (kind === 'cat') { // stripes
-        g.strokeStyle = P.dark; g.lineWidth = 2.4;
-        for (const dx of [-8, 0, 8]) { g.beginPath(); g.moveTo(dx, -94); g.lineTo(dx * 0.8, -86); g.stroke(); }
+      if (kind === 'monkey') { ell(g, -12, -66, 15, 16, P.light); ell(g, 12, -66, 15, 16, P.light); ell(g, 0, -50, 19, 15, P.light); }
+      if (kind === 'cat') { g.strokeStyle = P.dark; g.lineWidth = 2.4; for (const dx of [-8, 0, 8]) { g.beginPath(); g.moveTo(dx, -94); g.lineTo(dx * 0.8, -86); g.stroke(); } }
+      if (kind === 'unicorn') { // the horn
+        g.save(); g.translate(0, -94); tri(g, [-7, 4], [7, 4], [0, -26], '#ffd54a');
+        g.strokeStyle = '#e0a800'; g.lineWidth = 1.6; for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-5 + k * 0.5, -2 - k * 7); g.lineTo(5 - k * 0.5, -6 - k * 7); g.stroke(); }
+        g.restore();
       }
-      if (kind === 'cat' || kind === 'dog' || kind === 'bunny') ell(g, 0, -50, 17, 12, P.light); // muzzle
+      if (kind === 'cat' || kind === 'dog' || kind === 'bunny' || kind === 'lion' || kind === 'unicorn') ell(g, 0, -50, 17, 12, P.light); // muzzle
 
       // eyes
-      const ey = -64, ed = kind === 'owl' ? 15 : 14;
-      const dark = '#23222b';
+      const ey = isFrog ? -84 : isRobot ? -70 : -64, ed = isFrog ? 21 : kind === 'owl' ? 15 : 14;
+      const eyeInk = kind === 'panda' ? '#fff' : dark;
       for (const s of [-1, 1]) {
         const cx = s * ed;
         if (kind === 'panda') { g.save(); g.translate(cx, ey); g.rotate(s * 0.5); ell(g, 0, 0, 7.5, 10, P.dark); g.restore(); }
         if (kind === 'owl') ell(g, cx, ey, 12, 12, '#fffdf5');
-        if (blink) {
-          g.strokeStyle = kind === 'panda' ? '#fff' : dark; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 5, ey); g.lineTo(cx + 5, ey); g.stroke();
+        if (isFrog) ell(g, cx, ey, 11, 11, '#ffffff');
+        if (isRobot) { // LED eyes: they change shape with the feeling
+          const c = ex === 'sad' ? '#7aa8ff' : ex === 'wary' ? '#ffb347' : ex === 'wow' ? '#ffffff' : '#5de1ff';
+          if (blink) rrect(g, cx - 8, ey - 1.5, 16, 3, 1.5, c);
+          else if (ex === 'happy') { g.strokeStyle = c; g.lineWidth = 4; g.beginPath(); g.arc(cx, ey + 4, 7, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
+          else rrect(g, cx - 8, ey - (ex === 'wow' ? 10 : ex === 'wary' ? 3 : 7), 16, ex === 'wow' ? 20 : ex === 'wary' ? 6 : 14, 5, c);
           continue;
         }
-        if (ex === 'happy') {
-          g.strokeStyle = kind === 'panda' ? '#fff' : dark; g.lineWidth = 3; g.beginPath(); g.arc(cx, ey + 2, 5.5, Math.PI * 1.1, Math.PI * 1.9); g.stroke();
-          continue;
-        }
-        const r = ex === 'wow' ? 8 : kind === 'owl' ? 7 : 5.5;
+        if (blink) { g.strokeStyle = eyeInk; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 5, ey); g.lineTo(cx + 5, ey); g.stroke(); continue; }
+        if (ex === 'happy') { g.strokeStyle = eyeInk; g.lineWidth = 3; g.beginPath(); g.arc(cx, ey + 2, 5.5, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); continue; }
+        const r = ex === 'wow' ? 8 : kind === 'owl' || isFrog ? 6.5 : 5.5;
         const look = ex === 'awk' ? 3 * Math.sign(Math.sin(t * 0.8)) : 0;
-        if (kind !== 'panda' && kind !== 'owl') ell(g, cx, ey, r + 1.5, r + 2, '#ffffff');
+        if (kind !== 'panda' && kind !== 'owl' && !isFrog) ell(g, cx, ey, r + 1.5, r + 2, '#ffffff');
         ell(g, cx + look, ey, kind === 'panda' ? r - 1 : r - 1.2, kind === 'panda' ? r - 1 : r, kind === 'panda' ? '#fff' : dark);
-        ell(g, cx + look + (kind === 'panda' ? 0 : 0), ey, r * 0.62, r * 0.62, dark);
+        ell(g, cx + look, ey, r * 0.62, r * 0.62, dark);
         ell(g, cx + look + 1.6, ey - 2, 1.8, 1.8, '#fff'); // sparkle in the eye
-        if (ex === 'wary') { g.fillStyle = P.fur; g.fillRect(cx - 10, ey - 11, 20, 10); g.strokeStyle = dark; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - 8, ey - 1); g.lineTo(cx + 8, ey - 1); g.stroke(); }
-        if (ex === 'sad') { g.strokeStyle = dark; g.lineWidth = 2.4; g.beginPath(); g.moveTo(cx - s * 9, ey - 11 - s * 0); g.lineTo(cx + s * 7, ey - 7 - 4 * 0); g.stroke(); }
+        if (ex === 'wary') { g.fillStyle = isFrog ? P.fur : isPeng ? P.fur : P.fur; g.fillRect(cx - 11, ey - 12, 22, 11); g.strokeStyle = dark; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - 9, ey - 1); g.lineTo(cx + 9, ey - 1); g.stroke(); }
+        if (ex === 'sad') { g.strokeStyle = dark; g.lineWidth = 2.4; g.beginPath(); g.moveTo(cx - s * 9, ey - 11); g.lineTo(cx + s * 7, ey - 7); g.stroke(); }
       }
-      if (ex === 'sad') { // a tear
-        const k = (t * 0.7) % 1;
-        ell(g, -ed - 2, -56 + k * 16, 2.6, 3.8, 'rgba(110,180,255,' + (0.9 - k * 0.7) + ')');
-      }
-      if (ex === 'awk') { // a sweat drop
-        const k = (t * 0.9) % 1;
-        ell(g, 32, -82 + k * 10, 3.4, 5, 'rgba(120,190,255,' + (0.95 - k * 0.5) + ')');
-      }
+      if (ex === 'sad' && !isRobot) { const k = (t * 0.7) % 1; ell(g, -ed - 2, (isFrog ? -74 : -56) + k * 16, 2.6, 3.8, 'rgba(110,180,255,' + (0.9 - k * 0.7) + ')'); }
+      if (ex === 'awk') { const k = (t * 0.9) % 1; ell(g, 32, -82 + k * 10, 3.4, 5, 'rgba(120,190,255,' + (0.95 - k * 0.5) + ')'); }
 
       // nose and mouth
-      if (kind === 'owl') {
+      const my = -48;
+      g.strokeStyle = dark; g.fillStyle = dark; g.lineWidth = 2.2;
+      if (isRobot) {
+        const bars = ex === 'happy' ? 5 : ex === 'wow' ? 2 : 4;
+        for (let k = 0; k < bars; k++) rrect(g, -14 + k * (28 / Math.max(1, bars - 1)) - 2, -50 + (ex === 'sad' ? (k % 2) * 3 : 0), 4, ex === 'wow' ? 10 : 6, 2, '#5de1ff');
+      } else if (kind === 'owl') {
         tri(g, [-5, -52], [5, -52], [0, -42], '#f2a33a');
+      } else if (isPeng) {
+        tri(g, [-9, -54], [9, -54], [0, -42], '#f2a33a');
+        if (ex === 'happy') tri(g, [-6, -46], [6, -46], [0, -38], '#e0832a');
+      } else if (isFrog) {
+        // a wide smile that goes almost ear to ear
+        g.lineWidth = 2.6; g.beginPath();
+        if (ex === 'sad') g.arc(0, -36, 18, Math.PI * 1.15, Math.PI * 1.85);
+        else if (ex === 'wow') g.ellipse(0, -44, 6, 8, 0, 0, TAU);
+        else if (ex === 'wary') { g.moveTo(-14, -45); g.lineTo(14, -45); }
+        else g.arc(0, -52, 20, 0.12 * Math.PI, 0.88 * Math.PI);
+        g.stroke();
+        for (const s of [-1, 1]) ell(g, s * 4, -58, 1.6, 1.6, dark);
       } else {
         if (kind === 'cat') tri(g, [-4, -53], [4, -53], [0, -48], '#ff8fa8');
-        else if (kind === 'bunny') ell(g, 0, -52, 4, 3, '#ff9bb3');
+        else if (kind === 'bunny' || kind === 'unicorn') ell(g, 0, -52, 4, 3, '#ff9bb3');
+        else if (kind === 'monkey') { for (const s of [-1, 1]) ell(g, s * 3.2, -54, 1.8, 2.4, dark); }
+        else if (kind === 'lion') tri(g, [-6, -55], [6, -55], [0, -48], P.dark);
         else ell(g, 0, -53, kind === 'dog' ? 6 : 4.5, kind === 'dog' ? 4.5 : 3.4, dark);
-        g.strokeStyle = dark; g.fillStyle = dark; g.lineWidth = 2.2;
-        const my = -48;
         if (ex === 'happy') {
           g.beginPath(); g.moveTo(-8, my); g.quadraticCurveTo(0, my + 16, 8, my); g.closePath(); g.fill();
-          if (kind === 'dog' || kind === 'cat') ell(g, 0, my + 7, 4.5, 4, '#ff7a8f');
+          if (kind === 'dog' || kind === 'cat' || kind === 'lion') ell(g, 0, my + 7, 4.5, 4, '#ff7a8f');
         } else if (ex === 'wow') {
           ell(g, 0, my + 4, 4, 6, dark);
         } else if (ex === 'sad') {
@@ -637,13 +849,13 @@
           g.stroke();
         }
         if (kind === 'bunny' && (ex === 'idle' || ex === 'happy')) { g.fillStyle = '#fff'; g.strokeStyle = P.dark; g.lineWidth = 1; g.fillRect(-3.4, my + (ex === 'happy' ? 6 : 1.5), 3.2, 5); g.fillRect(0.2, my + (ex === 'happy' ? 6 : 1.5), 3.2, 5); }
-        if (kind === 'cat' || kind === 'fox') { // whiskers
+        if (kind === 'cat' || kind === 'fox' || kind === 'lion') { // whiskers
           g.strokeStyle = 'rgba(40,36,46,0.55)'; g.lineWidth = 1.3;
           for (const s of [-1, 1]) for (const dy of [-1.5, 3]) { g.beginPath(); g.moveTo(s * 15, -50 + dy); g.lineTo(s * 33, -52 + dy * 1.8); g.stroke(); }
         }
       }
       // cheeks
-      if (ex === 'happy' || ex === 'awk' || kind === 'bunny') for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');
+      if (!isRobot && (ex === 'happy' || ex === 'awk' || kind === 'bunny' || isPeng || kind === 'unicorn')) for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');
       g.restore();
     }
 
