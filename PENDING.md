@@ -13,6 +13,6 @@
 - Razorpay in test mode first: signed webhooks, server-side prices, secrets via wrangler; card payment for dollars.
 - Server-signed pass sessions (anti-cheat for the time passes).
 - Live Lights demo on the website.
-- Store listing wording, version 1.3.0, final tutorial video and store zip (only when you say).
+- Store listing wording, version 2.0.0 (this is the 2nd big version; the number stays 1.2.6 until you say), final tutorial video and store zip (only when you say).
 - Dollar prices stay $1.49 / 2.49 / 3.99 / 5.49 (rupees ₹9 / 15 / 25 / 35).
 - Check if the "Start here" card is too tall; shrink if needed.
