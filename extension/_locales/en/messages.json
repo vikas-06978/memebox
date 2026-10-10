@@ -1389,5 +1389,35 @@
   },
   "fx_mirror_tip": {
     "message": "Like a mirror: your Left is the left of your own video. Untick if it looks the wrong way round."
+  },
+  "fx_gest": {
+    "message": "It understands my hands, head and tongue"
+  },
+  "fx_gest_tip": {
+    "message": "Thumbs up, heart, OK, rock, call-me, stop, clap, nod, shake your head, tongue out, kiss. Needs Follow me."
+  },
+  "fx_sens": {
+    "message": "How easily it notices them"
+  },
+  "fx_sens_low": {
+    "message": "Low"
+  },
+  "fx_sens_normal": {
+    "message": "Normal"
+  },
+  "fx_sens_high": {
+    "message": "High"
+  },
+  "fx_try": {
+    "message": "Try: 👍 ✌️ 👌 🤘 🤙 ✋ 👏 ❤️ (two hands or fingers), nod, shake your head, 😛, kiss."
+  },
+  "fx_seen": {
+    "message": "The camera sees:"
+  },
+  "fx_seen_face": {
+    "message": "face"
+  },
+  "fx_seen_none": {
+    "message": "The camera sees nobody yet (camera on? Follow me ticked?)"
   }
 }

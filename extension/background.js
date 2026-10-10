@@ -390,6 +390,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendToTab(tabId, { type: 'fx-status', active: msg.active === true, frameId: sender.frameId }, 0);
       break;
 
+    case 'fx-seen':
+      sendToTab(tabId, { type: 'fx-seen', ml: msg.ml === true, face: msg.face === true, hands: Number(msg.hands) || 0, did: typeof msg.did === 'string' ? msg.did.slice(0, 4) : '' }, 0);
+      break;
+
     case 'frame-status':
       updateCallTab(tabId, (e) => {
         const had = Object.keys(e.frames).length > 0;

@@ -178,3 +178,54 @@ test('thumbs up and peace are noticed, and a closed hand is not a wave', async (
   expect(r.peace).toBeGreaterThan(0);
   expect(r.wave, 'a closed hand is not a wave').toBeLessThan(0);
 });
+
+test('hand shapes and head movements become events: heart, OK, rock, call-me, stop, clap, nod, shake (and not when Gestures is off or Sensitivity is low)', async ({ page }) => {
+  await page.setContent('<body></body>');
+  await page.addScriptTag({ path: 'extension/lib/fx.js' });
+  const r = await page.evaluate(() => {
+    const c = document.createElement('canvas'); c.width = 320; c.height = 180; c.getContext('2d').fillRect(0, 0, 320, 180);
+    const bsOf = (o) => ({ blinkL: 0, blinkR: 0, jaw: 0, smile: 0, tongue: 0, brow: 0, pucker: 0, wide: 0, ...o });
+    const H = (o) => ({ x: 0.5, y: 0.5, s: 0.2, n: 0, open: false, thumbUp: false, peace: false, ok: false, fingerHeart: false, rock: false, callMe: false, heart2: false, ...o });
+    // feeds `n` answers 110 ms apart; `step(i)` gives { hands, face, bs }
+    const run = (n, step, setup) => {
+      const R = MemeFx.createRenderer(); if (setup) setup(R);
+      let now = 100000, T;
+      for (let i = 0; i < n; i++) {
+        now += 110; const s = step(i);
+        R.ml = { at: now, face: { x: 0.5, y: 0.4, w: 0.2, h: 0.3, pose: s.pose || { yaw: 0, pitch: 0 }, ...(s.face || {}) }, bs: bsOf(s.bs), hands: s.hands || null, handsAt: s.hands ? now : -1e9 };
+        T = R.track(c, now);
+      }
+      return { ...T };
+    };
+    const hands = (h) => (i) => ({ hands: h(i) });
+    const out = {};
+    out.heart = run(5, hands(() => [H({ fingerHeart: true })])).heartAt;
+    out.heart2 = run(5, hands(() => [H({ heart2: true }), H({ heart2: true })])).heartAt;
+    out.ok = run(5, hands(() => [H({ ok: true })])).okAt;
+    out.rock = run(5, hands(() => [H({ rock: true })])).rockAt;
+    out.call = run(5, hands(() => [H({ callMe: true })])).callAt;
+    out.stop = run(14, hands(() => [H({ open: true, n: 4, x: 0.5 })])).stopAt;
+    out.waveNotStop = run(14, hands((i) => [H({ open: true, n: 4, x: i % 2 ? 0.4 : 0.55 })])).stopAt;
+    out.clap = run(8, hands((i) => (i < 4 ? [H({ open: true, x: 0.2 }), H({ open: true, x: 0.7 })] : [H({ open: true, x: 0.46 }), H({ open: true, x: 0.52 })]))).clapAt;
+    out.nod = run(14, (i) => ({ pose: { yaw: 0, pitch: i % 4 < 2 ? 0 : 0.1 } })).nodAt;
+    out.shake = run(14, (i) => ({ pose: { yaw: i % 4 < 2 ? -0.15 : 0.15, pitch: 0 } })).shakeAt;
+    out.still = run(14, () => ({ pose: { yaw: 0.01, pitch: 0.01 } }));
+    // switched off
+    out.offHeart = run(5, hands(() => [H({ fingerHeart: true })]), (R) => { R.gestOn = false; }).heartAt;
+    out.offTongue = run(5, () => ({ bs: { tongue: 0.9 } }), (R) => { R.gestOn = false; }).tongue;
+    // low sensitivity needs a clearer tongue
+    out.lowMild = run(5, () => ({ bs: { tongue: 0.55 } }), (R) => { R.sensK = 1.25; }).tongue;
+    out.lowClear = run(5, () => ({ bs: { tongue: 0.9 } }), (R) => { R.sensK = 1.25; }).tongue;
+    out.normalMild = run(5, () => ({ bs: { tongue: 0.55 } })).tongue;
+    return out;
+  });
+  for (const k of ['heart', 'heart2', 'ok', 'rock', 'call', 'stop', 'clap', 'nod', 'shake']) expect(r[k], k).toBeGreaterThan(0);
+  expect(r.waveNotStop, 'a swinging hand is a wave, not stop').toBeLessThan(0);
+  expect(r.still.nodAt, 'a head that stays still does not nod').toBeLessThan(0);
+  expect(r.still.shakeAt).toBeLessThan(0);
+  expect(r.offHeart, 'Gestures off').toBeLessThan(0);
+  expect(r.offTongue).toBe(false);
+  expect(r.lowMild, 'low sensitivity ignores a mild tongue').toBe(false);
+  expect(r.lowClear).toBe(true);
+  expect(r.normalMild).toBe(true);
+});

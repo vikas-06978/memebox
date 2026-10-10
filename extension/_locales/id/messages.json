@@ -1389,5 +1389,35 @@
   },
   "fx_mirror_tip": {
     "message": "Seperti cermin: kiri Anda adalah kiri di video Anda sendiri. Hapus centang jika terbalik."
+  },
+  "fx_gest": {
+    "message": "Mengerti tangan, kepala, dan lidah saya"
+  },
+  "fx_gest_tip": {
+    "message": "Jempol, hati, OK, rock, telepon, stop, tepuk tangan, mengangguk, menggeleng, menjulurkan lidah, cium. Perlu Follow me."
+  },
+  "fx_sens": {
+    "message": "Seberapa mudah dikenali"
+  },
+  "fx_sens_low": {
+    "message": "Rendah"
+  },
+  "fx_sens_normal": {
+    "message": "Normal"
+  },
+  "fx_sens_high": {
+    "message": "Tinggi"
+  },
+  "fx_try": {
+    "message": "Coba: 👍 ✌️ 👌 🤘 🤙 ✋ 👏 ❤️ (dua tangan atau jari), mengangguk, menggeleng, 😛, cium."
+  },
+  "fx_seen": {
+    "message": "Kamera melihat:"
+  },
+  "fx_seen_face": {
+    "message": "wajah"
+  },
+  "fx_seen_none": {
+    "message": "Kamera belum melihat siapa pun (kamera aktif? Follow me dicentang?)"
   }
 }

@@ -1389,5 +1389,35 @@
   },
   "fx_mirror_tip": {
     "message": "Comme un miroir : votre gauche est celle de votre propre vidéo. Décochez si c'est à l'envers."
+  },
+  "fx_gest": {
+    "message": "Il comprend mes mains, ma tête et ma langue"
+  },
+  "fx_gest_tip": {
+    "message": "Pouce levé, cœur, OK, rock, appelle-moi, stop, applaudir, hocher la tête, dire non, tirer la langue, bisou. Nécessite Follow me."
+  },
+  "fx_sens": {
+    "message": "Avec quelle facilité il les repère"
+  },
+  "fx_sens_low": {
+    "message": "Faible"
+  },
+  "fx_sens_normal": {
+    "message": "Normale"
+  },
+  "fx_sens_high": {
+    "message": "Forte"
+  },
+  "fx_try": {
+    "message": "Essayez : 👍 ✌️ 👌 🤘 🤙 ✋ 👏 ❤️ (deux mains ou doigts), hochez la tête, dites non, 😛, bisou."
+  },
+  "fx_seen": {
+    "message": "La caméra voit :"
+  },
+  "fx_seen_face": {
+    "message": "visage"
+  },
+  "fx_seen_none": {
+    "message": "La caméra ne voit encore personne (caméra active ? Follow me coché ?)"
   }
 }

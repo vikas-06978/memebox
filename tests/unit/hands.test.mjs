@@ -52,3 +52,46 @@ test('index and middle finger out, the others curled, is peace', () => {
   assert.equal(h.open, false);
   assert.equal(handInfo(hand({})).peace, false);
 });
+
+const { twoHandHeart, headPose } = loadScript('lib/hands.js').MemeHands;
+const touching = (lm) => { lm[8] = { x: 0.45, y: 0.6 }; lm[4] = { x: 0.46, y: 0.61 }; return lm; };
+
+test('thumb and index touching with the other three fingers out is OK', () => {
+  const h = handInfo(touching(hand({ index: 0, thumb: 'tucked' })));
+  assert.equal(h.ok, true);
+  assert.equal(h.fingerHeart, false);
+});
+
+test('thumb and index touching with the other fingers curled is a finger heart', () => {
+  const h = handInfo(touching(hand({ index: 0, middle: 0, ring: 0, pinky: 0, thumb: 'tucked' })));
+  assert.equal(h.fingerHeart, true);
+  assert.equal(h.ok, false);
+});
+
+test('index and little finger out, middle and ring curled, is rock', () => {
+  const h = handInfo(hand({ middle: 0, ring: 0, thumb: 'tucked' }));
+  assert.equal(h.rock, true);
+  assert.equal(h.peace, false);
+  assert.equal(handInfo(hand({})).rock, false);
+});
+
+test('two hands with the index tips together at the top and the thumb tips together at the bottom make a heart', () => {
+  const a = { s: 0.2, t8: { x: 0.46, y: 0.4 }, t4: { x: 0.48, y: 0.6 } }, b = { s: 0.2, t8: { x: 0.54, y: 0.4 }, t4: { x: 0.52, y: 0.6 } };
+  assert.equal(twoHandHeart([a, b]), true);
+  assert.equal(twoHandHeart([a]), false);
+  assert.equal(twoHandHeart([a, { ...b, t8: { x: 0.9, y: 0.4 } }]), false, 'index tips far apart');
+  assert.equal(twoHandHeart([a, { ...b, t4: { x: 0.52, y: 0.4 } }]), false, 'thumbs at the same height as the index tips');
+});
+
+test('the head pose: 0 when straight, yaw follows the nose left and right, pitch up and down', () => {
+  const lm = Array.from({ length: 478 }, () => ({ x: 0.5, y: 0.5 }));
+  lm[234] = { x: 0.4, y: 0.5 }; lm[454] = { x: 0.6, y: 0.5 }; lm[10] = { x: 0.5, y: 0.3 }; lm[152] = { x: 0.5, y: 0.7 };
+  lm[1] = { x: 0.5, y: 0.5 };
+  const straight = headPose(lm);
+  assert.ok(Math.abs(straight.yaw) < 0.01 && Math.abs(straight.pitch) < 0.01);
+  lm[1] = { x: 0.56, y: 0.5 };
+  assert.ok(headPose(lm).yaw > 0.2);
+  lm[1] = { x: 0.5, y: 0.56 };
+  assert.ok(headPose(lm).pitch > 0.1);
+  assert.equal(headPose([]), null);
+});

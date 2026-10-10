@@ -98,8 +98,8 @@
         faceBusy = 0;
         const n = performance.now(), prev = faceMl, num = (v) => (Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0);
         const bs = d.bs && typeof d.bs === 'object' ? Object.fromEntries(['blinkL', 'blinkR', 'jaw', 'smile', 'tongue', 'brow', 'pucker', 'wide'].map((k) => [k, num(d.bs[k])])) : null;
-        const hands = Array.isArray(d.hands) ? d.hands.slice(0, 2).map((h) => ({ x: num(h.x), y: num(h.y), s: num(h.s), n: Number(h.n) || 0, open: h.open === true, thumbUp: h.thumbUp === true, peace: h.peace === true })) : null;
-        faceMl = { at: n, face: d.face && Number.isFinite(d.face.x) && Number.isFinite(d.face.y) ? { x: d.face.x, y: d.face.y, w: Number(d.face.w) || 0, h: Number(d.face.h) || 0 } : null, bs, hands: hands || (prev ? prev.hands : null), handsAt: hands ? n : (prev ? prev.handsAt : -1e9) };
+        const hands = Array.isArray(d.hands) ? d.hands.slice(0, 2).map((h) => ({ x: num(h.x), y: num(h.y), s: num(h.s), n: Number(h.n) || 0, open: h.open === true, thumbUp: h.thumbUp === true, peace: h.peace === true, ok: h.ok === true, fingerHeart: h.fingerHeart === true, rock: h.rock === true, callMe: h.callMe === true, heart2: h.heart2 === true })) : null;
+        faceMl = { at: n, face: d.face && Number.isFinite(d.face.x) && Number.isFinite(d.face.y) ? { x: d.face.x, y: d.face.y, w: Number(d.face.w) || 0, h: Number(d.face.h) || 0, pose: d.face.pose && Number.isFinite(d.face.pose.yaw) && Number.isFinite(d.face.pose.pitch) ? { yaw: d.face.pose.yaw, pitch: d.face.pose.pitch } : null } : null, bs, hands: hands || (prev ? prev.hands : null), handsAt: hands ? n : (prev ? prev.handsAt : -1e9) };
         break; }
       case 'fx-config': fxCfg = globalThis.MemeFx ? globalThis.MemeFx.sanitize(d.value) : null; break;
     }
@@ -853,7 +853,7 @@
 
   // Face finding for "Follow me": a small copy of the frame goes to the bridge (same page, never leaves the computer),
   // which runs a small face model and sends the face position back. One frame at a time, about 10 a second.
-  let faceMl = null, faceBusy = 0, faceLast = 0, faceN = 0;
+  let faceMl = null, faceBusy = 0, faceLast = 0, faceN = 0, seenAt = 0;
   function sendFace(src, w, h, now) {
     if (now - faceLast < 70 || (faceBusy && now - faceBusy < 1000) || typeof createImageBitmap !== 'function') return;
     faceLast = now; faceBusy = now; faceN++;
@@ -868,7 +868,10 @@
     if (fxActive() && R) {
       R.ml = faceMl;
       R.render(g, src, w, h, fxCfg, now, audioInfo(), {});
-      if (R.followOn && now - R.followOn < 300) sendFace(src, w, h, now);
+      if (R.followOn && now - R.followOn < 300) {
+        sendFace(src, w, h, now);
+        if (now - seenAt > 250) { seenAt = now; post({ type: 'fx-seen', ...R.seen(now) }); } // for the panel's "what the camera sees" line
+      }
     }
     else g.drawImage(src, 0, 0, w, h);
     if (now < camTextUntil) {
