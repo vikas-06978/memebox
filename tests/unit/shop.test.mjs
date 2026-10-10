@@ -223,3 +223,14 @@ test('time pass: a turned-off key spends nothing, and the admin can gift minutes
   const page = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
   assert.match(page, /Pro Max 60 min left, Pro 30 min left/);
 });
+
+test('admin shows an activity section: earned, funnel, charts and pass time from orders and keys', async () => {
+  const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }))).json();
+  assert.ok(created.ok, JSON.stringify(created));
+  const html = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
+  assert.match(html, /Activity, last 30 days/);
+  assert.match(html, /checkouts started/);
+  assert.match(html, /<svg class="chart"/);
+  assert.match(html, /Pass time/);
+  assert.doesNotMatch(html, /style="/, 'the admin page CSP blocks inline styles');
+});

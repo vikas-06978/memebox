@@ -354,3 +354,13 @@ form.inline button { padding: 7px 14px; font-size: 14px; }
 .pass { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
 .pass-price { font-weight: 900; font-size: 18px; }
 .button.small { padding: 7px 14px; font-size: 14px; }
+
+/* admin: activity tiles and charts */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 12px 0 16px; }
+.tile { background: var(--card, #fff); border: 1px solid var(--line, rgba(127,127,127,.25)); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.tile b { font-size: 26px; line-height: 1.1; }
+.tile span { color: var(--muted, #666); font-size: 13px; }
+svg.chart { width: 100%; height: auto; display: block; }
+svg.chart .bar { fill: var(--brand-2); }
+svg.chart .bar.zero { fill: var(--line, rgba(127,127,127,.35)); }
+.chart-axis { display: flex; justify-content: space-between; color: var(--muted, #666); font-size: 12px; }
