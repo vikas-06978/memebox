@@ -43,10 +43,10 @@ test('UPI link has the payee, amount in rupees, INR and the order code as the no
   assert.throws(() => upiLink({ upiId: 'not a vpa', amount: 1, orderId: 'x' }));
 });
 
-test('prices: time passes ₹19 / 29 / 49 / 69 and $1.99 / 3.99 / 5.99 / 8.99; the old lifetime Pro and picture packs are closed', () => {
+test('prices: time passes ₹9 / 15 / 25 / 35 and $1.49 / 2.49 / 3.99 / 5.49; the old lifetime Pro and picture packs are closed', () => {
   const p = PRODUCTS;
-  assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_180.inr], [19, 29, 49, 69]);
-  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_180.usd], [1.99, 3.99, 5.99, 8.99]);
+  assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_180.inr], [9, 15, 25, 35]);
+  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_180.usd], [1.49, 2.49, 3.99, 5.49]);
   assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_max_180.maxSeconds], [1800, 3600, 7200, 10800]);
   assert.equal(p.pro.closed, true);
   assert.equal(p.pictures5.closed, true);
@@ -60,8 +60,8 @@ test('wrangler.toml has no UPI ID or other settings, so the dashboard values are
 test('/api/config tells the buy page the products and whether payments are open', async () => {
   const on = await (await call(configApi, req('/api/config'))).json();
   assert.equal(on.payments, true);
-  assert.equal(on.products.pass_max_180.inr, 69);
-  assert.equal(on.products.pass_max_180.usd, 8.99);
+  assert.equal(on.products.pass_max_180.inr, 35);
+  assert.equal(on.products.pass_max_180.usd, 5.49);
   assert.equal(on.products.pro, undefined, 'the old lifetime Pro is not for sale');
   const off = await (await call(configApi, req('/api/config'), { DB: db })).json();
   assert.equal(off.payments, false);
@@ -89,8 +89,8 @@ test('/api/license: active, unknown, badly formed and turned-off keys; CORS for 
 test('order flow: create → QR link → claim with UTR → admin approves → buyer sees a new key', async () => {
   const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }))).json();
   assert.equal(created.ok, true);
-  assert.equal(created.amount, 29);
-  assert.match(created.upiUrl, new RegExp(`^upi://pay\\?pa=memebox@upi&pn=MemeBox&am=29\\.00&cu=INR&tn=MemeBox%20${created.orderId}$`));
+  assert.equal(created.amount, 15);
+  assert.match(created.upiUrl, new RegExp(`^upi://pay\\?pa=memebox@upi&pn=MemeBox&am=15\\.00&cu=INR&tn=MemeBox%20${created.orderId}$`));
 
   const bad = await call(orderApi, postJson('/api/order', { action: 'claim', orderId: created.orderId, utr: '123' }));
   assert.equal(bad.status, 400);
@@ -114,7 +114,7 @@ test('order flow: create → QR link → claim with UTR → admin approves → b
   assert.equal(lic.kind, 'paid');
 
   const after = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
-  assert.match(after, /Earned so far: <b>₹29<\/b> from 1 approved order\./);
+  assert.match(after, /Earned so far: <b>₹15<\/b> from 1 approved order\./);
 });
 
 test('hours top up an existing key (Pro Max too), a closed product cannot be ordered, and a used UTR can\'t be reused', async () => {

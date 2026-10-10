@@ -813,7 +813,7 @@
     "message": "MemeBox Pro"
   },
   "op_pro_off": {
-    "message": "O Pro está desligado agora, então todos os recursos são grátis para todos."
+    "message": "O Pro está desligado nesta versão, então tudo está liberado para todos e não precisa de chave."
   },
   "op_pro_active": {
     "message": "✅ O MemeBox Pro está ativo neste navegador."
@@ -846,7 +846,7 @@
     "message": "A chave $1 não pôde ser verificada há muito tempo. Fique online para o MemeBox verificar de novo."
   },
   "op_license_pro": {
-    "message": "Chave $1: Pro, ilimitado."
+    "message": "Chave $1: Pro Max ilimitado. Todas as luzes, personagens, filtros e músicas estão liberados."
   },
   "op_license_slots": {
     "message": "Chave $1: $2 memes com imagem extras."
@@ -1251,5 +1251,8 @@
   },
   "fx_anim_beat": {
     "message": "No ritmo"
+  },
+  "op_license_pass": {
+    "message": "Chave $1: restam $2 de passe."
   }
 }

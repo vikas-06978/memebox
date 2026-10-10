@@ -813,7 +813,7 @@
     "message": "MemeBox Pro"
   },
   "op_pro_off": {
-    "message": "Pro sedang dimatikan, jadi semua fitur gratis untuk semua orang."
+    "message": "Pro dimatikan di versi ini, jadi semua fitur terbuka untuk semua dan tidak perlu kunci."
   },
   "op_pro_active": {
     "message": "✅ MemeBox Pro aktif di browser ini."
@@ -846,7 +846,7 @@
     "message": "Kunci $1 sudah lama tidak bisa diperiksa. Sambungkan ke internet agar MemeBox bisa memeriksanya lagi."
   },
   "op_license_pro": {
-    "message": "Kunci $1: Pro, tanpa batas."
+    "message": "Kunci $1: Pro Max tanpa batas. Semua lampu, karakter, filter, dan lagu terbuka."
   },
   "op_license_slots": {
     "message": "Kunci $1: $2 meme bergambar tambahan."
@@ -1251,5 +1251,8 @@
   },
   "fx_anim_beat": {
     "message": "Mengikuti beat"
+  },
+  "op_license_pass": {
+    "message": "Kunci $1: sisa $2 waktu pass."
   }
 }

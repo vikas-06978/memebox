@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT } from './helpers.mjs';
-import { build, stable, LANGS, PLATFORMS, pageUrl, siteUrl } from '../../tools/seo.mjs';
+import { build, stable, LANGS, PLATFORMS, PASS_OFFERS, pageUrl, siteUrl } from '../../tools/seo.mjs';
+import { PRODUCTS } from '../../site/src/shop.js';
 
 const PUBLIC = path.join(ROOT, 'site', 'public');
 const files = build();
@@ -35,7 +36,7 @@ test('every page: title, description, canonical, Open Graph, Twitter card and va
     for (const p of ['og:title', 'og:description', 'og:url', 'og:image', 'og:type']) assert.ok(html.includes(`property="${p}"`), `${rel} ${p}`);
     assert.match(html, /<meta name="twitter:card" content="summary_large_image">/, rel);
     assert.match(html, /<meta name="robots" content="index, follow/, rel);
-    assert.equal((html.match(/<h1>/g) || []).length, 1, `${rel} has one h1`);
+    assert.equal((html.match(/<h1[ >]/g) || []).length, 1, `${rel} has one h1`);
     const ld = JSON.parse(meta(html, /<script type="application\/ld\+json">([\s\S]*?)<\/script>/));
     const types = ld['@graph'].map((x) => x['@type']);
     assert.ok(types.includes('SoftwareApplication'), `${rel} SoftwareApplication`);
@@ -86,4 +87,12 @@ test('sitemap lists every page (with language alternates) and robots.txt points 
 test('the social preview image exists at 1200x630', () => {
   const b = fs.readFileSync(path.join(PUBLIC, 'assets', 'og-card.png'));
   assert.deepEqual([b.readUInt32BE(16), b.readUInt32BE(20)], [1200, 630]);
+});
+
+test('the prices in the structured data and the pricing page are the ones the shop charges', () => {
+  const sold = ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_180'].map((id) => [PRODUCTS[id].inr, PRODUCTS[id].usd]);
+  assert.deepEqual(PASS_OFFERS.map(([, inr, usd]) => [inr, usd]), sold);
+  const pricing = files['pricing.html'];
+  assert.match(pricing, /<link rel="canonical" href="[^"]+\/pricing">/);
+  assert.ok(files['sitemap.xml'].includes('/pricing'), 'the pricing page is in the sitemap');
 });

@@ -813,7 +813,7 @@
     "message": "MemeBox Pro"
   },
   "op_pro_off": {
-    "message": "Pro is switched off right now, so every feature is free for everyone."
+    "message": "Pro is switched off in this build, so every feature is unlocked for everyone and no key is needed."
   },
   "op_pro_active": {
     "message": "✅ MemeBox Pro is active in this browser."
@@ -846,7 +846,7 @@
     "message": "The key $1 couldn't be checked for a long time. Go online so MemeBox can check it again."
   },
   "op_license_pro": {
-    "message": "Key $1: Pro, unlimited."
+    "message": "Key $1: unlimited Pro Max. Every light, character, filter and tune is unlocked."
   },
   "op_license_slots": {
     "message": "Key $1: $2 extra picture memes."
@@ -1251,5 +1251,8 @@
   },
   "fx_anim_beat": {
     "message": "To the beat"
+  },
+  "op_license_pass": {
+    "message": "Key $1: $2 of pass time left."
   }
 }

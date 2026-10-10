@@ -142,7 +142,7 @@ test('buy page: QR for memebox@upi with the amount and order note; UTR; admin ap
   await expect(buyer.locator('#pay')).toBeVisible();
   const qrText = await buyer.locator('#qr').getAttribute('data-text');
   const orderId = new URL(buyer.url()).searchParams.get('order');
-  expect(qrText).toBe(`upi://pay?pa=memebox@upi&pn=MemeBox&am=29.00&cu=INR&tn=MemeBox%20${orderId}`);
+  expect(qrText).toBe(`upi://pay?pa=memebox@upi&pn=MemeBox&am=15.00&cu=INR&tn=MemeBox%20${orderId}`);
   expect(await buyer.locator('#upi-link').getAttribute('href')).toBe(qrText);
   await expect(buyer.locator('#note')).toHaveText(`MemeBox ${orderId}`);
   // The QR really is drawn (dark modules on the canvas).
@@ -166,7 +166,7 @@ test('buy page: QR for memebox@upi with the amount and order note; UTR; admin ap
   await expect(admin.getByText('Payments waiting for you (1)')).toBeVisible();
   await admin.getByRole('button', { name: 'Approve' }).click();
   await expect(admin.locator('.notice')).toContainText(`Order ${orderId} approved`);
-  await expect(admin.getByText('Earned so far: ₹29 from 1 approved order.')).toBeVisible();
+  await expect(admin.getByText('Earned so far: ₹15 from 1 approved order.')).toBeVisible();
 
   await buyer.reload();
   await expect(buyer.locator('#status-title')).toHaveText('Payment confirmed 🎉');
@@ -178,15 +178,15 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
   await page.goto('https://memebox.pages.dev/pricing?cur=inr');
   await expect(page.locator('h1')).toHaveText('Plans and prices');
   await expect(page.locator('.pass')).toHaveCount(4);
-  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['₹19', '₹29', '₹49']);
-  await expect(page.locator('#passes-max .pass-price')).toHaveText(['₹69']);
+  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['₹9', '₹15', '₹25']);
+  await expect(page.locator('#passes-max .pass-price')).toHaveText(['₹35']);
   await expect(page.locator('#passes-max a.button')).toHaveAttribute('href', '/buy?product=pass_max_180');
   await expect(page.locator('#usd-note')).toBeHidden();
   await page.screenshot({ path: 'tests/.tmp/pricing-inr.png', fullPage: true });
 
   await page.locator('.seg-btn[data-cur="usd"]').click();
-  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['$1.99', '$3.99', '$5.99']);
-  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$8.99']);
+  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['$1.49', '$2.49', '$3.99']);
+  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$5.49']);
   await expect(page.locator('.pass a.button')).toHaveCount(0);
   await expect(page.locator('#usd-note')).toBeVisible();
   await page.screenshot({ path: 'tests/.tmp/pricing-usd.png', fullPage: true });
@@ -195,7 +195,7 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
   await page.goto('https://memebox.pages.dev/pricing?cur=inr');
   await page.locator('#passes-pro a.button').nth(2).click();
   await expect(page.locator('#pay')).toBeVisible();
-  await expect(page.locator('#amount')).toHaveText('₹49');
+  await expect(page.locator('#amount')).toHaveText('₹25');
 });
 
 test('owner key from /admin activates in Options; turning it off in /admin is picked up', async ({ context, extensionId, site }) => {
@@ -211,7 +211,7 @@ test('owner key from /admin activates in Options; turning it off in /admin is pi
   const page = await openOptions(context, extensionId);
   await page.locator('#license-key').fill(key.toLowerCase());
   await page.getByRole('button', { name: 'Activate' }).click();
-  await expect(page.locator('#pro-status')).toContainText(`Key ${key}: Pro, unlimited.`);
+  await expect(page.locator('#pro-status')).toContainText(`Key ${key}: unlimited Pro Max.`);
   const { license } = await page.store('license');
   expect(license).toMatchObject({ key, status: 'active', unlimited: true });
 

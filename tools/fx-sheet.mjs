@@ -16,9 +16,19 @@ await page.evaluate((only) => {
   const W = 320, H = 180, FX = globalThis.MemeFx;
   const rows = [];
   const base = { ...FX.DEFAULTS, on: true };
-  const sample = document.createElement('canvas'); sample.width = W; sample.height = H;
-  FX.drawSample(sample.getContext('2d'), W, H, 0);
+  const lit = document.createElement('canvas'); lit.width = W; lit.height = H;
+  FX.drawSample(lit.getContext('2d'), W, H, 0);
+  const sample = lit;
+  const dim = document.createElement('canvas'); dim.width = W; dim.height = H; // the same picture in a dark room
+  { const dg = dim.getContext('2d'); dg.drawImage(sample, 0, 0); dg.fillStyle = 'rgba(0,0,0,0.82)'; dg.fillRect(0, 0, W, H); }
   const add = (title, tiles) => rows.push({ title, tiles });
+  add('dark room: plain, lamp, disco ball, lantern, moon, no lamp (the light must show on the face)', [
+    { label: 'plain dark room', cfg: { ...base, on: false }, dark: true },
+    { label: 'lamp', cfg: { ...base }, dark: true, at: 1500 },
+    { label: 'discoball', cfg: { ...base, fixture: 'discoball' }, dark: true, at: 1500 },
+    { label: 'lantern', cfg: { ...base, fixture: 'lantern' }, dark: true, at: 1500 },
+    { label: 'moon blue', cfg: { ...base, fixture: 'moon', color: 'blue' }, dark: true, at: 1500 },
+    { label: 'no lamp', cfg: { ...base, lamp: false }, dark: true, at: 1500 }]);
   add('lamp drop (0.4s, 1.2s, 2.0s, 2.8s, 3.3s, 5s)', [0.4, 1.2, 2.0, 2.8, 3.3, 5].map((s) => ({ label: s + 's', cfg: { ...base, lampAnim: 'drop' }, at: s * 1000, anim: true })));
   add('free: still lamp (warm, white, blue) + swing + flicker + no lamp', [
     { label: 'warm', cfg: { ...base } }, { label: 'white', cfg: { ...base, color: 'white' } }, { label: 'blue', cfg: { ...base, color: 'blue' } },
@@ -40,6 +50,7 @@ await page.evaluate((only) => {
       const wrap = document.createElement('div'); const c = document.createElement('canvas'); c.width = W; c.height = H;
       const g = c.getContext('2d'); const r = FX.createRenderer();
       const cfg = FX.sanitize(t.cfg);
+      const sample = t.dark ? dim : lit;
       const start = 100000;
       if (t.anim) { for (let ms = 0; ms <= t.at; ms += 33) r.render(g, sample, W, H, cfg, start + ms, null); }
       else { const steps = t.at ? Math.round(t.at / 33) : 3; for (let i = 0; i <= steps; i++) r.render(g, sample, W, H, cfg, start + i * 33, t.audio || null); }

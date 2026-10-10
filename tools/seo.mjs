@@ -66,6 +66,17 @@ function head({ title, desc, url, lang, alternates, image, ld, type = 'website' 
   return lines.map((l) => '  ' + l).join('\n');
 }
 
+// The paid passes, in rupees and dollars: the same numbers as site/src/shop.js (a test compares them).
+export const PASS_OFFERS = [
+  ['Pro pass, 30 minutes', 9, 1.49], ['Pro pass, 1 hour', 15, 2.49], ['Pro pass, 2 hours', 25, 3.99], ['Pro Max pass, 3 hours', 35, 5.49],
+];
+function passOffers(base) {
+  return PASS_OFFERS.flatMap(([name, inr, usd]) => [
+    { '@type': 'Offer', name, price: String(inr), priceCurrency: 'INR', url: `${base}/pricing` },
+    { '@type': 'Offer', name, price: usd.toFixed(2), priceCurrency: 'USD', url: `${base}/pricing` },
+  ]);
+}
+
 function appLd(base, url, t, lang) {
   return {
     '@type': 'SoftwareApplication',
@@ -83,7 +94,7 @@ function appLd(base, url, t, lang) {
     softwareHelp: `${base}/feedback`,
     offers: [
       { '@type': 'Offer', name: t('plan_free'), price: '0', priceCurrency: 'INR' },
-      { '@type': 'Offer', name: 'Pro pass (30 minutes)', price: '19', priceCurrency: 'INR', url: `${base}/pricing` },
+      ...passOffers(base),
     ],
   };
 }
@@ -162,7 +173,7 @@ function platformPage(p, base) {
   const url = `${base}/${p.slug}`;
   const faq = [
     [`Does everyone in the ${p.name} call hear the memes?`, `Yes. MemeBox plays the meme through your microphone, so everyone in the ${p.name} call hears it, just like your voice. They don't need MemeBox.`],
-    [`Is it free to use MemeBox with ${p.name}?`, 'Yes. The soundboard, Hindi and English voices, six tones and tab audio are free. Pro (₹99 once) adds unlimited picture memes, the voice changer and more.'],
+    [`Is it free to use MemeBox with ${p.name}?`, 'Yes. The soundboard, Hindi and English voices, six tones, tab audio, a hanging lamp, 3 filters and 2 music tunes are free. Camera lights, characters, more filters and music, and the voice changer are paid by the hour, from ₹9 for 30 minutes (about $1.49), with no subscription.'],
     ['Is my voice recorded?', 'Never. MemeBox only mixes sound inside your browser tab. Nothing is saved or uploaded.'],
     [`Does it work in the ${p.name} desktop app?`, `MemeBox works in the browser version of ${p.name} (Chrome or Edge). ${p.tip}`],
   ];
@@ -269,6 +280,35 @@ ${faq.map(([q, a]) => `      <details class="card"><summary>${esc(q)}</summary><
 `;
 }
 
+// ---------- the pricing page ----------
+
+function pricingHead(base) {
+  const url = `${base}/pricing`;
+  const title = 'MemeBox plans and prices: free, Pro and Pro Max';
+  const desc = 'MemeBox is free. Buy hours of camera lights, animated characters, filters and music only when you want them. From ₹9 or $1.49. No subscription, no expiry date.';
+  const ld = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      appLd(base, `${base}/`, (k) => dict('en')[k], 'en'),
+      faqLd([
+        ['Is MemeBox free?', 'Yes. The meme soundboard, Hindi and English voices, tones, tab audio, a hanging lamp, 3 filters and 2 music tunes are free forever.'],
+        ['How much do the extras cost?', 'Camera lights, characters, filters and music are paid by the hour: Pro from ₹9 or $1.49 for 30 minutes, Pro Max (all characters and filters) ₹35 or $5.49 for 3 hours. No subscription.'],
+        ['Do the hours expire?', 'No. Hours never expire. The clock runs only while you are in a call with your pass switched on, and you can pause it any time.'],
+        ['Can I try before I pay?', 'Yes. Every paid item can be previewed on your own screen for 20 seconds. It goes into your call only while you have a pass.'],
+        ['Are there refunds?', 'All sales are final, and unused hours stay on your key.'],
+      ]),
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'MemeBox', item: `${base}/` },
+          { '@type': 'ListItem', position: 2, name: 'Plans and prices', item: url },
+        ],
+      },
+    ],
+  };
+  return head({ title, desc, url, lang: 'en', image: `${base}/assets/og-card.png`, ld });
+}
+
 // ---------- sitemap ----------
 
 function sitemap(base) {
@@ -297,6 +337,10 @@ export function build() {
   const files = {};
   for (const l of LANGS) files[l === 'en' ? 'index.html' : `${l}/index.html`] = landing(template, l, base);
   for (const p of PLATFORMS) files[`${p.slug}.html`] = platformPage(p, base);
+  // pricing.html is a hand-written page: only the part between the SEO markers is owned by this script.
+  const pricing = fs.readFileSync(path.join(PUBLIC, 'pricing.html'), 'utf8');
+  files['pricing.html'] = pricing.replace(/<!-- SEO:START[^>]*-->[\s\S]*?<!-- SEO:END -->/,
+    `<!-- SEO:START (written by npm run seo; edit tools/seo.mjs instead) -->\n${pricingHead(base)}\n  <!-- SEO:END -->`);
   files['sitemap.xml'] = sitemap(base);
   return files;
 }

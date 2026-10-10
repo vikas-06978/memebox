@@ -389,7 +389,7 @@
     // Lamp: drawn around (0,0) = the point where the cord hangs.
     function drawLamp(g, w, h, st) {
       const { cx, rgb, bright, angle, dy } = st;
-      const lampW = h * 0.23, lampH = h * 0.14, cord = h * 0.12 + dy;
+      const lampW = h * 0.23, lampH = h * 0.14, cord = h * 0.035 + dy;
       g.save();
       g.translate(cx, 0);
       g.rotate(angle);
@@ -436,7 +436,7 @@
 
     // ---- other things that hang (or shine) like the lamp ----
     // Where the light comes from, below the point where the cord hangs, as a share of the picture height.
-    const FIX_OFF = { lamp: 0.26, discoball: 0.195, lantern: 0.185, chandelier: 0.165, moon: 0.19, star: 0.19, fairy: 0.06, spotlight: 0.07 };
+    const FIX_OFF = { lamp: 0.175, discoball: 0.14, lantern: 0.13, chandelier: 0.13, moon: 0.12, star: 0.11, fairy: 0.06, spotlight: 0.07 };
 
     function cordTo(g, h, st, len) {
       g.strokeStyle = '#17171c'; g.lineWidth = Math.max(2, h * 0.0045);
@@ -444,7 +444,7 @@
     }
 
     function drawDiscoBall(g, w, h, st) {
-      const r = h * 0.088, cord = h * 0.12, t = st.now / 1000;
+      const r = h * 0.088, cord = h * 0.05, t = st.now / 1000;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy + r);
@@ -472,7 +472,7 @@
     }
 
     function drawLantern(g, w, h, st) {
-      const cord = h * 0.1, hh = h * 0.17, ww = h * 0.11;
+      const cord = h * 0.04, hh = h * 0.17, ww = h * 0.11;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy);
@@ -515,7 +515,7 @@
     }
 
     function drawChandelier(g, w, h, st) {
-      const cord = h * 0.075, t = st.now / 1000, ww = h * 0.3;
+      const cord = h * 0.03, t = st.now / 1000, ww = h * 0.3;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy);
@@ -540,7 +540,7 @@
     }
 
     function drawMoon(g, w, h, st) {
-      const R0 = h * 0.075, cord = h * 0.1, t = st.now / 1000;
+      const R0 = h * 0.075, cord = h * 0.04, t = st.now / 1000;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy + R0 * 1.05);
@@ -559,7 +559,7 @@
     }
 
     function drawStar(g, w, h, st) {
-      const R0 = h * 0.07, cord = h * 0.1, t = st.now / 1000;
+      const R0 = h * 0.07, cord = h * 0.04, t = st.now / 1000;
       g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
       cordTo(g, h, st, cord);
       g.translate(0, cord + st.dy + R0 * 0.95);
@@ -827,6 +827,49 @@
         g.fillStyle = grad;
         g.fillRect(-h * 0.012, h * 0.04, h * 0.024, h * (0.35 + tau * 0.5));
       }
+      g.restore();
+    }
+
+    // ---- the light on YOUR face: works in a dark room too ----
+    // How dark is the room? A tiny copy of the picture is measured about twice a second.
+    function measureDark(g, w, h, now) {
+      if (now - (R.darkAt || -1e9) > 450) {
+        R.darkAt = now;
+        try {
+          if (!R.dk) { R.dk = makeScratch(24, 14); R.dkg = R.dk.getContext('2d', { willReadFrequently: true }); }
+          R.dkg.drawImage(g.canvas, w * 0.25, h * 0.2, w * 0.5, h * 0.55, 0, 0, 24, 14); // the middle, where your face is
+          const d = R.dkg.getImageData(0, 0, 24, 14).data;
+          let sum = 0;
+          for (let i = 0; i < d.length; i += 4) sum += 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2];
+          R.darkTarget = clamp((95 - sum / (d.length / 4)) / 80);
+        } catch { R.darkTarget = 0; }
+      }
+      R.dark = lerp(R.dark || 0, R.darkTarget || 0, 0.12);
+      return R.dark;
+    }
+
+    // Brightens the real picture around your face and tints it with the light's colour, so the lamp
+    // lights YOU (features and all), not just the air in front of the camera. Darker room = stronger lift.
+    function relight(g, w, h, rgb, amount, aimX, dark) {
+      if (amount < 0.02 || !('filter' in g) || !g.canvas) return;
+      if (!R.rl || R.rl.width !== w || R.rl.height !== h) R.rl = makeScratch(w, h);
+      const rg = R.rl.getContext('2d');
+      rg.globalCompositeOperation = 'copy';
+      rg.filter = `brightness(${(1.7 + 2.4 * dark).toFixed(2)}) contrast(0.9) saturate(1.1)`;
+      rg.drawImage(g.canvas, 0, 0, w, h);
+      rg.filter = 'none';
+      rg.globalCompositeOperation = 'multiply';
+      rg.fillStyle = rgba(mixRgb([255, 255, 255], rgb, 0.5), 1);
+      rg.fillRect(0, 0, w, h);
+      rg.globalCompositeOperation = 'destination-in';
+      const m = rg.createRadialGradient(aimX, h * 0.48, h * 0.04, aimX, h * 0.48, h * 0.64);
+      m.addColorStop(0, 'rgba(0,0,0,1)'); m.addColorStop(0.55, 'rgba(0,0,0,0.62)'); m.addColorStop(1, 'rgba(0,0,0,0)');
+      rg.fillStyle = m;
+      rg.fillRect(0, 0, w, h);
+      g.save();
+      g.globalCompositeOperation = 'screen';
+      g.globalAlpha = clamp(0.8 * amount * (0.7 + 0.6 * dark));
+      g.drawImage(R.rl, 0, 0, w, h);
       g.restore();
     }
 
@@ -1121,6 +1164,9 @@
         const lampPos = { cx: w * (cfg.lampPos === 'left' ? 0.22 : cfg.lampPos === 'right' ? 0.78 : 0.5) };
         const ls = lampState(cfg, h, now, e, audio);
         const focus = e.focus * ls.focusRamp;
+        const dark = measureDark(g, w, h, now);
+        // The lamp (any hanging light) lights your face; with no lamp there is still a soft light on you.
+        relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp, w / 2 + ls.angle * w * 0.5, dark);
 
         g.save();
         if (focus > 0.01) { // darker edges, light on you
@@ -1141,10 +1187,10 @@
         if (cfg.lamp && fixture !== 'lamp') {
           fixtureLight(g, w, h, fixture, { cx: lampPos.cx, bx, by: bulbY, ls, e, I, now });
         } else if (cfg.lamp) {
-          cone(g, bx, bulbY, h * 1.05, w * 0.78, -sway * 0.9 + (bx - w / 2) / w * 0.55, e.rgb, 0.46 * I * ls.bright);
-          glow(g, w / 2 + (bx - w / 2) * 0.3, h * 0.5, h * 0.62, e.rgb, 0.28 * I * ls.bright); // light on your face
+          cone(g, bx, bulbY, h * 1.05, w * 0.78, -sway * 0.9 + (bx - w / 2) / w * 0.55, e.rgb, 0.46 * I * ls.bright * (1 + 0.5 * dark));
+          glow(g, w / 2 + (bx - w / 2) * 0.3, h * 0.46, h * 0.66, e.rgb, 0.34 * I * ls.bright * (1 + 0.9 * dark)); // light on your face (more in a dark room)
         } else {
-          glow(g, w / 2, h * 0.46, h * 0.62, e.rgb, 0.2 * I); // no lamp: a soft light on you
+          glow(g, w / 2, h * 0.46, h * 0.62, e.rgb, 0.22 * I * (1 + 0.9 * dark)); // no lamp: a soft light on you
         }
         g.restore();
 
