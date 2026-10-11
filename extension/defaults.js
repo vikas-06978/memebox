@@ -44,13 +44,15 @@
 
   // Built-in sound effects (extension/sfx/<id>.wav, made by npm run sfx). Lines of kind "sfx" play one of them.
   const SFX = ['airhorn', 'sad-trombone', 'rimshot', 'drumroll', 'wrong-buzzer', 'tada', 'boing',
-    'slide-whistle', 'crickets', 'applause', 'evil-laugh', 'dramatic', 'record-scratch'];
+    'slide-whistle', 'crickets', 'applause', 'evil-laugh', 'dramatic', 'record-scratch',
+    'vine-boom', 'bonk', 'coin', 'level-up', 'cash-register', 'whoosh', 'laser', 'doorbell', 'shing', 'pop', 'knock', 'heartbeat'];
 
   // How the lights feel for each sound (Lights sync): suspense, excited, surprise, sad, fun, awkward.
   const SFX_MOOD = {
     airhorn: 'excited', 'sad-trombone': 'sad', rimshot: 'surprise', drumroll: 'suspense', 'wrong-buzzer': 'sad', tada: 'surprise',
     boing: 'fun', 'slide-whistle': 'fun', crickets: 'awkward', applause: 'excited', 'evil-laugh': 'suspense', dramatic: 'suspense',
-    'record-scratch': 'surprise',
+    'record-scratch': 'surprise', 'vine-boom': 'surprise', bonk: 'fun', coin: 'fun', 'level-up': 'excited', 'cash-register': 'excited', whoosh: 'fun',
+    laser: 'fun', doorbell: 'awkward', shing: 'suspense', pop: 'fun', knock: 'awkward', heartbeat: 'suspense',
   };
   const TONE_MOOD = { normal: '', chipmunk: 'fun', villain: 'suspense', robot: '', slowmo: 'suspense', excited: 'excited' };
   const moodFor = (line) => (line && (SFX_MOOD[line.sfx] || TONE_MOOD[line.tone])) || '';
@@ -83,6 +85,7 @@
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
     panelTab: 'memes',    // the page of the panel you left open: memes | music | lights | sound
+    showStrong: false,    // Options → Online packs: also offer the lines with strong language (18+)
     lineLang: 'auto',     // which meme lines to show: auto (from the browser language and time zone) | all | en | hi
     camUnmirror: true,    // while a camera caption shows, flip your own (mirrored) preview back so you can read it too
     theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)

@@ -241,7 +241,12 @@ test('admin shows an activity section: earned, funnel, charts and pass time from
   const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }))).json();
   assert.ok(created.ok, JSON.stringify(created));
   const html = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
-  assert.match(html, /Activity, last 30 days/);
+  assert.match(html, /id="activity">Activity/);
+  assert.match(html, /<div class="range" id="range"/, '7 / 14 / 30 day buttons');
+  assert.match(html, /<nav class="admin-nav"/, 'section nav');
+  assert.match(html, /data-pick="reason:too-hard"/, 'a reason bar filters the messages');
+  assert.match(html, /<script src="\/assets\/admin\.js" defer><\/script>/, 'the dashboard loads its own script file');
+  assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)/, 'no inline scripts');
   assert.match(html, /checkouts started/);
   assert.match(html, /<svg class="chart"/);
   assert.match(html, /Pass time/);

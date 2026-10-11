@@ -1464,5 +1464,98 @@
   },
   "chip_lang_more": {
     "message": "आणखी भाषा…"
+  },
+  "op_lang_mine": {
+    "message": "माझ्या भाषा"
+  },
+  "op_online": {
+    "message": "ऑनलाइन पॅक"
+  },
+  "op_online_hint": {
+    "message": "सर्वांसाठी मोफत संगीत आणि मीम. “पॅक पहा” दाबेपर्यंत कुठेही संपर्क होत नाही; डाउनलोड MemeBox साइटवरून येतात."
+  },
+  "op_online_browse": {
+    "message": "पॅक पहा"
+  },
+  "op_online_refresh": {
+    "message": "यादी रिफ्रेश"
+  },
+  "op_online_loading": {
+    "message": "लोड होत आहे…"
+  },
+  "op_online_fail": {
+    "message": "पॅक मिळाले नाहीत. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा."
+  },
+  "op_online_none": {
+    "message": "येथे अजून पॅक नाहीत. नवीन पॅक नियमित जोडले जातात."
+  },
+  "op_online_add": {
+    "message": "जोडा ($1)"
+  },
+  "op_online_added": {
+    "message": "जोडले ✓"
+  },
+  "op_online_remove": {
+    "message": "काढा"
+  },
+  "op_online_soon": {
+    "message": "लवकरच येत आहे"
+  },
+  "op_online_needs": {
+    "message": "Pro आवश्यक"
+  },
+  "op_online_strong": {
+    "message": "कडक भाषेचे पॅक दाखवा (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "संगीत"
+  },
+  "op_online_memes": {
+    "message": "मीम"
+  },
+  "op_online_items": {
+    "message": "$1 आयटम"
+  },
+  "op_online_busy": {
+    "message": "डाउनलोड $1 / $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” जोडले: $2 आयटम"
+  },
+  "pk_region_all": {
+    "message": "सर्व प्रदेश"
+  },
+  "pk_region_common": {
+    "message": "सर्वांसाठी"
+  },
+  "pk_region_in": {
+    "message": "भारत"
+  },
+  "pk_region_global": {
+    "message": "ग्लोबल"
+  },
+  "pk_get": {
+    "message": "＋ मोफत पॅक"
+  },
+  "op_online_pictures": {
+    "message": "चित्रे"
+  },
+  "op_online_free_n": {
+    "message": "$1 मोफत"
+  },
+  "op_online_paid_n": {
+    "message": "$1 साठी Pro आवश्यक"
+  },
+  "op_online_soon_n": {
+    "message": "$1 लवकरच येत आहेत"
+  },
+  "op_online_more": {
+    "message": "आणखी $1 जोडा ($2)"
+  },
+  "op_online_limit": {
+    "message": "आजची डाउनलोड मर्यादा संपली ($1 जोडले). उरलेले उद्या जोडता येतील."
   }
 }

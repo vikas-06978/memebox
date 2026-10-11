@@ -14,6 +14,7 @@
     let local = null;     // { ctx, player }
 
     const can = (id) => plan.canFx('music:' + id);
+    const closed = () => !plan.shopOpen() && !plan.isPro(); // paid options not on sale yet: locked tunes and the Buy button are left out
     const volume = () => {
       const v = Number(api.getSettings().musicVolume);
       return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0.5;
@@ -27,6 +28,8 @@
     const addInput = el('input', { type: 'file', accept: 'audio/*' });
     addInput.hidden = true;
     const addBtn = el('button', { className: 'chip add-music', type: 'button' }, t('mu_add'));
+    const packsBtn = el('button', { className: 'chip add-music', type: 'button' }, t('pk_get')); // free music packs from the site (Options → Online packs)
+    packsBtn.addEventListener('click', () => api.openPacks());
     mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });
     const status = el('div', { className: 'fx-status' });
@@ -89,11 +92,11 @@
         const x = el('button', { className: 'chip del', type: 'button', title: t('mu_del') }, '✕');
         x.addEventListener('click', async () => { if (callId === 'mine:' + m.id) stopAll(); await api.ask({ type: 'music-del', id: m.id }).catch(() => {}); });
         return el('span', { className: 'fx-pair' }, b, x);
-      }), addBtn);
+      }), addBtn, packsBtn);
     }
     function playMine(id) {
       if (callId === 'mine:' + id) { stopAll(); return; }
-      if (!can('own')) { lock.hidden = false; return; }
+      if (!can('own') && !(mine.find((x) => x.id === id) || {}).pack) { lock.hidden = false; return; } // a track from a free pack plays for everybody
       const f = api.frameId();
       if (f == null) { api.toast(t('mu_join'), 3500); return; }
       stopAll();
@@ -106,7 +109,8 @@
 
     function render() {
       renderMine();
-      chips.replaceChildren(...Music.IDS.map((id) => {
+      addBtn.hidden = closed() && !can('own');
+      chips.replaceChildren(...Music.IDS.filter((id) => !(closed() && !can(id))).map((id) => {
         const locked = !can(id);
         const on = id === callId || id === localId;
         const b = el('button', { className: 'chip' + (on ? ' on' : '') + (locked ? ' locked' : ''), type: 'button' },
@@ -115,7 +119,7 @@
         return b;
       }));
       const locked = localId && !can(localId);
-      lock.hidden = !locked;
+      lock.hidden = !locked || closed();
       const callName = callId.startsWith('mine:') ? ((mine.find((m) => 'mine:' + m.id === callId) || {}).name || t('mu_mine')) : callId ? t('mu_t_' + callId) : '';
       status.textContent = callId ? t('mu_in_call', callName)
         : localId ? t('mu_preview', t('mu_t_' + localId), String(PREVIEW_SECONDS))

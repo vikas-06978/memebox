@@ -59,7 +59,8 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   assert.doesNotMatch(html, /<script|style="/);
   const one = await (await call(adminPacks, req('/admin/packs?id=' + id, { headers: { Cookie: cookie } }))).text();
   assert.match(one, /Upload audio/);
-  assert.match(one, /Add text memes/);
+  assert.doesNotMatch(one, /Add text memes/, 'text memes belong to memes packs');
+  assert.match(one, /You planned 10 free tracks/, 'the free plan counter');
   const row = await db.prepare('SELECT * FROM packs WHERE id = ?').bind(id).first();
   assert.equal(row.status, 'draft');
   assert.equal(slugify('Indian Memes: Desi 😂!'), 'indian-memes-desi');
@@ -209,4 +210,68 @@ test('"Copyright-free" needs the link that says so: with it the item goes live, 
   assert.equal(b.status, 'live');
   assert.equal(b.licence, 'Copyright-free');
   assert.equal(b.source, 'https://example.com/licence');
+});
+
+test('you choose which items are free: an item\'s own plan beats the pack\'s, in the catalogue and on download', async () => {
+  const id = await makePack({ tier: 'max' }); // a Pro Max pack...
+  await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('One.mp3'), audio('Two.mp3'), audio('Three.mp3')], licenceKind: 'own', cleared: 'on' }));
+  const items = await listItems(db, id);
+  assert.equal(items.length, 3);
+  // ...with the first one made free in bulk
+  const res = await call(adminPacks, post({ action: 'items-tier', pack: id, ids: [items[0].id], itemTier: 'free' }));
+  assert.match(msgOf(res), /1 item updated/);
+  assert.match(errOf(await call(adminPacks, post({ action: 'items-tier', pack: id, itemTier: 'free' }))), /Tick some items/);
+  await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Phonk starter pack', region: 'common', tier: 'max', description: '', status: 'live', sort: '1' }));
+  const cat = await (await call(apiPacks, req('/api/packs'))).json();
+  const byTitle = Object.fromEntries(cat.packs[0].items.map((i) => [i.title, i.tier]));
+  assert.deepEqual(byTitle, { One: 'free', Two: 'max', Three: 'max' });
+  const get = (item, headers = {}) => call(apiPackFile, req('/api/pack-file?item=' + item, { headers }));
+  assert.equal((await get(items[0].id)).status, 200, 'the free one is open to everybody');
+  assert.equal((await get(items[1].id)).status, 403, 'the others still need Pro Max');
+  // and one item can be set on its own, back to following the pack
+  await call(adminPacks, post({ action: 'item-update', pack: id, item: items[0].id, title: 'One', lang: '', tags: '', licence: 'Own work', cleared: 'on', status: 'live', sort: '100', itemTier: '' }));
+  assert.equal((await get(items[0].id)).status, 403);
+  const page = await (await call(adminPacks, req('/admin/packs?id=' + id, { headers: { Cookie: cookie } }))).text();
+  assert.match(page, /0 free/);
+  assert.match(page, /3 Pro Max/);
+});
+
+test('a pictures pack takes png / jpg / webp, serves them with their type, and the free picture is open', async () => {
+  const id = await makePack({ title: 'Meme pictures', kind: 'pictures' });
+  const png = new File([new Uint8Array(500).fill(1)], 'drake.png', { type: 'image/png' });
+  const wav = new File([new Uint8Array(500)], 'sound.wav', { type: 'audio/wav' });
+  const res = await call(adminPacks, post({ action: 'items-upload', pack: id, files: [png, wav], licenceKind: 'own', cleared: 'on', itemTier: 'free' }));
+  assert.match(msgOf(res), /1 file uploaded/);
+  assert.match(msgOf(res), /not a picture/);
+  const [item] = await listItems(db, id);
+  assert.equal(item.kind, 'image');
+  assert.equal(item.tier, 'free');
+  await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Meme pictures', region: 'common', tier: 'pro', description: '', status: 'live', sort: '1' }));
+  const file = await call(apiPackFile, req('/api/pack-file?item=' + item.id));
+  assert.equal(file.status, 200);
+  assert.equal(file.headers.get('Content-Type'), 'image/png');
+  const page = await (await call(adminPacks, req('/admin/packs?id=' + id, { headers: { Cookie: cookie } }))).text();
+  assert.match(page, /Upload pictures/);
+  assert.match(page, /<img class="thumb"/);
+  assert.match(page, /That is the 1 free picture you planned/);
+});
+
+test('a daily cap on files per person: the next one is refused with 429; another person and the next day are fine; refused tries do not count', async () => {
+  const id = await makePack({ title: 'Cap test' });
+  await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('A.mp3')], licenceKind: 'own', cleared: 'on' }));
+  await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Cap test', region: 'common', tier: 'free', status: 'live' }));
+  const [item] = await listItems(db, id);
+  const e = env({ PACK_DAILY_LIMIT: '3' });
+  const get = (ip, key) => call(apiPackFile, new Request('https://memebox.pages.dev/api/pack-file?item=' + item.id, { headers: { 'CF-Connecting-IP': ip, ...(key ? { 'X-MemeBox-Key': key } : {}) } }), e);
+  for (let i = 0; i < 3; i++) assert.equal((await get('198.51.100.1')).status, 200);
+  const blocked = await get('198.51.100.1');
+  assert.equal(blocked.status, 429);
+  assert.match((await blocked.json()).error, /Daily download limit/);
+  assert.equal((await get('198.51.100.2')).status, 200, 'another person is not affected');
+  const key = await createLicense(db, { kind: 'paid', proSeconds: 600 });
+  for (let i = 0; i < 3; i++) assert.equal((await get('198.51.100.1', key)).status, 200, 'a key has its own count, whatever the address');
+  assert.equal((await get('198.51.100.9', key)).status, 429, 'and it follows the key to another address');
+  // the day after, the counter starts again
+  await db.prepare('DELETE FROM rate_limits').run();
+  assert.equal((await get('198.51.100.1')).status, 200);
 });

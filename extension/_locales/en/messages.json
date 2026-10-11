@@ -1464,5 +1464,98 @@
   },
   "chip_lang_more": {
     "message": "More languages…"
+  },
+  "op_lang_mine": {
+    "message": "My languages"
+  },
+  "op_online": {
+    "message": "Online packs"
+  },
+  "op_online_hint": {
+    "message": "Free music and memes for everyone. Nothing is contacted until you press Browse; downloads come from the MemeBox site."
+  },
+  "op_online_browse": {
+    "message": "Browse packs"
+  },
+  "op_online_refresh": {
+    "message": "Refresh list"
+  },
+  "op_online_loading": {
+    "message": "Loading…"
+  },
+  "op_online_fail": {
+    "message": "Could not get the packs. Check your internet and try again."
+  },
+  "op_online_none": {
+    "message": "No packs here yet. New ones are added regularly."
+  },
+  "op_online_add": {
+    "message": "Add ($1)"
+  },
+  "op_online_added": {
+    "message": "Added ✓"
+  },
+  "op_online_remove": {
+    "message": "Remove"
+  },
+  "op_online_soon": {
+    "message": "Coming soon"
+  },
+  "op_online_needs": {
+    "message": "Needs Pro"
+  },
+  "op_online_strong": {
+    "message": "Show packs with strong language (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "Music"
+  },
+  "op_online_memes": {
+    "message": "Memes"
+  },
+  "op_online_items": {
+    "message": "$1 items"
+  },
+  "op_online_busy": {
+    "message": "Downloading $1 of $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” added: $2 items"
+  },
+  "pk_region_all": {
+    "message": "All regions"
+  },
+  "pk_region_common": {
+    "message": "For everyone"
+  },
+  "pk_region_in": {
+    "message": "India"
+  },
+  "pk_region_global": {
+    "message": "Global"
+  },
+  "pk_get": {
+    "message": "＋ Free packs"
+  },
+  "op_online_pictures": {
+    "message": "Pictures"
+  },
+  "op_online_free_n": {
+    "message": "$1 free"
+  },
+  "op_online_paid_n": {
+    "message": "$1 need Pro"
+  },
+  "op_online_soon_n": {
+    "message": "$1 coming soon"
+  },
+  "op_online_more": {
+    "message": "Add $1 more ($2)"
+  },
+  "op_online_limit": {
+    "message": "Daily download limit reached ($1 added). The rest can be added tomorrow."
   }
 }

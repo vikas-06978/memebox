@@ -1,11 +1,15 @@
 // MemeBox site: the /admin/packs pages (HTML). No scripts: plain forms, so the admin page's strict security policy stays.
 import { escapeHtml as h } from './http.js';
 import { page } from './admin.js';
-import { KINDS, TIERS, REGIONS, LICENCES, LANGS, MAX_AUDIO_BYTES, canPublish } from './packs.js';
+import { KINDS, TIERS, REGIONS, LICENCES, LANGS, MAX_AUDIO_BYTES, MAX_IMAGE_BYTES, canPublish, itemTier } from './packs.js';
 
 const mb = (n) => (Number(n) / 1048576).toFixed(Number(n) >= 1048576 * 10 ? 0 : 1);
 const opts = (obj, selected) => Object.entries(obj).map(([k, v]) => `<option value="${h(k)}"${String(selected) === k ? ' selected' : ''}>${h(v)}</option>`).join('');
 const tierText = { free: 'Free', pro: 'Pro', max: 'Pro Max' };
+// The plan of one item: '' follows the pack.
+const itemTierOpts = (selected, packTier) => `<option value=""${selected ? '' : ' selected'}>Same as the pack (${h(tierText[packTier] || packTier)})</option>${TIERS.map((t) => `<option value="${t}"${selected === t ? ' selected' : ''}>${tierText[t]} (this item only)</option>`).join('')}`;
+// What you plan to give away free, per type (shown as a counter next to the real number).
+const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'picture'] };
 
 const COPYRIGHT = `
 <p class="notice" role="note"><b>Before you publish:</b> anything in a live pack is downloaded by real people, and paid packs are sold. It must be <b>yours</b>, or <b>licensed to you in writing</b> for sharing and selling inside an app.
@@ -40,11 +44,11 @@ ${COPYRIGHT}
 </section>
 <section class="card">
   <h2>New pack</h2>
-  <p class="muted">Start with <b>Common</b> packs (music and memes that everyone enjoys). Then add <b>India</b> and <b>Global</b> packs for memes that differ by country. A pack is private until you set it to Live.</p>
+  <p class="muted">Start with <b>Common</b> packs (music and memes that everyone enjoys). Then add <b>India</b> and <b>Global</b> packs for memes that differ by country. A pack is private until you set it to Live. People see Live packs in MemeBox → Options → Online packs (after pressing Browse packs), or from the “＋ Free packs” button in the panel. Free packs can be added by everybody; Pro and Pro Max packs show “Coming soon” until the paid options open.</p>
   <form method="post" action="/admin/packs" class="keyform">
     <input type="hidden" name="action" value="pack-create">
     <label>Name <input name="title" maxlength="80" required placeholder="e.g. Phonk starter pack"></label>
-    <label>Type <select name="kind"><option value="music">Music (audio tracks)</option><option value="memes">Memes (sounds and lines)</option></select></label>
+    <label>Type <select name="kind"><option value="music">Music (audio tracks)</option><option value="memes">Memes (sounds and lines)</option><option value="pictures">Pictures (meme pictures)</option></select></label>
     <label>For <select name="region">${opts(REGIONS, 'common')}</select></label>
     <label>Plan <select name="tier"><option value="free">Free</option><option value="pro">Pro</option><option value="max">Pro Max</option></select></label>
     <label>About it <input name="description" maxlength="400" placeholder="One line users will read"></label>
@@ -53,11 +57,23 @@ ${COPYRIGHT}
 </section>`);
 }
 
+// "4 free (plan: 10) · 40 Pro Max": how many items each plan has, next to what you planned to give away free.
+function planSummary(p, items) {
+  const n = { free: 0, pro: 0, max: 0 };
+  for (const i of items) n[itemTier(i, p)]++;
+  const [target, noun] = FREE_PLAN[p.kind] || [0, ''];
+  const left = target - n.free;
+  return `<p class="plans"><span class="tier tier-free">${n.free} free</span> <span class="tier tier-pro">${n.pro} Pro</span> <span class="tier tier-max">${n.max} Pro Max</span>
+    <span class="muted">${target ? (left > 0 ? `You planned ${target} free ${noun}: ${left} more can be free.` : left === 0 ? `That is the ${target} free ${noun} you planned.` : `${-left} more free than the ${target} you planned.`) : ''} Tick items below and choose a plan, or set one item at a time.</span></p>`;
+}
+
 function itemRow(p, i) {
+  const tierNow = TIERS.includes(i.tier) ? i.tier : '';
   const live = i.status === 'live', ok = canPublish(i);
-  const sound = i.kind === 'audio' ? `<audio controls preload="none" src="/admin/packfile?id=${h(i.id)}"></audio><div class="muted">${h(i.mime)} · ${mb(i.bytes)} MB · ${Number(i.downloads) || 0} downloads</div>` : '<div class="muted">Text meme (spoken by the voice engine)</div>';
+  const sound = i.kind === 'image' ? `<img class="thumb" alt="" src="/admin/packfile?id=${h(i.id)}"><div class="muted">${h(i.mime)} · ${mb(i.bytes)} MB · ${Number(i.downloads) || 0} downloads</div>` : i.kind === 'audio' ? `<audio controls preload="none" src="/admin/packfile?id=${h(i.id)}"></audio><div class="muted">${h(i.mime)} · ${mb(i.bytes)} MB · ${Number(i.downloads) || 0} downloads</div>` : '<div class="muted">Text meme (spoken by the voice engine)</div>';
   return `
     <tr>
+      <td class="nowrap"><input type="checkbox" name="ids" value="${h(i.id)}" form="bulk" aria-label="Select ${h(i.title)}"><div><span class="tier tier-${h(itemTier(i, p))}">${h(tierText[itemTier(i, p)])}</span></div></td>
       <td>
         <form method="post" action="/admin/packs" class="itemform">
           <input type="hidden" name="action" value="item-update"><input type="hidden" name="pack" value="${h(p.id)}"><input type="hidden" name="item" value="${h(i.id)}">
@@ -75,6 +91,7 @@ function itemRow(p, i) {
           <div class="row-wrap">
             <label class="check"><input type="checkbox" name="cleared"${Number(i.cleared) === 1 ? ' checked' : ''}> I may share this</label>
             <label class="check"><input type="checkbox" name="explicit"${Number(i.explicit) === 1 ? ' checked' : ''}> Strong language (only for people who allow it)</label>
+            <label>Plan <select name="itemTier">${itemTierOpts(tierNow, p.tier)}</select></label>
             <label>State <select name="status"><option value="draft"${live ? '' : ' selected'}>Draft (hidden)</option><option value="live"${live ? ' selected' : ''}>Live</option></select></label>
             <label>Order <input type="number" name="sort" min="0" max="9999" value="${Number(i.sort) || 100}" class="narrow"></label>
             <button type="submit" class="primary">Save</button>
@@ -91,6 +108,7 @@ function itemRow(p, i) {
 export function packPage({ pack: p, items, hasBucket, msg = '', err = '' }) {
   const bytes = items.reduce((a, i) => a + Number(i.bytes || 0), 0), live = items.filter((i) => i.status === 'live').length;
   const licenceFields = `
+      <label>Plan for these <select name="itemTier">${itemTierOpts('', p.tier)}</select></label>
       <label>Licence <select name="licenceKind">${opts(LICENCES, 'own')}</select></label>
       <label>Licence details <input name="licenceNote" maxlength="200" placeholder="Who gave you the rights, and when"></label>
       <label>Credit <input name="credit" maxlength="120" placeholder="Artist name (shown in the app)"></label>
@@ -121,7 +139,17 @@ ${COPYRIGHT}
   </form>
   <form method="post" action="/admin/packs" class="inline"><input type="hidden" name="action" value="pack-delete"><input type="hidden" name="pack" value="${h(p.id)}"><button type="submit">Delete this pack and all its files</button></form>
 </section>
-<section class="card">
+${p.kind === 'pictures' ? `<section class="card">
+  <h2>Upload pictures</h2>
+  ${hasBucket ? '' : '<p class="error">File storage is not set up yet (see the packs list page).</p>'}
+  <p class="muted">Choose one or many pictures (png, jpg, webp; up to ${Math.round(MAX_IMAGE_BYTES / 1048576)} MB each). The file name becomes the title. The app shrinks them to fit on the camera, and users attach them to a line as a picture meme.</p>
+  <form method="post" action="/admin/packs" enctype="multipart/form-data" class="keyform">
+    <input type="hidden" name="action" value="items-upload"><input type="hidden" name="pack" value="${h(p.id)}">
+    <label>Files <input type="file" name="files" multiple accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" required></label>
+    ${licenceFields}
+    <button type="submit" class="primary">Upload</button>
+  </form>
+</section>` : `<section class="card">
   <h2>Upload audio</h2>
   ${hasBucket ? '' : '<p class="error">File storage is not set up yet (see the packs list page).</p>'}
   <p class="muted">Choose one or many files (mp3, m4a, ogg, opus, wav, webm, flac, aac; up to ${Math.round(MAX_AUDIO_BYTES / 1048576)} MB each). The file name becomes the title. Shorter, compressed files download faster for your users.</p>
@@ -131,8 +159,8 @@ ${COPYRIGHT}
     ${licenceFields}
     <button type="submit" class="primary">Upload</button>
   </form>
-</section>
-<section class="card">
+</section>`}
+${p.kind === 'memes' ? `<section class="card">
   <h2>Add text memes</h2>
   <p class="muted">One per line: <code>text | language | strong</code>. The language (en, hi, hinglish) and the word <code>strong</code> are optional. The voice engine speaks them.</p>
   <form method="post" action="/admin/packs" class="keyform">
@@ -141,9 +169,16 @@ ${COPYRIGHT}
     ${licenceFields}
     <button type="submit" class="primary">Add them</button>
   </form>
-</section>
+</section>` : ''}
 <section class="card">
   <h2>Items (${items.length})</h2>
-  ${items.length ? `<div class="table-wrap"><table><tbody>${items.map((i) => itemRow(p, i)).join('')}</tbody></table></div>` : '<p class="muted">Nothing here yet.</p>'}
+  ${planSummary(p, items)}
+  ${items.length ? `<form method="post" action="/admin/packs" id="bulk" class="keyform bulk">
+    <input type="hidden" name="action" value="items-tier"><input type="hidden" name="pack" value="${h(p.id)}">
+    <span class="muted">With the ticked items:</span>
+    <label>make them <select name="itemTier">${itemTierOpts('', p.tier)}</select></label>
+    <button type="submit" class="primary">Set the plan</button>
+  </form>
+  <div class="table-wrap"><table><tbody>${items.map((i) => itemRow(p, i)).join('')}</tbody></table></div>` : '<p class="muted">Nothing here yet.</p>'}
 </section>`);
 }

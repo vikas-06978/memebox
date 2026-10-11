@@ -1464,5 +1464,98 @@
   },
   "chip_lang_more": {
     "message": "மேலும் மொழிகள்…"
+  },
+  "op_lang_mine": {
+    "message": "என் மொழிகள்"
+  },
+  "op_online": {
+    "message": "ஆன்லைன் பேக்குகள்"
+  },
+  "op_online_hint": {
+    "message": "அனைவருக்கும் இலவச இசையும் மீம்களும். “பேக்குகளைப் பார்” அழுத்தும்வரை எங்கும் தொடர்பு இல்லை; பதிவிறக்கங்கள் MemeBox தளத்திலிருந்து வரும்."
+  },
+  "op_online_browse": {
+    "message": "பேக்குகளைப் பார்"
+  },
+  "op_online_refresh": {
+    "message": "பட்டியலைப் புதுப்பி"
+  },
+  "op_online_loading": {
+    "message": "ஏற்றுகிறது…"
+  },
+  "op_online_fail": {
+    "message": "பேக்குகளைப் பெற முடியவில்லை. இணையத்தைச் சரிபார்த்து மீண்டும் முயலுங்கள்."
+  },
+  "op_online_none": {
+    "message": "இங்கே இன்னும் பேக்குகள் இல்லை. புதியவை தொடர்ந்து சேர்க்கப்படும்."
+  },
+  "op_online_add": {
+    "message": "சேர் ($1)"
+  },
+  "op_online_added": {
+    "message": "சேர்க்கப்பட்டது ✓"
+  },
+  "op_online_remove": {
+    "message": "நீக்கு"
+  },
+  "op_online_soon": {
+    "message": "விரைவில்"
+  },
+  "op_online_needs": {
+    "message": "Pro தேவை"
+  },
+  "op_online_strong": {
+    "message": "கடுமையான மொழி பேக்குகளைக் காட்டு (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "இசை"
+  },
+  "op_online_memes": {
+    "message": "மீம்"
+  },
+  "op_online_items": {
+    "message": "$1 உருப்படிகள்"
+  },
+  "op_online_busy": {
+    "message": "பதிவிறக்கம் $1 / $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” சேர்க்கப்பட்டது: $2 உருப்படிகள்"
+  },
+  "pk_region_all": {
+    "message": "அனைத்து பகுதிகள்"
+  },
+  "pk_region_common": {
+    "message": "அனைவருக்கும்"
+  },
+  "pk_region_in": {
+    "message": "இந்தியா"
+  },
+  "pk_region_global": {
+    "message": "உலகளாவிய"
+  },
+  "pk_get": {
+    "message": "＋ இலவச பேக்குகள்"
+  },
+  "op_online_pictures": {
+    "message": "படங்கள்"
+  },
+  "op_online_free_n": {
+    "message": "$1 இலவசம்"
+  },
+  "op_online_paid_n": {
+    "message": "$1-க்கு Pro தேவை"
+  },
+  "op_online_soon_n": {
+    "message": "$1 விரைவில்"
+  },
+  "op_online_more": {
+    "message": "மேலும் $1 சேர் ($2)"
+  },
+  "op_online_limit": {
+    "message": "இன்றைய பதிவிறக்க வரம்பு முடிந்தது ($1 சேர்க்கப்பட்டது). மீதியை நாளை சேர்க்கலாம்."
   }
 }

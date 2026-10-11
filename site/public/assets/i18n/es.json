@@ -245,5 +245,9 @@
   "pr_chars_bundle": "Los 10 personajes extra",
   "buy_char_title": "Personaje: $1",
   "buy_chars_all": "Los 10 personajes extra",
-  "buy_char_desc": "Tuyo para siempre en tu clave. Se sienta en la esquina y reacciona a los sonidos sin pase; Follow me y sus otros trucos necesitan un pase Pro activo."
+  "buy_char_desc": "Tuyo para siempre en tu clave. Se sienta en la esquina y reacciona a los sonidos sin pase; Follow me y sus otros trucos necesitan un pase Pro activo.",
+  "fb_did_title": "Llega en la próxima actualización, gracias a respuestas como la tuya:",
+  "fb_did_1": "Memes en 26 idiomas, con frases locales como «¡Pausa para el café!»",
+  "fb_did_2": "Una tarjeta «Cómo usar» en el panel, para empezar fácilmente",
+  "fb_did_3": "Más sonidos incluidos, además de luces, personajes y música gratis"
 }

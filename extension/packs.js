@@ -28,6 +28,18 @@
       fx('p-fx-record-scratch', 'record-scratch', 'Record scratch... wait, what?'),
       fx('p-fx-boing', 'boing', 'BOING!'),
       fx('p-fx-slide-whistle', 'slide-whistle', 'Slide whistle'),
+      fx('p-fx-vine-boom', 'vine-boom', 'Vine boom'),
+      fx('p-fx-bonk', 'bonk', 'Bonk!'),
+      fx('p-fx-coin', 'coin', 'Coin!'),
+      fx('p-fx-level-up', 'level-up', 'Level up!'),
+      fx('p-fx-cash-register', 'cash-register', 'Ka-ching!'),
+      fx('p-fx-whoosh', 'whoosh', 'Whoosh'),
+      fx('p-fx-laser', 'laser', 'Pew pew!'),
+      fx('p-fx-doorbell', 'doorbell', 'Ding dong'),
+      fx('p-fx-shing', 'shing', 'Shing!'),
+      fx('p-fx-pop', 'pop', 'Pop!'),
+      fx('p-fx-knock', 'knock', 'Knock knock knock'),
+      fx('p-fx-heartbeat', 'heartbeat', 'Heartbeat'),
     ],
     college: [
       hi('p-college-1', 'Attendance 75% nahi hai? Medical certificate ready rakh', 'अटेंडेंस पचहत्तर परसेंट नहीं है? मेडिकल सर्टिफ़िकेट रेडी रख', 'villain'),
@@ -173,6 +185,12 @@
     for (const l of lines) Object.assign(l, { category: cat, volume: 1 });
   }
 
+  // The browser's language, when it is one of the meme languages (else English). Only that language's World lines are added on their own.
+  const ownLang = () => {
+    const l = String((globalThis.navigator && globalThis.navigator.language) || 'en').toLowerCase().split('-')[0];
+    return globalThis.MEME.isLang(l) ? l : 'en';
+  };
+
   globalThis.MEME_PACKS = Object.freeze({
     ids: ['general', 'effects', 'college', 'cricket', 'office', 'party', 'world'],
     // Lines of one built-in pack (fresh copies).
@@ -186,12 +204,16 @@
     missing(lines, seeded) {
       if (seeded >= 2) return [];
       const have = new Set(lines.map((l) => l && l.id));
-      const fresh = seeded >= 1 ? this.lines('world') : this.all(); // v1 people already have the other packs: only the world pack is new
+      const fresh = seeded >= 1 ? this.worldFor(ownLang()) : this.all(); // v1 people already have the other packs: only their own language is new
       return fresh.filter((l) => !have.has(l.id)).map((l) => ({ ...l, fav: 0 }));
     },
-    // Every built-in line that comes with a first install (not the optional Sound effects pack).
+    // The World pack's lines in one language (empty for English, whose lines are in General).
+    worldFor(lang) {
+      return lang === 'en' ? [] : PACKS.world.filter((l) => l.lang === lang).map((l) => ({ ...l }));
+    },
+    // Every built-in line that comes with a first install (not the optional Sound effects pack, and from the World pack only the lines in the browser's language).
     all() {
-      return this.ids.filter((id) => id !== 'effects').flatMap((id) => this.lines(id));
+      return this.ids.filter((id) => id !== 'effects' && id !== 'world').flatMap((id) => this.lines(id)).concat(this.worldFor(ownLang()));
     },
   });
 })();

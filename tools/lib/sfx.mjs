@@ -322,9 +322,113 @@ function boom() {
   return drive(reverb(out, 0.25, 1.2), 2.4);
 }
 
+// ---------- more effects (1.3.0) ----------
+
+// The classic "vine boom": a deep thud with a quick downward pitch drop, a crunch of noise and a short tail.
+function vineBoom() {
+  const out = buffer(1.5), r = rng(81), lp = new Biquad('lp', 900); let ph = 0;
+  for (let i = 0; i < out.length; i++) {
+    const t = i / SR; ph += (55 + 260 * decay(t, 0.06)) / SR;
+    out[i] = Math.sin(TAU * ph) * decay(t, 0.5) * 1.5 + Math.sin(TAU * ph * 2) * decay(t, 0.2) * 0.5 + lp.p(r() * 2 - 1) * decay(t, 0.05) * 0.9;
+  }
+  return drive(reverb(out, 0.18, 1), 2.2);
+}
+
+// A wooden "bonk" on the head.
+function bonk() {
+  const out = buffer(0.7), bp = new Biquad('bp', 900, 6), r = rng(82); let ph = 0;
+  for (let i = 0; i < out.length; i++) {
+    const t = i / SR; ph += (420 - 260 * Math.min(1, t / 0.12)) / SR;
+    out[i] = Math.sin(TAU * ph) * decay(t, 0.09) * 1.1 + bp.p(r() * 2 - 1) * decay(t, 0.025) * 0.8;
+  }
+  return drive(out, 1.8);
+}
+
+// Two bright square notes: a coin.
+function coin() {
+  const out = buffer(0.9);
+  const note = (f, at, len) => { const n = T(len), seg = new Float32Array(n); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR; ph += f / SR; seg[i] = square(ph) * 0.5 * adsr(t, len, 0.004, len * 0.7) * (0.5 + 0.5 * decay(t, 0.2)); } addAt(out, seg, at); };
+  note(987.77, 0, 0.09); note(1318.51, 0.09, 0.6);
+  return drive(out, 1.4);
+}
+
+// A rising arpeggio: a level up.
+function levelUp() {
+  const out = buffer(1.6);
+  const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98];
+  notes.forEach((f, k) => { const len = k === notes.length - 1 ? 0.7 : 0.1, n = T(len), seg = new Float32Array(n); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR; ph += f / SR; seg[i] = (square(ph) * 0.35 + Math.sin(TAU * ph) * 0.5) * adsr(t, len, 0.004, len * 0.6); } addAt(out, seg, k * 0.085); });
+  return drive(out, 1.4);
+}
+
+// Ka-ching: a drawer bump, then a bell.
+function cashRegister() {
+  const out = buffer(1.8), r = rng(83), bp = new Biquad('bp', 2500, 1.5);
+  for (let i = 0; i < T(0.12); i++) { const t = i / SR; out[i] += bp.p(r() * 2 - 1) * decay(t, 0.03) * 0.9; }
+  const bell = (f, at) => { const n = T(1.4), seg = new Float32Array(n); for (let i = 0; i < n; i++) { const t = i / SR; seg[i] = (Math.sin(TAU * f * t) + 0.6 * Math.sin(TAU * f * 2.76 * t) + 0.4 * Math.sin(TAU * f * 5.4 * t)) * decay(t, 0.45) * 0.45; } addAt(out, seg, at); };
+  bell(2093, 0.14); bell(2637, 0.3);
+  return drive(out, 1.5);
+}
+
+// A swoosh: filtered noise sweeping up and away.
+function whoosh() {
+  const out = buffer(0.9), r = rng(84), bp = new Biquad('bp', 400, 1.2);
+  for (let i = 0; i < out.length; i++) {
+    const t = i / SR; bp.set(300 + 5200 * smooth(t / 0.7), 1.2);
+    out[i] = bp.p(r() * 2 - 1) * Math.sin(Math.PI * Math.min(1, t / 0.8)) ** 2 * 2.2;
+  }
+  return drive(out, 1.4);
+}
+
+// Pew pew: a quick falling beam, twice.
+function laser() {
+  const out = buffer(0.9);
+  for (const at of [0, 0.25]) { const n = T(0.2), seg = new Float32Array(n); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR; ph += (2400 * decay(t, 0.05) + 300) / SR; seg[i] = (saw(ph) * 0.5 + Math.sin(TAU * ph) * 0.4) * decay(t, 0.1); } addAt(out, seg, at); }
+  return drive(out, 2.4);
+}
+
+// Ding-dong doorbell.
+function doorbell() {
+  const out = buffer(2.2);
+  const bell = (f, at, tau) => { const n = T(1.6), seg = new Float32Array(n); for (let i = 0; i < n; i++) { const t = i / SR; seg[i] = (Math.sin(TAU * f * t) + 0.5 * Math.sin(TAU * f * 2.01 * t) + 0.25 * Math.sin(TAU * f * 3.9 * t)) * decay(t, tau) * 0.6; } addAt(out, seg, at); };
+  bell(784, 0, 0.5); bell(622.25, 0.55, 0.7);
+  return drive(reverb(out, 0.15), 1.4);
+}
+
+// Shing: a sword being drawn.
+function shing() {
+  const out = buffer(1.0), r = rng(85), hp = new Biquad('hp', 3500, 1);
+  for (let i = 0; i < out.length; i++) {
+    const t = i / SR; out[i] = hp.p(r() * 2 - 1) * smooth(t / 0.08) * decay(t, 0.22) * 1.6 + Math.sin(TAU * 4200 * t) * decay(t, 0.3) * 0.25 + Math.sin(TAU * 6300 * t) * decay(t, 0.25) * 0.15;
+  }
+  return drive(out, 1.5);
+}
+
+// A bubble pop.
+function pop() {
+  const out = buffer(0.25); let ph = 0;
+  for (let i = 0; i < out.length; i++) { const t = i / SR; ph += (1100 * Math.exp(-t * 28) + 220) / SR; out[i] = Math.sin(TAU * ph) * decay(t, 0.03) * 1.2; }
+  return drive(out, 1.5);
+}
+
+// Knock knock knock on a door.
+function knock() {
+  const out = buffer(1.1);
+  for (const at of [0, 0.22, 0.44]) { const n = T(0.16), seg = new Float32Array(n), r = rng(86 + at * 100), lp = new Biquad('lp', 700); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR; ph += (160 + 120 * decay(t, 0.02)) / SR; seg[i] = Math.sin(TAU * ph) * decay(t, 0.04) + lp.p(r() * 2 - 1) * decay(t, 0.015) * 0.9; } addAt(out, seg, at); }
+  return drive(out, 1.8);
+}
+
+// Lub-dub, lub-dub: a heartbeat.
+function heartbeat() {
+  const out = buffer(2.2);
+  const beat = (at, g) => { const n = T(0.22), seg = new Float32Array(n); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR; ph += (70 - 30 * Math.min(1, t / 0.15)) / SR; seg[i] = Math.sin(TAU * ph) * decay(t, 0.07) * g; } addAt(out, seg, at); };
+  for (const base of [0, 1.0]) { beat(base, 1.3); beat(base + 0.3, 0.95); }
+  return drive(out, 2.0);
+}
+
 export const EFFECTS = {
   airhorn, 'sad-trombone': sadTrombone, rimshot, drumroll, 'wrong-buzzer': wrongBuzzer, tada, boing,
   'slide-whistle': slideWhistle, crickets, applause, 'evil-laugh': evilLaugh, dramatic, 'record-scratch': recordScratch,
+  'vine-boom': vineBoom, bonk, coin, 'level-up': levelUp, 'cash-register': cashRegister, whoosh, laser, doorbell, shing, pop, knock, heartbeat,
 };
 export const EXTRA = { boom };
 

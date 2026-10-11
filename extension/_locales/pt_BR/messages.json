@@ -1464,5 +1464,98 @@
   },
   "chip_lang_more": {
     "message": "Mais idiomas…"
+  },
+  "op_lang_mine": {
+    "message": "Meus idiomas"
+  },
+  "op_online": {
+    "message": "Pacotes online"
+  },
+  "op_online_hint": {
+    "message": "Música e memes grátis para todos. Nada é contatado até você tocar em Explorar; os downloads vêm do site do MemeBox."
+  },
+  "op_online_browse": {
+    "message": "Explorar pacotes"
+  },
+  "op_online_refresh": {
+    "message": "Atualizar lista"
+  },
+  "op_online_loading": {
+    "message": "Carregando…"
+  },
+  "op_online_fail": {
+    "message": "Não foi possível obter os pacotes. Verifique a internet e tente de novo."
+  },
+  "op_online_none": {
+    "message": "Ainda não há pacotes. Novos são adicionados com frequência."
+  },
+  "op_online_add": {
+    "message": "Adicionar ($1)"
+  },
+  "op_online_added": {
+    "message": "Adicionado ✓"
+  },
+  "op_online_remove": {
+    "message": "Remover"
+  },
+  "op_online_soon": {
+    "message": "Em breve"
+  },
+  "op_online_needs": {
+    "message": "Requer Pro"
+  },
+  "op_online_strong": {
+    "message": "Mostrar pacotes com linguagem forte (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "Música"
+  },
+  "op_online_memes": {
+    "message": "Memes"
+  },
+  "op_online_items": {
+    "message": "$1 itens"
+  },
+  "op_online_busy": {
+    "message": "Baixando $1 de $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” adicionado: $2 itens"
+  },
+  "pk_region_all": {
+    "message": "Todas as regiões"
+  },
+  "pk_region_common": {
+    "message": "Para todos"
+  },
+  "pk_region_in": {
+    "message": "Índia"
+  },
+  "pk_region_global": {
+    "message": "Global"
+  },
+  "pk_get": {
+    "message": "＋ Pacotes grátis"
+  },
+  "op_online_pictures": {
+    "message": "Imagens"
+  },
+  "op_online_free_n": {
+    "message": "$1 grátis"
+  },
+  "op_online_paid_n": {
+    "message": "$1 exigem Pro"
+  },
+  "op_online_soon_n": {
+    "message": "$1 em breve"
+  },
+  "op_online_more": {
+    "message": "Adicionar mais $1 ($2)"
+  },
+  "op_online_limit": {
+    "message": "Limite diário de downloads atingido ($1 adicionados). O resto pode ser adicionado amanhã."
   }
 }

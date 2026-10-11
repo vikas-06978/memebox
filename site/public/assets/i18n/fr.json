@@ -245,5 +245,9 @@
   "pr_chars_bundle": "Les 10 personnages en plus",
   "buy_char_title": "Personnage : $1",
   "buy_chars_all": "Les 10 personnages en plus",
-  "buy_char_desc": "À vous pour toujours sur votre clé. Il reste dans le coin et réagit aux sons sans pass ; Follow me et ses autres tours demandent un pass Pro actif."
+  "buy_char_desc": "À vous pour toujours sur votre clé. Il reste dans le coin et réagit aux sons sans pass ; Follow me et ses autres tours demandent un pass Pro actif.",
+  "fb_did_title": "Dans la prochaine mise à jour, grâce à des réponses comme la vôtre :",
+  "fb_did_1": "Des memes en 26 langues, avec des phrases locales comme « Pause café ! »",
+  "fb_did_2": "Une carte « Mode d’emploi » dans le panneau, pour démarrer facilement",
+  "fb_did_3": "Plus de sons intégrés, et des lumières, personnages et musiques gratuits"
 }

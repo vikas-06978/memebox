@@ -1464,5 +1464,98 @@
   },
   "chip_lang_more": {
     "message": "మరిన్ని భాషలు…"
+  },
+  "op_lang_mine": {
+    "message": "నా భాషలు"
+  },
+  "op_online": {
+    "message": "ఆన్‌లైన్ ప్యాక్‌లు"
+  },
+  "op_online_hint": {
+    "message": "అందరికీ ఉచిత సంగీతం, మీమ్స్. “ప్యాక్‌లు చూడండి” నొక్కే వరకు ఎక్కడా కనెక్షన్ ఉండదు; డౌన్‌లోడ్‌లు MemeBox సైట్ నుండి వస్తాయి."
+  },
+  "op_online_browse": {
+    "message": "ప్యాక్‌లు చూడండి"
+  },
+  "op_online_refresh": {
+    "message": "జాబితా రిఫ్రెష్"
+  },
+  "op_online_loading": {
+    "message": "లోడ్ అవుతోంది…"
+  },
+  "op_online_fail": {
+    "message": "ప్యాక్‌లు రాలేదు. ఇంటర్నెట్ చూసి మళ్లీ ప్రయత్నించండి."
+  },
+  "op_online_none": {
+    "message": "ఇక్కడ ఇంకా ప్యాక్‌లు లేవు. కొత్తవి క్రమం తప్పకుండా చేరుతాయి."
+  },
+  "op_online_add": {
+    "message": "జోడించు ($1)"
+  },
+  "op_online_added": {
+    "message": "జోడించబడింది ✓"
+  },
+  "op_online_remove": {
+    "message": "తొలగించు"
+  },
+  "op_online_soon": {
+    "message": "త్వరలో"
+  },
+  "op_online_needs": {
+    "message": "Pro కావాలి"
+  },
+  "op_online_strong": {
+    "message": "కఠిన భాష ఉన్న ప్యాక్‌లు చూపు (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "సంగీతం"
+  },
+  "op_online_memes": {
+    "message": "మీమ్స్"
+  },
+  "op_online_items": {
+    "message": "$1 అంశాలు"
+  },
+  "op_online_busy": {
+    "message": "డౌన్‌లోడ్ $1 / $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” జోడించబడింది: $2 అంశాలు"
+  },
+  "pk_region_all": {
+    "message": "అన్ని ప్రాంతాలు"
+  },
+  "pk_region_common": {
+    "message": "అందరికీ"
+  },
+  "pk_region_in": {
+    "message": "భారతదేశం"
+  },
+  "pk_region_global": {
+    "message": "గ్లోబల్"
+  },
+  "pk_get": {
+    "message": "＋ ఉచిత ప్యాక్‌లు"
+  },
+  "op_online_pictures": {
+    "message": "చిత్రాలు"
+  },
+  "op_online_free_n": {
+    "message": "$1 ఉచితం"
+  },
+  "op_online_paid_n": {
+    "message": "$1 కి Pro కావాలి"
+  },
+  "op_online_soon_n": {
+    "message": "$1 త్వరలో"
+  },
+  "op_online_more": {
+    "message": "ఇంకా $1 జోడించు ($2)"
+  },
+  "op_online_limit": {
+    "message": "నేటి డౌన్‌లోడ్ పరిమితి పూర్తయింది ($1 జోడించబడ్డాయి). మిగతావి రేపు జోడించవచ్చు."
   }
 }

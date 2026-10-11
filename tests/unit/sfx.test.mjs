@@ -31,7 +31,7 @@ test('every effect has a WAV file, and every file is an effect', () => {
 test('effects are short, loud and even', () => {
   for (const id of Object.keys(EFFECTS)) {
     const s = stats(fs.readFileSync(path.join(dir, `${id}.wav`)));
-    assert.ok(s.seconds >= 0.8 && s.seconds <= 3.2, `${id} is ${s.seconds.toFixed(1)} s`);
+    assert.ok(s.seconds >= 0.2 && s.seconds <= 3.2, `${id} is ${s.seconds.toFixed(1)} s`);
     assert.ok(s.peak >= 0.35 && s.peak <= 0.95, `${id} peak ${s.peak.toFixed(2)}`); // dense effects (airhorn) are capped by loudness, not peak
     assert.ok(s.rmsDb >= -12 && s.rmsDb <= -9, `${id} loudness ${s.rmsDb.toFixed(1)} dB`);
   }

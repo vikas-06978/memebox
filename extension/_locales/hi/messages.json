@@ -1464,5 +1464,98 @@
   },
   "chip_lang_more": {
     "message": "और भाषाएँ…"
+  },
+  "op_lang_mine": {
+    "message": "मेरी भाषाएँ"
+  },
+  "op_online": {
+    "message": "ऑनलाइन पैक"
+  },
+  "op_online_hint": {
+    "message": "सबके लिए मुफ़्त संगीत और मीम। जब तक आप “पैक देखें” नहीं दबाते, कहीं कोई संपर्क नहीं होता; डाउनलोड MemeBox साइट से आते हैं।"
+  },
+  "op_online_browse": {
+    "message": "पैक देखें"
+  },
+  "op_online_refresh": {
+    "message": "सूची ताज़ा करें"
+  },
+  "op_online_loading": {
+    "message": "लोड हो रहा है…"
+  },
+  "op_online_fail": {
+    "message": "पैक नहीं मिल सके। इंटरनेट जाँचें और फिर कोशिश करें।"
+  },
+  "op_online_none": {
+    "message": "यहाँ अभी कोई पैक नहीं है। नए पैक नियमित रूप से जुड़ते हैं।"
+  },
+  "op_online_add": {
+    "message": "जोड़ें ($1)"
+  },
+  "op_online_added": {
+    "message": "जोड़ा गया ✓"
+  },
+  "op_online_remove": {
+    "message": "हटाएँ"
+  },
+  "op_online_soon": {
+    "message": "जल्द आ रहा है"
+  },
+  "op_online_needs": {
+    "message": "Pro चाहिए"
+  },
+  "op_online_strong": {
+    "message": "तीखी भाषा वाले पैक दिखाएँ (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "संगीत"
+  },
+  "op_online_memes": {
+    "message": "मीम"
+  },
+  "op_online_items": {
+    "message": "$1 आइटम"
+  },
+  "op_online_busy": {
+    "message": "डाउनलोड $1 / $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” जोड़ा गया: $2 आइटम"
+  },
+  "pk_region_all": {
+    "message": "सभी क्षेत्र"
+  },
+  "pk_region_common": {
+    "message": "सबके लिए"
+  },
+  "pk_region_in": {
+    "message": "भारत"
+  },
+  "pk_region_global": {
+    "message": "ग्लोबल"
+  },
+  "pk_get": {
+    "message": "＋ मुफ़्त पैक"
+  },
+  "op_online_pictures": {
+    "message": "तस्वीरें"
+  },
+  "op_online_free_n": {
+    "message": "$1 मुफ़्त"
+  },
+  "op_online_paid_n": {
+    "message": "$1 के लिए Pro चाहिए"
+  },
+  "op_online_soon_n": {
+    "message": "$1 जल्द आ रहे हैं"
+  },
+  "op_online_more": {
+    "message": "$1 और जोड़ें ($2)"
+  },
+  "op_online_limit": {
+    "message": "आज की डाउनलोड सीमा पूरी हो गई ($1 जोड़े गए)। बाकी कल जोड़े जा सकते हैं।"
   }
 }

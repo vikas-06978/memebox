@@ -562,9 +562,9 @@
     .ptab.on { background: var(--p-bg); color: var(--p-text); box-shadow: 0 1px 3px rgba(0,0,0,.16); }
     .ptab:focus-visible { outline: 2px solid #1a73e8; outline-offset: 1px; }
     .pti { font-size: 14px; }
-    .panel[data-tab="music"] :is(.search, .chips, .memes-row, .list, details[data-page]:not([data-page="music"])),
-    .panel[data-tab="lights"] :is(.search, .chips, .memes-row, .list, details[data-page]:not([data-page="lights"])),
-    .panel[data-tab="sound"] :is(.search, .chips, .memes-row, .list, details[data-page]:not([data-page="sound"])),
+    .panel[data-tab="music"] :is(.search, .chips, .memes-row, .list, .packs-link, details[data-page]:not([data-page="music"])),
+    .panel[data-tab="lights"] :is(.search, .chips, .memes-row, .list, .packs-link, details[data-page]:not([data-page="lights"])),
+    .panel[data-tab="sound"] :is(.search, .chips, .memes-row, .list, .packs-link, details[data-page]:not([data-page="sound"])),
     .panel[data-tab="memes"] details[data-page] { display: none; }
     details[data-page] > summary { display: none; }
     details[data-page] { border-top: 0; padding-top: 0; }
@@ -687,6 +687,8 @@
   const camBox = el('input', { type: 'checkbox' });
   const unmirrorBox = el('input', { type: 'checkbox' });
   const list = el('ul', { className: 'list' });
+  const packsLink = el('button', { className: 'chip small packs-link', type: 'button', title: t('op_online_hint') }, t('pk_get'));
+  packsLink.addEventListener('click', () => api.openPacks());
   const optionsBtn = el('button', { className: 'icon', type: 'button', title: t('options') }, '⚙️');
   const feedbackBtn = el('button', { className: 'icon', type: 'button', title: t('feedback') }, '💬');
   feedbackBtn.setAttribute('aria-label', t('feedback'));
@@ -738,6 +740,7 @@
     langChips,
     el('div', { className: 'row memes-row' }, randomBtn, beepBtn, stopBtn),
     list,
+    packsLink,
     settings,
     el('div', { className: 'foot' }, t('panel_foot')),
     timerNote,
@@ -770,6 +773,7 @@
     saveSetting: (k, v) => saveSetting(k, v),
     placePanel: () => placePanel(),
     panelIsOpen: () => panelOpen,
+    openPacks: () => { if (!bridge.toRuntime({ type: 'open-options', hash: 'online' })) orphaned(); },
     openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
     inCall: () => !!activeFrame(),
     frameId: () => { const f = activeFrame(); return f ? f.id : null; },
@@ -846,7 +850,11 @@
   function renderLangChips() {
     const cur = lineLang();
     const set = activeLangs();
-    const pick = (id) => { state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id); renderLangChips(); renderList(); };
+    const pick = (id) => {
+      state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id);
+      if (MEME.isLang(id)) bridge.toRuntime({ type: 'add-lang-lines', lang: id }); // that language's built-in lines, once
+      renderLangChips(); renderList();
+    };
     const shown = ['en', ownLang(), 'hi'].filter((c, i, a) => a.indexOf(c) === i);
     const chip = (id, name) => {
       const on = cur === 'auto' ? (id === 'all' ? !set : !!set && set.has(id) && id === ownLang()) : id === cur;

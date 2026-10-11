@@ -113,10 +113,22 @@ test('built-in packs stay friendly: no words about religion, caste, gender, look
 test('updating never adds the optional Sound effects pack, and never touches my lines', () => {
   const mine = { id: 'mine-1', kind: 'tts', text: 'My own line', lang: 'en', tone: 'normal', fav: 3, category: 'mine', volume: 1 };
   assert.equal(MEME_PACKS.missing([mine], 2).length, 0, 'already up to date: nothing is added');
-  assert.deepEqual(MEME_PACKS.missing([mine], 1).map((l) => l.category), MEME_PACKS.lines('world').map(() => 'world'), 'from 2.0 packs: only the world pack is new');
+  assert.equal(MEME_PACKS.missing([mine], 1).length, 0, 'an English browser gets no World lines on update');
   const fromOld = MEME_PACKS.missing([mine], 0);
   assert.equal(fromOld.length, MEME_PACKS.all().length, 'from before packs existed: the packs');
   assert.ok(fromOld.every((l) => l.category !== 'effects' && l.fav === 0));
   assert.ok(MEME_PACKS.all().every((l) => l.kind !== 'sfx'), 'a first install has no effects');
-  assert.equal(MEME_PACKS.lines('effects').length, 13, 'but the pack is there to add');
+  assert.equal(MEME_PACKS.lines('effects').length, 25, 'but the pack is there to add');
+});
+
+test('the World pack is added per language: first install and updates add only the browser language, the rest only when picked', () => {
+  const H = loadScript(['defaults.js', 'packs.js'], { navigator: { language: 'es-MX' } });
+  const first = H.MEME_PACKS.all();
+  assert.ok(first.some((l) => l.lang === 'es'), 'Spanish lines come with a Spanish browser');
+  assert.ok(first.every((l) => l.lang === 'es' || l.lang === 'en' || l.lang === 'hi'), 'no other World language is added by itself');
+  const update = H.MEME_PACKS.missing([{ id: 'mine-1' }], 1);
+  assert.ok(update.length === 4 && update.every((l) => l.lang === 'es' && l.category === 'world'), 'an update adds 4 Spanish lines');
+  assert.equal(H.MEME_PACKS.worldFor('en').length, 0);
+  assert.equal(H.MEME_PACKS.worldFor('ja').length, 4, 'picking a language adds its 4 lines');
+  assert.equal(H.MEME_PACKS.lines('world').length, 96, 'the whole pack is still available');
 });

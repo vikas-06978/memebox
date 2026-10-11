@@ -103,7 +103,7 @@ function chart(series, label) {
     const bh = x.n ? Math.max(2, (x.n / max) * (H - 4)) : 1;
     return `<rect class="bar${x.n ? '' : ' zero'}" x="${(i * bw + 1).toFixed(1)}" y="${(H - bh).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${bh.toFixed(1)}" rx="1.5"><title>${h(x.d)}: ${x.n}</title></rect>`;
   }).join('');
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${h(label)}">${bars}</svg><div class="chart-axis"><span>${h(series[0].d.slice(5))}</span><span>${h(series[series.length - 1].d.slice(5))}</span></div>`;
+  return `<div class="chartbox" data-series="${h(JSON.stringify(series))}"><div class="chart-sum"><b class="chart-total">${sum(series)}</b> <span class="muted">in the range</span></div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${h(label)}">${bars}</svg><div class="chart-axis"><span>${h(series[0].d.slice(5))}</span><span>${h(series[series.length - 1].d.slice(5))}</span></div></div>`;
 }
 const sum = (s) => s.reduce((a, x) => a + x.n, 0);
 const hours = (sec) => (sec / 3600).toFixed(1);
@@ -112,8 +112,9 @@ export function activitySection(a) {
   const pct = (x, y) => (y ? Math.round((x / y) * 100) + '%' : 'n/a');
   const usedPro = Math.max(0, a.time.soldPro - a.time.leftPro), usedMax = Math.max(0, a.time.soldMax - a.time.leftMax);
   return `
-<h2 class="section-title">Activity, last ${DAYS} days</h2>
-<p class="muted">Counted from orders, keys and feedback only. The extension sends nothing about what people do in their calls.</p>
+<h2 class="section-title" id="activity">Activity</h2>
+<div class="range" id="range" role="group" aria-label="Range"><button type="button" data-days="7">7 days</button><button type="button" data-days="14">14 days</button><button type="button" data-days="30">30 days</button></div>
+<p class="muted">Counted from orders, keys and feedback only. The extension sends nothing about what people do in their calls. The tiles show the last ${DAYS} days; the charts follow the range above.</p>
 <div class="tiles">
   <div class="tile"><b>₹${sum(a.revenue)}</b><span>earned</span></div>
   <div class="tile"><b>${a.funnel.approved}</b><span>approved orders</span></div>
@@ -138,7 +139,7 @@ export function activitySection(a) {
 </div>`;
 }
 
-export function page(title, body) {
+export function page(title, body, { script = false, waiting = 0 } = {}) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -148,10 +149,11 @@ export function page(title, body) {
 <title>${h(title)}</title>
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body class="admin">
+<body class="admin" data-waiting="${Number(waiting) || 0}">
 <main class="wrap">
 ${body}
 </main>
+${script ? '<script src="/assets/admin.js" defer></script>' : ''}
 </body>
 </html>`;
 }
@@ -166,10 +168,11 @@ export function loginPage(error = '') {
 </form>`);
 }
 
+// entries: [label, count] or [label, count, pick]; a pick like "reason:too-hard" makes the row clickable (it filters the messages table).
 function bars(entries) {
   const max = Math.max(1, ...entries.map(([, n]) => n));
-  return `<ul class="bars">${entries.map(([label, n]) => `
-    <li><span class="label">${h(label)}</span><progress max="${max}" value="${n}"></progress><b>${n}</b></li>`).join('')}</ul>`;
+  return `<ul class="bars">${entries.map(([label, n, pick]) => `
+    <li${pick ? ` class="pick" data-pick="${h(pick)}" title="Show these messages"` : ''}><span class="label">${h(label)}</span><progress max="${max}" value="${n}"></progress><b>${n}</b></li>`).join('')}</ul>`;
 }
 
 const PRODUCT_TEXT = Object.fromEntries(Object.entries(PRODUCTS).map(([id, p]) => [id, p.name.replace('pass: ', 'pass ')]));
@@ -202,8 +205,8 @@ export function shopSection(shop, notice = '') {
     <tr><td class="nowrap">${h(String(o.decided_at).slice(0, 16).replace('T', ' '))}</td><td>₹${h(o.amount_inr)} ${h(PRODUCT_TEXT[o.product] || o.product)}</td>
     <td>${h(o.status)}</td><td class="nowrap">${h(o.utr || '')}</td><td class="nowrap">${h(o.license_key)}</td></tr>`).join('');
   const keys = shop.licenses.map((l) => `
-    <tr>
-      <td class="nowrap"><code>${h(l.key)}</code></td>
+    <tr data-q="${h((l.key + ' ' + l.kind + ' ' + l.note + ' ' + licenseText(l)).toLowerCase())}">
+      <td class="nowrap"><code>${h(l.key)}</code> <button type="button" class="small copy-key" data-key="${h(l.key)}">Copy</button></td>
       <td>${h(l.kind)}</td>
       <td>${h(licenseText(l))}</td>
       <td>${h(l.note)}</td>
@@ -236,47 +239,64 @@ ${notice ? `<p class="notice" role="status">${notice}</p>` : ''}
     <label>Note <input name="note" maxlength="200" placeholder="e.g. my laptop"></label>
     <button type="submit" class="primary">Make a key</button>
   </form>
-  ${shop.licenses.length ? `<div class="table-wrap"><table><thead><tr><th>Key</th><th>Kind</th><th>Gives</th><th>Note</th><th>Last check</th><th></th></tr></thead><tbody>${keys}</tbody></table></div>` : '<p class="muted">No keys yet.</p>'}
+  ${shop.licenses.length ? `<input type="search" id="k-q" class="filter" placeholder="Search keys, notes, who…" aria-label="Search keys"><div class="table-wrap"><table id="keys"><thead><tr><th>Key</th><th>Kind</th><th>Gives</th><th>Note</th><th>Last check</th><th></th></tr></thead><tbody>${keys}</tbody></table></div>` : '<p class="muted">No keys yet.</p>'}
 </section>`;
 }
 
-export function dashboardPage(s, shopHtml = '') {
+export function dashboardPage(s, shopHtml = '', waiting = 0) {
   const rated = Object.values(s.byRating).reduce((a, b) => a + b, 0);
   const avg = rated ? (Object.entries(s.byRating).reduce((a, [k, n]) => a + Number(k) * n, 0) / rated).toFixed(2) : 'n/a';
   const rows = s.latest.map((r) => `
-    <tr>
+    <tr data-id="${h(r.id)}" data-type="${h(r.type)}" data-rating="${h(r.rating || '')}" data-reason="${h(r.reason || '')}" data-q="${h([r.message, r.wants, r.email, r.version, r.lang, r.site, r.reason].join(' ').toLowerCase())}">
+      <td class="nowrap"><label class="check" title="I have read / answered this"><input type="checkbox" class="done" aria-label="Answered"></label></td>
       <td class="nowrap">${h(r.created_at.slice(0, 16).replace('T', ' '))}</td>
       <td>${r.type === 'uninstall' ? 'Uninstall: ' + h(REASON_TEXT[r.reason] || r.reason) : h(RATING_FACES[r.rating] || '')}</td>
-      <td>${h(r.message)}${r.wants ? `<div class="muted">Wants: ${h(r.wants)}</div>` : ''}</td>
-      <td>${h(r.email)}</td>
+      <td class="msg">${h(r.message)}${r.wants ? `<div class="muted">Wants: ${h(r.wants)}</div>` : ''}</td>
+      <td>${r.email ? `${h(r.email)} <button type="button" class="small copy" data-copy="${h(r.email)}">Copy email</button>` : ''}</td>
       <td class="nowrap">${h(r.version)} ${h(r.site)} ${h(r.lang)}${r.platform || r.device ? `<div class="muted">${h(PLATFORM_TEXT[r.platform] || '')}${r.platform && r.device ? ' · ' : ''}${h(DEVICE_TEXT[r.device] || '')}</div>` : ''}</td>
     </tr>`).join('');
   return page('MemeBox admin', `
 <header class="admin-head">
   <h1>MemeBox admin</h1>
+  <span class="muted">updated <span id="updated"></span></span>
+  <button type="button" id="refresh">Refresh</button>
+  <label class="check"><input type="checkbox" id="auto-refresh"> every minute</label>
   <a class="button" href="/admin/packs">Music &amp; meme packs</a>
   <a class="button" href="/admin/csv">Download CSV</a>
   <form method="post" action="/admin/logout"><button type="submit">Sign out</button></form>
 </header>
+<nav class="admin-nav" aria-label="Sections">
+  <a href="#shop">Payments${waiting ? ` <b class="badge">${Number(waiting)}</b>` : ''}</a><a href="#licenses">Keys</a><a href="#activity">Activity</a><a href="#feedback">Feedback</a><a href="#messages-card">Messages</a>
+</nav>
 ${shopHtml}
-<h2 class="section-title">Feedback</h2>
+<h2 class="section-title" id="feedback">Feedback</h2>
 <p class="muted">${s.total} answers in total. Average rating: ${avg} of 4 (${rated} ratings).</p>
 <div class="grid">
-  <section class="card"><h2>Ratings</h2>${bars(Object.entries(s.byRating).map(([k, n]) => [RATING_FACES[k], n]))}</section>
+  <section class="card"><h2>Ratings</h2>${bars(Object.entries(s.byRating).map(([k, n]) => [RATING_FACES[k], n, 'rating:' + k]))}</section>
   <section class="card"><h2>Features used</h2>${bars(Object.entries(s.used))}</section>
-  <section class="card"><h2>Why people uninstalled</h2>${bars(Object.entries(s.byReason).map(([k, n]) => [REASON_TEXT[k], n]))}</section>
+  <section class="card"><h2>Why people uninstalled</h2>${bars(Object.entries(s.byReason).map(([k, n]) => [REASON_TEXT[k], n, 'reason:' + k]))}</section>
   <section class="card"><h2>Where they used it</h2>${bars(Object.entries(s.byPlatform || {}).map(([k, n]) => [PLATFORM_TEXT[k], n]))}</section>
   <section class="card"><h2>Which device</h2>${bars(Object.entries(s.byDevice || {}).map(([k, n]) => [DEVICE_TEXT[k], n]))}</section>
   <section class="card"><h2>Top requests</h2>${s.requests.length
     ? `<ol class="requests">${s.requests.map((r) => `<li>${h(r.want)} <b>×${r.n}</b></li>`).join('')}</ol>`
     : '<p class="muted">No requests yet.</p>'}</section>
 </div>
-<section class="card">
+<section class="card" id="messages-card">
   <h2>Latest 50 messages</h2>
-  ${s.latest.length ? `<div class="table-wrap"><table>
-    <thead><tr><th>When (UTC)</th><th>Rating</th><th>Message</th><th>Email</th><th>Version, site, lang</th></tr></thead>
+  ${s.latest.length ? `<div class="toolbar">
+    <input type="search" id="m-q" placeholder="Search messages, email, version…" aria-label="Search messages">
+    <select id="m-type" aria-label="Type"><option value="">All types</option><option value="feedback">Feedback</option><option value="uninstall">Uninstall</option></select>
+    <select id="m-rating" aria-label="Rating"><option value="">Any rating</option>${Object.entries(RATING_FACES).map(([k, f]) => `<option value="${k}">${f}</option>`).join('')}</select>
+    <select id="m-reason" aria-label="Reason"><option value="">Any reason</option>${REASONS.map((k) => `<option value="${h(k)}">${h(REASON_TEXT[k])}</option>`).join('')}</select>
+    <label class="check"><input type="checkbox" id="m-hide-done"> hide answered</label>
+    <button type="button" id="m-clear" class="small">Clear</button>
+    <span class="muted" id="m-count"></span>
+  </div>
+  <p class="muted">Click a row to open it. Tick a row once you have read or answered it (kept in this browser). Click a face or a reason above to filter.</p>
+  <div class="table-wrap"><table id="messages">
+    <thead><tr><th></th><th>When (UTC)</th><th>Rating</th><th>Message</th><th>Email</th><th>Version, site, lang</th></tr></thead>
     <tbody>${rows}</tbody></table></div>` : '<p class="muted">No messages yet.</p>'}
-</section>`);
+</section>`, { script: true, waiting });
 }
 
 // CSV with every column. Cells that start like a formula are prefixed with ' so

@@ -1464,5 +1464,98 @@
   },
   "chip_lang_more": {
     "message": "Bahasa lain…"
+  },
+  "op_lang_mine": {
+    "message": "Bahasa saya"
+  },
+  "op_online": {
+    "message": "Paket online"
+  },
+  "op_online_hint": {
+    "message": "Musik dan meme gratis untuk semua. Tidak ada koneksi sampai kamu menekan Jelajahi; unduhan datang dari situs MemeBox."
+  },
+  "op_online_browse": {
+    "message": "Jelajahi paket"
+  },
+  "op_online_refresh": {
+    "message": "Segarkan daftar"
+  },
+  "op_online_loading": {
+    "message": "Memuat…"
+  },
+  "op_online_fail": {
+    "message": "Gagal mengambil paket. Periksa internetmu dan coba lagi."
+  },
+  "op_online_none": {
+    "message": "Belum ada paket. Paket baru ditambahkan secara berkala."
+  },
+  "op_online_add": {
+    "message": "Tambah ($1)"
+  },
+  "op_online_added": {
+    "message": "Ditambahkan ✓"
+  },
+  "op_online_remove": {
+    "message": "Hapus"
+  },
+  "op_online_soon": {
+    "message": "Segera hadir"
+  },
+  "op_online_needs": {
+    "message": "Butuh Pro"
+  },
+  "op_online_strong": {
+    "message": "Tampilkan paket berbahasa kasar (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "Musik"
+  },
+  "op_online_memes": {
+    "message": "Meme"
+  },
+  "op_online_items": {
+    "message": "$1 item"
+  },
+  "op_online_busy": {
+    "message": "Mengunduh $1 dari $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” ditambahkan: $2 item"
+  },
+  "pk_region_all": {
+    "message": "Semua wilayah"
+  },
+  "pk_region_common": {
+    "message": "Untuk semua"
+  },
+  "pk_region_in": {
+    "message": "India"
+  },
+  "pk_region_global": {
+    "message": "Global"
+  },
+  "pk_get": {
+    "message": "＋ Paket gratis"
+  },
+  "op_online_pictures": {
+    "message": "Gambar"
+  },
+  "op_online_free_n": {
+    "message": "$1 gratis"
+  },
+  "op_online_paid_n": {
+    "message": "$1 butuh Pro"
+  },
+  "op_online_soon_n": {
+    "message": "$1 segera hadir"
+  },
+  "op_online_more": {
+    "message": "Tambah $1 lagi ($2)"
+  },
+  "op_online_limit": {
+    "message": "Batas unduhan harian tercapai ($1 ditambahkan). Sisanya bisa ditambahkan besok."
   }
 }
