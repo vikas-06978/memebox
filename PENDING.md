@@ -30,3 +30,11 @@
 - Once: `npx wrangler r2 bucket create memebox-packs`, then `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-packs.sql`, then deploy the site. Open `/admin/packs`.
 - You upload: the common-ground music and memes, the phonk tracks (10 free, the rest Pro / Pro Max), India memes, Global memes. For every file write the licence and tick "I may share this" only when it is true.
 - Me, next: the new panel layout (tabs, calmer look) and the packs screen inside the extension (browse, download with size shown, delete, Pro lock, "strong language" switch, suggested by browser language).
+
+## Feedback to act on (from /admin, version 1.2.2)
+- French user (2026-10-10, "Other"): "il n'y a pas beaucoup de choix de langue" (not many language choices). Memes and the voice engine only have Hindi and English. Plan: language packs (French, Spanish, Portuguese, Indonesian, Arabic...) as downloadable meme packs; voices need a decision (bundled eSpeak has only en and hi; more voices cost MB, so either download on demand, or use pre-recorded clips in the packs).
+- English user (2026-10-07, "Too hard to use"): already answered from 1.2.3 on (Start here card, mute badge, reload button); check again with the new panel layout.
+
+## How a release works
+- Deploying the site (`wrangler pages deploy`) changes only the website and its server: installed extensions do not change. The site stays compatible with the old extension (same /api/license).
+- Installed extensions change only when a new version is published in the Chrome Web Store (Chrome then updates people by itself, usually within hours). Order: 1) test the site and the extension locally, 2) deploy the site, 3) publish the extension (use the Web Store's staged / trusted-testers option first if you want a trial run).
