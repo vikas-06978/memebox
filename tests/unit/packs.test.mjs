@@ -198,3 +198,15 @@ test('without the R2 bucket the page says so and audio uploads are refused (text
   const r2 = await call(adminPacks, post({ action: 'lines-add', pack: id, lines: 'hello' }), e);
   assert.match(msgOf(r2), /1 meme added/);
 });
+
+test('"Copyright-free" needs the link that says so: with it the item goes live, without it it stays a draft', async () => {
+  const id = await makePack();
+  await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('A.mp3')], licenceKind: 'free', cleared: 'on' }));
+  assert.equal((await listItems(db, id))[0].status, 'draft');
+  const r = await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('B.mp3')], licenceKind: 'free', cleared: 'on', source: 'https://example.com/licence' }));
+  assert.match(msgOf(r), /live/);
+  const b = (await listItems(db, id)).find((i) => i.title === 'B');
+  assert.equal(b.status, 'live');
+  assert.equal(b.licence, 'Copyright-free');
+  assert.equal(b.source, 'https://example.com/licence');
+});

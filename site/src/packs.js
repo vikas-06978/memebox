@@ -10,6 +10,7 @@ export const LICENCES = {
   cc0: 'CC0 / public domain',
   licensed: 'Licensed to me in writing (say by whom)',
   ccby: 'CC BY (credit required)',
+  free: 'Copyright-free / royalty-free (paste the link that says so in Source)',
   other: 'Other (explain)',
 };
 export const LANGS = { '': 'Any language', en: 'English', hi: 'Hindi', hinglish: 'Hinglish' };
@@ -42,7 +43,7 @@ export const canPublish = (item) => Number(item.cleared) === 1 && clip(item.lice
 
 export function licenceText(kind, note) {
   if (!Object.hasOwn(LICENCES, kind)) return clip(note, 300);
-  const label = kind === 'licensed' ? 'Licensed' : kind === 'ccby' ? 'CC BY' : kind === 'cc0' ? 'CC0' : kind === 'own' ? 'Own work' : 'Other';
+  const label = kind === 'free' ? 'Copyright-free' : kind === 'licensed' ? 'Licensed' : kind === 'ccby' ? 'CC BY' : kind === 'cc0' ? 'CC0' : kind === 'own' ? 'Own work' : 'Other';
   return clip(note ? `${label}: ${note}` : label, 300);
 }
 
@@ -105,6 +106,9 @@ function audioType(file) {
 
 const titleFromName = (name) => clip(String(name || 'Untitled').replace(/\.[a-z0-9]{2,5}$/i, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' '), 80) || 'Untitled';
 
+// "Copyright-free" needs proof: the link where it says so (a licence page, the artist's page...). Without it the item stays a draft.
+const needsSource = (meta) => meta.licenceKind === 'free' && !clip(meta.source, 200);
+
 // Upload audio files into a pack. Each becomes an item; it goes live right away only if "cleared" is ticked and there is a licence line.
 // Returns { added, skipped: [reason...] }.
 export async function addAudio(db, bucket, packId, files, meta = {}) {
@@ -118,7 +122,7 @@ export async function addAudio(db, bucket, packId, files, meta = {}) {
     if (file.size > MAX_AUDIO_BYTES) { out.skipped.push(`${file.name}: over 25 MB`); continue; }
     const id = newItemId(), key = `packs/${packId}/${id}.${type.ext}`;
     await bucket.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: type.mime } });
-    const item = { cleared, licence };
+    const item = { cleared: needsSource(meta) ? 0 : cleared, licence };
     await db.prepare(
       'INSERT INTO pack_items (id, pack_id, title, kind, file_key, mime, bytes, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at) VALUES (?, ?, ?, \'audio\', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?)',
     ).bind(id, packId, titleFromName(file.name), key, type.mime, file.size, cleanLang(meta.lang), clip(meta.tags, 120), meta.explicit ? 1 : 0, licence, clip(meta.source, 200), clip(meta.credit, 120), cleared, canPublish(item) ? 'live' : 'draft', now()).run();
@@ -135,7 +139,7 @@ export async function addLines(db, packId, text, meta = {}) {
     const [line, lang, flag] = raw.split('|').map((x) => x.trim());
     if (!line) continue;
     const explicit = /^(strong|explicit|18|y|yes|1)$/i.test(flag || '') ? 1 : meta.explicit ? 1 : 0;
-    const item = { cleared, licence };
+    const item = { cleared: needsSource(meta) ? 0 : cleared, licence };
     await db.prepare(
       'INSERT INTO pack_items (id, pack_id, title, kind, text, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at) VALUES (?, ?, ?, \'line\', ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?)',
     ).bind(newItemId(), packId, clip(line, 80), clip(line, 200), cleanLang(lang !== undefined && lang !== '' ? lang : meta.lang), clip(meta.tags, 120), explicit, licence, clip(meta.source, 200), clip(meta.credit, 120), cleared, canPublish(item) ? 'live' : 'draft', now()).run();

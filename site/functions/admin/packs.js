@@ -61,7 +61,7 @@ export async function onRequest({ request, env }) {
     if (action === 'items-upload') {
       if (!hasBucket) return back(packId, '', 'File storage is not set up yet (see the packs list page).');
       const r = await addAudio(env.DB, env.PACKS, packId, form.getAll('files'), meta);
-      const live = r.added ? ` ${meta.cleared && (meta.licenceKind || meta.licenceNote) ? 'They are live.' : 'They are drafts: tick "I may share this" and write the licence, then set them live.'}` : '';
+      const live = r.added ? ` ${meta.licenceKind === 'free' && !meta.source.trim() ? 'They are drafts: for "Copyright-free" paste the link that says so in Source, then set them live.' : meta.cleared && (meta.licenceKind || meta.licenceNote) ? 'They are live.' : 'They are drafts: tick "I may share this" and write the licence, then set them live.'}` : '';
       return back(packId, `${r.added} file${r.added === 1 ? '' : 's'} uploaded.${live}${r.skipped.length ? ' Skipped: ' + r.skipped.join('; ') : ''}`);
     }
     if (action === 'lines-add') {
