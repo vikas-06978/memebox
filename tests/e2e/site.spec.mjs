@@ -45,6 +45,10 @@ test('feedback form: rating, features, message; stored with only version and sit
   await page.getByRole('button', { name: 'Send feedback' }).click();
   await expect(page.locator('#thanks')).toBeVisible();
 
+  await expect(page.locator('#thanks .did li')).toHaveCount(3); // what is coming, so people see their answers matter
+  await expect(page.locator('#thanks')).toContainText('we will read it');
+  await page.screenshot({ path: 'tests/.tmp/feedback-thanks.png' });
+
   const [row] = await site.rows();
   expect(row).toMatchObject({ type: 'feedback', rating: 3, used: '["clips","voice-changer"]', wants: 'More cricket lines',
     message: 'Loved the chipmunk voice', email: '', version: '0.6.0', site: 'meet', lang: 'en' });
@@ -111,6 +115,25 @@ test('admin: wrong key refused; right key shows totals, requests and messages; C
   await expect(page.getByText('3 answers in total')).toBeVisible();
   await expect(page.locator('.requests li').first()).toContainText('dark mode ×2');
   await expect(page.locator('tbody tr')).toHaveCount(3);
+
+  // The dashboard is interactive (admin.js): search, filters, clickable bars, ticks, 7/14/30 days.
+  await expect(page.locator('#m-count')).toHaveText('3 of 3');
+  await page.locator('#m-q').fill('msg 1');
+  await expect(page.locator('#messages tbody tr:visible')).toHaveCount(1);
+  await page.locator('#m-clear').click();
+  await expect(page.locator('#messages tbody tr:visible')).toHaveCount(3);
+  await page.locator('li[data-pick="rating:4"]').click(); // a bar filters the table
+  await expect(page.locator('#messages tbody tr:visible')).toHaveCount(2);
+  await page.locator('#m-clear').click();
+  await page.locator('#messages tbody tr').first().locator('input.done').check();
+  await page.locator('#m-hide-done').check();
+  await expect(page.locator('#messages tbody tr:visible')).toHaveCount(2);
+  await page.locator('#m-hide-done').uncheck();
+  const before = await page.locator('.chartbox').first().locator('rect').count();
+  await page.locator('#range button[data-days="7"]').click();
+  expect(await page.locator('.chartbox').first().locator('rect').count()).toBe(7);
+  expect(before).toBe(30);
+  await page.screenshot({ path: 'tests/.tmp/admin-dashboard.png', fullPage: true });
 
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('link', { name: 'Download CSV' }).click()]);
   expect(download.suggestedFilename()).toMatch(/^memebox-feedback-\d{4}-\d\d-\d\d\.csv$/);

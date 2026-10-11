@@ -245,5 +245,9 @@
   "pr_chars_bundle": "All 10 extra characters",
   "buy_char_title": "Character: $1",
   "buy_chars_all": "All 10 extra characters",
-  "buy_char_desc": "Yours for ever on your key. It sits in the corner and reacts to sounds without a pass; Follow me and its other tricks need a running Pro pass."
+  "buy_char_desc": "Yours for ever on your key. It sits in the corner and reacts to sounds without a pass; Follow me and its other tricks need a running Pro pass.",
+  "fb_did_title": "Coming in the next update, because of answers like yours:",
+  "fb_did_1": "Memes in 26 languages, with local lines like “Chai break!”",
+  "fb_did_2": "A “How to use” card in the panel, so it is easy to start",
+  "fb_did_3": "More built-in sounds, plus free lights, characters and music"
 }

@@ -14,15 +14,16 @@ export function json(data, status = 200, extra = {}) {
   });
 }
 
-// Every admin response goes through here: never indexed, never cached, no scripts at all.
-export function adminResponse(body, { status = 200, type = 'text/html; charset=utf-8', headers = {} } = {}) {
+// Every admin response goes through here: never indexed, never cached, no scripts (only the dashboard may load its own admin.js).
+export function adminResponse(body, { status = 200, type = 'text/html; charset=utf-8', headers = {}, script = false } = {}) {
   return new Response(body, {
     status,
     headers: {
       'Content-Type': type,
       ...SECURITY,
       ...NOINDEX,
-      'Content-Security-Policy': "default-src 'none'; style-src 'self'; img-src 'self'; media-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+      // The dashboard (script: true) may run /assets/admin.js and nothing else: still no inline scripts and no other sources.
+      'Content-Security-Policy': `default-src 'none'; ${script ? "script-src 'self'; " : ''}style-src 'self'; img-src 'self'; media-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'`,
       'X-Frame-Options': 'DENY',
       ...headers,
     },

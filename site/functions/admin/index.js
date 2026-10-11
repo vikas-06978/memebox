@@ -16,7 +16,8 @@ export async function onRequest({ request, env }) {
     const notice = LICENSE_RE.test(created)
       ? `New key: <code>${escapeHtml(created)}</code>. Copy it into MemeBox Options → MemeBox Pro.`
       : ORDER_RE.test(approved) ? `Order ${escapeHtml(approved)} approved. The buyer's page now shows their key.` : '';
-    return adminResponse(dashboardPage(await loadStats(env.DB), shopSection(await loadShop(env.DB), notice) + activitySection(await loadActivity(env.DB))));
+    const shop = await loadShop(env.DB);
+    return adminResponse(dashboardPage(await loadStats(env.DB), shopSection(shop, notice) + activitySection(await loadActivity(env.DB)), shop.waiting.length), { script: true });
   }
 
   if (request.method === 'POST') {

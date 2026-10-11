@@ -4,6 +4,12 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+### 1.3.0 (first release of this work: the free parts)
+- Ships with `SHOP_OPEN: false` in `extension/config.js`: everything that is free is there (memes in 26 languages, the free lights, the cat and dog, the free tunes and filters, own clips and music as before) and what is not free yet is simply not shown: no locks, no Buy buttons, no prices. Existing key holders and the owner key keep everything. Set `SHOP_OPEN: true` when the paid options go on sale.
+- 12 more built-in sounds (vine boom, bonk, coin, level up, ka-ching, whoosh, pew pew, doorbell, shing, pop, knock, heartbeat), in the optional Sound effects pack.
+- Admin dashboard is interactive: section nav with a payments badge, 7 / 14 / 30 day charts, search and filters on messages (click a rating or reason bar to filter), tick messages as answered, copy emails and keys, key search, refresh and auto-refresh. The dashboard (only) may load its own `/assets/admin.js`; the CSP still blocks inline scripts.
+- Feedback and uninstall pages say every answer is read and list what is coming in the next update.
+
 ### Added (work towards 1.3.0, not released yet)
 - **Memes in 26 languages**: English, Hindi, Spanish, French, German, Portuguese, Italian, Indonesian, Turkish, Arabic, Bengali, Tamil, Telugu, Marathi, Gujarati, Punjabi, Urdu, Vietnamese, Japanese, Korean, Dutch, Polish, Swahili, Romanian, Swedish and Persian. Each has a bundled offline eSpeak voice (about 3 MB in total) and a free "World" pack of local lines (tea or coffee break, local food, everyday jokes) spoken in that language. The language chips show All, English, your browser language and Hindi, with a list for the rest; people outside India see English plus their own language by default. No clutter: a first install or update adds only the World lines in your browser's language; the others are added when you pick that language (panel chips or the Options language filter, which shows "My languages" by default). Russian and Chinese are left out for now (their dictionaries are large).
 - **Lights & looks** on your own camera: a hanging lamp, a spotlight on you, coloured corner lights and light shows, five filters, lights that follow the memes you play, and a no-flashing option. A live preview in the panel shows exactly what the call will see. Works in the background tab too (frame-by-frame camera pipeline).
