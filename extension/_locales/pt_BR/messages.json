@@ -1419,5 +1419,26 @@
   },
   "fx_seen_none": {
     "message": "A câmera ainda não vê ninguém (câmera ligada? Follow me marcado?)"
+  },
+  "cam_unmirror": {
+    "message": "Desvirar minha prévia durante a legenda"
+  },
+  "cam_unmirror_tip": {
+    "message": "Enquanto uma legenda aparece na sua câmera, seu próprio quadro (espelhado pelo site) é desvirado por 3 segundos para você ler. Os outros sempre veem certo."
+  },
+  "fx_masti": {
+    "message": "Ele brinca comigo (cabeça, ombro, óculos, rolando)"
+  },
+  "fx_masti_tip": {
+    "message": "De vez em quando o bichinho senta na sua cabeça ou ombro, pendura nos óculos ou rola ao redor da cabeça. Precisa do Follow me."
+  },
+  "fx_sounds": {
+    "message": "Ele faz sons (choro, comemoração, batimento)"
+  },
+  "fx_sounds_tip": {
+    "message": "Sons pequenos: soluço, fungada, uma comemoração ou um batimento. Os outros na chamada também ouvem."
+  },
+  "fx_seen_off": {
+    "message": "O modelo de rosto ainda não responde. Espere alguns segundos; se continuar, recarregue a aba da chamada."
   }
 }

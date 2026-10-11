@@ -276,6 +276,7 @@
   bridge.onUiMessage = (msg) => {
     for (const fn of messageCbs) { try { fn(msg); } catch { /* ignore */ } }
     if (msg.type === 'fx-status') state.camLive = msg.active === true; // your camera is going through MemeBox
+    if (msg.type === 'cam-caption' && msg.fixed === true) state.captionFixedAt = Date.now(); // your own tile now shows the caption the right way round
     if (msg.type === 'frame-status') onFrameStatus(msg);
     else if (msg.type === 'play-result') onPlayResult(msg);
     else if (msg.type === 'tab-audio-start' && typeof msg.streamId === 'string') {
@@ -629,6 +630,7 @@
   const monitorBox = el('input', { type: 'checkbox' });
   const duckBox = el('input', { type: 'checkbox' });
   const camBox = el('input', { type: 'checkbox' });
+  const unmirrorBox = el('input', { type: 'checkbox' });
   const list = el('ul', { className: 'list' });
   const optionsBtn = el('button', { className: 'icon', type: 'button', title: t('options') }, '⚙️');
   const feedbackBtn = el('button', { className: 'icon', type: 'button', title: t('feedback') }, '💬');
@@ -647,7 +649,8 @@
       el('div', { className: 'checks' },
         el('label', { className: 'check', title: t('monitor_tip') }, monitorBox, t('monitor_label')),
         el('label', { className: 'check', title: t('duck_tip') }, duckBox, t('duck_label')),
-        el('label', { className: 'check', title: t('cam_tip') }, camBox, t('cam_label')))));
+        el('label', { className: 'check', title: t('cam_tip') }, camBox, t('cam_label')),
+        el('label', { className: 'check', title: t('cam_unmirror_tip') }, unmirrorBox, t('cam_unmirror')))));
   settings.addEventListener('toggle', () => {
     if (state.settings.soundOpen !== settings.open) {
       state.settings = { ...state.settings, soundOpen: settings.open };
@@ -790,6 +793,7 @@
     monitorBox.checked = on;
     duckBox.checked = state.settings.autoDuck !== false;
     camBox.checked = state.settings.camCaptions === true;
+    unmirrorBox.checked = state.settings.camUnmirror !== false;
     if (!shadow.activeElement || shadow.activeElement !== tabVol) {
       tabVol.value = Math.round((Number(state.settings.tabVolume ?? 1) || 0) * 100);
     }
@@ -877,8 +881,11 @@
   // A canvas (not an <img>), so the call site's image rules (CSP) can't block the picture.
   function showCaption(text, picture) {
     for (const c of shadow.querySelectorAll('.caption')) c.remove();
-    // With "Caption on my camera" the text is already on your own video tile (mirrored by the call site), so a second copy on the page would be a duplicate.
-    if (state.settings.camCaptions === true && state.camLive && plan.can('captions')) { if (picture) picture.close(); return; }
+    // PRO: camera captions. With "Caption on my camera" the text is on your own video tile too; when that tile could be flipped back so it reads right, a second copy on the page would be a duplicate.
+    if (state.settings.camCaptions === true && state.camLive && plan.can('captions') && state.settings.camUnmirror !== false && !showCaption.now) {
+      setTimeout(() => { showCaption.now = true; if (Date.now() - (state.captionFixedAt || 0) > 800) showCaption(text, picture); else if (picture) picture.close(); showCaption.now = false; }, 250);
+      return;
+    }
     const c = el('div', { className: 'caption' });
     if (picture) {
       const canvas = el('canvas', { className: 'meme-pic', width: picture.width, height: picture.height });
@@ -1061,6 +1068,10 @@
     state.settings = { ...state.settings, camCaptions: camBox.checked };
     saveSetting('camCaptions', camBox.checked);
     toast(camBox.checked ? t('cam_on') : t('cam_off'));
+  });
+  unmirrorBox.addEventListener('change', () => {
+    state.settings = { ...state.settings, camUnmirror: unmirrorBox.checked };
+    saveSetting('camUnmirror', unmirrorBox.checked);
   });
   let tabVolTimer = 0;
   tabVol.addEventListener('input', () => {

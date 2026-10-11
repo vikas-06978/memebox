@@ -58,6 +58,8 @@
     const mirrorBox = el('input', { type: 'checkbox' });
     const followBox = el('input', { type: 'checkbox' });
     const gestBox = el('input', { type: 'checkbox' });
+    const mastiBox = el('input', { type: 'checkbox' });
+    const soundsBox = el('input', { type: 'checkbox' });
     const sensChips = chipRow();
     const seenLine = el('div', { className: 'fx-status' });
     const tryLine = el('div', { className: 'fx-how' }, t('fx_try'));
@@ -145,6 +147,8 @@
       el('label', { className: 'check', title: t('fx_studio_tip') }, studioBox, t('fx_studio')),
       el('label', { className: 'check', title: t('fx_follow_tip') }, followBox, t('fx_follow')),
       el('label', { className: 'check', title: t('fx_gest_tip') }, gestBox, t('fx_gest')),
+      el('label', { className: 'check', title: t('fx_masti_tip') }, mastiBox, t('fx_masti')),
+      el('label', { className: 'check', title: t('fx_sounds_tip') }, soundsBox, t('fx_sounds')),
       el('div', { className: 'fx-how' }, t('fx_sens')), sensChips, tryLine, seenLine,
       el('label', { className: 'check', title: t('fx_away_tip') }, awayBox, t('fx_away')),
       el('div', { className: 'row' }, el('span', {}, '☀'), bright));
@@ -203,7 +207,7 @@
     api.settingsDetails.after(details);
 
     const wire = (box, key) => box.addEventListener('change', () => set({ [key]: box.checked }, true));
-    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe'); wire(mirrorBox, 'mirror'); wire(followBox, 'follow'); wire(gestBox, 'gestures'); hdBox.addEventListener('change', () => set({ enhance: hdBox.checked ? Math.max(0.6, cfg().enhance || 0) : 0, on: true }, true)); wire(studioBox, 'studio'); wire(awayBox, 'awayDance');
+    wire(onBox, 'on'); wire(lampBox, 'lamp'); wire(cornersBox, 'corners'); wire(focusBox, 'focus'); wire(syncBox, 'sync'); wire(safeBox, 'safe'); wire(mirrorBox, 'mirror'); wire(followBox, 'follow'); wire(gestBox, 'gestures'); wire(mastiBox, 'masti'); wire(soundsBox, 'sounds'); hdBox.addEventListener('change', () => set({ enhance: hdBox.checked ? Math.max(0.6, cfg().enhance || 0) : 0, on: true }, true)); wire(studioBox, 'studio'); wire(awayBox, 'awayDance');
     bright.addEventListener('input', () => set({ intensity: Number(bright.value) / 100 }));
 
     // ---- build the choice lists from what exists ----
@@ -244,7 +248,7 @@
     function render() {
       const c = cfg();
       onBox.checked = c.on; lampBox.checked = c.lamp; cornersBox.checked = c.corners;
-      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe; mirrorBox.checked = c.mirror !== false; canvas.style.transform = c.mirror !== false ? 'scaleX(-1)' : ''; followBox.checked = c.follow; gestBox.checked = c.gestures !== false; gestBox.disabled = !c.follow; hdBox.checked = c.enhance > 0; hdRange.value = Math.round((c.enhance || 0.6) * 100); hdRange.disabled = !(c.enhance > 0); sizeRange.value = Math.round((c.lampSize || 1) * 100); studioBox.checked = c.studio; awayBox.checked = c.awayDance;
+      focusBox.checked = c.focus; syncBox.checked = c.sync; safeBox.checked = c.safe; mirrorBox.checked = c.mirror !== false; canvas.style.transform = c.mirror !== false ? 'scaleX(-1)' : ''; followBox.checked = c.follow; gestBox.checked = c.gestures !== false; gestBox.disabled = !c.follow; mastiBox.checked = c.masti !== false; mastiBox.disabled = !c.follow; soundsBox.checked = c.sounds !== false; hdBox.checked = c.enhance > 0; hdRange.value = Math.round((c.enhance || 0.6) * 100); hdRange.disabled = !(c.enhance > 0); sizeRange.value = Math.round((c.lampSize || 1) * 100); studioBox.checked = c.studio; awayBox.checked = c.awayDance;
       bright.value = Math.round(c.intensity * 100);
       body.classList.toggle('fx-off', !c.on);
       sum.textContent = c.on ? t('fx_state_on') : t('fx_state_off');
@@ -284,8 +288,9 @@
     api.onPanelToggle((open) => { if (open) { render(); kick(); } else if (raf) { cancelAnimationFrame(raf); raf = 0; } });
     let seenAt = 0;
     const showSeen = (m) => {
+      if (m && !m.ml && m.waiting) { seenLine.textContent = t('fx_seen_off'); return; }
       if (!m || !m.ml) { seenLine.textContent = t('fx_seen_none'); return; }
-      seenLine.textContent = `${t('fx_seen')} ${m.face ? '🙂 ' + t('fx_seen_face') : '—'}${m.hands ? ' · ✋ ' + m.hands : ''}${m.did ? ' · ' + m.did : ''}`;
+      seenLine.textContent = `${t('fx_seen')} ${m.face ? '🙂 ' + t('fx_seen_face') : '—'}${m.hands ? ' · ✋ ' + m.hands : ''}${m.did ? ' · ' + m.did : ''} · ${m.fps}/s · ${m.ms} ms`;
     };
     api.onMessage((msg) => {
       if (msg.type === 'fx-status') { camActive = msg.active === true; render(); }

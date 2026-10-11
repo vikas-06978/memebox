@@ -1419,5 +1419,26 @@
   },
   "fx_seen_none": {
     "message": "La caméra ne voit encore personne (caméra active ? Follow me coché ?)"
+  },
+  "cam_unmirror": {
+    "message": "Redresser mon aperçu pendant une légende"
+  },
+  "cam_unmirror_tip": {
+    "message": "Pendant qu'une légende s'affiche sur votre caméra, votre propre vignette (inversée par le site) est redressée 3 secondes pour que vous puissiez la lire. Les autres la voient toujours à l'endroit."
+  },
+  "fx_masti": {
+    "message": "Il joue sur moi (tête, épaule, lunettes, roulade)"
+  },
+  "fx_masti_tip": {
+    "message": "De temps en temps l'animal s'assoit sur votre tête ou épaule, se suspend à vos lunettes ou roule autour de votre tête. Nécessite Follow me."
+  },
+  "fx_sounds": {
+    "message": "Il fait des bruits (pleurs, hourra, battements)"
+  },
+  "fx_sounds_tip": {
+    "message": "Petits sons : sanglots, reniflement, un hourra ou un battement de cœur. Les autres dans l'appel les entendent aussi."
+  },
+  "fx_seen_off": {
+    "message": "Le modèle de visage ne répond pas encore. Patientez quelques secondes ; sinon, rechargez l'onglet de l'appel."
   }
 }

@@ -390,8 +390,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendToTab(tabId, { type: 'fx-status', active: msg.active === true, frameId: sender.frameId }, 0);
       break;
 
+    case 'cam-caption':
+      sendToTab(tabId, { type: 'cam-caption', fixed: msg.fixed === true }, 0);
+      break;
+
     case 'fx-seen':
-      sendToTab(tabId, { type: 'fx-seen', ml: msg.ml === true, face: msg.face === true, hands: Number(msg.hands) || 0, did: typeof msg.did === 'string' ? msg.did.slice(0, 4) : '' }, 0);
+      sendToTab(tabId, { type: 'fx-seen', ml: msg.ml === true, face: msg.face === true, hands: Number(msg.hands) || 0, did: typeof msg.did === 'string' ? msg.did.slice(0, 4) : '', waiting: msg.waiting === true, fps: Number(msg.fps) || 0, ms: Number(msg.ms) || 0 }, 0);
       break;
 
     case 'frame-status':

@@ -93,10 +93,12 @@
       case 'tab-audio-stop': stopTabAudio(); break;
       case 'tab-audio-volume': setTabVolume(d.value); break;
       case 'voice': setVoice(String(d.value), d.url); break;
-      case 'cam-captions': camCaptions = d.value === true; break;
+      case 'cam-captions': camCaptions = d.value === true; camUnmirror = d.unmirror !== false; break;
       case 'face-result': { // where the face is, how it looks (blendshapes 0..1), and raised hands (every other result)
-        faceBusy = 0;
-        const n = performance.now(), prev = faceMl, num = (v) => (Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0);
+        const n = performance.now(), prev = faceMl;
+        if (faceBusy) { const rt = n - faceBusy; faceMs = faceMs ? faceMs * 0.7 + rt * 0.3 : rt; }
+        faceBusy = 0; faceTimes.push(n); while (faceTimes.length && n - faceTimes[0] > 2000) faceTimes.shift();
+        const num = (v) => (Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0);
         const bs = d.bs && typeof d.bs === 'object' ? Object.fromEntries(['blinkL', 'blinkR', 'jaw', 'smile', 'tongue', 'brow', 'pucker', 'wide'].map((k) => [k, num(d.bs[k])])) : null;
         const hands = Array.isArray(d.hands) ? d.hands.slice(0, 2).map((h) => ({ x: num(h.x), y: num(h.y), s: num(h.s), n: Number(h.n) || 0, open: h.open === true, thumbUp: h.thumbUp === true, peace: h.peace === true, ok: h.ok === true, fingerHeart: h.fingerHeart === true, rock: h.rock === true, callMe: h.callMe === true, heart2: h.heart2 === true })) : null;
         faceMl = { at: n, face: d.face && Number.isFinite(d.face.x) && Number.isFinite(d.face.y) ? { x: d.face.x, y: d.face.y, w: Number(d.face.w) || 0, h: Number(d.face.h) || 0, pose: d.face.pose && Number.isFinite(d.face.pose.yaw) && Number.isFinite(d.face.pose.pitch) ? { yaw: d.face.pose.yaw, pitch: d.face.pose.pitch } : null } : null, bs, hands: hands || (prev ? prev.hands : null), handsAt: hands ? n : (prev ? prev.handsAt : -1e9) };
@@ -744,6 +746,32 @@
   // Only the video you send is changed, nobody else's.
 
   const captionedTracks = new WeakSet();
+  let camUnmirror = true, unmirrored = [], unmirrorTimer = 0;
+  // The call site shows YOUR OWN tile mirrored, so a caption on your camera reads backwards to you (everybody else sees it right).
+  // While a caption shows, your own tile is flipped back so you can read it too. Returns how many tiles were flipped.
+  function unmirrorSelf() {
+    if (!camUnmirror) return 0;
+    restoreMirror();
+    for (const v of document.querySelectorAll('video')) {
+      const so = v.srcObject;
+      if (!so || typeof so.getVideoTracks !== 'function' || !so.getVideoTracks().some((t) => captionedTracks.has(t))) continue;
+      for (let el = v, i = 0; el && i < 4; el = el.parentElement, i++) { // the mirror is on the video or on something just around it
+        const m = /matrix\(([^)]+)\)/.exec(getComputedStyle(el).transform || '');
+        if (m && parseFloat(m[1].split(',')[0]) < 0) {
+          unmirrored.push({ el, prev: el.style.getPropertyValue('transform'), prio: el.style.getPropertyPriority('transform') });
+          el.style.setProperty('transform', 'none', 'important');
+          break;
+        }
+      }
+    }
+    clearTimeout(unmirrorTimer);
+    unmirrorTimer = setTimeout(restoreMirror, 3050);
+    return unmirrored.length;
+  }
+  function restoreMirror() {
+    for (const u of unmirrored) { if (u.prev) u.el.style.setProperty('transform', u.prev, u.prio); else u.el.style.removeProperty('transform'); }
+    unmirrored = [];
+  }
   let camText = '';
   let camTextUntil = 0;
   let camPicture = null; // ImageBitmap of the playing line's meme picture
@@ -751,6 +779,7 @@
   function showCamCaption(text, picture) {
     camText = String(text).slice(0, 120);
     camTextUntil = performance.now() + 3000;
+    if (camText) post({ type: 'cam-caption', fixed: unmirrorSelf() > 0 }); // the panel shows its own copy of the caption only when your tile could not be flipped
     if (camPicture) { camPicture.close(); camPicture = null; }
     if (picture) {
       createImageBitmap(new Blob([picture.bytes], { type: picture.type })).then((bmp) => {
@@ -853,9 +882,10 @@
 
   // Face finding for "Follow me": a small copy of the frame goes to the bridge (same page, never leaves the computer),
   // which runs a small face model and sends the face position back. One frame at a time, about 10 a second.
-  let faceMl = null, faceBusy = 0, faceLast = 0, faceN = 0, seenAt = 0;
+  let faceMl = null, faceBusy = 0, faceLast = 0, faceN = 0, seenAt = 0, faceMs = 0;
+  const faceTimes = []; // when the answers arrived, for "answers per second"
   function sendFace(src, w, h, now) {
-    if (now - faceLast < 70 || (faceBusy && now - faceBusy < 1000) || typeof createImageBitmap !== 'function') return;
+    if (now - faceLast < 35 || (faceBusy && now - faceBusy < 1000) || typeof createImageBitmap !== 'function') return;
     faceLast = now; faceBusy = now; faceN++;
     const fw = 384, fh = Math.max(16, Math.round(256 * h / w));
     createImageBitmap(src, { resizeWidth: fw, resizeHeight: fh, resizeQuality: 'low' })
@@ -868,9 +898,11 @@
     if (fxActive() && R) {
       R.ml = faceMl;
       R.render(g, src, w, h, fxCfg, now, audioInfo(), {});
+      const sq = R.takeSfx && R.takeSfx(); // the little sounds the animal makes (they go into the call like a meme)
+      if (sq && sq.length && fxCfg.sounds !== false && ctx && ctx.state === 'running' && board && globalThis.MemeSfx) for (const x of sq) { try { globalThis.MemeSfx.play(ctx, board, x.k, x.a); } catch { /* ignore */ } }
       if (R.followOn && now - R.followOn < 300) {
         sendFace(src, w, h, now);
-        if (now - seenAt > 250) { seenAt = now; post({ type: 'fx-seen', ...R.seen(now) }); } // for the panel's "what the camera sees" line
+        if (now - seenAt > 250) { seenAt = now; post({ type: 'fx-seen', ...R.seen(now), waiting: faceN > 3 && !(faceMl && now - faceMl.at < 3000), fps: Math.round(faceTimes.filter((x) => now - x < 2000).length / 2), ms: Math.round(faceMs) }); } // for the panel's "what the camera sees" line
       }
     }
     else g.drawImage(src, 0, 0, w, h);

@@ -1419,5 +1419,26 @@
   },
   "fx_seen_none": {
     "message": "Kamera belum melihat siapa pun (kamera aktif? Follow me dicentang?)"
+  },
+  "cam_unmirror": {
+    "message": "Balikkan pratinjau saya saat ada teks"
+  },
+  "cam_unmirror_tip": {
+    "message": "Saat teks tampil di kamera Anda, kotak video Anda sendiri (yang dicerminkan situs) dibalik selama 3 detik agar bisa dibaca. Orang lain selalu melihatnya dengan benar."
+  },
+  "fx_masti": {
+    "message": "Ia bermain di tubuh saya (kepala, bahu, kacamata, berguling)"
+  },
+  "fx_masti_tip": {
+    "message": "Sesekali hewan duduk di kepala atau bahu Anda, bergantung di kacamata atau berguling mengelilingi kepala. Perlu Follow me."
+  },
+  "fx_sounds": {
+    "message": "Ia mengeluarkan suara (menangis, bersorak, detak jantung)"
+  },
+  "fx_sounds_tip": {
+    "message": "Suara kecil seperti isak, mengendus, sorakan, atau detak jantung. Orang lain di panggilan juga mendengarnya."
+  },
+  "fx_seen_off": {
+    "message": "Model wajah belum menjawab. Tunggu beberapa detik; jika tetap, muat ulang tab panggilan."
   }
 }

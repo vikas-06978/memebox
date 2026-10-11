@@ -1419,5 +1419,26 @@
   },
   "fx_seen_none": {
     "message": "The camera sees nobody yet (camera on? Follow me ticked?)"
+  },
+  "cam_unmirror": {
+    "message": "Flip my preview back while a caption shows"
+  },
+  "cam_unmirror_tip": {
+    "message": "While a caption shows on your camera, your own tile (which the call site mirrors) is flipped back for 3 seconds so you can read it. Others always see it the right way."
+  },
+  "fx_masti": {
+    "message": "It plays on me (head, shoulder, glasses, rolling)"
+  },
+  "fx_masti_tip": {
+    "message": "Now and then the animal sits on your head or shoulder, hangs on your glasses or rolls around your head. Needs Follow me."
+  },
+  "fx_sounds": {
+    "message": "It makes sounds (crying, cheering, heartbeat)"
+  },
+  "fx_sounds_tip": {
+    "message": "Little sounds like sobbing, sniffing, a cheer or a heartbeat. Others in the call hear them too."
+  },
+  "fx_seen_off": {
+    "message": "The face model is not answering yet. Wait a few seconds; if it stays like this, reload the call tab."
   }
 }

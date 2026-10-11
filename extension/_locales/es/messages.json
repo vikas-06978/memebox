@@ -1419,5 +1419,26 @@
   },
   "fx_seen_none": {
     "message": "La cámara aún no ve a nadie (¿cámara activa? ¿Follow me marcado?)"
+  },
+  "cam_unmirror": {
+    "message": "Girar mi vista previa mientras hay subtítulo"
+  },
+  "cam_unmirror_tip": {
+    "message": "Mientras se muestra un subtítulo en tu cámara, tu propio recuadro (que la web refleja) se gira 3 segundos para que puedas leerlo. Los demás siempre lo ven bien."
+  },
+  "fx_masti": {
+    "message": "Juega conmigo (cabeza, hombro, gafas, rodando)"
+  },
+  "fx_masti_tip": {
+    "message": "De vez en cuando el animal se sienta en tu cabeza u hombro, cuelga de tus gafas o rueda alrededor de tu cabeza. Necesita Follow me."
+  },
+  "fx_sounds": {
+    "message": "Hace sonidos (llorar, vitorear, latido)"
+  },
+  "fx_sounds_tip": {
+    "message": "Sonidos pequeños: sollozos, olfateo, un vítor o un latido. Los demás en la llamada también los oyen."
+  },
+  "fx_seen_off": {
+    "message": "El modelo de caras aún no responde. Espera unos segundos; si sigue así, recarga la pestaña de la llamada."
   }
 }
