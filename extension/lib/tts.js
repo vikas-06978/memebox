@@ -18,7 +18,11 @@ function clamp(v, lo, hi, dflt) {
   return Number.isFinite(n) ? Math.min(hi, Math.max(lo, Math.round(n))) : dflt;
 }
 
-export const VOICES = { hi: 'hi', en: 'en-us' };
+// eSpeak voice for each meme language code (see MEME.LANGS in defaults.js).
+export const VOICES = {
+  en: 'en-us', pt: 'pt-br', hi: 'hi', es: 'es', fr: 'fr', de: 'de', it: 'it', id: 'id', tr: 'tr', ar: 'ar', bn: 'bn', ta: 'ta', te: 'te',
+  mr: 'mr', gu: 'gu', pa: 'pa', ur: 'ur', vi: 'vi', ja: 'ja', ko: 'ko', nl: 'nl', pl: 'pl', sw: 'sw', ro: 'ro', sv: 'sv', fa: 'fa',
+};
 
 // text + language + tone's eSpeak settings -> WAV ArrayBuffer (mono, 16-bit, 22050 Hz).
 export async function synthesizeWav(text, lang, espeak = {}) {

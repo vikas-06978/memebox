@@ -70,3 +70,23 @@ test('welcome page: no reload card when every open call tab already works', asyn
   await page.waitForTimeout(800);
   await expect(page.locator('#reload-card')).toBeHidden();
 });
+
+test('1.2.7: the panel opens with a "How to use" card until "Got it"; the language chips pick the meme language', async ({ context, callPage }, testInfo) => {
+  const [sw] = context.serviceWorkers();
+  const setSettings = (patch) => sw.evaluate(async (patch) => { const { settings } = await chrome.storage.local.get('settings'); await chrome.storage.local.set({ settings: { ...settings, ...patch } }); }, patch);
+  await callPage.evaluate(() => window.joinCall());
+  await callPage.waitForTimeout(900);
+  await callPage.mouse.click(FAB.x, FAB.y, { button: 'right' });
+  await callPage.waitForTimeout(700);
+  const withGuide = await callPage.screenshot();
+  await callPage.screenshot({ path: 'tests/.tmp/guide-open.png' });
+  await setSettings({ guideDone: true });
+  await callPage.waitForTimeout(700);
+  const without = await callPage.screenshot();
+  expect(Buffer.compare(withGuide, without), 'the guide goes away after "Got it"').not.toBe(0);
+  await setSettings({ lineLang: 'es' });
+  await callPage.waitForTimeout(700);
+  const spanish = await callPage.screenshot();
+  await callPage.screenshot({ path: 'tests/.tmp/lang-es.png' });
+  expect(Buffer.compare(without, spanish), 'Spanish lines replace the English list').not.toBe(0);
+});

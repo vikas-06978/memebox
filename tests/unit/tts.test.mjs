@@ -9,13 +9,13 @@ import { wavInfo } from '../../extension/lib/wav.js';
 
 const { MEME } = loadScript('defaults.js');
 
-test('bundled eSpeak only ships English + Hindi dictionaries (small, no CDN)', () => {
+test('bundled eSpeak ships the small dictionaries for every meme language (no CDN)', () => {
   const js = fs.readFileSync(path.join(EXT, 'vendor/espeak-ng/espeak-ng.js'), 'utf8');
   const dicts = [...js.matchAll(/espeak-ng-data\/(\w+)_dict"/g)].map((m) => m[1]).sort();
-  assert.deepEqual(dicts, ['en', 'hi']);
+  assert.deepEqual(dicts, Object.keys(MEME.LANGS).sort(), 'one dictionary per meme language');
   assert.doesNotMatch(js, /https?:\/\/[^"'\s]*\.(wasm|data)/, 'no remote wasm/data URLs');
   const size = fs.statSync(path.join(EXT, 'vendor/espeak-ng/espeak-ng.data')).size;
-  assert.ok(size < 2e6, `data file is small (${size} bytes)`);
+  assert.ok(size < 4e6, `data file is small (${size} bytes)`);
 });
 
 for (const lang of ['hi', 'en']) {
@@ -39,4 +39,17 @@ test('tones change the speed: slow-mo > normal > chipmunk in length', async () =
   const [slow, normal, chip] = [await len('slowmo'), await len('normal'), await len('chipmunk')];
   assert.ok(slow > normal * 1.4, `slow-mo ${slow.toFixed(2)} vs normal ${normal.toFixed(2)}`);
   assert.ok(normal > chip, `normal ${normal.toFixed(2)} vs chipmunk ${chip.toFixed(2)}`);
+});
+
+test('every meme language has a voice and speaks its own built-in lines', async () => {
+  const { VOICES } = await import('../../extension/lib/tts.js');
+  const { MEME_PACKS } = loadScript(['defaults.js', 'packs.js']);
+  assert.deepEqual(Object.keys(VOICES).sort(), Object.keys(MEME.LANGS).sort());
+  const world = MEME_PACKS.lines('world');
+  for (const lang of Object.keys(MEME.LANGS).filter((c) => c !== 'en' && c !== 'hi')) {
+    const line = world.find((l) => l.lang === lang);
+    assert.ok(line, `${lang}: has world lines`);
+    const info = wavInfo(await synthesizeWav(line.say || line.text, lang, MEME.TONES.normal.espeak));
+    assert.ok(info.seconds > 0.3, `${lang}: ${line.text} -> ${info.seconds.toFixed(2)} s`);
+  }
 });

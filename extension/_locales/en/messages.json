@@ -894,5 +894,32 @@
   },
   "lang_reload": {
     "message": "Language changed. Reload this call tab to see MemeBox in it."
+  },
+  "cat_world": {
+    "message": "World"
+  },
+  "chip_lang_all": {
+    "message": "All languages"
+  },
+  "chip_lang_more": {
+    "message": "More languages…"
+  },
+  "guide_title": {
+    "message": "How to use MemeBox"
+  },
+  "guide_1": {
+    "message": "Join your call and turn your microphone ON (unmuted)."
+  },
+  "guide_2": {
+    "message": "Tap any line below: everyone in the call hears it, in the voice you pick."
+  },
+  "guide_3": {
+    "message": "In a hurry? Press 😂 for a random one, or Alt+1 to Alt+9 for your favourites."
+  },
+  "guide_hide": {
+    "message": "Got it"
+  },
+  "guide_btn": {
+    "message": "How to use"
   }
 }

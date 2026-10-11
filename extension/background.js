@@ -9,7 +9,7 @@ const { TONES, LIMITS } = globalThis.MEME;
 
 // First install: the general pack + every built-in pack. Updates from before packs existed
 // get the new packs added once (their own lines are kept).
-const PACKS_SEEDED = 1;
+const PACKS_SEEDED = 2;
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') chrome.tabs.create({ url: 'onboarding.html' }).catch(() => {});
   const { lines, settings, seeded } = await chrome.storage.local.get(['lines', 'settings', 'seeded']);
@@ -133,7 +133,7 @@ async function audioFor(item) {
   }
   const text = String(item.say || item.text || '').trim().slice(0, LIMITS.textChars);
   if (!text) throw new Error('Empty line');
-  return { b64: await tts(text, item.lang === 'hi' ? 'hi' : 'en', tone), tone };
+  return { b64: await tts(text, MEME.isLang(item.lang) ? item.lang : 'en', tone), tone };
 }
 
 async function handlePlay(tabId, { frameId, reqId, item }) {

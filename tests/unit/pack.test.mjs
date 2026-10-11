@@ -60,7 +60,7 @@ test('rejects wrong format, version, names and lengths', () => {
 });
 
 test('rejects bad field values', () => {
-  bad((p) => { p.lines[0].lang = 'fr'; }, 'lines[0].lang');
+  bad((p) => { p.lines[0].lang = 'xx'; }, 'lines[0].lang');
   bad((p) => { p.lines[0].tone = 'loud'; }, 'lines[0].tone');
   bad((p) => { p.lines[0].kind = 'url'; }, 'lines[0].kind');
   bad((p) => { p.lines[0].fav = 10; }, 'lines[0].fav');
@@ -84,8 +84,8 @@ test('non-objects are rejected cleanly', () => {
   for (const x of [null, 42, 'pack', [], true]) assert.equal(P.validate(x).ok, false);
 });
 
-test('built-in packs: Sound effects, College, Cricket, Office, Party + general, all valid', () => {
-  assert.deepEqual([...MEME_PACKS.ids], ['general', 'effects', 'college', 'cricket', 'office', 'party']);
+test('built-in packs: Sound effects, College, Cricket, Office, Party, World + general, all valid', () => {
+  assert.deepEqual([...MEME_PACKS.ids], ['general', 'effects', 'college', 'cricket', 'office', 'party', 'world']);
   const all = MEME_PACKS.all();
   assert.equal(new Set(all.map((l) => l.id)).size, all.length, 'unique ids');
   for (const id of MEME_PACKS.ids) {
@@ -112,7 +112,8 @@ test('built-in packs stay friendly: no words about religion, caste, gender, look
 
 test('updating never adds the optional Sound effects pack, and never touches my lines', () => {
   const mine = { id: 'mine-1', kind: 'tts', text: 'My own line', lang: 'en', tone: 'normal', fav: 3, category: 'mine', volume: 1 };
-  assert.equal(MEME_PACKS.missing([mine], 1).length, 0, 'from 1.2.x: nothing is added');
+  assert.equal(MEME_PACKS.missing([mine], 2).length, 0, 'already up to date: nothing is added');
+  assert.deepEqual(MEME_PACKS.missing([mine], 1).map((l) => l.category), MEME_PACKS.lines('world').map(() => 'world'), 'from 1.2.x: only the world pack is new');
   const fromOld = MEME_PACKS.missing([mine], 0);
   assert.equal(fromOld.length, MEME_PACKS.all().length, 'from before packs existed: the packs');
   assert.ok(fromOld.every((l) => l.category !== 'effects' && l.fav === 0));

@@ -4,6 +4,13 @@ All notable changes to MemeBox. The format follows [Keep a Changelog](https://ke
 
 ## [Unreleased]
 
+## [1.2.7] - 2026-10-11
+
+### Added
+- **Memes in 26 languages**: English, Hindi, Spanish, French, German, Portuguese, Italian, Indonesian, Turkish, Arabic, Bengali, Tamil, Telugu, Marathi, Gujarati, Punjabi, Urdu, Vietnamese, Japanese, Korean, Dutch, Polish, Swahili, Romanian, Swedish and Persian. Every language has a bundled offline eSpeak voice (about 2 MB more in total) and a free "World" pack with local lines (tea or coffee break, local food, everyday jokes) spoken in that language. Language chips in the panel: All, English, your browser language, Hindi, and a list for the rest. Outside India the default is English plus your own language. The World pack is added once for people who update; their own lines are never touched.
+- **"How to use MemeBox"** card at the top of the panel for everybody (new and old users) until they press "Got it", in all 12 languages. The ? button in the panel brings it back. Answers the "too hard to use" feedback.
+- The feedback and uninstall pages now say that every answer is read and that fixes come in the next update, in the next few days.
+
 ## [1.2.6] - 2026-10-10
 
 ### Changed

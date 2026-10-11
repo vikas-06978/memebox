@@ -9,7 +9,6 @@
   "theme_sunny": "Sunny",
   "theme_neon": "Neon",
   "theme_candy": "Candy",
-
   "nav_try": "Try it",
   "nav_features": "Features",
   "nav_pricing": "Pricing",
@@ -27,7 +26,6 @@
   "tick_browsers": "Chrome and Edge",
   "hero_heard": "Everyone heard “Chai break!”",
   "works_on": "Works in the browser on",
-
   "try_title": "Try it right here 👇",
   "try_sub": "Press a meme. In a real call, everyone would hear it through your mic.",
   "try_you": "You",
@@ -41,7 +39,6 @@
   "try_count_0": "Press any meme to start",
   "try_count": "Memes played: $1 🎉",
   "try_stop": "⏹ Stop",
-
   "feat_title": "Everything you need to be the funny one",
   "feat_sub": "Meme lines, sound effects, your own clips and a voice changer, one click away during any call.",
   "f1_t": "One-click memes",
@@ -56,7 +53,6 @@
   "f5_p": "A funny YouTube moment? Send that tab's sound into the call. Nothing is downloaded.",
   "f6_t": "Your language, your colors",
   "f6_p": "12 languages and six color themes, from Dark to Neon. Plus your own clips and packs.",
-
   "how_title": "Ready in three steps",
   "how_sub": "No account, no setup. A short welcome page even tests your mic.",
   "how1_t": "Add MemeBox",
@@ -65,7 +61,6 @@
   "how2_p": "Open Meet, Zoom, Teams or Discord in the browser. The 😂 button appears in the corner.",
   "how3_t": "Click 😂",
   "how3_p": "The meme goes into your mic. Everyone hears it, and a big caption shows on your screen.",
-
   "price_title": "Free to start. Pro when you want more.",
   "price_sub": "Pay once with any UPI app. No subscription.",
   "plan_free": "Free",
@@ -85,11 +80,9 @@
   "plan_get": "Get Pro",
   "price_more": "Just want more pictures? Get 5 more for ₹29 on the",
   "price_buy_link": "buy page",
-
   "priv_title": "Private by design",
   "priv_text": "Your microphone, camera and tab audio are only mixed inside your browser. Nothing is recorded or uploaded. No accounts, no ads, no tracking.",
   "priv_link": "Read the privacy policy",
-
   "faq_title": "Questions",
   "q1": "Do the others in the call need MemeBox?",
   "a1": "No. The meme goes out through your microphone, so they hear it like your voice.",
@@ -101,7 +94,6 @@
   "a4": "With any UPI app (GPay, PhonePe, Paytm, BHIM). Scan the QR code on the buy page, type the transaction ID, and your key appears once the payment is confirmed.",
   "q5": "Is my voice recorded?",
   "a5": "Never. MemeBox only mixes sound inside your browser tab. Nothing is saved or sent anywhere.",
-
   "band_title": "Your next call is about to get a lot funnier",
   "band_sub": "Free, private, and ready in seconds.",
   "band_cta": "Add MemeBox to Chrome",
@@ -110,7 +102,6 @@
   "foot_privacy": "Privacy",
   "foot_terms": "Terms",
   "foot_source": "Source code",
-
   "fb_title": "How is MemeBox for you?",
   "fb_intro": "Takes one minute. We read every message.",
   "fb_rating": "Your rating",
@@ -141,10 +132,10 @@
   "fb_send": "Send feedback",
   "fb_privacy": "We store only what you type here, plus the MemeBox version. No tracking.",
   "fb_thanks": "Thank you! 🙏",
-  "fb_thanks_text": "Your feedback was sent. You can close this tab.",
+  "fb_thanks_text": "Your feedback was sent and we will read it. We work on what people tell us, and you will see changes in the next update, in the next few days.",
   "privacy": "Privacy",
   "un_title": "MemeBox was removed",
-  "un_intro": "Sorry to see you go. One quick question helps us make it better.",
+  "un_intro": "Sorry to see you go. One quick question helps us make it better. We read every answer and fix what people report within days, so your answer can change the next update.",
   "un_why": "Why did you remove it?",
   "un_r_work": "It didn't work on my call",
   "un_r_hard": "Too hard to use",
@@ -153,7 +144,7 @@
   "un_r_other": "Other",
   "un_more": "Anything else? (optional)",
   "un_send": "Send",
-  "un_thanks_text": "That really helps. You can close this tab.",
+  "un_thanks_text": "Thank you, we read every answer. Fixes and improvements are coming in the next update, in the next few days, so you are welcome to come back and try again.",
   "err_rating": "Please pick a rating.",
   "err_reason": "Please pick a reason.",
   "err_email": "That email doesn't look right.",
@@ -161,7 +152,6 @@
   "err_wait": "The spam check is still running. Try again in a few seconds.",
   "err_too_many": "Too many tries from here. Please try again in an hour.",
   "err_spam": "The spam check failed. Reload the page and try again.",
-
   "buy_title": "Get more from MemeBox",
   "buy_intro": "Pay once with any UPI app (GPay, PhonePe, Paytm, BHIM). The money goes straight to the developer.",
   "buy_closed": "Payments aren't open yet. Please check back soon.",

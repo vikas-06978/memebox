@@ -894,5 +894,32 @@
   },
   "lang_reload": {
     "message": "Langue changée. Rechargez cet onglet d'appel pour voir MemeBox dans cette langue."
+  },
+  "cat_world": {
+    "message": "Monde"
+  },
+  "chip_lang_all": {
+    "message": "Toutes les langues"
+  },
+  "chip_lang_more": {
+    "message": "Autres langues…"
+  },
+  "guide_title": {
+    "message": "Comment utiliser MemeBox"
+  },
+  "guide_1": {
+    "message": "Rejoignez votre appel et activez le micro (non coupé)."
+  },
+  "guide_2": {
+    "message": "Touchez une phrase ci-dessous : tout le monde l’entend dans l’appel, avec la voix choisie."
+  },
+  "guide_3": {
+    "message": "Pressé ? Appuyez sur 😂 pour une au hasard, ou Alt+1 à Alt+9 pour vos favorites."
+  },
+  "guide_hide": {
+    "message": "Compris"
+  },
+  "guide_btn": {
+    "message": "Mode d’emploi"
   }
 }

@@ -190,9 +190,24 @@
     sendToHook({ type: 'beep', reqId });
   }
 
+  // Which meme lines to offer: with "auto", people in India (browser in an Indian language, or India time zone) see everything; everybody else
+  // sees English plus the lines in their browser's language. Nothing is sent anywhere: it is read from the browser. Change it with the language chips.
+  const ownLang = () => { const l = String(navigator.language || 'en').toLowerCase().split('-')[0]; return MEME.isLang(l) ? l : 'en'; };
+  function activeLangs() { // null = every language
+    const v = state.settings.lineLang;
+    if (v === 'all') return null;
+    if (MEME.isLang(v)) return new Set([v]);
+    const l = String(navigator.language || 'en').toLowerCase();
+    let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* ignore */ }
+    if (/^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') return null;
+    return new Set(['en', ownLang()]);
+  }
+  const lineLang = () => { const v = state.settings.lineLang; return v === 'all' || MEME.isLang(v) ? v : 'auto'; };
+  const langLines = (items) => { const set = activeLangs(); return !set ? items : items.filter((l) => l.kind !== 'tts' || set.has(l.lang)); };
+
   function visibleLines() {
     const q = state.query.trim().toLowerCase();
-    let items = state.lines;
+    let items = langLines(state.lines);
     if (state.filter === 'star') items = items.filter((l) => l.star);
     else if (state.filter === 'recent') items = state.recent.map((id) => items.find((l) => l.id === id)).filter(Boolean);
     else if (state.filter !== 'all') items = items.filter((l) => l.category === state.filter);
@@ -202,7 +217,7 @@
 
   function playRandom() {
     // In the panel, Random respects the current filter/search, while the 😂 click uses everything.
-    const base = panelOpen ? visibleLines() : state.lines;
+    const base = panelOpen ? visibleLines() : langLines(state.lines);
     const pool = base.length > 1 ? base.filter((l) => l.id !== state.lastRandomId) : base;
     if (!pool.length) { toast(t('no_lines')); return; }
     const line = pool[Math.floor(Math.random() * pool.length)];
@@ -479,6 +494,12 @@
     .search:focus { outline: none; border-color: #1a73e8; box-shadow: 0 0 0 4px rgba(26, 115, 232, .15); }
     .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
     .chips::-webkit-scrollbar { display: none; }
+    .chip.small { padding: 3px 10px; font-size: 11.5px; }
+    .chips.langs { flex-wrap: wrap; overflow: visible; }
+    .lang-more { appearance: none; -webkit-appearance: none; cursor: pointer; max-width: 130px; }
+    .guide { padding: 10px 12px; border-radius: 12px; background: var(--p-soft); border: 1px solid var(--p-line); font-size: 12.5px; line-height: 1.4; }
+    .guide ol { margin: 6px 0 8px; padding-inline-start: 18px; }
+    .guide li { margin: 3px 0; }
     .chip { flex: none; border: 1px solid var(--p-line); background: var(--p-bg); color: inherit; border-radius: 999px;
       padding: 5px 12px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .1s; }
     .chip:hover { background: var(--p-soft); }
@@ -580,7 +601,15 @@
   const statusBox = el('div', { className: 'status' }, statusDot, statusText);
   const search = el('input', { className: 'search', type: 'search', placeholder: t('search_ph') });
   search.setAttribute('aria-label', t('search_ph'));
+  const langChips = el('div', { className: 'chips langs' });
   const chips = el('div', { className: 'chips', role: 'tablist' });
+  const guideClose = el('button', { className: 'btn test', type: 'button' }, t('guide_hide'));
+  const guide = el('div', { className: 'guide', hidden: true },
+    el('b', {}, t('guide_title')),
+    el('ol', {}, el('li', {}, t('guide_1')), el('li', {}, t('guide_2')), el('li', {}, t('guide_3'))),
+    guideClose);
+  const guideBtn = el('button', { className: 'icon', type: 'button', title: t('guide_btn') }, '?');
+  guideBtn.setAttribute('aria-label', t('guide_btn'));
   const randomBtn = el('button', { className: 'btn', type: 'button' }, t('btn_random'));
   const beepBtn = el('button', { className: 'btn test', type: 'button', title: t('btn_mic_test_tip') }, t('btn_mic_test'));
   const stopBtn = el('button', { className: 'btn stop', type: 'button', title: 'Alt+0' }, t('btn_stop_all'));
@@ -626,10 +655,12 @@
     if (panelOpen) placePanel();
   });
   const panel = el('div', { className: 'panel' },
-    el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), feedbackBtn, optionsBtn, closeBtn),
+    el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), guideBtn, feedbackBtn, optionsBtn, closeBtn),
     statusBox,
     tabBar,
+    guide,
     search,
+    langChips,
     chips,
     el('div', { className: 'row' }, randomBtn, beepBtn, stopBtn),
     list,
@@ -662,6 +693,7 @@
     const theme = state.settings.theme;
     host.dataset.theme = Object.prototype.hasOwnProperty.call(THEMES, theme) ? theme : 'auto';
     renderStatus();
+    renderGuide();
     renderChips();
     renderList();
     renderVolume();
@@ -701,7 +733,42 @@
     return known === 'cat_' + id ? id : known;
   }
 
+  // First-use help: the three steps sit at the top of the panel until closed with "Got it"; the ? button brings them back.
+  function renderGuide() {
+    guide.hidden = !(state.settings.guideDone !== true || state.guideOpen);
+    if (panelOpen) placePanel();
+  }
+  guideBtn.addEventListener('click', () => {
+    if (!guide.hidden) { guideClose.click(); return; }
+    state.guideOpen = true; renderGuide();
+  });
+  guideClose.addEventListener('click', () => {
+    state.guideOpen = false;
+    state.settings = { ...state.settings, guideDone: true };
+    saveSetting('guideDone', true);
+    renderGuide();
+  });
+
+  function renderLangChips() {
+    const cur = lineLang();
+    const set = activeLangs();
+    const pick = (id) => { state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id); renderLangChips(); renderList(); };
+    const shown = ['en', ownLang(), 'hi'].filter((c, i, a) => a.indexOf(c) === i);
+    const chip = (id, name) => {
+      const on = cur === 'auto' ? (id === 'all' ? !set : !!set && set.has(id) && id === ownLang()) : id === cur;
+      const b = el('button', { className: 'chip small' + (on ? ' on' : ''), type: 'button' }, name);
+      b.addEventListener('click', () => pick(id));
+      return b;
+    };
+    const more = el('select', { className: 'chip small lang-more', title: t('chip_lang_more') },
+      el('option', { value: '' }, t('chip_lang_more')), ...Object.entries(MEME.LANGS).map(([c, n]) => el('option', { value: c }, n)));
+    more.addEventListener('change', () => { if (more.value) pick(more.value); });
+    if (MEME.isLang(cur) && !shown.includes(cur)) { more.value = cur; more.classList.add('on'); }
+    langChips.replaceChildren(chip('all', t('chip_lang_all')), ...shown.map((c) => chip(c, MEME.LANGS[c])), more);
+  }
+
   function renderChips() {
+    renderLangChips();
     const cats = [...new Set(state.lines.map((l) => l.category).filter(Boolean))];
     const filters = [['all', t('chip_all')], ['star', '⭐ ' + t('chip_star')], ['recent', '🕘 ' + t('chip_recent')],
       ...cats.map((c) => [c, categoryLabel(c)])];

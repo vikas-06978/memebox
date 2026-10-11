@@ -894,5 +894,32 @@
   },
   "lang_reload": {
     "message": "Bahasa diganti. Muat ulang tab panggilan ini untuk melihat MemeBox dalam bahasa itu."
+  },
+  "cat_world": {
+    "message": "Dunia"
+  },
+  "chip_lang_all": {
+    "message": "Semua bahasa"
+  },
+  "chip_lang_more": {
+    "message": "Bahasa lain…"
+  },
+  "guide_title": {
+    "message": "Cara memakai MemeBox"
+  },
+  "guide_1": {
+    "message": "Masuk ke panggilan dan nyalakan mikrofon (tidak dibisukan)."
+  },
+  "guide_2": {
+    "message": "Ketuk kalimat mana pun di bawah: semua orang di panggilan mendengarnya, dengan suara pilihanmu."
+  },
+  "guide_3": {
+    "message": "Buru-buru? Tekan 😂 untuk acak, atau Alt+1 sampai Alt+9 untuk favoritmu."
+  },
+  "guide_hide": {
+    "message": "Mengerti"
+  },
+  "guide_btn": {
+    "message": "Cara pakai"
   }
 }
