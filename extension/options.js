@@ -904,6 +904,7 @@ function renderPro() {
   }
   $('pro-status').textContent = text;
   $('license-remove').hidden = !l;
+  $('buy').hidden = !plan.shopOpen(); // the paid options are not on sale yet: only the key box stays (existing key holders, the owner)
 }
 
 async function checkLicense(key) {

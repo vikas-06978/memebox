@@ -118,7 +118,7 @@ test('updating never adds the optional Sound effects pack, and never touches my 
   assert.equal(fromOld.length, MEME_PACKS.all().length, 'from before packs existed: the packs');
   assert.ok(fromOld.every((l) => l.category !== 'effects' && l.fav === 0));
   assert.ok(MEME_PACKS.all().every((l) => l.kind !== 'sfx'), 'a first install has no effects');
-  assert.equal(MEME_PACKS.lines('effects').length, 13, 'but the pack is there to add');
+  assert.equal(MEME_PACKS.lines('effects').length, 25, 'but the pack is there to add');
 });
 
 test('the World pack is added per language: first install and updates add only the browser language, the rest only when picked', () => {

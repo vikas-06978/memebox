@@ -136,7 +136,11 @@
     } catch { /* orphaned content script */ }
   }
 
+  // false while the paid options are not on sale yet: the panels leave out whatever is locked and every Buy button.
+  const shopOpen = () => config().SHOP_OPEN !== false || config().PRO_ENABLED !== true;
+
   globalThis.MemePlan = Object.freeze({
+    shopOpen,
     PRO_FEATURES, FREE_LIMITS, LICENSE_MAX_AGE_MS,
     PASS_MAX_SECONDS, FREE_CHARACTERS, STANDARD_CHARACTERS, FREE_TUNES, isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, setPass, validLicense, passTier, passLeft,
     get ready() { return ready; },

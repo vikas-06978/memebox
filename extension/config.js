@@ -9,4 +9,7 @@ globalThis.MEMEBOX_CONFIG = Object.freeze({
   // false = every feature is free for everyone. While true, the store listing must say
   // which features are paid and declare in-app purchases (STORE.md).
   PRO_ENABLED: true,
+  // false = the paid options are not offered yet: what you can't use is simply not shown (no locks, no Buy buttons, no prices) and
+  // existing key holders keep everything. true = locked things show a lock, the Buy buttons and the plans.
+  SHOP_OPEN: false,
 });

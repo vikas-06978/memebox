@@ -14,6 +14,7 @@
     let local = null;     // { ctx, player }
 
     const can = (id) => plan.canFx('music:' + id);
+    const closed = () => !plan.shopOpen() && !plan.isPro(); // paid options not on sale yet: locked tunes and the Buy button are left out
     const volume = () => {
       const v = Number(api.getSettings().musicVolume);
       return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0.5;
@@ -106,7 +107,8 @@
 
     function render() {
       renderMine();
-      chips.replaceChildren(...Music.IDS.map((id) => {
+      addBtn.hidden = closed() && !can('own');
+      chips.replaceChildren(...Music.IDS.filter((id) => !(closed() && !can(id))).map((id) => {
         const locked = !can(id);
         const on = id === callId || id === localId;
         const b = el('button', { className: 'chip' + (on ? ' on' : '') + (locked ? ' locked' : ''), type: 'button' },
@@ -115,7 +117,7 @@
         return b;
       }));
       const locked = localId && !can(localId);
-      lock.hidden = !locked;
+      lock.hidden = !locked || closed();
       const callName = callId.startsWith('mine:') ? ((mine.find((m) => 'mine:' + m.id === callId) || {}).name || t('mu_mine')) : callId ? t('mu_t_' + callId) : '';
       status.textContent = callId ? t('mu_in_call', callName)
         : localId ? t('mu_preview', t('mu_t_' + localId), String(PREVIEW_SECONDS))
