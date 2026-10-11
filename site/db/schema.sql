@@ -70,7 +70,7 @@ CREATE INDEX IF NOT EXISTS orders_status ON orders (status, created_at);
 CREATE TABLE IF NOT EXISTS packs (
   id          TEXT PRIMARY KEY,                   -- a short name made of a-z, 0-9 and -
   title       TEXT NOT NULL,
-  kind        TEXT NOT NULL CHECK (kind IN ('music', 'memes')),
+  kind        TEXT NOT NULL,                      -- music | memes | pictures
   region      TEXT NOT NULL DEFAULT 'common',     -- common (everyone), in (India), global, or another short code
   tier        TEXT NOT NULL DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'max')),
   description TEXT NOT NULL DEFAULT '',
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS pack_items (
   id          TEXT PRIMARY KEY,
   pack_id     TEXT NOT NULL,
   title       TEXT NOT NULL,
-  kind        TEXT NOT NULL CHECK (kind IN ('audio', 'line')),   -- an audio file, or a text meme the voice engine speaks
+  kind        TEXT NOT NULL,                      -- audio (a sound file) | image (a meme picture) | line (a text meme the voice engine speaks)
   file_key    TEXT NOT NULL DEFAULT '',           -- the object in R2 (audio only)
   mime        TEXT NOT NULL DEFAULT '',
   bytes       INTEGER NOT NULL DEFAULT 0,
@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS pack_items (
   status      TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'live')),
   sort        INTEGER NOT NULL DEFAULT 100,
   downloads   INTEGER NOT NULL DEFAULT 0,         -- only a count, no information about who
-  created_at  TEXT NOT NULL
+  created_at  TEXT NOT NULL,
+  tier        TEXT NOT NULL DEFAULT ''            -- '' = the pack's plan, else free | pro | max for this item only
 );
 CREATE INDEX IF NOT EXISTS pack_items_pack ON pack_items (pack_id, sort);

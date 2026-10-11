@@ -413,3 +413,10 @@ body.admin .tile span { position: static; background: none; padding: 0; color: v
 .thanks .did h3 { margin: 0 0 6px; font-size: 1rem; }
 .thanks .did ul { margin: 0; padding-inline-start: 20px; }
 .thanks .did li { margin: 4px 0; }
+/* admin packs: per-item plans */
+.tier { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: .78rem; font-weight: 700; background: color-mix(in srgb, var(--muted) 18%, transparent); }
+.tier-free { background: color-mix(in srgb, var(--ok) 22%, transparent); color: var(--ok); }
+.tier-pro { background: color-mix(in srgb, var(--accent) 20%, transparent); }
+.tier-max { background: color-mix(in srgb, var(--brand-2) 28%, transparent); }
+.bulk { align-items: center; margin: 8px 0; }
+.thumb { display: block; max-width: 140px; max-height: 100px; border-radius: 8px; border: 1px solid var(--line); }

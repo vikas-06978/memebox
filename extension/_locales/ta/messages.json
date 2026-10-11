@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ இலவச பேக்குகள்"
+  },
+  "op_online_pictures": {
+    "message": "படங்கள்"
+  },
+  "op_online_free_n": {
+    "message": "$1 இலவசம்"
+  },
+  "op_online_paid_n": {
+    "message": "$1-க்கு Pro தேவை"
+  },
+  "op_online_soon_n": {
+    "message": "$1 விரைவில்"
+  },
+  "op_online_more": {
+    "message": "மேலும் $1 சேர் ($2)"
   }
 }

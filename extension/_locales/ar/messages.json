@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ حزم مجانية"
+  },
+  "op_online_pictures": {
+    "message": "صور"
+  },
+  "op_online_free_n": {
+    "message": "$1 مجاني"
+  },
+  "op_online_paid_n": {
+    "message": "$1 تتطلب Pro"
+  },
+  "op_online_soon_n": {
+    "message": "$1 قريباً"
+  },
+  "op_online_more": {
+    "message": "إضافة $1 أخرى ($2)"
   }
 }

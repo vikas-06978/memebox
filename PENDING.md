@@ -34,7 +34,7 @@
 - Owner key (MBX-294K-D9VF-9BF6): keep it private; it is unlimited, so rotate it if it ever leaks. Our own account is the main (owner) user of the system.
 
 ## Packs (music and memes)
-- Once: `npx wrangler r2 bucket create memebox-packs`, then `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-packs.sql`, then deploy the site. Open `/admin/packs`.
+- Once: `npx wrangler r2 bucket create memebox-packs`, then `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-packs.sql` and then `--file=db/migrations/2026-10-packs-v2.sql` (per-item plans and picture packs), then deploy the site. Open `/admin/packs`.
 - You upload: the common-ground music and memes, the phonk tracks (10 free, the rest Pro / Pro Max), India memes, Global memes. For every file write the licence and tick "I may share this" only when it is true.
 - Done in 1.3.0: the panel layout and the packs screen inside the extension (Options → Online packs, with size, add / remove, Coming soon for paid packs, strong-language switch, India / Global first by region).
 

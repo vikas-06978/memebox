@@ -2,7 +2,7 @@
 // Audio files live in an R2 bucket (binding PACKS); everything else is in D1 (tables packs and pack_items).
 import { cleanKey, getLicense, LICENSE_RE } from './shop.js';
 
-export const KINDS = ['music', 'memes'];
+export const KINDS = ['music', 'memes', 'pictures'];
 export const TIERS = ['free', 'pro', 'max'];
 export const REGIONS = { common: 'Common (everyone)', in: 'India', global: 'Global / English' };
 export const LICENCES = {
@@ -15,6 +15,12 @@ export const LICENCES = {
 };
 export const LANGS = { '': 'Any language', en: 'English', hi: 'Hindi', hinglish: 'Hinglish' };
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const IMAGE_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/webp': 'webp' };
+const IMAGE_EXT = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
+// The plan of one item: its own (free / pro / max) if you set one, else the pack's.
+export const itemTier = (item, pack) => (TIERS.includes(item.tier) ? item.tier : pack.tier);
+export const cleanItemTier = (t) => (TIERS.includes(t) ? t : '');
 const AUDIO_TYPES = {
   'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/opus': 'opus',
   'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/wave': 'wav', 'audio/webm': 'webm', 'audio/flac': 'flac', 'audio/x-flac': 'flac',
@@ -109,23 +115,34 @@ const titleFromName = (name) => clip(String(name || 'Untitled').replace(/\.[a-z0
 // "Copyright-free" needs proof: the link where it says so (a licence page, the artist's page...). Without it the item stays a draft.
 const needsSource = (meta) => meta.licenceKind === 'free' && !clip(meta.source, 200);
 
-// Upload audio files into a pack. Each becomes an item; it goes live right away only if "cleared" is ticked and there is a licence line.
-// Returns { added, skipped: [reason...] }.
+// Upload audio files (or, for a pictures pack, images) into a pack. Each becomes an item; it goes live right away only if "cleared" is ticked
+// and there is a licence line. Returns { added, skipped: [reason...] }.
 export async function addAudio(db, bucket, packId, files, meta = {}) {
+  const pack = await getPack(db, packId);
+  const pictures = !!pack && pack.kind === 'pictures';
   const out = { added: 0, skipped: [] };
   const licence = licenceText(meta.licenceKind, meta.licenceNote);
   const cleared = meta.cleared ? 1 : 0;
   for (const file of files) {
     if (!file || typeof file.arrayBuffer !== 'function' || !file.size) continue;
-    const type = audioType(file);
-    if (!type) { out.skipped.push(`${file.name}: not an audio file (mp3, m4a, ogg, opus, wav, webm, flac, aac)`); continue; }
-    if (file.size > MAX_AUDIO_BYTES) { out.skipped.push(`${file.name}: over 25 MB`); continue; }
+    let type, max;
+    if (pictures) {
+      const t = String(file.type || '').toLowerCase().split(';')[0];
+      const ext = (/\.([a-z0-9]{2,5})$/i.exec(file.name || '') || [])[1];
+      type = IMAGE_TYPES[t] ? { mime: t === 'image/jpg' ? 'image/jpeg' : t, ext: IMAGE_TYPES[t] } : ext && IMAGE_EXT[ext.toLowerCase()] ? { mime: IMAGE_EXT[ext.toLowerCase()], ext: ext.toLowerCase() === 'jpeg' ? 'jpg' : ext.toLowerCase() } : null;
+      max = MAX_IMAGE_BYTES;
+      if (!type) { out.skipped.push(`${file.name}: not a picture (png, jpg, webp)`); continue; }
+    } else {
+      type = audioType(file); max = MAX_AUDIO_BYTES;
+      if (!type) { out.skipped.push(`${file.name}: not an audio file (mp3, m4a, ogg, opus, wav, webm, flac, aac)`); continue; }
+    }
+    if (file.size > max) { out.skipped.push(`${file.name}: over ${Math.round(max / 1048576)} MB`); continue; }
     const id = newItemId(), key = `packs/${packId}/${id}.${type.ext}`;
     await bucket.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: type.mime } });
     const item = { cleared: needsSource(meta) ? 0 : cleared, licence };
     await db.prepare(
-      'INSERT INTO pack_items (id, pack_id, title, kind, file_key, mime, bytes, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at) VALUES (?, ?, ?, \'audio\', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?)',
-    ).bind(id, packId, titleFromName(file.name), key, type.mime, file.size, cleanLang(meta.lang), clip(meta.tags, 120), meta.explicit ? 1 : 0, licence, clip(meta.source, 200), clip(meta.credit, 120), cleared, canPublish(item) ? 'live' : 'draft', now()).run();
+      'INSERT INTO pack_items (id, pack_id, title, kind, file_key, mime, bytes, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at, tier) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?, ?)',
+    ).bind(id, packId, titleFromName(file.name), pictures ? 'image' : 'audio', key, type.mime, file.size, cleanLang(meta.lang), clip(meta.tags, 120), meta.explicit ? 1 : 0, licence, clip(meta.source, 200), clip(meta.credit, 120), cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier)).run();
     out.added++;
   }
   return out;
@@ -141,8 +158,8 @@ export async function addLines(db, packId, text, meta = {}) {
     const explicit = /^(strong|explicit|18|y|yes|1)$/i.test(flag || '') ? 1 : meta.explicit ? 1 : 0;
     const item = { cleared: needsSource(meta) ? 0 : cleared, licence };
     await db.prepare(
-      'INSERT INTO pack_items (id, pack_id, title, kind, text, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at) VALUES (?, ?, ?, \'line\', ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?)',
-    ).bind(newItemId(), packId, clip(line, 80), clip(line, 200), cleanLang(lang !== undefined && lang !== '' ? lang : meta.lang), clip(meta.tags, 120), explicit, licence, clip(meta.source, 200), clip(meta.credit, 120), cleared, canPublish(item) ? 'live' : 'draft', now()).run();
+      'INSERT INTO pack_items (id, pack_id, title, kind, text, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at, tier) VALUES (?, ?, ?, \'line\', ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?, ?)',
+    ).bind(newItemId(), packId, clip(line, 80), clip(line, 200), cleanLang(lang !== undefined && lang !== '' ? lang : meta.lang), clip(meta.tags, 120), explicit, licence, clip(meta.source, 200), clip(meta.credit, 120), cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier)).run();
     added++;
   }
   return added;
@@ -155,9 +172,20 @@ export async function updateItem(db, id, f) {
   const next = { cleared: f.cleared ? 1 : 0, licence: clip(f.licence, 300) };
   let status = f.status === 'live' ? 'live' : 'draft', note = '';
   if (status === 'live' && !canPublish(next)) { status = 'draft'; note = 'Kept as a draft: tick "I may share this" and write the licence first.'; }
-  await db.prepare('UPDATE pack_items SET title = ?, text = ?, lang = ?, tags = ?, explicit = ?, licence = ?, source = ?, credit = ?, cleared = ?, status = ?, sort = ? WHERE id = ?')
-    .bind(clip(f.title, 80) || item.title, item.kind === 'line' ? clip(f.text, 200) || item.text : item.text, cleanLang(f.lang), clip(f.tags, 120), f.explicit ? 1 : 0, next.licence, clip(f.source, 200), clip(f.credit, 120), next.cleared, status, Math.max(0, Math.min(9999, Math.floor(Number(f.sort)) || 100)), id).run();
+  await db.prepare('UPDATE pack_items SET title = ?, text = ?, lang = ?, tags = ?, explicit = ?, licence = ?, source = ?, credit = ?, cleared = ?, status = ?, sort = ?, tier = ? WHERE id = ?')
+    .bind(clip(f.title, 80) || item.title, item.kind === 'line' ? clip(f.text, 200) || item.text : item.text, cleanLang(f.lang), clip(f.tags, 120), f.explicit ? 1 : 0, next.licence, clip(f.source, 200), clip(f.credit, 120), next.cleared, status, Math.max(0, Math.min(9999, Math.floor(Number(f.sort)) || 100)), cleanItemTier(f.tier), id).run();
   return { status, note };
+}
+
+// Set the plan of several items at once ('' = follow the pack). Only items of this pack are touched.
+export async function setItemsTier(db, packId, ids, tier) {
+  let n = 0;
+  for (const id of ids.slice(0, 500)) {
+    if (!ITEM_ID_RE.test(id)) continue;
+    const r = await db.prepare('UPDATE pack_items SET tier = ? WHERE id = ? AND pack_id = ?').bind(cleanItemTier(tier), id, packId).run();
+    n += Number(r.meta && r.meta.changes) || 0;
+  }
+  return n;
 }
 
 export async function deleteItem(db, bucket, id) {
@@ -179,7 +207,7 @@ export async function publicCatalog(db) {
       id: p.id, title: p.title, kind: p.kind, region: p.region, tier: p.tier, description: p.description,
       bytes: mine.reduce((a, i) => a + Number(i.bytes || 0), 0),
       items: mine.map((i) => ({
-        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.text, lang: i.lang, tags: i.tags,
+        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p),
         explicit: Number(i.explicit) === 1, credit: i.credit, licence: i.licence,
       })),
     };

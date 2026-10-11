@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ मुफ़्त पैक"
+  },
+  "op_online_pictures": {
+    "message": "तस्वीरें"
+  },
+  "op_online_free_n": {
+    "message": "$1 मुफ़्त"
+  },
+  "op_online_paid_n": {
+    "message": "$1 के लिए Pro चाहिए"
+  },
+  "op_online_soon_n": {
+    "message": "$1 जल्द आ रहे हैं"
+  },
+  "op_online_more": {
+    "message": "$1 और जोड़ें ($2)"
   }
 }

@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ Packs gratis"
+  },
+  "op_online_pictures": {
+    "message": "Imágenes"
+  },
+  "op_online_free_n": {
+    "message": "$1 gratis"
+  },
+  "op_online_paid_n": {
+    "message": "$1 requieren Pro"
+  },
+  "op_online_soon_n": {
+    "message": "$1 próximamente"
+  },
+  "op_online_more": {
+    "message": "Añadir $1 más ($2)"
   }
 }

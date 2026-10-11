@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ मोफत पॅक"
+  },
+  "op_online_pictures": {
+    "message": "चित्रे"
+  },
+  "op_online_free_n": {
+    "message": "$1 मोफत"
+  },
+  "op_online_paid_n": {
+    "message": "$1 साठी Pro आवश्यक"
+  },
+  "op_online_soon_n": {
+    "message": "$1 लवकरच येत आहेत"
+  },
+  "op_online_more": {
+    "message": "आणखी $1 जोडा ($2)"
   }
 }

@@ -30,7 +30,11 @@
   }
   const saveInstalled = () => chrome.storage.local.set({ packsInstalled: installed });
 
-  const usable = (pack) => pack.items.filter((i) => showStrong || !i.explicit);
+  // What a pack offers: the items you may see (strong language is off by default), the ones you can add now (their plan allows it),
+  // and the rest (a Pro or Pro Max item: "Coming soon" while the shop is closed).
+  const visible = (pack) => pack.items.filter((i) => showStrong || !i.explicit);
+  const openItems = (pack) => visible(pack).filter((i) => tierOk(i.tier || pack.tier));
+  const isNew = (pack, i) => !((installed[pack.id] || {}).items || []).includes(i.id);
   const regionName = (r) => t('pk_region_' + (REGIONS.includes(r) ? r || 'all' : 'global'));
 
   function render() {
@@ -38,26 +42,31 @@
     if (!catalog) return;
     const want = regionSel.value;
     const mine = inIndia() ? ['in', 'common', 'global'] : ['common', 'global', 'in'];
-    const packs = catalog.filter((p) => usable(p).length && (!want || p.region === want))
+    const packs = catalog.filter((p) => visible(p).length && (!want || p.region === want))
       .sort((a, b) => mine.indexOf(a.region) - mine.indexOf(b.region));
     if (!packs.length) { status.textContent = t('op_online_none'); return; }
     status.textContent = '';
     for (const p of packs) {
-      const items = usable(p), bytes = items.reduce((a, i) => a + (i.bytes || 0), 0), have = installed[p.id];
-      const tags = [t(p.kind === 'music' ? 'op_online_music' : 'op_online_memes'), regionName(p.region), mb(bytes), t('op_online_items', items.length)];
+      const all = visible(p), open = openItems(p), locked = all.length - open.length, have = installed[p.id];
+      const fresh = open.filter((i) => isNew(p, i)), bytes = fresh.reduce((a, i) => a + (i.bytes || 0), 0);
+      const tags = [t(p.kind === 'music' ? 'op_online_music' : p.kind === 'pictures' ? 'op_online_pictures' : 'op_online_memes'), regionName(p.region),
+        t('op_online_free_n', String(open.length))];
+      if (locked) tags.push(t(plan.shopOpen() ? 'op_online_paid_n' : 'op_online_soon_n', String(locked)));
       if (p.items.some((i) => i.explicit)) tags.push(t('op_online_strong_tag'));
-      const note = [p.description, [...new Set(items.map((i) => i.licence).filter(Boolean))].join(' · ')].filter(Boolean).join(' — ');
+      const note = [p.description, [...new Set(all.map((i) => i.licence).filter(Boolean))].join(' · ')].filter(Boolean).join(' — ');
       const act = el('div', { className: 'actions' });
+      if (have) act.append(el('span', { className: 'tag' }, t('op_online_added')));
+      if (fresh.length) {
+        const add = el('button', { type: 'button', className: 'small primary' }, t(have ? 'op_online_more' : 'op_online_add', ...(have ? [String(fresh.length), mb(bytes)] : [mb(bytes)])));
+        add.addEventListener('click', () => addPack(p, add));
+        act.append(add);
+      } else if (!have) {
+        act.append(el('button', { type: 'button', className: 'small', disabled: true }, plan.shopOpen() ? t('op_online_needs') : t('op_online_soon')));
+      }
       if (have) {
         const rm = el('button', { type: 'button', className: 'small danger' }, t('op_online_remove'));
         rm.addEventListener('click', () => remove(p));
-        act.append(el('span', { className: 'tag' }, t('op_online_added')), rm);
-      } else if (!tierOk(p.tier)) {
-        act.append(el('button', { type: 'button', className: 'small', disabled: true }, plan.shopOpen() ? t('op_online_needs') : t('op_online_soon')));
-      } else {
-        const add = el('button', { type: 'button', className: 'small primary' }, t('op_online_add', mb(bytes)));
-        add.addEventListener('click', () => addPack(p, add));
-        act.append(add);
+        act.append(rm);
       }
       list.append(el('li', {}, el('div', { className: 'pack-name' }, el('b', {}, p.title), ' ', ...tags.map((x) => el('span', { className: 'tag' }, x))),
         note ? el('div', { className: 'hint' }, note) : '', act));
@@ -74,8 +83,8 @@
   }
 
   async function addPack(pack, btn) {
-    const items = usable(pack);
-    const ids = { lines: [], clips: [], music: [] };
+    const items = openItems(pack).filter((i) => isNew(pack, i));
+    const ids = { lines: [], clips: [], music: [], pictures: [], items: [] };
     btn.disabled = true;
     let done = 0, failed = 0;
     const { myMusic } = await chrome.storage.local.get('myMusic');
@@ -87,6 +96,13 @@
         if (item.kind === 'line') {
           const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.text || item.title, lang: itemLang(item.lang), tone: 'normal', category, fav: 0, volume: 1 });
           if (line) { ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
+        } else if (item.kind === 'image') { // a meme picture: a line that shows it on your camera while it plays
+          const bytes = await fetchFile(item);
+          const shrunk = await shrinkPicture(new File([bytes], item.title + '.img', { type: item.mime || 'image/png' }));
+          const pictureId = 'p-pk' + suffix(item.id);
+          await MemeDB.putPicture({ id: pictureId, name: item.title.slice(0, 120), ...shrunk });
+          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.title, lang: 'en', tone: 'normal', category, fav: 0, volume: 1 });
+          if (line) { line.pictureId = pictureId; ids.pictures.push(pictureId); ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         } else if (pack.kind === 'music') {
           if (tracks.filter((x) => x.pack).length >= MAX_PACK_TRACKS) throw new Error('too many');
           const bytes = await fetchFile(item);
@@ -102,12 +118,17 @@
           const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'clip', clipId, text: item.title, lang: 'en', tone: 'normal', category, fav: 0, volume: 1 });
           if (line) { ids.clips.push(clipId); ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         }
-        done++;
+        done++; ids.items.push(item.id);
       } catch { failed++; }
     }
     if (ids.music.length) await chrome.storage.local.set({ myMusic: tracks });
     if (ids.lines.length) await saveLines();
-    if (done) { installed[pack.id] = { ...ids, at: new Date().toISOString().slice(0, 10) }; await saveInstalled(); }
+    if (done) {
+      const was = installed[pack.id] || {};
+      const join = (k) => [...new Set([...(was[k] || []), ...ids[k]])];
+      installed[pack.id] = { lines: join('lines'), clips: join('clips'), music: join('music'), pictures: join('pictures'), items: join('items'), at: new Date().toISOString().slice(0, 10) };
+      await saveInstalled();
+    }
     toast(done ? t('op_online_done', pack.title, String(done)) + (failed ? ` (${failed} ✗)` : '') : t('op_online_fail'), !done);
     render();
   }
@@ -118,6 +139,7 @@
     const gone = new Set(have.lines || []);
     if (gone.size) { lines = lines.filter((l) => !gone.has(l.id)); await saveLines(); }
     for (const id of [...(have.clips || []), ...(have.music || [])]) await MemeDB.deleteClip(id).catch(() => {});
+    for (const id of have.pictures || []) await MemeDB.deletePicture(id).catch(() => {});
     if ((have.music || []).length) {
       const { myMusic } = await chrome.storage.local.get('myMusic');
       await chrome.storage.local.set({ myMusic: (Array.isArray(myMusic) ? myMusic : []).filter((x) => !have.music.includes(x.id)) });

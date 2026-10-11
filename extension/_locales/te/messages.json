@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ ఉచిత ప్యాక్‌లు"
+  },
+  "op_online_pictures": {
+    "message": "చిత్రాలు"
+  },
+  "op_online_free_n": {
+    "message": "$1 ఉచితం"
+  },
+  "op_online_paid_n": {
+    "message": "$1 కి Pro కావాలి"
+  },
+  "op_online_soon_n": {
+    "message": "$1 త్వరలో"
+  },
+  "op_online_more": {
+    "message": "ఇంకా $1 జోడించు ($2)"
   }
 }

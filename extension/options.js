@@ -400,7 +400,7 @@ $('line-form').addEventListener('submit', async (e) => {
   if (!line) { toast(t('op_err_text'), true); return; }
   const before = lines.find((l) => l.id === line.id);
   if (pic.mode === 'new') {
-    const others = new Set(lines.filter((l) => l.id !== line.id && l.pictureId).map((l) => l.pictureId));
+    const others = new Set(lines.filter((l) => l.id !== line.id && l.pictureId && !l.id.startsWith('pk-')).map((l) => l.pictureId)); // pictures from the free packs do not use up your own
     if (!plan.can('pictures') && others.size >= plan.pictureLimit()) { // PRO: picture memes beyond the free/bought slots
       toast(t('pro_pictures', plan.pictureLimit()), true);
       return;

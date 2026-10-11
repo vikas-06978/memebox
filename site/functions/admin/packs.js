@@ -1,12 +1,12 @@
 // /admin/packs: the admin makes music and meme packs and uploads their audio (signed-in admins only).
 //   GET  /admin/packs            list of packs, and a form for a new one
 //   GET  /admin/packs?id=NAME    one pack: settings, upload audio, add text memes, every item
-//   POST /admin/packs            action = pack-create | pack-update | pack-delete | items-upload | lines-add | item-update | item-delete
+//   POST /admin/packs            action = pack-create | pack-update | pack-delete | items-upload | lines-add | item-update | items-tier | item-delete
 import { adminResponse, adminRedirect } from '../../src/http.js';
 import { isAdmin } from '../../src/security.js';
 import { packsListPage, packPage } from '../../src/packs-admin.js';
 import {
-  listPacks, getPack, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, PACK_ID_RE,
+  listPacks, getPack, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, PACK_ID_RE,
 } from '../../src/packs.js';
 
 const MESSAGES = {
@@ -51,7 +51,7 @@ export async function onRequest({ request, env }) {
     if (!PACK_ID_RE.test(packId) || !(await getPack(env.DB, packId))) return back('', '', 'That pack does not exist.');
     const meta = {
       licenceKind: String(form.get('licenceKind') || ''), licenceNote: String(form.get('licenceNote') || ''), credit: String(form.get('credit') || ''), source: String(form.get('source') || ''),
-      lang: String(form.get('lang') || ''), tags: String(form.get('tags') || ''), explicit: form.get('explicit') === 'on', cleared: form.get('cleared') === 'on',
+      lang: String(form.get('lang') || ''), tags: String(form.get('tags') || ''), explicit: form.get('explicit') === 'on', cleared: form.get('cleared') === 'on', tier: String(form.get('itemTier') || ''),
     };
     if (action === 'pack-update') {
       await updatePack(env.DB, packId, { title: form.get('title'), region: form.get('region'), tier: form.get('tier'), description: form.get('description'), status: form.get('status'), sort: form.get('sort') });
@@ -71,9 +71,13 @@ export async function onRequest({ request, env }) {
     if (action === 'item-update') {
       const r = await updateItem(env.DB, String(form.get('item') || ''), {
         title: form.get('title'), text: form.get('text'), lang: form.get('lang'), tags: form.get('tags'), explicit: form.get('explicit') === 'on', licence: form.get('licence'),
-        source: form.get('source'), credit: form.get('credit'), cleared: form.get('cleared') === 'on', status: form.get('status'), sort: form.get('sort'),
+        source: form.get('source'), credit: form.get('credit'), cleared: form.get('cleared') === 'on', status: form.get('status'), sort: form.get('sort'), tier: form.get('itemTier'),
       });
       return r.note ? back(packId, '', r.note) : back(packId, 'saved');
+    }
+    if (action === 'items-tier') { // the checked items get a plan: you decide which ones are the free ones
+      const n = await setItemsTier(env.DB, packId, form.getAll('ids').map(String), String(form.get('itemTier') || ''));
+      return back(packId, n ? `${n} item${n === 1 ? '' : 's'} updated.` : '', n ? '' : 'Tick some items first.');
     }
     if (action === 'item-delete') { await deleteItem(env.DB, env.PACKS, String(form.get('item') || '')); return back(packId, 'deleted'); }
   } catch (e) {

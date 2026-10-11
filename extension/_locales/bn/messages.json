@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ বিনামূল্যের প্যাক"
+  },
+  "op_online_pictures": {
+    "message": "ছবি"
+  },
+  "op_online_free_n": {
+    "message": "$1টি বিনামূল্যে"
+  },
+  "op_online_paid_n": {
+    "message": "$1টির জন্য Pro লাগবে"
+  },
+  "op_online_soon_n": {
+    "message": "$1টি শীঘ্রই আসছে"
+  },
+  "op_online_more": {
+    "message": "আরও $1টি যোগ করুন ($2)"
   }
 }

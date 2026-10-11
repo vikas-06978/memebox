@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ મફત પેક"
+  },
+  "op_online_pictures": {
+    "message": "ચિત્રો"
+  },
+  "op_online_free_n": {
+    "message": "$1 મફત"
+  },
+  "op_online_paid_n": {
+    "message": "$1 માટે Pro જોઈએ"
+  },
+  "op_online_soon_n": {
+    "message": "$1 જલ્દી આવે છે"
+  },
+  "op_online_more": {
+    "message": "વધુ $1 ઉમેરો ($2)"
   }
 }

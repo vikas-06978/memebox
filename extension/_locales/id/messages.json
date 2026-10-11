@@ -1539,5 +1539,20 @@
   },
   "pk_get": {
     "message": "＋ Paket gratis"
+  },
+  "op_online_pictures": {
+    "message": "Gambar"
+  },
+  "op_online_free_n": {
+    "message": "$1 gratis"
+  },
+  "op_online_paid_n": {
+    "message": "$1 butuh Pro"
+  },
+  "op_online_soon_n": {
+    "message": "$1 segera hadir"
+  },
+  "op_online_more": {
+    "message": "Tambah $1 lagi ($2)"
   }
 }
