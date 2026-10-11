@@ -36,7 +36,7 @@
 ## Packs (music and memes)
 - Once: `npx wrangler r2 bucket create memebox-packs`, then `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-packs.sql`, then deploy the site. Open `/admin/packs`.
 - You upload: the common-ground music and memes, the phonk tracks (10 free, the rest Pro / Pro Max), India memes, Global memes. For every file write the licence and tick "I may share this" only when it is true.
-- Me, next: the new panel layout (tabs, calmer look) and the packs screen inside the extension (browse, download with size shown, delete, Pro lock, "strong language" switch, suggested by browser language).
+- Done in 1.3.0: the panel layout and the packs screen inside the extension (Options → Online packs, with size, add / remove, Coming soon for paid packs, strong-language switch, India / Global first by region).
 
 ## Feedback to act on (from /admin, version 1.2.2)
 - French user (2026-10-10, "Other"): "il n'y a pas beaucoup de choix de langue" (not many language choices). Memes and the voice engine only have Hindi and English. Plan: language packs (French, Spanish, Portuguese, Indonesian, Arabic...) as downloadable meme packs; voices need a decision (bundled eSpeak has only en and hi; more voices cost MB, so either download on demand, or use pre-recorded clips in the packs).

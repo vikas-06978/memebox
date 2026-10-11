@@ -1467,5 +1467,77 @@
   },
   "op_lang_mine": {
     "message": "لغاتي"
+  },
+  "op_online": {
+    "message": "حزم عبر الإنترنت"
+  },
+  "op_online_hint": {
+    "message": "موسيقى وميمز مجانية للجميع. لا يتم الاتصال بأي شيء حتى تضغط «تصفّح الحزم»؛ التنزيلات تأتي من موقع MemeBox."
+  },
+  "op_online_browse": {
+    "message": "تصفّح الحزم"
+  },
+  "op_online_refresh": {
+    "message": "تحديث القائمة"
+  },
+  "op_online_loading": {
+    "message": "جارٍ التحميل…"
+  },
+  "op_online_fail": {
+    "message": "تعذّر جلب الحزم. تحقق من الإنترنت وحاول مجدداً."
+  },
+  "op_online_none": {
+    "message": "لا توجد حزم هنا بعد. تُضاف حزم جديدة بانتظام."
+  },
+  "op_online_add": {
+    "message": "إضافة ($1)"
+  },
+  "op_online_added": {
+    "message": "تمت الإضافة ✓"
+  },
+  "op_online_remove": {
+    "message": "إزالة"
+  },
+  "op_online_soon": {
+    "message": "قريباً"
+  },
+  "op_online_needs": {
+    "message": "يتطلب Pro"
+  },
+  "op_online_strong": {
+    "message": "عرض الحزم ذات اللغة القوية (+18)"
+  },
+  "op_online_strong_tag": {
+    "message": "+18"
+  },
+  "op_online_music": {
+    "message": "موسيقى"
+  },
+  "op_online_memes": {
+    "message": "ميمز"
+  },
+  "op_online_items": {
+    "message": "$1 عناصر"
+  },
+  "op_online_busy": {
+    "message": "تنزيل $1 من $2…"
+  },
+  "op_online_done": {
+    "message": "تمت إضافة «$1»: $2 عناصر"
+  },
+  "pk_region_all": {
+    "message": "كل المناطق"
+  },
+  "pk_region_common": {
+    "message": "للجميع"
+  },
+  "pk_region_in": {
+    "message": "الهند"
+  },
+  "pk_region_global": {
+    "message": "عالمي"
+  },
+  "pk_get": {
+    "message": "＋ حزم مجانية"
   }
 }

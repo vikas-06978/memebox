@@ -1467,5 +1467,77 @@
   },
   "op_lang_mine": {
     "message": "Mes langues"
+  },
+  "op_online": {
+    "message": "Packs en ligne"
+  },
+  "op_online_hint": {
+    "message": "Musique et memes gratuits pour tous. Rien n’est contacté tant que vous n’appuyez pas sur Parcourir ; les téléchargements viennent du site MemeBox."
+  },
+  "op_online_browse": {
+    "message": "Parcourir les packs"
+  },
+  "op_online_refresh": {
+    "message": "Actualiser la liste"
+  },
+  "op_online_loading": {
+    "message": "Chargement…"
+  },
+  "op_online_fail": {
+    "message": "Impossible d’obtenir les packs. Vérifiez votre connexion et réessayez."
+  },
+  "op_online_none": {
+    "message": "Pas encore de packs. De nouveaux sont ajoutés régulièrement."
+  },
+  "op_online_add": {
+    "message": "Ajouter ($1)"
+  },
+  "op_online_added": {
+    "message": "Ajouté ✓"
+  },
+  "op_online_remove": {
+    "message": "Retirer"
+  },
+  "op_online_soon": {
+    "message": "Bientôt"
+  },
+  "op_online_needs": {
+    "message": "Nécessite Pro"
+  },
+  "op_online_strong": {
+    "message": "Afficher les packs au langage cru (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "Musique"
+  },
+  "op_online_memes": {
+    "message": "Memes"
+  },
+  "op_online_items": {
+    "message": "$1 éléments"
+  },
+  "op_online_busy": {
+    "message": "Téléchargement $1 sur $2…"
+  },
+  "op_online_done": {
+    "message": "« $1 » ajouté : $2 éléments"
+  },
+  "pk_region_all": {
+    "message": "Toutes les régions"
+  },
+  "pk_region_common": {
+    "message": "Pour tous"
+  },
+  "pk_region_in": {
+    "message": "Inde"
+  },
+  "pk_region_global": {
+    "message": "Mondial"
+  },
+  "pk_get": {
+    "message": "＋ Packs gratuits"
   }
 }

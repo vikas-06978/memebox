@@ -145,6 +145,19 @@
       <p class="hint" data-i18n="op_packs_hint">A pack holds lines and their clips. Importing adds to your lines, and lines with the same id are replaced. Files are checked strictly.</p>
     </section>
 
+    <!-- ============ ONLINE PACKS ============ -->
+    <section class="card" id="online-card">
+      <h2 data-i18n="op_online">Online packs</h2>
+      <p class="hint" data-i18n="op_online_hint">Free music and memes for everyone. Nothing is contacted until you press Browse; downloads come from the MemeBox site.</p>
+      <div class="actions">
+        <button type="button" id="online-browse" class="primary" data-i18n="op_online_browse">Browse packs</button>
+        <select id="online-region" aria-label="Region"></select>
+        <label class="check"><input type="checkbox" id="online-strong"> <span data-i18n="op_online_strong">Show packs with strong language (18+)</span></label>
+      </div>
+      <p id="online-status" class="hint" role="status" aria-live="polite"></p>
+      <ul id="online-list" class="packs"></ul>
+    </section>
+
     <!-- ============ PARTY MODE ============ -->
     <section class="card" id="party-card">
       <h2 data-i18n="op_party">Timed lines / Party mode</h2>
@@ -192,5 +205,6 @@
   <script src="lib/trim.js"></script>
   <script src="lib/pack.js"></script>
   <script src="options.js"></script>
+  <script src="online-packs.js"></script>
 </body>
 </html>

@@ -1467,5 +1467,77 @@
   },
   "op_lang_mine": {
     "message": "મારી ભાષાઓ"
+  },
+  "op_online": {
+    "message": "ઓનલાઇન પેક"
+  },
+  "op_online_hint": {
+    "message": "બધા માટે મફત સંગીત અને મીમ. “પેક જુઓ” દબાવો ત્યાં સુધી કોઈ સંપર્ક થતો નથી; ડાઉનલોડ MemeBox સાઇટ પરથી આવે છે."
+  },
+  "op_online_browse": {
+    "message": "પેક જુઓ"
+  },
+  "op_online_refresh": {
+    "message": "યાદી રિફ્રેશ"
+  },
+  "op_online_loading": {
+    "message": "લોડ થાય છે…"
+  },
+  "op_online_fail": {
+    "message": "પેક મળ્યા નહીં. ઇન્ટરનેટ તપાસીને ફરી પ્રયાસ કરો."
+  },
+  "op_online_none": {
+    "message": "અહીં હજી કોઈ પેક નથી. નવા નિયમિત ઉમેરાય છે."
+  },
+  "op_online_add": {
+    "message": "ઉમેરો ($1)"
+  },
+  "op_online_added": {
+    "message": "ઉમેર્યું ✓"
+  },
+  "op_online_remove": {
+    "message": "દૂર કરો"
+  },
+  "op_online_soon": {
+    "message": "જલ્દી આવે છે"
+  },
+  "op_online_needs": {
+    "message": "Pro જોઈએ"
+  },
+  "op_online_strong": {
+    "message": "કડક ભાષાવાળા પેક બતાવો (18+)"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "સંગીત"
+  },
+  "op_online_memes": {
+    "message": "મીમ"
+  },
+  "op_online_items": {
+    "message": "$1 આઇટમ"
+  },
+  "op_online_busy": {
+    "message": "ડાઉનલોડ $1 / $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” ઉમેર્યું: $2 આઇટમ"
+  },
+  "pk_region_all": {
+    "message": "બધા પ્રદેશ"
+  },
+  "pk_region_common": {
+    "message": "બધા માટે"
+  },
+  "pk_region_in": {
+    "message": "ભારત"
+  },
+  "pk_region_global": {
+    "message": "ગ્લોબલ"
+  },
+  "pk_get": {
+    "message": "＋ મફત પેક"
   }
 }

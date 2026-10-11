@@ -343,7 +343,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (sender.id !== chrome.runtime.id || !msg || typeof msg !== 'object' || msg.target) return;
 
   if (msg.type === 'open-options') {
-    chrome.runtime.openOptionsPage();
+    if (msg.hash === 'online') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#online-card') }).catch(() => {});
+    else chrome.runtime.openOptionsPage();
     return;
   }
   if (msg.type === 'open-site') {

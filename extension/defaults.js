@@ -85,6 +85,7 @@
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
     panelTab: 'memes',    // the page of the panel you left open: memes | music | lights | sound
+    showStrong: false,    // Options → Online packs: also offer the lines with strong language (18+)
     lineLang: 'auto',     // which meme lines to show: auto (from the browser language and time zone) | all | en | hi
     camUnmirror: true,    // while a camera caption shows, flip your own (mirrored) preview back so you can read it too
     theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)

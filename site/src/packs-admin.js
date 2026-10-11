@@ -40,7 +40,7 @@ ${COPYRIGHT}
 </section>
 <section class="card">
   <h2>New pack</h2>
-  <p class="muted">Start with <b>Common</b> packs (music and memes that everyone enjoys). Then add <b>India</b> and <b>Global</b> packs for memes that differ by country. A pack is private until you set it to Live.</p>
+  <p class="muted">Start with <b>Common</b> packs (music and memes that everyone enjoys). Then add <b>India</b> and <b>Global</b> packs for memes that differ by country. A pack is private until you set it to Live. People see Live packs in MemeBox → Options → Online packs (after pressing Browse packs), or from the “＋ Free packs” button in the panel. Free packs can be added by everybody; Pro and Pro Max packs show “Coming soon” until the paid options open.</p>
   <form method="post" action="/admin/packs" class="keyform">
     <input type="hidden" name="action" value="pack-create">
     <label>Name <input name="title" maxlength="80" required placeholder="e.g. Phonk starter pack"></label>
