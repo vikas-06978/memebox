@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "Model wajah belum menjawab. Tunggu beberapa detik; jika tetap, muat ulang tab panggilan."
+  },
+  "tab_memes": {
+    "message": "Meme"
+  },
+  "tab_music": {
+    "message": "Musik"
+  },
+  "tab_lights": {
+    "message": "Lampu"
+  },
+  "tab_sound": {
+    "message": "Suara"
+  },
+  "chip_lang_all": {
+    "message": "Semua bahasa"
+  },
+  "fx_more": {
+    "message": "Opsi lainnya"
   }
 }

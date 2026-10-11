@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "फेस मॉडल अभी जवाब नहीं दे रहा। कुछ सेकंड रुकें; ऐसा ही रहे तो कॉल टैब रीलोड करें।"
+  },
+  "tab_memes": {
+    "message": "मीम्स"
+  },
+  "tab_music": {
+    "message": "संगीत"
+  },
+  "tab_lights": {
+    "message": "लाइट"
+  },
+  "tab_sound": {
+    "message": "आवाज़"
+  },
+  "chip_lang_all": {
+    "message": "सभी भाषाएँ"
+  },
+  "fx_more": {
+    "message": "और विकल्प"
   }
 }

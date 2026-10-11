@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "ফেস মডেল এখনও সাড়া দিচ্ছে না। কয়েক সেকেন্ড অপেক্ষা করুন; এমনই থাকলে কল ট্যাব রিলোড করুন।"
+  },
+  "tab_memes": {
+    "message": "মিম"
+  },
+  "tab_music": {
+    "message": "গান"
+  },
+  "tab_lights": {
+    "message": "আলো"
+  },
+  "tab_sound": {
+    "message": "শব্দ"
+  },
+  "chip_lang_all": {
+    "message": "সব ভাষা"
+  },
+  "fx_more": {
+    "message": "আরও বিকল্প"
   }
 }

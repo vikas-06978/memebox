@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "El modelo de caras aún no responde. Espera unos segundos; si sigue así, recarga la pestaña de la llamada."
+  },
+  "tab_memes": {
+    "message": "Memes"
+  },
+  "tab_music": {
+    "message": "Música"
+  },
+  "tab_lights": {
+    "message": "Luces"
+  },
+  "tab_sound": {
+    "message": "Sonido"
+  },
+  "chip_lang_all": {
+    "message": "Todos los idiomas"
+  },
+  "fx_more": {
+    "message": "Más opciones"
   }
 }

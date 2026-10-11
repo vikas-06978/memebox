@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "फेस मॉडेल अजून उत्तर देत नाही. काही सेकंद थांबा; असेच राहिले तर कॉल टॅब रीलोड करा."
+  },
+  "tab_memes": {
+    "message": "मीम्स"
+  },
+  "tab_music": {
+    "message": "संगीत"
+  },
+  "tab_lights": {
+    "message": "लाइट"
+  },
+  "tab_sound": {
+    "message": "आवाज"
+  },
+  "chip_lang_all": {
+    "message": "सर्व भाषा"
+  },
+  "fx_more": {
+    "message": "आणखी पर्याय"
   }
 }

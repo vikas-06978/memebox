@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "The face model is not answering yet. Wait a few seconds; if it stays like this, reload the call tab."
+  },
+  "tab_memes": {
+    "message": "Memes"
+  },
+  "tab_music": {
+    "message": "Music"
+  },
+  "tab_lights": {
+    "message": "Lights"
+  },
+  "tab_sound": {
+    "message": "Sound"
+  },
+  "chip_lang_all": {
+    "message": "All languages"
+  },
+  "fx_more": {
+    "message": "More options"
   }
 }

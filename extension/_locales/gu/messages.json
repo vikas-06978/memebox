@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "ફેસ મૉડેલ હજી જવાબ આપતું નથી. થોડી સેકન્ડ રાહ જુઓ; એવું જ રહે તો કૉલ ટેબ રીલોડ કરો."
+  },
+  "tab_memes": {
+    "message": "મીમ્સ"
+  },
+  "tab_music": {
+    "message": "સંગીત"
+  },
+  "tab_lights": {
+    "message": "લાઇટ"
+  },
+  "tab_sound": {
+    "message": "અવાજ"
+  },
+  "chip_lang_all": {
+    "message": "બધી ભાષાઓ"
+  },
+  "fx_more": {
+    "message": "વધુ વિકલ્પો"
   }
 }

@@ -1440,5 +1440,23 @@
   },
   "fx_seen_off": {
     "message": "Le modèle de visage ne répond pas encore. Patientez quelques secondes ; sinon, rechargez l'onglet de l'appel."
+  },
+  "tab_memes": {
+    "message": "Mèmes"
+  },
+  "tab_music": {
+    "message": "Musique"
+  },
+  "tab_lights": {
+    "message": "Lumières"
+  },
+  "tab_sound": {
+    "message": "Son"
+  },
+  "chip_lang_all": {
+    "message": "Toutes les langues"
+  },
+  "fx_more": {
+    "message": "Plus d'options"
   }
 }

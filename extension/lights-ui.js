@@ -136,22 +136,25 @@
     colorsG.append(swatches);
     cornersG.append(cornersLine, patChips);
     looksG.append(filterChips);
-    charG.append(charChips, charPosChips);
-    const extras = el('div', { className: 'checks' },
-      el('label', { className: 'check', title: t('fx_focus_tip') }, focusBox, t('fx_focus')),
-      el('label', { className: 'check', title: t('fx_sync_tip') }, syncBox, t('fx_sync')),
-      el('label', { className: 'check', title: t('fx_safe_tip') }, safeBox, t('fx_safe')),
-      el('label', { className: 'check', title: t('fx_mirror_tip') }, mirrorBox, t('fx_mirror')),
-      el('label', { className: 'check', title: t('fx_hd_tip') }, hdBox, t('fx_hd')),
-      el('div', { className: 'row' }, el('span', {}, '✨'), hdRange),
-      el('label', { className: 'check', title: t('fx_studio_tip') }, studioBox, t('fx_studio')),
+    // The animal's own choices sit with the animal; the picture and light choices are tucked into "More".
+    const animalOpts = el('div', { className: 'checks' },
       el('label', { className: 'check', title: t('fx_follow_tip') }, followBox, t('fx_follow')),
       el('label', { className: 'check', title: t('fx_gest_tip') }, gestBox, t('fx_gest')),
+      el('div', { className: 'fx-how' }, t('fx_sens')), sensChips, tryLine, seenLine,
       el('label', { className: 'check', title: t('fx_masti_tip') }, mastiBox, t('fx_masti')),
       el('label', { className: 'check', title: t('fx_sounds_tip') }, soundsBox, t('fx_sounds')),
-      el('div', { className: 'fx-how' }, t('fx_sens')), sensChips, tryLine, seenLine,
-      el('label', { className: 'check', title: t('fx_away_tip') }, awayBox, t('fx_away')),
-      el('div', { className: 'row' }, el('span', {}, '☀'), bright));
+      el('label', { className: 'check', title: t('fx_away_tip') }, awayBox, t('fx_away')));
+    charG.append(charChips, charPosChips, animalOpts);
+    const extras = el('details', { className: 'fx-adv' }, el('summary', {}, t('fx_more')),
+      el('div', { className: 'checks' },
+        el('label', { className: 'check', title: t('fx_focus_tip') }, focusBox, t('fx_focus')),
+        el('label', { className: 'check', title: t('fx_sync_tip') }, syncBox, t('fx_sync')),
+        el('label', { className: 'check', title: t('fx_safe_tip') }, safeBox, t('fx_safe')),
+        el('label', { className: 'check', title: t('fx_mirror_tip') }, mirrorBox, t('fx_mirror')),
+        el('label', { className: 'check', title: t('fx_hd_tip') }, hdBox, t('fx_hd')),
+        el('div', { className: 'row' }, el('span', {}, '✨'), hdRange),
+        el('label', { className: 'check', title: t('fx_studio_tip') }, studioBox, t('fx_studio')),
+        el('div', { className: 'row' }, el('span', {}, '☀'), bright)));
     const body = el('div', { className: 'settings-body fx-body' },
       el('div', { className: 'fx-how' }, t('fx_how')),
       onRow, presetG, canvas, dragHint, darkBtn, status, lockBar, lampG, colorsG, cornersG, looksG, charG, extras);
@@ -204,6 +207,7 @@
 
     const sum = el('span', { className: 'sum' });
     const details = el('details', { className: 'settings fx' }, el('summary', {}, el('span', {}, t('fx_title')), sum), body);
+    details.dataset.page = 'lights';
     api.settingsDetails.after(details);
 
     const wire = (box, key) => box.addEventListener('change', () => set({ [key]: box.checked }, true));

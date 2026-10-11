@@ -75,6 +75,7 @@
       applyStored(r);
       placeFab();
       renderAll();
+      showPage(state.settings.panelTab, false);
       sendAudioSettings();
     }).catch(() => {});
     chrome.storage.onChanged.addListener((changes, area) => {
@@ -86,6 +87,7 @@
       if ('lines' in r && !Array.isArray(r.lines)) r.lines = MEME.defaultLines();
       applyStored(r);
       renderAll();
+      if (r.settings && r.settings.panelTab && r.settings.panelTab !== panel.dataset.tab) showPage(r.settings.panelTab, false); // another tab changed the page
       if ('settings' in r) { sendAudioSettings(); for (const fn of settingsCbs) { try { fn(); } catch { /* ignore */ } } }
     });
   } catch { /* orphaned */ }
@@ -159,6 +161,7 @@
     const picture = pictures.has(msg.reqId) ? await pictures.get(msg.reqId) : null;
     pictures.delete(msg.reqId);
     if (msg.ok) {
+      if (!startCard.hidden) { startCard.hidden = true; try { chrome.storage.local.set({ startDone: true }); } catch { /* orphaned */ } } // you found out how it works
       celebrate();
       if (line) {
         showCaption(line.text, picture);
@@ -190,9 +193,20 @@
     sendToHook({ type: 'beep', reqId });
   }
 
+  // Which meme lines to offer: with "auto", people whose browser is in an Indian language or whose time zone is India see everything, everybody
+  // else sees the English lines (and sounds). Nothing is sent anywhere: it is read from the browser. Change it with the language chips.
+  const LINE_LANGS = [['all', null], ['en', 'English'], ['hi', 'हिन्दी']];
+  function autoLineLang() {
+    const l = String(navigator.language || 'en').toLowerCase();
+    let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* ignore */ }
+    return /^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta' ? 'all' : 'en';
+  }
+  const lineLang = () => { const v = state.settings.lineLang; return v === 'all' || v === 'en' || v === 'hi' ? v : autoLineLang(); };
+  const langLines = (items) => { const lg = lineLang(); return lg === 'all' ? items : items.filter((l) => l.kind !== 'tts' || l.lang === lg); };
+
   function visibleLines() {
     const q = state.query.trim().toLowerCase();
-    let items = state.lines;
+    let items = langLines(state.lines);
     if (state.filter === 'star') items = items.filter((l) => l.star);
     else if (state.filter === 'recent') items = state.recent.map((id) => items.find((l) => l.id === id)).filter(Boolean);
     else if (state.filter !== 'all') items = items.filter((l) => l.category === state.filter);
@@ -202,7 +216,7 @@
 
   function playRandom() {
     // In the panel, Random respects the current filter/search, while the 😂 click uses everything.
-    const base = panelOpen ? visibleLines() : state.lines;
+    const base = panelOpen ? visibleLines() : langLines(state.lines);
     const pool = base.length > 1 ? base.filter((l) => l.id !== state.lastRandomId) : base;
     if (!pool.length) { toast(t('no_lines')); return; }
     const line = pool[Math.floor(Math.random() * pool.length)];
@@ -476,10 +490,11 @@
     .status.warn { background: #fff3cd; color: #5c3d00; border: 1px solid #f9ab00; font-size: 13px; line-height: 1.35; }
     :host([data-theme="dark"]) .status.warn, :host([data-theme="neon"]) .status.warn { background: #4a3a00; color: #ffe08a; }
     @media (prefers-color-scheme: dark) { :host(:not([data-theme])) .status.warn, :host([data-theme="auto"]) .status.warn { background: #4a3a00; color: #ffe08a; } }
-    .start { background: var(--p-soft); border-radius: 12px; padding: 8px 12px; font-size: 12px; line-height: 1.35; display: flex; flex-direction: column; gap: 4px; }
+    .start { background: var(--p-soft); border-radius: 12px; padding: 8px 12px; font-size: 11.5px; line-height: 1.35; display: flex; flex-direction: column; gap: 3px; }
+    .start-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
+    .start .btn.small { padding: 3px 10px; font-size: 11.5px; }
     .start[hidden] { display: none; }
     .start p { margin: 0; }
-    .start .btn { align-self: flex-start; margin-top: 4px; }
     .status .dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #9aa0a6; box-shadow: 0 0 0 3px rgba(127,127,127,.15); }
     .search { width: 100%; padding: 10px 14px; border: 1px solid var(--p-line); border-radius: 12px; font: inherit; color: inherit; background: var(--p-field);
       transition: border-color .1s, box-shadow .1s; }
@@ -535,6 +550,40 @@
     .settings summary .sum { flex: 1; text-align: right; color: var(--p-muted); font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .settings-body { display: grid; gap: 10px; padding: 10px 2px 2px; }
     .panel.fx-open { overflow-y: auto; }
+    /* pages */
+    .pagetabs { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--p-soft); }
+    .ptab { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; border: 0; background: transparent; color: var(--p-muted);
+      padding: 7px 4px; border-radius: 9px; font: 700 12.5px/1 system-ui, -apple-system, "Segoe UI", "Nirmala UI", sans-serif; cursor: pointer; transition: background .12s, color .12s; }
+    .ptab:hover { color: var(--p-text); }
+    .ptab.on { background: var(--p-bg); color: var(--p-text); box-shadow: 0 1px 3px rgba(0,0,0,.16); }
+    .ptab:focus-visible { outline: 2px solid #1a73e8; outline-offset: 1px; }
+    .pti { font-size: 14px; }
+    .panel[data-tab="music"] :is(.search, .chips, .memes-row, .list, details[data-page]:not([data-page="music"])),
+    .panel[data-tab="lights"] :is(.search, .chips, .memes-row, .list, details[data-page]:not([data-page="lights"])),
+    .panel[data-tab="sound"] :is(.search, .chips, .memes-row, .list, details[data-page]:not([data-page="sound"])),
+    .panel[data-tab="memes"] details[data-page] { display: none; }
+    details[data-page] > summary { display: none; }
+    details[data-page] { border-top: 0; padding-top: 0; }
+    details[data-page] .settings-body { padding-top: 2px; }
+    .panel[data-tab="memes"] .foot { display: block; }
+    .panel:not([data-tab="memes"]) > .foot, .panel:not([data-tab="memes"]) > .start { display: none; }
+    .langchips { margin-top: -4px; }
+    .chip.small { padding: 3px 10px; font-size: 11.5px; }
+    /* switches instead of boxes */
+    .panel .check input[type="checkbox"] { appearance: none; -webkit-appearance: none; flex: none; width: 32px; height: 19px; margin: 0; border-radius: 19px; background: var(--p-line);
+      position: relative; cursor: pointer; transition: background .15s; }
+    .panel .check input[type="checkbox"]::after { content: ""; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.3); transition: transform .15s; }
+    .panel .check input[type="checkbox"]:checked { background: #f59e0b; }
+    .panel .check input[type="checkbox"]:checked::after { transform: translateX(13px); }
+    .panel .check input[type="checkbox"]:disabled { opacity: .45; cursor: default; }
+    .panel .check input[type="checkbox"]:focus-visible { outline: 2px solid #1a73e8; outline-offset: 2px; }
+    .panel .check { gap: 9px; }
+    .fx-adv { border: 1px solid var(--p-line); border-radius: 12px; padding: 4px 10px; }
+    .fx-adv > summary { cursor: pointer; font-weight: 700; padding: 6px 0; list-style: none; display: flex; justify-content: space-between; }
+    .fx-adv > summary::-webkit-details-marker { display: none; }
+    .fx-adv > summary::after { content: "▾"; color: var(--p-muted); }
+    .fx-adv[open] > summary::after { content: "▴"; }
+    .fx-adv .checks { padding-bottom: 8px; }
     .panel.fx-open .list, .panel.fx-open .chips, .panel.fx-open .search { display: none; }
     .fx-pass { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--p-soft); border-radius: 10px; padding: 8px 10px; font-weight: 600; font-size: 12px; }
     .fx-pass.on { background: #e6f4ea; color: #137333; }
@@ -612,6 +661,7 @@
   const search = el('input', { className: 'search', type: 'search', placeholder: t('search_ph') });
   search.setAttribute('aria-label', t('search_ph'));
   const chips = el('div', { className: 'chips', role: 'tablist' });
+  const langChips = el('div', { className: 'chips langchips' });
   const randomBtn = el('button', { className: 'btn', type: 'button' }, t('btn_random'));
   const beepBtn = el('button', { className: 'btn test', type: 'button', title: t('btn_mic_test_tip') }, t('btn_mic_test'));
   const stopBtn = el('button', { className: 'btn stop', type: 'button', title: 'Alt+0' }, t('btn_stop_all'));
@@ -651,31 +701,37 @@
         el('label', { className: 'check', title: t('duck_tip') }, duckBox, t('duck_label')),
         el('label', { className: 'check', title: t('cam_tip') }, camBox, t('cam_label')),
         el('label', { className: 'check', title: t('cam_unmirror_tip') }, unmirrorBox, t('cam_unmirror')))));
-  settings.addEventListener('toggle', () => {
-    if (state.settings.soundOpen !== settings.open) {
-      state.settings = { ...state.settings, soundOpen: settings.open };
-      saveSetting('soundOpen', settings.open);
-    }
-    if (panelOpen) placePanel();
-  });
+  settings.addEventListener('toggle', () => { if (panelOpen) placePanel(); });
   // First-use help: three plain steps, shown until the person taps "Got it".
-  const startOk = el('button', { className: 'btn', type: 'button' }, t('st_ok'));
+  const startOk = el('button', { className: 'btn small', type: 'button' }, t('st_ok'));
   const startCard = el('div', { className: 'start', hidden: true },
-    el('strong', {}, t('st_title')), el('p', {}, t('st_1')), el('p', {}, t('st_2')), el('p', {}, t('st_3')), startOk);
+    el('div', { className: 'start-head' }, el('strong', {}, t('st_title')), startOk), el('p', {}, t('st_1')), el('p', {}, t('st_2')), el('p', {}, t('st_3')));
   startOk.addEventListener('click', () => {
     startCard.hidden = true;
     try { chrome.storage.local.set({ startDone: true }); } catch { /* orphaned */ }
     if (panelOpen) placePanel();
   });
   try { chrome.storage.local.get('startDone').then((r) => { startCard.hidden = r.startDone === true; }).catch(() => { startCard.hidden = false; }); } catch { startCard.hidden = false; }
+  // The panel has four pages, one at a time: Memes, Music, Lights, Sound. (Music and Lights add their own sections; see MemeUiMounts.)
+  const PAGES = [['memes', '😂', 'tab_memes'], ['music', '🎵', 'tab_music'], ['lights', '💡', 'tab_lights'], ['sound', '🎛', 'tab_sound']];
+  const pageTabs = el('div', { className: 'pagetabs', role: 'tablist' });
+  const pageBtns = {};
+  for (const [id, emoji, key] of PAGES) {
+    const b = el('button', { className: 'ptab', type: 'button', role: 'tab' }, el('span', { className: 'pti' }, emoji), el('span', {}, t(key)));
+    b.addEventListener('click', () => showPage(id));
+    pageBtns[id] = b; pageTabs.append(b);
+  }
+  settings.dataset.page = 'sound';
   const panel = el('div', { className: 'panel' },
     el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), feedbackBtn, optionsBtn, closeBtn),
     statusBox,
     startCard,
+    pageTabs,
     tabBar,
     search,
     chips,
-    el('div', { className: 'row' }, randomBtn, beepBtn, stopBtn),
+    langChips,
+    el('div', { className: 'row memes-row' }, randomBtn, beepBtn, stopBtn),
     list,
     settings,
     el('div', { className: 'foot' }, t('panel_foot')),
@@ -726,6 +782,18 @@
     try { mount(uiApi); } catch { /* a broken extra section must not break the panel */ }
   }
 
+  // Show one page of the panel: the others are hidden, and its section (Music, Lights, Sound) is opened.
+  function showPage(id, save = true) {
+    if (!pageBtns[id]) id = 'memes';
+    panel.dataset.tab = id;
+    for (const [pid, b] of Object.entries(pageBtns)) { b.classList.toggle('on', pid === id); b.setAttribute('aria-selected', String(pid === id)); }
+    for (const d of panel.querySelectorAll('details[data-page]')) { const want = d.dataset.page === id; if (d.open !== want) d.open = want; }
+    panel.classList.toggle('fx-open', id === 'lights' || id === 'music');
+    if (save && state.settings.panelTab !== id) { state.settings = { ...state.settings, panelTab: id }; saveSetting('panelTab', id); }
+    if (panelOpen) placePanel();
+  }
+  panel.dataset.tab = 'memes'; // (showPage runs again once the saved settings are read)
+
   // ---------- rendering ----------
 
   function renderAll() {
@@ -748,7 +816,6 @@
     const pct = Math.round((Number(state.settings.volume) || 0) * 100);
     const v = VOICES[state.voice] || VOICES.off;
     settingsSum.textContent = `🔊 ${pct}% · ${v.emoji} ${t('voice_' + state.voice)}`;
-    if (settings.open !== (state.settings.soundOpen === true)) settings.open = state.settings.soundOpen === true;
   }
 
   function renderStatus() {
@@ -771,7 +838,17 @@
     return known === 'cat_' + id ? id : known;
   }
 
+  function renderLangChips() {
+    const cur = lineLang();
+    langChips.replaceChildren(...LINE_LANGS.map(([id, name]) => {
+      const b = el('button', { className: 'chip small' + (id === cur ? ' on' : ''), type: 'button' }, name || t('chip_lang_all'));
+      b.addEventListener('click', () => { state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id); renderLangChips(); renderList(); });
+      return b;
+    }));
+  }
+
   function renderChips() {
+    renderLangChips();
     const cats = [...new Set(state.lines.map((l) => l.category).filter(Boolean))];
     const filters = [['all', t('chip_all')], ['star', '⭐ ' + t('chip_star')], ['recent', '🕘 ' + t('chip_recent')],
       ...cats.map((c) => [c, categoryLabel(c)])];
