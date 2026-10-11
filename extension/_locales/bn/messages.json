@@ -1458,5 +1458,11 @@
   },
   "fx_more": {
     "message": "আরও বিকল্প"
+  },
+  "cat_world": {
+    "message": "সারা বিশ্ব"
+  },
+  "chip_lang_more": {
+    "message": "আরও ভাষা…"
   }
 }

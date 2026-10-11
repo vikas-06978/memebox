@@ -1458,5 +1458,11 @@
   },
   "fx_more": {
     "message": "और विकल्प"
+  },
+  "cat_world": {
+    "message": "दुनिया भर"
+  },
+  "chip_lang_more": {
+    "message": "और भाषाएँ…"
   }
 }

@@ -37,7 +37,7 @@ test('default pack is valid and uses unique ids and favourite slots', () => {
 test('sanitizeLine rejects junk and clamps fields', () => {
   assert.equal(MEME.sanitizeLine(null), null);
   assert.equal(MEME.sanitizeLine({ text: '   ' }), null);
-  const l = MEME.sanitizeLine({ text: 'x'.repeat(999), lang: 'fr', tone: 'nope', fav: 42, evil: '<script>' });
+  const l = MEME.sanitizeLine({ text: 'x'.repeat(999), lang: 'xx', tone: 'nope', fav: 42, evil: '<script>' });
   assert.equal(l.text.length, 300);
   assert.equal(l.lang, 'en');
   assert.equal(l.tone, 'normal');

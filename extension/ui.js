@@ -193,16 +193,20 @@
     sendToHook({ type: 'beep', reqId });
   }
 
-  // Which meme lines to offer: with "auto", people whose browser is in an Indian language or whose time zone is India see everything, everybody
-  // else sees the English lines (and sounds). Nothing is sent anywhere: it is read from the browser. Change it with the language chips.
-  const LINE_LANGS = [['all', null], ['en', 'English'], ['hi', 'हिन्दी']];
-  function autoLineLang() {
+  // Which meme lines to offer: with "auto", people in India (browser in an Indian language, or India time zone) see everything; everybody else
+  // sees English plus the lines in their browser's language. Nothing is sent anywhere: it is read from the browser. Change it with the language chips.
+  const ownLang = () => { const l = String(navigator.language || 'en').toLowerCase().split('-')[0]; return MEME.isLang(l) ? l : 'en'; };
+  function activeLangs() { // null = every language
+    const v = state.settings.lineLang;
+    if (v === 'all') return null;
+    if (MEME.isLang(v)) return new Set([v]);
     const l = String(navigator.language || 'en').toLowerCase();
     let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* ignore */ }
-    return /^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta' ? 'all' : 'en';
+    if (/^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') return null;
+    return new Set(['en', ownLang()]);
   }
-  const lineLang = () => { const v = state.settings.lineLang; return v === 'all' || v === 'en' || v === 'hi' ? v : autoLineLang(); };
-  const langLines = (items) => { const lg = lineLang(); return lg === 'all' ? items : items.filter((l) => l.kind !== 'tts' || l.lang === lg); };
+  const lineLang = () => { const v = state.settings.lineLang; return v === 'all' || MEME.isLang(v) ? v : 'auto'; };
+  const langLines = (items) => { const set = activeLangs(); return !set ? items : items.filter((l) => l.kind !== 'tts' || set.has(l.lang)); };
 
   function visibleLines() {
     const q = state.query.trim().toLowerCase();
@@ -569,6 +573,7 @@
     .panel:not([data-tab="memes"]) > .foot, .panel:not([data-tab="memes"]) > .start { display: none; }
     .langchips { margin-top: -4px; }
     .chip.small { padding: 3px 10px; font-size: 11.5px; }
+    .lang-more { appearance: none; -webkit-appearance: none; cursor: pointer; max-width: 130px; }
     /* switches instead of boxes */
     .panel .check input[type="checkbox"] { appearance: none; -webkit-appearance: none; flex: none; width: 32px; height: 19px; margin: 0; border-radius: 19px; background: var(--p-line);
       position: relative; cursor: pointer; transition: background .15s; }
@@ -840,11 +845,20 @@
 
   function renderLangChips() {
     const cur = lineLang();
-    langChips.replaceChildren(...LINE_LANGS.map(([id, name]) => {
-      const b = el('button', { className: 'chip small' + (id === cur ? ' on' : ''), type: 'button' }, name || t('chip_lang_all'));
-      b.addEventListener('click', () => { state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id); renderLangChips(); renderList(); });
+    const set = activeLangs();
+    const pick = (id) => { state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id); renderLangChips(); renderList(); };
+    const shown = ['en', ownLang(), 'hi'].filter((c, i, a) => a.indexOf(c) === i);
+    const chip = (id, name) => {
+      const on = cur === 'auto' ? (id === 'all' ? !set : !!set && set.has(id) && id === ownLang()) : id === cur;
+      const b = el('button', { className: 'chip small' + (on ? ' on' : ''), type: 'button' }, name);
+      b.addEventListener('click', () => pick(id));
       return b;
-    }));
+    };
+    const more = el('select', { className: 'chip small lang-more', title: t('chip_lang_more') },
+      el('option', { value: '' }, t('chip_lang_more')), ...Object.entries(MEME.LANGS).map(([c, n]) => el('option', { value: c }, n)));
+    more.addEventListener('change', () => { if (more.value) pick(more.value); });
+    if (MEME.isLang(cur) && !shown.includes(cur)) { more.value = cur; more.classList.add('on'); }
+    langChips.replaceChildren(chip('all', t('chip_lang_all')), ...shown.map((c) => chip(c, MEME.LANGS[c])), more);
   }
 
   function renderChips() {

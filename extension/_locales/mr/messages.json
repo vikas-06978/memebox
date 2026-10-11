@@ -1458,5 +1458,11 @@
   },
   "fx_more": {
     "message": "आणखी पर्याय"
+  },
+  "cat_world": {
+    "message": "जगभर"
+  },
+  "chip_lang_more": {
+    "message": "आणखी भाषा…"
   }
 }

@@ -1458,5 +1458,11 @@
   },
   "fx_more": {
     "message": "Opsi lainnya"
+  },
+  "cat_world": {
+    "message": "Dunia"
+  },
+  "chip_lang_more": {
+    "message": "Bahasa lain…"
   }
 }

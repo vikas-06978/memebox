@@ -1458,5 +1458,11 @@
   },
   "fx_more": {
     "message": "Plus d'options"
+  },
+  "cat_world": {
+    "message": "Monde"
+  },
+  "chip_lang_more": {
+    "message": "Autres langues…"
   }
 }
