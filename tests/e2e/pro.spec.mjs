@@ -98,7 +98,8 @@ test.describe('free plan (no key)', () => {
 
 test('picture meme: add a picture to a line; playing it shows the picture on my camera', async ({ context, extensionId, callPage }) => {
   const page = await openOptions(context, extensionId);
-  // The first line ("Bhai tu rehne de") is on Alt+1.
+  // The first line ("Bhai tu rehne de") is on Alt+1. (The list shows English by default in an English browser: pick all languages.)
+  await page.selectOption('#lines-lang', '');
   await page.locator('#lines-body tr').first().getByRole('button', { name: 'Edit' }).click();
   await page.setInputFiles('#line-pic', { name: 'monkey.png', mimeType: 'image/png', buffer: ICON });
   await expect(page.locator('#line-pic-preview')).toBeVisible();
