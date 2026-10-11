@@ -16,6 +16,13 @@ export const LICENCES = {
 export const LANGS = { '': 'Any language', en: 'English', hi: 'Hindi', hinglish: 'Hinglish' };
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+// How much the packs may hold in total (MB). Cloudflare's free R2 storage is 10 GB: stay well under it. PACKS_MAX_MB in Cloudflare changes it.
+export const DEFAULT_STORAGE_MB = 5000;
+export const storageLimitBytes = (env) => (Number(env && env.PACKS_MAX_MB) > 0 ? Number(env.PACKS_MAX_MB) : DEFAULT_STORAGE_MB) * 1048576;
+export async function storageUsed(db) {
+  const row = await db.prepare('SELECT COALESCE(SUM(bytes), 0) AS n FROM pack_items').first();
+  return Number(row && row.n) || 0;
+}
 const IMAGE_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/webp': 'webp' };
 const IMAGE_EXT = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
 // The plan of one item: its own (free / pro / max) if you set one, else the pack's.
@@ -117,7 +124,8 @@ const needsSource = (meta) => meta.licenceKind === 'free' && !clip(meta.source, 
 
 // Upload audio files (or, for a pictures pack, images) into a pack. Each becomes an item; it goes live right away only if "cleared" is ticked
 // and there is a licence line. Returns { added, skipped: [reason...] }.
-export async function addAudio(db, bucket, packId, files, meta = {}) {
+export async function addAudio(db, bucket, packId, files, meta = {}, limitBytes = Infinity) {
+  let used = await storageUsed(db);
   const pack = await getPack(db, packId);
   const pictures = !!pack && pack.kind === 'pictures';
   const out = { added: 0, skipped: [] };
@@ -137,6 +145,8 @@ export async function addAudio(db, bucket, packId, files, meta = {}) {
       if (!type) { out.skipped.push(`${file.name}: not an audio file (mp3, m4a, ogg, opus, wav, webm, flac, aac)`); continue; }
     }
     if (file.size > max) { out.skipped.push(`${file.name}: over ${Math.round(max / 1048576)} MB`); continue; }
+    if (used + file.size > limitBytes) { out.skipped.push(`${file.name}: the storage budget (${Math.round(limitBytes / 1048576)} MB) is full`); continue; }
+    used += file.size;
     const id = newItemId(), key = `packs/${packId}/${id}.${type.ext}`;
     await bucket.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: type.mime } });
     const item = { cleared: needsSource(meta) ? 0 : cleared, licence };

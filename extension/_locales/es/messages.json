@@ -1575,5 +1575,11 @@
   },
   "tone_excited": {
     "message": "Emocionado"
+  },
+  "op_online_space": {
+    "message": "Packs en este equipo: $1 de $2 MB"
+  },
+  "op_online_full": {
+    "message": "El espacio para packs de este equipo está lleno ($1 añadidos, $2 MB en total). Quita un pack para añadir más."
   }
 }

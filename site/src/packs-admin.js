@@ -19,11 +19,19 @@ function notice(msg, err) {
   return `${msg ? `<p class="notice" role="status">${h(msg)}</p>` : ''}${err ? `<p class="error" role="alert">${h(err)}</p>` : ''}`;
 }
 
-export function packsListPage({ packs, hasBucket, msg = '', err = '' }) {
+// "123 MB of 5000 MB": what the packs hold in the bucket against your budget (Cloudflare's free storage is 10 GB).
+function storageMeter(storage) {
+  if (!storage) return '';
+  const pct = Math.min(100, Math.round((storage.used / storage.limit) * 100));
+  return `<p class="storage"><b>Storage:</b> ${mb(storage.used)} MB of ${mb(storage.limit)} MB used (${pct}%). <progress max="100" value="${pct}"></progress>
+    <span class="muted">Uploads stop at the budget so the bucket cannot grow by surprise. Cloudflare R2 gives 10 GB of storage free every month; the budget is set with PACKS_MAX_MB.</span></p>`;
+}
+
+export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = null }) {
   const rows = packs.map((p) => `
     <tr>
       <td><a href="/admin/packs?id=${h(p.id)}"><b>${h(p.title)}</b></a><div class="muted">${h(p.id)}</div></td>
-      <td>${h(p.kind === 'music' ? 'Music' : 'Memes')}</td>
+      <td>${h(p.kind === 'music' ? 'Music' : p.kind === 'pictures' ? 'Pictures' : 'Memes')}</td>
       <td>${h(REGIONS[p.region] || p.region)}</td>
       <td>${h(tierText[p.tier] || p.tier)}</td>
       <td>${p.status === 'live' ? '<b>Live</b>' : '<span class="muted">Draft</span>'}</td>
@@ -37,6 +45,7 @@ export function packsListPage({ packs, hasBucket, msg = '', err = '' }) {
 </header>
 ${notice(msg, err)}
 ${hasBucket ? '' : '<p class="error" role="alert">The file storage is not set up yet. Run once: <code>npx wrangler r2 bucket create memebox-packs</code>, then deploy again. Until then you can add text memes, but not audio.</p>'}
+${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">
   <h2>Your packs</h2>
@@ -105,7 +114,7 @@ function itemRow(p, i) {
     </tr>`;
 }
 
-export function packPage({ pack: p, items, hasBucket, msg = '', err = '' }) {
+export function packPage({ pack: p, items, hasBucket, msg = '', err = '', storage = null }) {
   const bytes = items.reduce((a, i) => a + Number(i.bytes || 0), 0), live = items.filter((i) => i.status === 'live').length;
   const licenceFields = `
       <label>Plan for these <select name="itemTier">${itemTierOpts('', p.tier)}</select></label>
@@ -123,6 +132,7 @@ export function packPage({ pack: p, items, hasBucket, msg = '', err = '' }) {
   <a class="button" href="/admin/packs">All packs</a>
 </header>
 ${notice(msg, err)}
+${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">
   <h2>About this pack</h2>

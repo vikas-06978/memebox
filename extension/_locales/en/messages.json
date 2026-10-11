@@ -1575,5 +1575,11 @@
   },
   "tone_excited": {
     "message": "Excited"
+  },
+  "op_online_space": {
+    "message": "Packs on this computer: $1 of $2 MB"
+  },
+  "op_online_full": {
+    "message": "This computer's space for packs is full ($1 added, $2 MB in total). Remove a pack to add more."
   }
 }

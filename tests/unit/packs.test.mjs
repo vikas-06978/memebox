@@ -275,3 +275,33 @@ test('a daily cap on files per person: the next one is refused with 429; another
   await db.prepare('DELETE FROM rate_limits').run();
   assert.equal((await get('198.51.100.1')).status, 200);
 });
+
+test('the storage budget: uploads stop when the bucket would pass it, and the pages show how much is used', async () => {
+  const id = await makePack({ title: 'Budget test' });
+  const e = env({ PACKS_MAX_MB: '1' }); // 1 MB for the whole test
+  const up = (files) => call(adminPacks, (() => {
+    const f = new FormData(); f.append('action', 'items-upload'); f.append('pack', id); f.append('licenceKind', 'own'); f.append('cleared', 'on');
+    for (const x of files) f.append('files', x);
+    return req('/admin/packs', { method: 'POST', headers: { Cookie: cookie }, body: f });
+  })(), e);
+  const r = await up([audio('A.mp3', 600 * 1024), audio('B.mp3', 600 * 1024)]);
+  assert.match(msgOf(r), /1 file uploaded/);
+  assert.match(msgOf(r), /storage budget \(1 MB\) is full/);
+  assert.equal((await listItems(db, id)).length, 1);
+  const list = await (await call(adminPacks, req('/admin/packs', { headers: { Cookie: cookie } }), e)).text();
+  assert.match(list, /Storage:<\/b> 0\.6 MB of 1\.0 MB used/);
+  const one = await (await call(adminPacks, req('/admin/packs?id=' + id, { headers: { Cookie: cookie } }), e)).text();
+  assert.match(one, /Storage:/);
+});
+
+test('a daily cap on how much too: big files use it up faster than small ones', async () => {
+  const id = await makePack({ title: 'Mb cap' });
+  await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('Big.mp3', 600 * 1024)], licenceKind: 'own', cleared: 'on' }));
+  await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Mb cap', region: 'common', tier: 'free', status: 'live' }));
+  const [item] = await listItems(db, id);
+  const e = env({ PACK_DAILY_MB: '1' });
+  const get = (ip) => call(apiPackFile, new Request('https://memebox.pages.dev/api/pack-file?item=' + item.id, { headers: { 'CF-Connecting-IP': ip } }), e);
+  assert.equal((await get('203.0.113.77')).status, 200);
+  assert.equal((await get('203.0.113.77')).status, 429, 'a second 0.6 MB file passes the 1 MB a day');
+  assert.equal((await get('203.0.113.78')).status, 200, 'another person is fine');
+});

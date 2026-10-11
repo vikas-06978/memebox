@@ -6,12 +6,14 @@
   const SITE = MEMEBOX_CONFIG.SITE_URL;
   const MAX_MEME_CLIP = 4 * 1024 * 1024;
   const MAX_PACK_TRACKS = 40;
+  const MAX_PACK_BYTES = 300 * 1048576; // all downloaded packs together on this computer
   const REGIONS = ['', 'common', 'in', 'global'];
   const box = $('online-card');
   if (!box) return;
   const list = $('online-list'), status = $('online-status'), browse = $('online-browse'), regionSel = $('online-region'), strongBox = $('online-strong');
   let catalog = null, installed = {}, showStrong = false;
 
+  const usedBytes = () => Object.values(installed).reduce((a, p) => a + (Number(p.bytes) || 0), 0);
   const mb = (bytes) => (bytes / 1048576 >= 0.1 ? (bytes / 1048576).toFixed(1) : '<0.1') + ' MB';
   const suffix = (id) => String(id).replace(/^i-/, '');
   const inIndia = () => {
@@ -45,7 +47,7 @@
     const packs = catalog.filter((p) => visible(p).length && (!want || p.region === want))
       .sort((a, b) => mine.indexOf(a.region) - mine.indexOf(b.region));
     if (!packs.length) { status.textContent = t('op_online_none'); return; }
-    status.textContent = '';
+    status.textContent = t('op_online_space', (usedBytes() / 1048576).toFixed(1), String(MAX_PACK_BYTES / 1048576));
     for (const p of packs) {
       const all = visible(p), open = openItems(p), locked = all.length - open.length, have = installed[p.id];
       const fresh = open.filter((i) => isNew(p, i)), bytes = fresh.reduce((a, i) => a + (i.bytes || 0), 0);
@@ -85,13 +87,15 @@
 
   async function addPack(pack, btn) {
     const items = openItems(pack).filter((i) => isNew(pack, i));
-    const ids = { lines: [], clips: [], music: [], pictures: [], items: [] };
+    const ids = { lines: [], clips: [], music: [], pictures: [], items: [], bytes: 0 };
     btn.disabled = true;
     let done = 0, failed = 0, limited = false;
     const { myMusic } = await chrome.storage.local.get('myMusic');
     let tracks = Array.isArray(myMusic) ? [...myMusic] : [];
     const category = String(pack.title).slice(0, 30);
+    let full = false;
     for (const item of items) {
+      if (usedBytes() + ids.bytes + (item.bytes || 0) > MAX_PACK_BYTES) { full = true; break; } // this computer's share for packs is used up
       btn.textContent = t('op_online_busy', String(done + 1), String(items.length));
       try {
         if (item.kind === 'line') {
@@ -119,7 +123,7 @@
           const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'clip', clipId, text: item.title, lang: 'en', tone: 'normal', category, fav: 0, volume: 1 });
           if (line) { ids.clips.push(clipId); ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         }
-        done++; ids.items.push(item.id);
+        done++; ids.items.push(item.id); ids.bytes += item.bytes || 0;
       } catch (e) {
         if (e && e.limit) { limited = true; break; } // today's limit is reached: keep what was added, the rest can be added tomorrow
         failed++;
@@ -130,10 +134,10 @@
     if (done) {
       const was = installed[pack.id] || {};
       const join = (k) => [...new Set([...(was[k] || []), ...ids[k]])];
-      installed[pack.id] = { lines: join('lines'), clips: join('clips'), music: join('music'), pictures: join('pictures'), items: join('items'), at: new Date().toISOString().slice(0, 10) };
+      installed[pack.id] = { bytes: (was.bytes || 0) + ids.bytes, lines: join('lines'), clips: join('clips'), music: join('music'), pictures: join('pictures'), items: join('items'), at: new Date().toISOString().slice(0, 10) };
       await saveInstalled();
     }
-    toast(limited ? t('op_online_limit', String(done)) : done ? t('op_online_done', pack.title, String(done)) + (failed ? ` (${failed} ✗)` : '') : t('op_online_fail'), limited ? false : !done);
+    toast(full && done ? t('op_online_full', String(done), String(MAX_PACK_BYTES / 1048576)) : full ? t('op_online_full', '0', String(MAX_PACK_BYTES / 1048576)) : limited ? t('op_online_limit', String(done)) : done ? t('op_online_done', pack.title, String(done)) + (failed ? ` (${failed} ✗)` : '') : t('op_online_fail'), limited || full ? false : !done);
     render();
   }
 

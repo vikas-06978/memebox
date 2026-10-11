@@ -1575,5 +1575,11 @@
   },
   "tone_excited": {
     "message": "Animado"
+  },
+  "op_online_space": {
+    "message": "Pacotes neste computador: $1 de $2 MB"
+  },
+  "op_online_full": {
+    "message": "O espaço para pacotes neste computador está cheio ($1 adicionados, $2 MB no total). Remova um pacote para adicionar mais."
   }
 }

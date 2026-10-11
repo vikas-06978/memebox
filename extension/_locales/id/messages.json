@@ -1575,5 +1575,11 @@
   },
   "tone_excited": {
     "message": "Bersemangat"
+  },
+  "op_online_space": {
+    "message": "Paket di komputer ini: $1 dari $2 MB"
+  },
+  "op_online_full": {
+    "message": "Ruang paket di komputer ini penuh ($1 ditambahkan, total $2 MB). Hapus satu paket untuk menambah lagi."
   }
 }
