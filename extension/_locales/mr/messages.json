@@ -1464,5 +1464,8 @@
   },
   "chip_lang_more": {
     "message": "आणखी भाषा…"
+  },
+  "op_lang_mine": {
+    "message": "माझ्या भाषा"
   }
 }

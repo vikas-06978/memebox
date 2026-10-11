@@ -24,6 +24,14 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   await chrome.storage.local.set(patch);
 });
 
+async function addLangLines(lang) {
+  const { lines } = await chrome.storage.local.get('lines');
+  if (!Array.isArray(lines)) return;
+  const have = new Set(lines.map((l) => l && l.id));
+  const add = MEME_PACKS.worldFor(lang).filter((l) => !have.has(l.id));
+  if (add.length) await chrome.storage.local.set({ lines: [...lines, ...add] });
+}
+
 // ---------- feedback ----------
 // The feedback page gets only the version and the call site. The uninstall survey only the version.
 const { SITE_URL, STORE_URL } = globalThis.MEMEBOX_CONFIG;
@@ -446,6 +454,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // A meme was played (used for the one-time "Enjoying MemeBox?" ask).
     case 'played-one':
       countPlay(tabId).catch(() => {});
+      break;
+
+    // The panel's language list picked a language: add that language's built-in lines once (nothing else is added).
+    case 'add-lang-lines':
+      if (MEME.isLang(msg.lang)) addLangLines(msg.lang).catch(() => {});
       break;
 
     // A call started: load the speech engine in advance.

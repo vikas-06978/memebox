@@ -1464,5 +1464,8 @@
   },
   "chip_lang_more": {
     "message": "More languages…"
+  },
+  "op_lang_mine": {
+    "message": "My languages"
   }
 }

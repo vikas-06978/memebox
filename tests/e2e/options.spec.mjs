@@ -36,7 +36,7 @@ test('first install has the general pack + College, Cricket, Office, Party', asy
   for (const c of ['general', 'college', 'cricket', 'office', 'party']) expect(cats.has(c)).toBe(true);
   expect(cats.has('effects')).toBe(false); // the Sound effects pack is optional: it is only there once added
   expect(lines.length).toBeGreaterThanOrEqual(46);
-  await expect(page.locator('#builtin-packs li')).toHaveCount(7);
+  await expect(page.locator('#builtin-packs li')).toHaveCount(6);
 });
 
 test('upload a WAV, trim it, save as a clip, and it plays into the call', async ({ context, extensionId, callPage }) => {
@@ -187,4 +187,18 @@ test('per-line volume: a line at 0% is silent in the call, at 200% it is loud', 
   const loud = await callPage.evaluate(() => window.peakOver(2500));
   expect(silent).toBeLessThan(Math.max(0.3, micOnly * 1.5));
   expect(loud).toBeGreaterThan(Math.max(0.5, silent * 2));
+});
+
+test('English browser: the lines list shows only English (+ my own); other languages come only when picked', async ({ context, extensionId }) => {
+  const page = await openOptions(context, extensionId);
+  const langs = async () => [...new Set(await page.$$eval('#lines-body tr td .tag', (els) => els.map((e) => e.textContent.trim())))];
+  const before = ((await page.store('lines')).lines || []).filter((l) => l.category === 'world').length;
+  expect(before, 'no World lines are stored on an English first install').toBe(0);
+  expect((await langs()).filter((c) => !['en', 'hi'].includes(c) && c.length === 2)).toEqual([]);
+  await page.selectOption('#lines-lang', 'ja'); // picking a language adds its 4 lines
+  await expect.poll(async () => ((await page.store('lines')).lines || []).filter((l) => l.lang === 'ja').length).toBe(4);
+  await expect(page.locator('#lines-body tr')).toHaveCount(4);
+  await page.selectOption('#lines-lang', 'mine');
+  await expect(page.locator('#lines-body tr').first()).toBeVisible();
+  expect(await page.$$eval('#lines-body tr', (r) => r.length)).toBeGreaterThanOrEqual(14);
 });
