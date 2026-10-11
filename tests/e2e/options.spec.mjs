@@ -36,7 +36,7 @@ test('first install has the general pack + College, Cricket, Office, Party', asy
   for (const c of ['general', 'college', 'cricket', 'office', 'party']) expect(cats.has(c)).toBe(true);
   expect(cats.has('effects')).toBe(false); // the Sound effects pack is optional: it is only there once added
   expect(lines.length).toBeGreaterThanOrEqual(46);
-  await expect(page.locator('#builtin-packs li')).toHaveCount(6);
+  await expect(page.locator('#builtin-packs li')).toHaveCount(7);
 });
 
 test('upload a WAV, trim it, save as a clip, and it plays into the call', async ({ context, extensionId, callPage }) => {

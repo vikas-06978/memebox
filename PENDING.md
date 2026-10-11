@@ -17,6 +17,13 @@
 - Dollar prices stay $1.49 / 2.49 / 3.99 / 5.49 (rupees ₹9 / 15 / 25 / 35).
 - Check if the "Start here" card is too tall; shrink if needed.
 
+## Store listing, update notice and video (at release, when told)
+- Rewrite the Chrome Web Store description and screenshots (the live listing still describes the old free app): headline, free / Pro / Pro Max with rupees and dollars, 26 languages, characters. English first, translations later.
+- No "coming soon" teaser. Instead: a one-time "What's new in 2.0" card after the update (existing key holders keep unlimited, say it clearly) and a short note on the website home page.
+- Main video, 60-90 s, no voice-over and big captions so it works in every language: install, play a meme in a Meet call, lights, characters, music, Pro / Pro Max and prices. Recorded from the final 2.0 build. Captions in other languages later.
+- Pro / Pro Max explanation in each language for the store listing and video captions (the pricing page already has 12 languages).
+- Update the old dollar prices in this file: now Pro 30 min $1.49, 1 h $2.49, 2 h $3.99; Pro Max 1 h $3.49, 3 h $6.49; characters $0.99-$1.99, bundle $5.99.
+
 ## Security and copy protection (before the store release)
 - Honest limit: extension code can always be read by anyone who installs it. We can only make copying slow and the paid parts useless without us.
 - Release build: minify and obfuscate the JS, strip comments, no source maps, no tests or tools in the store zip.

@@ -7,7 +7,7 @@
   const params = new URLSearchParams(location.search);
   let orderId = /^MB[A-HJ-NP-Z2-9]{10}$/.test(params.get('order') || '') ? params.get('order') : '';
   let pollTimer = 0;
-  const wanted = /^pass_[a-z0-9_]{3,20}$/.test(params.get('product') || '') ? params.get('product') : '';
+  const wanted = /^(pass|char|chars)_[a-z0-9_]{2,20}$/.test(params.get('product') || '') ? params.get('product') : '';
 
   function showError(text) {
     $('error').textContent = text;
@@ -137,6 +137,7 @@
     const box = $('products');
     for (const [id, p] of Object.entries(c.products || {})) {
       const isPass = p.proSeconds > 0 || p.maxSeconds > 0;
+      const isChar = Array.isArray(p.addons) && p.addons.length > 0;
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'primary';
@@ -144,13 +145,13 @@
       b.dataset.product = id;
       b.addEventListener('click', () => buy(id));
       const card = document.createElement('article');
-      card.className = 'card product' + (p.unlimited || p.maxSeconds ? ' best' : '');
+      card.className = 'card product' + (p.unlimited || p.maxSeconds ? ' best' : '') + (isChar ? ' char' : '');
       const h = document.createElement('h2');
-      h.textContent = isPass ? T('buy_name_' + id) : p.unlimited ? 'MemeBox Pro' : T('buy_more_pics', p.pictureSlots);
+      h.textContent = isPass ? T('buy_name_' + id) : isChar ? (id === 'chars_all' ? T('buy_chars_all') : T('buy_char_title', id.replace(/^char_/, '').replace(/^./, (c) => c.toUpperCase()))) : p.unlimited ? 'MemeBox Pro' : T('buy_more_pics', p.pictureSlots);
       const d = document.createElement('p');
       d.className = 'muted';
       d.textContent = isPass ? T(p.maxSeconds ? 'buy_pass_desc_max' : 'buy_pass_desc_pro')
-        : p.unlimited ? T('buy_pro_desc') : T('buy_pics_desc', p.pictureSlots);
+        : isChar ? T('buy_char_desc') : p.unlimited ? T('buy_pro_desc') : T('buy_pics_desc', p.pictureSlots);
       const price = document.createElement('p');
       price.className = 'price';
       price.textContent = `₹${p.inr}`;

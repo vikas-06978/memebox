@@ -1,7 +1,7 @@
 // MemeBox site: admin dashboard data, HTML and CSV.
 import { escapeHtml as h } from './http.js';
 import { FEATURES, REASONS, PLATFORMS, DEVICES } from './validate.js';
-import { PRODUCTS } from './shop.js';
+import { PRODUCTS, parseAddons } from './shop.js';
 
 export const RATING_FACES = { 1: '😞', 2: '😐', 3: '🙂', 4: '😍' };
 const REASON_TEXT = {
@@ -172,7 +172,7 @@ function bars(entries) {
     <li><span class="label">${h(label)}</span><progress max="${max}" value="${n}"></progress><b>${n}</b></li>`).join('')}</ul>`;
 }
 
-const PRODUCT_TEXT = { pictures5: '5 more pictures', pro: 'Pro (unlimited)', pass_pro_30: 'Pro pass 30 min', pass_pro_60: 'Pro pass 1 h', pass_pro_120: 'Pro pass 2 h', pass_max_180: 'Pro Max pass 3 h' };
+const PRODUCT_TEXT = Object.fromEntries(Object.entries(PRODUCTS).map(([id, p]) => [id, p.name.replace('pass: ', 'pass ')]));
 
 function licenseText(l) {
   if (l.unlimited) return 'Pro, unlimited';
@@ -180,6 +180,8 @@ function licenseText(l) {
   const parts = [];
   if (l.max_seconds > 0) parts.push(`Pro Max ${mins(l.max_seconds)} min left`);
   if (l.pro_seconds > 0) parts.push(`Pro ${mins(l.pro_seconds)} min left`);
+  const chars = parseAddons(l.addons).filter((x) => x.id.startsWith('character:')).map((x) => x.id.slice(10));
+  if (chars.length) parts.push(`characters: ${chars.join(', ')}`);
   if (l.picture_slots > 0 || !parts.length) parts.push(`${l.picture_slots} picture slot${l.picture_slots === 1 ? '' : 's'}`);
   return parts.join(', ');
 }

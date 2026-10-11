@@ -15,6 +15,14 @@
     excited:  { label: 'Excited',  emoji: '🤩', espeak: { rate: 190, pitch: 78, range: 95, volume: 125 }, playbackRate: 1.1,  gain: 1.35 },
   };
 
+  // Languages meme lines can be spoken in (an eSpeak-NG voice is bundled for each). Shown as chips / in the language list.
+  const LANGS = {
+    en: 'English', hi: 'हिन्दी', es: 'Español', fr: 'Français', de: 'Deutsch', pt: 'Português', it: 'Italiano', id: 'Bahasa Indonesia',
+    tr: 'Türkçe', ar: 'العربية', bn: 'বাংলা', ta: 'தமிழ்', te: 'తెలుగు', mr: 'मराठी', gu: 'ગુજરાતી', pa: 'ਪੰਜਾਬੀ', ur: 'اردو',
+    vi: 'Tiếng Việt', ja: '日本語', ko: '한국어', nl: 'Nederlands', pl: 'Polski', sw: 'Kiswahili', ro: 'Română', sv: 'Svenska', fa: 'فارسی',
+  };
+  const isLang = (c) => Object.prototype.hasOwnProperty.call(LANGS, c);
+
   // `text` is what is shown and `say` (optional) is what eSpeak pronounces.
   // Hinglish lines get a Devanagari `say` so the Hindi voice reads them naturally.
   const LINES = [
@@ -74,6 +82,8 @@
     tabVolume: 1,         // another tab's sound in the call, 0-2
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
+    panelTab: 'memes',    // the page of the panel you left open: memes | music | lights | sound
+    lineLang: 'auto',     // which meme lines to show: auto (from the browser language and time zone) | all | en | hi
     camUnmirror: true,    // while a camera caption shows, flip your own (mirrored) preview back so you can read it too
     theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)
     fx: {},               // Lights & looks (lib/fx.js): lamp, colours, light show, filter. {} = the defaults
@@ -139,7 +149,7 @@
       id: String(l.id || '').slice(0, 64) || 'l-' + Math.random().toString(36).slice(2, 10),
       kind,
       text,
-      lang: l.lang === 'hi' ? 'hi' : 'en',
+      lang: isLang(l.lang) ? l.lang : 'en',
       tone: Object.prototype.hasOwnProperty.call(TONES, l.tone) ? l.tone : 'normal',
       fav: Number.isInteger(l.fav) && l.fav >= 1 && l.fav <= 9 ? l.fav : 0,
       category: cleanCategory(l.category),
@@ -156,7 +166,7 @@
   }
 
   globalThis.MEME = Object.freeze({
-    TONES, VOICES, THEMES, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, THEMES, LANGS, isLang, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

@@ -43,14 +43,26 @@ test('UPI link has the payee, amount in rupees, INR and the order code as the no
   assert.throws(() => upiLink({ upiId: 'not a vpa', amount: 1, orderId: 'x' }));
 });
 
-test('prices: time passes ₹9 / 15 / 25 / 35 and $1.49 / 2.49 / 3.99 / 5.49; the old lifetime Pro and picture packs are closed', () => {
+test('prices: Pro ₹9 / 15 / 25 and Pro Max ₹25 / 49 (dollars 1.49 / 2.49 / 3.99 and 3.49 / 6.49); characters ₹29 / 39 / 49 and all ten for ₹249; Pro Max costs more per hour than any Pro pass', () => {
   const p = PRODUCTS;
-  assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_180.inr], [9, 15, 25, 35]);
-  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_180.usd], [1.49, 2.49, 3.99, 5.49]);
-  assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_max_180.maxSeconds], [1800, 3600, 7200, 10800]);
+  assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_60.inr, p.pass_max_180.inr], [9, 15, 25, 25, 49]);
+  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_60.usd, p.pass_max_180.usd], [1.49, 2.49, 3.99, 3.49, 6.49]);
+  assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_max_60.maxSeconds, p.pass_max_180.maxSeconds], [1800, 3600, 7200, 3600, 10800]);
+  const perHour = (x) => x.inr / ((x.proSeconds + x.maxSeconds) / 3600), perHourUsd = (x) => x.usd / ((x.proSeconds + x.maxSeconds) / 3600);
+  const cheapestPro = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120'].map((id) => perHour(p[id])));
+  const cheapestProUsd = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120'].map((id) => perHourUsd(p[id])));
+  for (const id of ['pass_max_60', 'pass_max_180']) { assert.ok(perHour(p[id]) > cheapestPro, id + ' costs more per hour than Pro (rupees)'); assert.ok(perHourUsd(p[id]) > cheapestProUsd, id + ' costs more per hour than Pro (dollars)'); }
   assert.equal(p.pro.closed, true);
   assert.equal(p.pictures5.closed, true);
-  assert.deepEqual(forSale().map(([id]) => id), ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_180']);
+  assert.deepEqual(['bunny', 'panda', 'owl', 'fox'].map((c) => p['char_' + c].inr), [29, 29, 29, 29]);
+  assert.deepEqual(['penguin', 'lion', 'monkey', 'frog'].map((c) => p['char_' + c].inr), [39, 39, 39, 39]);
+  assert.deepEqual(['unicorn', 'robot'].map((c) => p['char_' + c].inr), [49, 49]);
+  assert.equal(p.chars_all.inr, 249);
+  assert.equal(p.chars_all.addons.length, 10);
+  const separately = Object.entries(p).filter(([id]) => id.startsWith('char_')).reduce((a, [, x]) => a + x.inr, 0);
+  assert.ok(p.chars_all.inr < separately, 'the bundle is cheaper than buying one by one');
+  assert.deepEqual(forSale().map(([id]) => id).slice(0, 5), ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_60', 'pass_max_180']);
+  assert.equal(forSale().length, 5 + 10 + 1);
 });
 
 test('wrangler.toml has no UPI ID or other settings, so the dashboard values are never overwritten', () => {
@@ -60,8 +72,9 @@ test('wrangler.toml has no UPI ID or other settings, so the dashboard values are
 test('/api/config tells the buy page the products and whether payments are open', async () => {
   const on = await (await call(configApi, req('/api/config'))).json();
   assert.equal(on.payments, true);
-  assert.equal(on.products.pass_max_180.inr, 35);
-  assert.equal(on.products.pass_max_180.usd, 5.49);
+  assert.equal(on.products.pass_max_180.inr, 49);
+  assert.equal(on.products.pass_max_180.usd, 6.49);
+  assert.deepEqual(on.products.char_bunny.addons, ['character:bunny']);
   assert.equal(on.products.pro, undefined, 'the old lifetime Pro is not for sale');
   const off = await (await call(configApi, req('/api/config'), { DB: db })).json();
   assert.equal(off.payments, false);
@@ -72,7 +85,7 @@ test('/api/license: active, unknown, badly formed and turned-off keys; CORS for 
   const ok = await call(licenseApi, postJson('/api/license', { key: key.toLowerCase() }));
   assert.equal(ok.status, 200);
   assert.equal(ok.headers.get('Access-Control-Allow-Origin'), '*');
-  assert.deepEqual((await ok.json()).license, { key, status: 'active', unlimited: true, pictureSlots: 0, proSeconds: 0, maxSeconds: 0 });
+  assert.deepEqual((await ok.json()).license, { key, status: 'active', unlimited: true, pictureSlots: 0, proSeconds: 0, maxSeconds: 0, addons: [] });
   assert.match((await getLicense(db, key)).last_seen, /^\d{4}-\d\d-\d\d$/);
 
   assert.equal((await call(licenseApi, postJson('/api/license', { key: 'MBX-AAAA-BBBB-CCCC' }))).status, 404);
@@ -233,4 +246,30 @@ test('admin shows an activity section: earned, funnel, charts and pass time from
   assert.match(html, /<svg class="chart"/);
   assert.match(html, /Pass time/);
   assert.doesNotMatch(html, /style="/, 'the admin page CSP blocks inline styles');
+});
+
+test('buying a character: a new key owns it; buying on an existing key adds it (and the bundle adds all ten); the key tells the extension', async () => {
+  const buy = async (product, forKey = '') => {
+    const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product, forKey }))).json();
+    assert.ok(created.ok, JSON.stringify(created));
+    await call(orderApi, postJson('/api/order', { action: 'claim', orderId: created.orderId, utr: String(Math.floor(1e11 + Math.random() * 9e11)) }));
+    await call(adminOrder, adminForm('/admin/order', { id: created.orderId, action: 'approve' }));
+    return (await (await call(orderApi, req('/api/order?id=' + created.orderId))).json()).order.licenseKey;
+  };
+  const key = await buy('char_panda');
+  assert.match(key, LICENSE_RE);
+  let view = (await (await call(licenseApi, postJson('/api/license', { key }))).json()).license;
+  assert.deepEqual(view.addons, [{ id: 'character:panda', until: 0 }]);
+  assert.equal(view.proSeconds, 0, 'a character is not a time pass');
+  await buy('char_lion', key);
+  await buy('char_panda', key); // the same one twice is kept once
+  view = (await (await call(licenseApi, postJson('/api/license', { key }))).json()).license;
+  assert.deepEqual(view.addons.map((a) => a.id).sort(), ['character:lion', 'character:panda']);
+  await buy('chars_all', key);
+  view = (await (await call(licenseApi, postJson('/api/license', { key }))).json()).license;
+  assert.equal(view.addons.length, 10);
+  assert.ok(view.addons.every((a) => /^character:[a-z]+$/.test(a.id)));
+  const dash = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
+  assert.match(dash, /characters: /);
+  assert.match(dash, /Character: Panda/);
 });

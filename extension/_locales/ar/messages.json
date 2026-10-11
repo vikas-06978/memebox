@@ -1440,5 +1440,29 @@
   },
   "fx_seen_off": {
     "message": "نموذج الوجه لا يستجيب بعد. انتظر بضع ثوانٍ، وإن استمر ذلك فأعد تحميل تبويب المكالمة."
+  },
+  "tab_memes": {
+    "message": "ميمز"
+  },
+  "tab_music": {
+    "message": "موسيقى"
+  },
+  "tab_lights": {
+    "message": "إضاءة"
+  },
+  "tab_sound": {
+    "message": "صوت"
+  },
+  "chip_lang_all": {
+    "message": "كل اللغات"
+  },
+  "fx_more": {
+    "message": "خيارات أكثر"
+  },
+  "cat_world": {
+    "message": "العالم"
+  },
+  "chip_lang_more": {
+    "message": "لغات أخرى…"
   }
 }

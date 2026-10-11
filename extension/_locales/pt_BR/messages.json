@@ -1440,5 +1440,29 @@
   },
   "fx_seen_off": {
     "message": "O modelo de rosto ainda não responde. Espere alguns segundos; se continuar, recarregue a aba da chamada."
+  },
+  "tab_memes": {
+    "message": "Memes"
+  },
+  "tab_music": {
+    "message": "Música"
+  },
+  "tab_lights": {
+    "message": "Luzes"
+  },
+  "tab_sound": {
+    "message": "Som"
+  },
+  "chip_lang_all": {
+    "message": "Todos os idiomas"
+  },
+  "fx_more": {
+    "message": "Mais opções"
+  },
+  "cat_world": {
+    "message": "Mundo"
+  },
+  "chip_lang_more": {
+    "message": "Mais idiomas…"
   }
 }

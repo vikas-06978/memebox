@@ -1,5 +1,5 @@
 // Refreshes vendor/espeak-ng/ from the @echogarden/espeak-ng-emscripten npm package,
-// keeping only the Hindi and English dictionaries (about 24 MB -> about 1.5 MB).
+// keeping English, Hindi and about 24 other small language dictionaries (24 MB -> about 3 MB; Russian and Chinese are left out for size).
 //
 // You do NOT need to run this to use the extension: the output is already
 // committed in vendor/espeak-ng/. It exists so the bundled binary can be
@@ -14,7 +14,7 @@ import os from 'node:os';
 import { execSync } from 'node:child_process';
 
 const PKG = '@echogarden/espeak-ng-emscripten@0.3.5';
-const KEEP_DICTS = new Set(['en_dict', 'hi_dict']);
+const KEEP_DICTS = new Set(['en','hi','es','fr','de','pt','it','id','tr','nl','pl','sw','ar','bn','ta','te','mr','gu','pa','ur','vi','ja','ko','ro','sv','fa'].map((l) => l + '_dict'));
 const outDir = path.resolve(import.meta.dirname, '..', 'extension', 'vendor', 'espeak-ng');
 
 let srcDir = process.argv[2];

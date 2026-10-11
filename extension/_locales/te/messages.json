@@ -1440,5 +1440,29 @@
   },
   "fx_seen_off": {
     "message": "ఫేస్ మోడల్ ఇంకా స్పందించడం లేదు. కొన్ని సెకన్లు వేచి ఉండండి; అలాగే ఉంటే కాల్ ట్యాబ్‌ను రీలోడ్ చేయండి."
+  },
+  "tab_memes": {
+    "message": "మీమ్స్"
+  },
+  "tab_music": {
+    "message": "సంగీతం"
+  },
+  "tab_lights": {
+    "message": "లైట్"
+  },
+  "tab_sound": {
+    "message": "శబ్దం"
+  },
+  "chip_lang_all": {
+    "message": "అన్ని భాషలు"
+  },
+  "fx_more": {
+    "message": "మరిన్ని ఎంపికలు"
+  },
+  "cat_world": {
+    "message": "ప్రపంచం"
+  },
+  "chip_lang_more": {
+    "message": "మరిన్ని భాషలు…"
   }
 }

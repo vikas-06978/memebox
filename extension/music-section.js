@@ -41,6 +41,7 @@
       el('div', { className: 'row' }, el('span', {}, '\u{1F50A}'), vol, stopBtn));
     const sum = el('span', { className: 'sum' });
     const details = el('details', { className: 'settings fx' }, el('summary', {}, el('span', {}, t('mu_title')), sum), body);
+    details.dataset.page = 'music';
     const anchor = api.panel.querySelector('details.fx') || api.settingsDetails;
     anchor.after(details);
 

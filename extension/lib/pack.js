@@ -89,7 +89,7 @@
         if (l.kind !== 'tts' && l.kind !== 'clip' && l.kind !== 'sfx') err(`${p}.kind`, 'must be "tts", "clip" or "sfx"');
         if (!isStr(l.text, LIMITS.text, 1) || !l.text.trim() || !noControl(l.text)) err(`${p}.text`, `1-${LIMITS.text} characters`);
         if (l.say !== undefined && (!isStr(l.say, LIMITS.text) || !noControl(l.say))) err(`${p}.say`, `up to ${LIMITS.text} characters`);
-        if (l.lang !== 'hi' && l.lang !== 'en') err(`${p}.lang`, 'must be "hi" or "en"');
+        if (!globalThis.MEME.isLang(l.lang)) err(`${p}.lang`, `one of ${Object.keys(globalThis.MEME.LANGS).join(', ')}`);
         if (!Object.prototype.hasOwnProperty.call(TONES, l.tone)) err(`${p}.tone`, `one of ${Object.keys(TONES).join(', ')}`);
         if (!isStr(l.category, LIMITS.category, 1) || !noControl(l.category)) err(`${p}.category`, `1-${LIMITS.category} characters`);
         if (l.fav !== undefined && !(Number.isInteger(l.fav) && l.fav >= 0 && l.fav <= 9)) err(`${p}.fav`, 'whole number 0-9');

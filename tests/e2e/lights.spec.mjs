@@ -100,14 +100,21 @@ test('a free person cannot send Pro looks: locked corner lights, a drop animatio
   expect(proCorner.r, 'the rose corner light for Pro').toBeGreaterThan(corner.r + 25);
 });
 
-test('a character (cat) sits in the corner for Pro, not for a free person', async ({ context, callPage }) => {
+test('a Pro Max character (lion) sits in the corner for a key, not for a free person; the free cat sits there for everybody', async ({ context, callPage }) => {
   const [sw] = context.serviceWorkers();
   await sw.evaluate(() => chrome.storage.local.remove('license'));
   await callPage.evaluate(helpers);
-  await setFx(context, { armed: true, on: true, lamp: false, focus: false, character: 'cat', charPos: 'right', mirror: false });
+  await setFx(context, { armed: true, on: true, lamp: false, focus: false, character: 'lion', charPos: 'right', mirror: false });
   await callPage.evaluate(() => window.openCam());
   await callPage.waitForTimeout(1800);
   const free = await callPage.evaluate(() => window.avg(0.78, 0.68, 0.88, 0.8));
+  // the free cat is there without any key
+  await setFx(context, { armed: true, on: true, lamp: false, focus: false, character: 'cat', charPos: 'right', mirror: false });
+  await callPage.waitForTimeout(2500);
+  const cat = await callPage.evaluate(() => window.avg(0.78, 0.68, 0.88, 0.8));
+  expect(cat.r - free.r, 'a free person has the cat').toBeGreaterThan(30);
+  await setFx(context, { armed: true, on: true, lamp: false, focus: false, character: 'lion', charPos: 'right', mirror: false });
+  await callPage.waitForTimeout(1500);
 
   await sw.evaluate(() => chrome.storage.local.set({ license: { key: 'MBX-TEST-TEST-TEST', status: 'active', unlimited: true, pictureSlots: 0, checkedAt: Date.now() } }));
   await callPage.waitForTimeout(2500); // the cat pops up

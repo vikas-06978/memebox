@@ -838,6 +838,8 @@ $('timer-form').addEventListener('submit', (e) => {
 
 $('feedback').addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-feedback' }).catch(() => {}));
 
+$('line-lang').replaceChildren(...Object.entries(MEME.LANGS).map(([code, name]) => el('option', { value: code }, `${name} (${code})`)));
+
 // ---------- language ----------
 // "Auto" follows Chrome's language. Picking one loads its texts for every MemeBox page and
 // the on-call panel (see lib/i18n-page.js).

@@ -8,6 +8,6 @@ export function onRequest({ request, env }) {
   return json({
     turnstileSiteKey: env.TURNSTILE_SITE_KEY || '',
     payments: !!(env.UPI_ID && VPA_RE.test(env.UPI_ID)),
-    products: Object.fromEntries(forSale().map(([id, p]) => [id, { name: p.name, inr: p.inr, usd: p.usd, unlimited: p.unlimited, pictureSlots: p.pictureSlots, proSeconds: p.proSeconds, maxSeconds: p.maxSeconds }])),
+    products: Object.fromEntries(forSale().map(([id, p]) => [id, { name: p.name, inr: p.inr, usd: p.usd, unlimited: p.unlimited, pictureSlots: p.pictureSlots, proSeconds: p.proSeconds, maxSeconds: p.maxSeconds, addons: p.addons }])),
   }, 200, { 'Cache-Control': 'public, max-age=300' });
 }
