@@ -1581,5 +1581,11 @@
   },
   "op_online_full": {
     "message": "O espaço para pacotes neste computador está cheio ($1 adicionados, $2 MB no total). Remova um pacote para adicionar mais."
+  },
+  "mu_phonk": {
+    "message": "🔥 Modo Phonk"
+  },
+  "mu_phonk_tip": {
+    "message": "Faixas de phonk oficiais pelo YouTube, enviadas depois para sua chamada"
   }
 }

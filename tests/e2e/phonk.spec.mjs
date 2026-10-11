@@ -1,0 +1,78 @@
+// Phonk Mode: the /phonk page on the site. Free tracks play for everybody, paid ones are locked until the plan allows them, the key from the
+// extension (after "#") is removed from the address, and YouTube's own embed is shown (here a stand-in page: no network).
+import { test as base, expect } from '@playwright/test';
+import { startSite } from '../../tools/site-dev.mjs';
+import { createLicense } from '../../site/src/shop.js';
+
+const test = base.extend({
+  site: [async ({}, use) => {
+    const site = await startSite({ env: { ADMIN_KEY: 'k' } });
+    const ts = new Date().toISOString();
+    await site.db.prepare("INSERT INTO packs (id, title, kind, region, tier, description, status, sort, created_at, updated_at) VALUES ('phonk-mode', 'Phonk Mode', 'links', 'common', 'max', '', 'live', 1, ?, ?)").bind(ts, ts).run();
+    const add = (n, id, title, artist, tier) => site.db.prepare("INSERT INTO pack_items (id, pack_id, title, kind, text, credit, licence, cleared, status, sort, created_at, tier) VALUES (?, 'phonk-mode', ?, 'link', ?, ?, 'Official', 1, 'live', ?, ?, ?)").bind(`i-link00000${n}`, title, id, artist, n, ts, tier).run();
+    await add(1, 'aaaaaaaaaaa', 'Free track', 'Artist A', 'free');
+    await add(2, 'bbbbbbbbbbb', 'Pro track', 'Artist B', 'pro');
+    await add(3, 'ccccccccccc', 'Max track', 'Artist C', '');
+    site.proKey = await createLicense(site.db, { kind: 'paid', proSeconds: 600 });
+    await use(site);
+    await site.close();
+  }, { scope: 'test' }],
+  page: async ({ page }, use) => {
+    page.cspErrors = [];
+    page.on('console', (m) => { if (/Content Security Policy/i.test(m.text())) page.cspErrors.push(m.text()); });
+    await page.route('https://www.youtube-nocookie.com/**', (route) => route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>stand-in for the YouTube player</title><p>player</p>' }));
+    await use(page);
+  },
+});
+test.use({ channel: 'chromium' });
+
+test('Phonk Mode: free for everybody, paid tracks are "Coming soon" and locked; the free one plays in YouTube\'s embed', async ({ page, site }) => {
+  await page.goto(`${site.url}/phonk`);
+  await expect(page.locator('h1')).toHaveText('Phonk Mode');
+  await expect(page.locator('#tracks li')).toHaveCount(3);
+  await expect(page.locator('#tracks li').nth(0).locator('.tier')).toHaveText('Free');
+  await expect(page.locator('#tracks li').nth(1).locator('.tier')).toHaveText('Coming soon'); // the shop is closed: no payments set up
+  await expect(page.locator('#tracks li').nth(1).locator('button')).toBeDisabled();
+  await expect(page.locator('#player-box')).toBeHidden();
+  await page.locator('#tracks li').nth(0).locator('button').click();
+  await expect(page.locator('#player-box')).toBeVisible();
+  const src = await page.locator('#player').getAttribute('src');
+  expect(src).toContain('https://www.youtube-nocookie.com/embed/aaaaaaaaaaa');
+  expect(src).toContain('autoplay=1');
+  await expect(page.locator('#now')).toContainText('Free track');
+  await expect(page.locator('#open-yt')).toHaveAttribute('href', 'https://www.youtube.com/watch?v=aaaaaaaaaaa');
+  // the player is really visible (YouTube requires it): at least 200 x 200
+  const size = await page.locator('#player').boundingBox();
+  expect(size.width).toBeGreaterThanOrEqual(200);
+  expect(size.height).toBeGreaterThanOrEqual(200);
+  // "next" skips the tracks this person may not play
+  await page.locator('#next').click();
+  await page.waitForTimeout(300);
+  expect(await page.locator('#player').getAttribute('src')).toContain('aaaaaaaaaaa'); // nothing else is allowed, so it stays
+  expect(page.cspErrors).toEqual([]);
+});
+
+test('Phonk Mode: the key after "#" unlocks the Pro track, is removed from the address, and a Pro key does not open a Pro Max track', async ({ page, site }) => {
+  await page.goto(`${site.url}/phonk#k=${site.proKey}`);
+  await expect(page.locator('#tracks li')).toHaveCount(3);
+  expect(page.url()).toBe(`${site.url}/phonk`); // the key is gone from the address
+  await expect(page.locator('#tracks li').nth(1).locator('button')).toBeEnabled();
+  await expect(page.locator('#tracks li').nth(2).locator('button')).toBeDisabled(); // tier '' = the pack's plan: Pro Max
+  await page.locator('#tracks li').nth(1).locator('button').click();
+  await expect(page.locator('#player')).toHaveAttribute('src', /bbbbbbbbbbb/);
+  await page.locator('#next').click(); // the next playable one after this: none (the Pro Max one is locked)
+  await expect(page.locator('#player')).toHaveAttribute('src', /bbbbbbbbbbb/);
+  await page.screenshot({ path: 'tests/.tmp/phonk-page.png', fullPage: true });
+});
+
+test('Phonk Mode: switched off (PHONK_MODE=off) the page says it is resting and gives no links', async ({ page }) => {
+  const site = await startSite({ env: { ADMIN_KEY: 'k', PHONK_MODE: 'off' } });
+  try {
+    const ts = new Date().toISOString();
+    await site.db.prepare("INSERT INTO packs (id, title, kind, region, tier, description, status, sort, created_at, updated_at) VALUES ('p', 'P', 'links', 'common', 'free', '', 'live', 1, ?, ?)").bind(ts, ts).run();
+    await site.db.prepare("INSERT INTO pack_items (id, pack_id, title, kind, text, credit, licence, cleared, status, sort, created_at, tier) VALUES ('i-link000099', 'p', 'T', 'link', 'aaaaaaaaaaa', 'A', 'Official', 1, 'live', 1, ?, 'free')").bind(ts).run();
+    await page.goto(`${site.url}/phonk`);
+    await expect(page.locator('#status')).toContainText('resting');
+    await expect(page.locator('#tracks li')).toHaveCount(0);
+  } finally { await site.close(); }
+});

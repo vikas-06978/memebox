@@ -1581,5 +1581,11 @@
   },
   "op_online_full": {
     "message": "El espacio para packs de este equipo está lleno ($1 añadidos, $2 MB en total). Quita un pack para añadir más."
+  },
+  "mu_phonk": {
+    "message": "🔥 Modo Phonk"
+  },
+  "mu_phonk_tip": {
+    "message": "Temas phonk oficiales por YouTube, enviados luego a tu llamada"
   }
 }

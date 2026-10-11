@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Phonk Mode: MemeBox</title>
+  <link rel="icon" href="/assets/icon.png">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/prefs.js"></script>
+</head>
+<body class="page-bg">
+  <main class="wrap phonk">
+    <header class="page-head">
+      <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
+      <h1 data-t="ph_title">Phonk Mode</h1>
+      <p class="muted" data-t="ph_intro">Official phonk tracks, played through YouTube. MemeBox does not host or copy any music.</p>
+    </header>
+
+    <section class="card player-card">
+      <div class="player-box" id="player-box" hidden>
+        <iframe id="player" title="YouTube player" width="560" height="315" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <p id="now" class="now"><span data-t="ph_pick">Pick a track to start</span></p>
+      <div class="controls">
+        <button type="button" id="prev" data-t-aria="ph_prev" aria-label="Previous">⏮</button>
+        <button type="button" id="toggle" class="primary" data-t-aria="ph_play" aria-label="Play / pause">⏯</button>
+        <button type="button" id="next" data-t-aria="ph_next" aria-label="Next">⏭</button>
+        <input type="range" id="volume" min="0" max="100" value="100" aria-label="Volume">
+        <a id="open-yt" class="button" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" hidden data-t="ph_open">Open on YouTube</a>
+      </div>
+      <p id="msg" class="hint" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <h2 id="list-title" data-t="ph_title">Phonk Mode</h2>
+      <p id="status" class="muted" role="status"><span data-t="ph_loading">Loading tracks…</span></p>
+      <ol id="tracks" class="tracks"></ol>
+    </section>
+
+    <section class="card steps">
+      <h2 data-t="ph_steps">Play it into your call</h2>
+      <ol>
+        <li data-t="ph_step1">Join your call (Google Meet, Zoom or Teams in the browser, or Discord).</li>
+        <li data-t="ph_step2">Keep this tab open, then click the MemeBox icon in the toolbar.</li>
+        <li data-t="ph_step3">Press “Send this tab’s sound”. Everybody in the call hears the music.</li>
+      </ol>
+      <p class="muted" data-t="ph_note">The music plays from YouTube, so its artists keep their views. YouTube may show an ad first, and the ad would play into the call too.</p>
+    </section>
+
+    <footer class="foot"><a href="/privacy" data-t="privacy">Privacy</a> <div class="prefs" data-prefs></div></footer>
+  </main>
+  <script src="/assets/phonk.js"></script>
+</body>
+</html>

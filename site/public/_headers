@@ -7,5 +7,9 @@
 /uninstall
   X-Robots-Tag: noindex
 
+/phonk
+  X-Robots-Tag: noindex
+  Content-Security-Policy: default-src 'self'; script-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self'; img-src 'self' data:; style-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+
 /assets/*
   Cache-Control: public, max-age=86400

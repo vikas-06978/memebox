@@ -1581,5 +1581,11 @@
   },
   "op_online_full": {
     "message": "This computer's space for packs is full ($1 added, $2 MB in total). Remove a pack to add more."
+  },
+  "mu_phonk": {
+    "message": "🔥 Phonk Mode"
+  },
+  "mu_phonk_tip": {
+    "message": "Official phonk tracks played through YouTube, then sent into your call"
   }
 }

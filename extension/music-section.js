@@ -30,6 +30,8 @@
     const addBtn = el('button', { className: 'chip add-music', type: 'button' }, t('mu_add'));
     const packsBtn = el('button', { className: 'chip add-music', type: 'button' }, t('pk_get')); // free music packs from the site (Options → Online packs)
     packsBtn.addEventListener('click', () => api.openPacks());
+    const phonkBtn = el('button', { className: 'chip add-music', type: 'button', title: t('mu_phonk_tip') }, t('mu_phonk')); // Phonk Mode: a page on our site with YouTube's own player
+    phonkBtn.addEventListener('click', () => api.openSite('/phonk'));
     mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });
     const status = el('div', { className: 'fx-status' });
@@ -92,7 +94,7 @@
         const x = el('button', { className: 'chip del', type: 'button', title: t('mu_del') }, '✕');
         x.addEventListener('click', async () => { if (callId === 'mine:' + m.id) stopAll(); await api.ask({ type: 'music-del', id: m.id }).catch(() => {}); });
         return el('span', { className: 'fx-pair' }, b, x);
-      }), addBtn, packsBtn);
+      }), addBtn, packsBtn, phonkBtn);
     }
     function playMine(id) {
       if (callId === 'mine:' + id) { stopAll(); return; }

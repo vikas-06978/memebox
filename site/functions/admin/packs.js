@@ -1,12 +1,12 @@
 // /admin/packs: the admin makes music and meme packs and uploads their audio (signed-in admins only).
 //   GET  /admin/packs            list of packs, and a form for a new one
 //   GET  /admin/packs?id=NAME    one pack: settings, upload audio, add text memes, every item
-//   POST /admin/packs            action = pack-create | pack-update | pack-delete | items-upload | lines-add | item-update | items-tier | item-delete
+//   POST /admin/packs            action = pack-create | pack-update | pack-delete | items-upload | lines-add | links-add | item-update | items-tier | item-delete
 import { adminResponse, adminRedirect } from '../../src/http.js';
 import { isAdmin } from '../../src/security.js';
 import { packsListPage, packPage } from '../../src/packs-admin.js';
 import {
-  listPacks, getPack, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, storageLimitBytes, storageUsed, PACK_ID_RE,
+  listPacks, getPack, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, addLinks, storageLimitBytes, storageUsed, PACK_ID_RE,
 } from '../../src/packs.js';
 
 const MESSAGES = {
@@ -63,6 +63,11 @@ export async function onRequest({ request, env }) {
       const r = await addAudio(env.DB, env.PACKS, packId, form.getAll('files'), meta, storageLimitBytes(env));
       const live = r.added ? ` ${meta.licenceKind === 'free' && !meta.source.trim() ? 'They are drafts: for "Copyright-free" paste the link that says so in Source, then set them live.' : meta.cleared && (meta.licenceKind || meta.licenceNote) ? 'They are live.' : 'They are drafts: tick "I may share this" and write the licence, then set them live.'}` : '';
       return back(packId, `${r.added} file${r.added === 1 ? '' : 's'} uploaded.${live}${r.skipped.length ? ' Skipped: ' + r.skipped.join('; ') : ''}`);
+    }
+    if (action === 'links-add') {
+      const r = await addLinks(env.DB, packId, form.get('links'), { cleared: form.get('official') === 'on', tier: String(form.get('itemTier') || '') });
+      const live = r.added ? (form.get('official') === 'on' ? ' They are live.' : ' They are drafts: tick the official-upload box, then set them live.') : '';
+      return back(packId, `${r.added} link${r.added === 1 ? '' : 's'} added.${live}${r.skipped.length ? ' Skipped: ' + r.skipped.join('; ') : ''}`);
     }
     if (action === 'lines-add') {
       const n = await addLines(env.DB, packId, form.get('lines'), meta);

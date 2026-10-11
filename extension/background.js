@@ -349,7 +349,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (msg.type === 'open-site') {
     // Only our own few pages, never a path the page chose.
-    const path = ['/buy', '/pricing'].includes(msg.path) ? msg.path : '/buy';
+    const path = ['/buy', '/pricing', '/phonk'].includes(msg.path) ? msg.path : '/buy';
+    if (path === '/phonk') {
+      // Phonk Mode (a page on our site with YouTube's own player): the key goes after the "#", so it is never sent to any server.
+      chrome.storage.local.get('license').then(({ license }) => {
+        const key = license && /^MBX-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(license.key || '') ? license.key : '';
+        chrome.tabs.create({ url: SITE_URL + path + (key ? '#k=' + key : '') });
+      }).catch(() => chrome.tabs.create({ url: SITE_URL + path }));
+      return;
+    }
     chrome.tabs.create({ url: SITE_URL + path });
     return;
   }

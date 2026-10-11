@@ -1581,5 +1581,11 @@
   },
   "op_online_full": {
     "message": "Ruang paket di komputer ini penuh ($1 ditambahkan, total $2 MB). Hapus satu paket untuk menambah lagi."
+  },
+  "mu_phonk": {
+    "message": "🔥 Mode Phonk"
+  },
+  "mu_phonk_tip": {
+    "message": "Lagu phonk resmi lewat YouTube, lalu dikirim ke panggilanmu"
   }
 }

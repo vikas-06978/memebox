@@ -10,7 +10,8 @@ import { onRequest as adminPacks } from '../../site/functions/admin/packs.js';
 import { onRequest as adminPackFile } from '../../site/functions/admin/packfile.js';
 import { onRequest as apiPacks } from '../../site/functions/api/packs.js';
 import { onRequest as apiPackFile } from '../../site/functions/api/pack-file.js';
-import { listPacks, listItems, canPublish, slugify } from '../../site/src/packs.js';
+import { listPacks, listItems, canPublish, slugify, youtubeId } from '../../site/src/packs.js';
+import { onRequest as apiPackLink } from '../../site/functions/api/pack-link.js';
 
 const ADMIN_KEY = 'admin-key-for-tests';
 let db, bucket, cookie;
@@ -304,4 +305,71 @@ test('a daily cap on how much too: big files use it up faster than small ones', 
   assert.equal((await get('203.0.113.77')).status, 200);
   assert.equal((await get('203.0.113.77')).status, 429, 'a second 0.6 MB file passes the 1 MB a day');
   assert.equal((await get('203.0.113.78')).status, 200, 'another person is fine');
+});
+
+test('Phonk Mode: YouTube links are stored (nothing hosted), need the official-upload box to go live, and keep their plan per track', async () => {
+  assert.equal(youtubeId('https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=5'), 'dQw4w9WgXcQ');
+  assert.equal(youtubeId('https://youtu.be/dQw4w9WgXcQ?si=abc'), 'dQw4w9WgXcQ');
+  assert.equal(youtubeId('https://music.youtube.com/watch?v=dQw4w9WgXcQ'), 'dQw4w9WgXcQ');
+  assert.equal(youtubeId('https://www.youtube.com/embed/dQw4w9WgXcQ'), 'dQw4w9WgXcQ');
+  assert.equal(youtubeId('https://www.youtube.com/shorts/dQw4w9WgXcQ'), 'dQw4w9WgXcQ');
+  assert.equal(youtubeId('https://example.com/watch?v=dQw4w9WgXcQ'), '', 'only YouTube');
+  assert.equal(youtubeId('https://www.youtube.com/watch?v=short'), '', 'not a video id');
+  assert.equal(youtubeId('javascript:alert(1)'), '');
+
+  const id = await makePack({ title: 'Phonk Mode', kind: 'links', tier: 'max' });
+  const links = 'https://www.youtube.com/watch?v=aaaaaaaaaaa | Track A | Artist A\nhttps://youtu.be/bbbbbbbbbbb | Track B\nhttps://example.com/nope\nhttps://youtu.be/aaaaaaaaaaa | Again';
+  let r = await call(adminPacks, post({ action: 'links-add', pack: id, links, itemTier: '' }));
+  assert.match(msgOf(r), /2 links added/);
+  assert.match(msgOf(r), /not a YouTube video link/);
+  assert.match(msgOf(r), /already in this pack/);
+  assert.match(msgOf(r), /drafts/, 'without the official-upload box they stay drafts');
+  let items = await listItems(db, id);
+  assert.deepEqual(items.map((i) => [i.kind, i.text, i.status, i.credit, i.bytes]), [['link', 'aaaaaaaaaaa', 'draft', 'Artist A', 0], ['link', 'bbbbbbbbbbb', 'draft', '', 0]]);
+  await call(adminPacks, post({ action: 'items-tier', pack: id, ids: [items[0].id], itemTier: 'free' }));
+  // confirm: add a third one as official, it goes live
+  r = await call(adminPacks, post({ action: 'links-add', pack: id, links: 'https://youtu.be/ccccccccccc | Track C', official: 'on', itemTier: 'pro' }));
+  assert.match(msgOf(r), /They are live/);
+  items = await listItems(db, id);
+  assert.equal(items[2].status, 'live');
+  assert.equal(items[2].tier, 'pro');
+  const page = await (await call(adminPacks, req('/admin/packs?id=' + id, { headers: { Cookie: cookie } }))).text();
+  assert.match(page, /Nothing is hosted/);
+  assert.match(page, /Open on YouTube/);
+  assert.doesNotMatch(page, /<iframe/, 'the admin page embeds nothing');
+});
+
+test('Phonk Mode: the catalogue hides the video ids, /api/pack-link gives one only to people whose plan allows it, and PHONK_MODE=off switches it all off', async () => {
+  const id = await makePack({ title: 'Phonk Mode', kind: 'links', tier: 'max' });
+  await call(adminPacks, post({ action: 'links-add', pack: id, links: 'https://youtu.be/aaaaaaaaaaa | Free one | A\nhttps://youtu.be/bbbbbbbbbbb | Pro one | B\nhttps://youtu.be/ccccccccccc | Max one | C', official: 'on' }));
+  const [a, b] = await listItems(db, id);
+  await call(adminPacks, post({ action: 'items-tier', pack: id, ids: [a.id], itemTier: 'free' }));
+  await call(adminPacks, post({ action: 'items-tier', pack: id, ids: [b.id], itemTier: 'pro' }));
+  await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Phonk Mode', region: 'common', tier: 'max', description: '', status: 'live', sort: '1' }));
+  const cat = await (await call(apiPacks, req('/api/packs'))).json();
+  assert.equal(cat.packs[0].items.length, 3);
+  assert.deepEqual(cat.packs[0].items.map((i) => i.tier), ['free', 'pro', 'max']);
+  assert.ok(cat.packs[0].items.every((i) => i.text === '' && i.bytes === 0), 'no video id in the public list');
+  assert.doesNotMatch(JSON.stringify(cat), /aaaaaaaaaaa|bbbbbbbbbbb|ccccccccccc/);
+
+  const items = await listItems(db, id);
+  const link = (item, key, e = env()) => call(apiPackLink, req('/api/pack-link?item=' + item, { headers: key ? { 'X-MemeBox-Key': key } : {} }), e);
+  const ok = await link(items[0].id);
+  assert.equal(ok.status, 200);
+  assert.deepEqual(await ok.json(), { ok: true, id: 'aaaaaaaaaaa', title: 'Free one', artist: 'A' });
+  assert.equal((await link(items[1].id)).status, 403, 'a Pro track needs a key');
+  assert.equal((await link(items[2].id)).status, 403);
+  const proKey = await createLicense(db, { kind: 'paid', proSeconds: 600 });
+  const maxKey = await createLicense(db, { kind: 'paid', maxSeconds: 600 });
+  assert.equal((await link(items[1].id, proKey)).status, 200);
+  assert.equal((await link(items[2].id, proKey)).status, 403, 'Pro does not open a Pro Max track');
+  assert.equal((await link(items[2].id, maxKey)).status, 200);
+  assert.equal((await link('i-doesnotexist')).status, 404);
+  // the kill switch
+  const off = env({ PHONK_MODE: 'off' });
+  assert.equal((await link(items[0].id, '', off)).status, 503);
+  const cat2 = await (await call(apiPacks, req('/api/packs'), off)).json();
+  assert.equal(cat2.packs.length, 0, 'the catalogue has no Phonk Mode packs while it is off');
+  // a link item is never served as a file
+  assert.equal((await call(apiPackFile, req('/api/pack-file?item=' + items[0].id))).status, 404);
 });
