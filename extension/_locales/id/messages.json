@@ -1557,5 +1557,35 @@
   },
   "op_online_limit": {
     "message": "Batas unduhan harian tercapai ($1 ditambahkan). Sisanya bisa ditambahkan besok."
+  },
+  "tone_normal": {
+    "message": "Biasa"
+  },
+  "tone_chipmunk": {
+    "message": "Tupai"
+  },
+  "tone_villain": {
+    "message": "Penjahat"
+  },
+  "tone_robot": {
+    "message": "Robot"
+  },
+  "tone_slowmo": {
+    "message": "Gerak lambat"
+  },
+  "tone_excited": {
+    "message": "Bersemangat"
+  },
+  "op_online_space": {
+    "message": "Paket di komputer ini: $1 dari $2 MB"
+  },
+  "op_online_full": {
+    "message": "Ruang paket di komputer ini penuh ($1 ditambahkan, total $2 MB). Hapus satu paket untuk menambah lagi."
+  },
+  "mu_phonk": {
+    "message": "🔥 Mode Phonk"
+  },
+  "mu_phonk_tip": {
+    "message": "Lagu phonk resmi lewat YouTube, lalu dikirim ke panggilanmu"
   }
 }

@@ -35,7 +35,7 @@ export function clientIp(request) {
 
 // Counts one hit for (bucket, IP) in this hour (or in the current window of `windowHours` hours, e.g. 24 = a day) and says whether it's allowed.
 // Rows of finished windows are deleted first, so nothing is kept past the window.
-export async function rateLimit(db, { salt, ip, bucket = 'feedback', max = 5, now = Date.now(), windowHours = 1 }) {
+export async function rateLimit(db, { salt, ip, bucket = 'feedback', max = 5, now = Date.now(), windowHours = 1, weight = 1 }) {
   const nowHour = currentHour(now);
   const win = Math.floor(nowHour / windowHours);
   const hour = (win + 1) * windowHours - 1; // the last hour of this window: the row is deleted once the window is over
@@ -43,10 +43,10 @@ export async function rateLimit(db, { salt, ip, bucket = 'feedback', max = 5, no
   const nowH = nowHour;
   await db.prepare('DELETE FROM rate_limits WHERE hour < ?').bind(nowH).run();
   const row = await db.prepare(
-    'INSERT INTO rate_limits (key, hour, count) VALUES (?, ?, 1) ' +
-    'ON CONFLICT(key) DO UPDATE SET count = count + 1 RETURNING count',
-  ).bind(key, hour).first();
-  const count = row ? Number(row.count) : 1;
+    'INSERT INTO rate_limits (key, hour, count) VALUES (?, ?, ?) ' +
+    'ON CONFLICT(key) DO UPDATE SET count = count + ? RETURNING count',
+  ).bind(key, hour, weight, weight).first();
+  const count = row ? Number(row.count) : weight;
   return { allowed: count <= max, count };
 }
 

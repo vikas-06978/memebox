@@ -1557,5 +1557,35 @@
   },
   "op_online_limit": {
     "message": "আজকের ডাউনলোড সীমা শেষ ($1টি যোগ হয়েছে)। বাকি কাল যোগ করা যাবে।"
+  },
+  "tone_normal": {
+    "message": "সাধারণ"
+  },
+  "tone_chipmunk": {
+    "message": "চিপমাঙ্ক"
+  },
+  "tone_villain": {
+    "message": "খলনায়ক"
+  },
+  "tone_robot": {
+    "message": "রোবট"
+  },
+  "tone_slowmo": {
+    "message": "ধীর"
+  },
+  "tone_excited": {
+    "message": "উত্তেজিত"
+  },
+  "op_online_space": {
+    "message": "এই কম্পিউটারে প্যাক: $2 MB-এর মধ্যে $1 MB"
+  },
+  "op_online_full": {
+    "message": "এই কম্পিউটারে প্যাকের জায়গা ভরে গেছে ($1টি যোগ হয়েছে, মোট $2 MB)। আরও যোগ করতে একটি প্যাক সরান।"
+  },
+  "mu_phonk": {
+    "message": "🔥 ফঙ্ক মোড"
+  },
+  "mu_phonk_tip": {
+    "message": "অফিসিয়াল ফঙ্ক ট্র্যাক YouTube থেকে চলে, তারপর আপনার কলে যায়"
   }
 }

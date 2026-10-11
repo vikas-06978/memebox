@@ -2,7 +2,7 @@
 // Audio files live in an R2 bucket (binding PACKS); everything else is in D1 (tables packs and pack_items).
 import { cleanKey, getLicense, LICENSE_RE } from './shop.js';
 
-export const KINDS = ['music', 'memes', 'pictures'];
+export const KINDS = ['music', 'memes', 'pictures', 'links'];
 export const TIERS = ['free', 'pro', 'max'];
 export const REGIONS = { common: 'Common (everyone)', in: 'India', global: 'Global / English' };
 export const LICENCES = {
@@ -16,6 +16,13 @@ export const LICENCES = {
 export const LANGS = { '': 'Any language', en: 'English', hi: 'Hindi', hinglish: 'Hinglish' };
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+// How much the packs may hold in total (MB). Cloudflare's free R2 storage is 10 GB: stay well under it. PACKS_MAX_MB in Cloudflare changes it.
+export const DEFAULT_STORAGE_MB = 5000;
+export const storageLimitBytes = (env) => (Number(env && env.PACKS_MAX_MB) > 0 ? Number(env.PACKS_MAX_MB) : DEFAULT_STORAGE_MB) * 1048576;
+export async function storageUsed(db) {
+  const row = await db.prepare('SELECT COALESCE(SUM(bytes), 0) AS n FROM pack_items').first();
+  return Number(row && row.n) || 0;
+}
 const IMAGE_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/webp': 'webp' };
 const IMAGE_EXT = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
 // The plan of one item: its own (free / pro / max) if you set one, else the pack's.
@@ -117,7 +124,8 @@ const needsSource = (meta) => meta.licenceKind === 'free' && !clip(meta.source, 
 
 // Upload audio files (or, for a pictures pack, images) into a pack. Each becomes an item; it goes live right away only if "cleared" is ticked
 // and there is a licence line. Returns { added, skipped: [reason...] }.
-export async function addAudio(db, bucket, packId, files, meta = {}) {
+export async function addAudio(db, bucket, packId, files, meta = {}, limitBytes = Infinity) {
+  let used = await storageUsed(db);
   const pack = await getPack(db, packId);
   const pictures = !!pack && pack.kind === 'pictures';
   const out = { added: 0, skipped: [] };
@@ -137,12 +145,54 @@ export async function addAudio(db, bucket, packId, files, meta = {}) {
       if (!type) { out.skipped.push(`${file.name}: not an audio file (mp3, m4a, ogg, opus, wav, webm, flac, aac)`); continue; }
     }
     if (file.size > max) { out.skipped.push(`${file.name}: over ${Math.round(max / 1048576)} MB`); continue; }
+    if (used + file.size > limitBytes) { out.skipped.push(`${file.name}: the storage budget (${Math.round(limitBytes / 1048576)} MB) is full`); continue; }
+    used += file.size;
     const id = newItemId(), key = `packs/${packId}/${id}.${type.ext}`;
     await bucket.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: type.mime } });
     const item = { cleared: needsSource(meta) ? 0 : cleared, licence };
     await db.prepare(
       'INSERT INTO pack_items (id, pack_id, title, kind, file_key, mime, bytes, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at, tier) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, ?, ?)',
     ).bind(id, packId, titleFromName(file.name), pictures ? 'image' : 'audio', key, type.mime, file.size, cleanLang(meta.lang), clip(meta.tags, 120), meta.explicit ? 1 : 0, licence, clip(meta.source, 200), clip(meta.credit, 120), cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier)).run();
+    out.added++;
+  }
+  return out;
+}
+
+// ---------- Phonk Mode: YouTube links (nothing is hosted: the app plays the official YouTube embed) ----------
+
+// The 11-character id of a YouTube video from a normal link (youtu.be, watch?v=, embed, shorts, music.youtube.com), or '' if it is not one.
+export function youtubeId(url) {
+  let u;
+  try { u = new URL(String(url || '').trim()); } catch { return ''; }
+  const host = u.hostname.replace(/^www\./, '').replace(/^m\./, '');
+  let id = '';
+  if (host === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+  else if (host === 'youtube.com' || host === 'music.youtube.com' || host === 'youtube-nocookie.com') {
+    if (u.pathname === '/watch') id = u.searchParams.get('v') || '';
+    else { const m = /^\/(?:embed|shorts|v)\/([^/?#]+)/.exec(u.pathname); id = m ? m[1] : ''; }
+  }
+  return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : '';
+}
+export const VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+
+// One YouTube link per line:  link | title | artist   (title and artist are optional). The item goes live only when you confirm
+// that it is an official upload that may be embedded ("cleared"). Returns { added, skipped }.
+export async function addLinks(db, packId, text, meta = {}) {
+  const out = { added: 0, skipped: [] };
+  const cleared = meta.cleared ? 1 : 0;
+  const licence = cleared ? 'Official YouTube upload (embedding allowed)' : '';
+  const seen = new Set((await db.prepare('SELECT text FROM pack_items WHERE pack_id = ? AND kind = \'link\'').bind(packId).all()).results.map((r) => r.text));
+  for (const raw of String(text || '').split(/\r?\n/).slice(0, 200)) {
+    const [url, title, artist] = raw.split('|').map((x) => x.trim());
+    if (!url) continue;
+    const id = youtubeId(url);
+    if (!id) { out.skipped.push(`${clip(url, 60)}: not a YouTube video link`); continue; }
+    if (seen.has(id)) { out.skipped.push(`${id}: already in this pack`); continue; }
+    seen.add(id);
+    const item = { cleared, licence };
+    await db.prepare(
+      'INSERT INTO pack_items (id, pack_id, title, kind, text, source, credit, licence, cleared, status, sort, created_at, tier) VALUES (?, ?, ?, \'link\', ?, ?, ?, ?, ?, ?, 100, ?, ?)',
+    ).bind(newItemId(), packId, clip(title, 80) || 'YouTube track', id, `https://www.youtube.com/watch?v=${id}`, clip(artist, 120), licence, cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier)).run();
     out.added++;
   }
   return out;
@@ -198,8 +248,8 @@ export async function deleteItem(db, bucket, id) {
 // ---------- what users get ----------
 
 // Live packs with their live items (no file addresses: the extension asks /api/pack-file for each file).
-export async function publicCatalog(db) {
-  const packs = (await db.prepare("SELECT * FROM packs WHERE status = 'live' ORDER BY sort, title").all()).results;
+export async function publicCatalog(db, { links = true } = {}) {
+  const packs = (await db.prepare("SELECT * FROM packs WHERE status = 'live' ORDER BY sort, title").all()).results.filter((p) => links || p.kind !== 'links'); // links = false is the kill switch of Phonk Mode
   const items = (await db.prepare("SELECT i.* FROM pack_items i JOIN packs p ON p.id = i.pack_id WHERE p.status = 'live' AND i.status = 'live' ORDER BY i.sort, i.created_at, i.title").all()).results;
   return packs.map((p) => {
     const mine = items.filter((i) => i.pack_id === p.id);
@@ -207,7 +257,7 @@ export async function publicCatalog(db) {
       id: p.id, title: p.title, kind: p.kind, region: p.region, tier: p.tier, description: p.description,
       bytes: mine.reduce((a, i) => a + Number(i.bytes || 0), 0),
       items: mine.map((i) => ({
-        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p),
+        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.kind === 'link' ? '' : i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p), // a video id is only given by /api/pack-link, to people whose plan allows it
         explicit: Number(i.explicit) === 1, credit: i.credit, licence: i.licence,
       })),
     };

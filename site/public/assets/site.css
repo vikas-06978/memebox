@@ -420,3 +420,18 @@ body.admin .tile span { position: static; background: none; padding: 0; color: v
 .tier-max { background: color-mix(in srgb, var(--brand-2) 28%, transparent); }
 .bulk { align-items: center; margin: 8px 0; }
 .thumb { display: block; max-width: 140px; max-height: 100px; border-radius: 8px; border: 1px solid var(--line); }
+
+/* Phonk Mode page */
+.phonk .player-box { position: relative; aspect-ratio: 16 / 9; min-height: 220px; border-radius: 14px; overflow: hidden; background: #000; }
+.phonk .player-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.phonk .now { font-weight: 700; margin: 12px 0 6px; }
+.phonk .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.phonk .controls button { min-width: 44px; }
+.phonk .controls input[type=range] { flex: 1 1 120px; max-width: 220px; }
+.tracks { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.track { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 12px; border: 1px solid var(--line); }
+.track.on { background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: var(--accent); }
+.track.locked { opacity: .65; }
+.track button { flex: 1; text-align: start; background: none; border: 0; padding: 6px 0; cursor: pointer; font: inherit; color: inherit; }
+.track button:disabled { cursor: default; }
+.steps ol { padding-inline-start: 22px; }

@@ -9,7 +9,7 @@ const tierText = { free: 'Free', pro: 'Pro', max: 'Pro Max' };
 // The plan of one item: '' follows the pack.
 const itemTierOpts = (selected, packTier) => `<option value=""${selected ? '' : ' selected'}>Same as the pack (${h(tierText[packTier] || packTier)})</option>${TIERS.map((t) => `<option value="${t}"${selected === t ? ' selected' : ''}>${tierText[t]} (this item only)</option>`).join('')}`;
 // What you plan to give away free, per type (shown as a counter next to the real number).
-const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'picture'] };
+const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'picture'], links: [10, 'tracks'] };
 
 const COPYRIGHT = `
 <p class="notice" role="note"><b>Before you publish:</b> anything in a live pack is downloaded by real people, and paid packs are sold. It must be <b>yours</b>, or <b>licensed to you in writing</b> for sharing and selling inside an app.
@@ -19,11 +19,19 @@ function notice(msg, err) {
   return `${msg ? `<p class="notice" role="status">${h(msg)}</p>` : ''}${err ? `<p class="error" role="alert">${h(err)}</p>` : ''}`;
 }
 
-export function packsListPage({ packs, hasBucket, msg = '', err = '' }) {
+// "123 MB of 5000 MB": what the packs hold in the bucket against your budget (Cloudflare's free storage is 10 GB).
+function storageMeter(storage) {
+  if (!storage) return '';
+  const pct = Math.min(100, Math.round((storage.used / storage.limit) * 100));
+  return `<p class="storage"><b>Storage:</b> ${mb(storage.used)} MB of ${mb(storage.limit)} MB used (${pct}%). <progress max="100" value="${pct}"></progress>
+    <span class="muted">Uploads stop at the budget so the bucket cannot grow by surprise. Cloudflare R2 gives 10 GB of storage free every month; the budget is set with PACKS_MAX_MB.</span></p>`;
+}
+
+export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = null }) {
   const rows = packs.map((p) => `
     <tr>
       <td><a href="/admin/packs?id=${h(p.id)}"><b>${h(p.title)}</b></a><div class="muted">${h(p.id)}</div></td>
-      <td>${h(p.kind === 'music' ? 'Music' : 'Memes')}</td>
+      <td>${h(p.kind === 'music' ? 'Music' : p.kind === 'pictures' ? 'Pictures' : p.kind === 'links' ? 'Phonk Mode' : 'Memes')}</td>
       <td>${h(REGIONS[p.region] || p.region)}</td>
       <td>${h(tierText[p.tier] || p.tier)}</td>
       <td>${p.status === 'live' ? '<b>Live</b>' : '<span class="muted">Draft</span>'}</td>
@@ -37,6 +45,7 @@ export function packsListPage({ packs, hasBucket, msg = '', err = '' }) {
 </header>
 ${notice(msg, err)}
 ${hasBucket ? '' : '<p class="error" role="alert">The file storage is not set up yet. Run once: <code>npx wrangler r2 bucket create memebox-packs</code>, then deploy again. Until then you can add text memes, but not audio.</p>'}
+${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">
   <h2>Your packs</h2>
@@ -48,7 +57,7 @@ ${COPYRIGHT}
   <form method="post" action="/admin/packs" class="keyform">
     <input type="hidden" name="action" value="pack-create">
     <label>Name <input name="title" maxlength="80" required placeholder="e.g. Phonk starter pack"></label>
-    <label>Type <select name="kind"><option value="music">Music (audio tracks)</option><option value="memes">Memes (sounds and lines)</option><option value="pictures">Pictures (meme pictures)</option></select></label>
+    <label>Type <select name="kind"><option value="music">Music (audio tracks)</option><option value="memes">Memes (sounds and lines)</option><option value="pictures">Pictures (meme pictures)</option><option value="links">Phonk Mode (YouTube links, nothing hosted)</option></select></label>
     <label>For <select name="region">${opts(REGIONS, 'common')}</select></label>
     <label>Plan <select name="tier"><option value="free">Free</option><option value="pro">Pro</option><option value="max">Pro Max</option></select></label>
     <label>About it <input name="description" maxlength="400" placeholder="One line users will read"></label>
@@ -70,7 +79,7 @@ function planSummary(p, items) {
 function itemRow(p, i) {
   const tierNow = TIERS.includes(i.tier) ? i.tier : '';
   const live = i.status === 'live', ok = canPublish(i);
-  const sound = i.kind === 'image' ? `<img class="thumb" alt="" src="/admin/packfile?id=${h(i.id)}"><div class="muted">${h(i.mime)} · ${mb(i.bytes)} MB · ${Number(i.downloads) || 0} downloads</div>` : i.kind === 'audio' ? `<audio controls preload="none" src="/admin/packfile?id=${h(i.id)}"></audio><div class="muted">${h(i.mime)} · ${mb(i.bytes)} MB · ${Number(i.downloads) || 0} downloads</div>` : '<div class="muted">Text meme (spoken by the voice engine)</div>';
+  const sound = i.kind === 'link' ? `<a href="https://www.youtube.com/watch?v=${h(i.text)}" target="_blank" rel="noopener noreferrer">Open on YouTube ↗</a><div class="muted">${h(i.text)} · ${Number(i.downloads) || 0} plays</div>` : i.kind === 'image' ? `<img class="thumb" alt="" src="/admin/packfile?id=${h(i.id)}"><div class="muted">${h(i.mime)} · ${mb(i.bytes)} MB · ${Number(i.downloads) || 0} downloads</div>` : i.kind === 'audio' ? `<audio controls preload="none" src="/admin/packfile?id=${h(i.id)}"></audio><div class="muted">${h(i.mime)} · ${mb(i.bytes)} MB · ${Number(i.downloads) || 0} downloads</div>` : '<div class="muted">Text meme (spoken by the voice engine)</div>';
   return `
     <tr>
       <td class="nowrap"><input type="checkbox" name="ids" value="${h(i.id)}" form="bulk" aria-label="Select ${h(i.title)}"><div><span class="tier tier-${h(itemTier(i, p))}">${h(tierText[itemTier(i, p)])}</span></div></td>
@@ -105,7 +114,7 @@ function itemRow(p, i) {
     </tr>`;
 }
 
-export function packPage({ pack: p, items, hasBucket, msg = '', err = '' }) {
+export function packPage({ pack: p, items, hasBucket, msg = '', err = '', storage = null }) {
   const bytes = items.reduce((a, i) => a + Number(i.bytes || 0), 0), live = items.filter((i) => i.status === 'live').length;
   const licenceFields = `
       <label>Plan for these <select name="itemTier">${itemTierOpts('', p.tier)}</select></label>
@@ -123,6 +132,7 @@ export function packPage({ pack: p, items, hasBucket, msg = '', err = '' }) {
   <a class="button" href="/admin/packs">All packs</a>
 </header>
 ${notice(msg, err)}
+${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">
   <h2>About this pack</h2>
@@ -139,7 +149,18 @@ ${COPYRIGHT}
   </form>
   <form method="post" action="/admin/packs" class="inline"><input type="hidden" name="action" value="pack-delete"><input type="hidden" name="pack" value="${h(p.id)}"><button type="submit">Delete this pack and all its files</button></form>
 </section>
-${p.kind === 'pictures' ? `<section class="card">
+${p.kind === 'links' ? `<section class="card">
+  <h2>Add YouTube links</h2>
+  <p class="notice" role="note"><b>Nothing is hosted.</b> MemeBox plays these through YouTube's own player, so the artists keep their views. Add only <b>official uploads</b> (the artist's or label's own channel, or a channel that owns the rights) that <b>allow embedding</b>. Never add re-uploads by other people, and remove a track if its owner asks. Phonk Mode can be switched off for everybody at any time (PHONK_MODE=off in Cloudflare).</p>
+  <p class="muted">One per line: <code>link | title | artist</code> (title and artist are optional). Normal YouTube links work (youtube.com/watch?v=..., youtu.be/...).</p>
+  <form method="post" action="/admin/packs" class="keyform">
+    <input type="hidden" name="action" value="links-add"><input type="hidden" name="pack" value="${h(p.id)}">
+    <label class="wide">Links <textarea name="links" rows="8" maxlength="30000" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX | Track name | Artist" required></textarea></label>
+    <label>Plan for these <select name="itemTier">${itemTierOpts('', p.tier)}</select></label>
+    <label class="check"><input type="checkbox" name="official"> <b>These are official uploads that allow embedding</b> (I checked each one)</label>
+    <button type="submit" class="primary">Add the links</button>
+  </form>
+</section>` : p.kind === 'pictures' ? `<section class="card">
   <h2>Upload pictures</h2>
   ${hasBucket ? '' : '<p class="error">File storage is not set up yet (see the packs list page).</p>'}
   <p class="muted">Choose one or many pictures (png, jpg, webp; up to ${Math.round(MAX_IMAGE_BYTES / 1048576)} MB each). The file name becomes the title. The app shrinks them to fit on the camera, and users attach them to a line as a picture meme.</p>

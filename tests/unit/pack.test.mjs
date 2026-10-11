@@ -127,8 +127,22 @@ test('the World pack is added per language: first install and updates add only t
   assert.ok(first.some((l) => l.lang === 'es'), 'Spanish lines come with a Spanish browser');
   assert.ok(first.every((l) => l.lang === 'es' || l.lang === 'en' || l.lang === 'hi'), 'no other World language is added by itself');
   const update = H.MEME_PACKS.missing([{ id: 'mine-1' }], 1);
-  assert.ok(update.length === 4 && update.every((l) => l.lang === 'es' && l.category === 'world'), 'an update adds 4 Spanish lines');
+  assert.ok(update.length === 16 && update.every((l) => l.lang === 'es' && l.category === 'world'), 'an update adds the 16 Spanish lines');
   assert.equal(H.MEME_PACKS.worldFor('en').length, 0);
   assert.equal(H.MEME_PACKS.worldFor('ja').length, 4, 'picking a language adds its 4 lines');
-  assert.equal(H.MEME_PACKS.lines('world').length, 96, 'the whole pack is still available');
+  assert.equal(H.MEME_PACKS.lines('world').length, 216, 'the whole pack is still available');
+});
+
+test('the language you pick decides which built-in lines show: a regional language shows only its own lines (no English), your own lines always show', () => {
+  const H = loadScript(['defaults.js', 'packs.js']);
+  const { MEME } = H;
+  assert.equal(MEME.langOf('pt_BR'), 'pt');
+  assert.equal(MEME.langOf('ta-IN'), 'ta');
+  assert.equal(MEME.langOf('xx'), 'en');
+  assert.ok(MEME.isBuiltinLine({ id: 'd-en-1' }) && MEME.isBuiltinLine({ id: 'p-w-ta-3' }));
+  assert.ok(!MEME.isBuiltinLine({ id: 'l-abc123' }) && !MEME.isBuiltinLine({ id: 'pk-xyz' }));
+  const ta = H.MEME_PACKS.worldFor('ta');
+  assert.equal(ta.length, 16, 'sixteen Tamil lines');
+  assert.ok(ta.every((l) => l.lang === 'ta' && /[஀-௿]/.test(l.text)), 'written in Tamil script, spoken by the Tamil voice');
+  for (const lang of ['bn', 'mr', 'te', 'gu', 'es', 'ar', 'pt', 'fr', 'id']) assert.equal(H.MEME_PACKS.worldFor(lang).length, 16, lang);
 });

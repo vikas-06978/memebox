@@ -1557,5 +1557,35 @@
   },
   "op_online_limit": {
     "message": "Limite quotidienne de téléchargements atteinte ($1 ajoutés). Le reste pourra être ajouté demain."
+  },
+  "tone_normal": {
+    "message": "Normal"
+  },
+  "tone_chipmunk": {
+    "message": "Tamia"
+  },
+  "tone_villain": {
+    "message": "Méchant"
+  },
+  "tone_robot": {
+    "message": "Robot"
+  },
+  "tone_slowmo": {
+    "message": "Ralenti"
+  },
+  "tone_excited": {
+    "message": "Excité"
+  },
+  "op_online_space": {
+    "message": "Packs sur cet ordinateur : $1 sur $2 Mo"
+  },
+  "op_online_full": {
+    "message": "L’espace réservé aux packs sur cet ordinateur est plein ($1 ajoutés, $2 Mo au total). Retirez un pack pour en ajouter."
+  },
+  "mu_phonk": {
+    "message": "🔥 Mode Phonk"
+  },
+  "mu_phonk_tip": {
+    "message": "Titres phonk officiels via YouTube, puis envoyés dans votre appel"
   }
 }

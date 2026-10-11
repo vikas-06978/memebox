@@ -10,6 +10,7 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return methodNotAllowed('GET, OPTIONS');
   if (!env.DB) return json({ ok: false, error: 'Packs are not set up yet.' }, 503, CORS);
   let packs = [];
-  try { packs = await publicCatalog(env.DB); } catch { /* the packs tables are not there yet (migration not run) */ }
+  // PHONK_MODE=off in Cloudflare turns Phonk Mode (the YouTube link packs) off for everybody
+  try { packs = await publicCatalog(env.DB, { links: env.PHONK_MODE !== 'off' }); } catch { /* the packs tables are not there yet (migration not run) */ }
   return json({ ok: true, packs }, 200, { ...CORS, 'Cache-Control': 'public, max-age=60' });
 }

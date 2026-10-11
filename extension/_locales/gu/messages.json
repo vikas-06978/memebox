@@ -1557,5 +1557,35 @@
   },
   "op_online_limit": {
     "message": "આજની ડાઉનલોડ મર્યાદા પૂરી ($1 ઉમેર્યા). બાકીના કાલે ઉમેરી શકાશે."
+  },
+  "tone_normal": {
+    "message": "સામાન્ય"
+  },
+  "tone_chipmunk": {
+    "message": "ચિપમંક"
+  },
+  "tone_villain": {
+    "message": "વિલન"
+  },
+  "tone_robot": {
+    "message": "રોબોટ"
+  },
+  "tone_slowmo": {
+    "message": "ધીમું"
+  },
+  "tone_excited": {
+    "message": "ઉત્સાહિત"
+  },
+  "op_online_space": {
+    "message": "આ કમ્પ્યુટર પર પેક: $2 MB માંથી $1 MB"
+  },
+  "op_online_full": {
+    "message": "પેક માટે આ કમ્પ્યુટરની જગ્યા ભરાઈ ગઈ ($1 ઉમેર્યા, કુલ $2 MB). વધુ ઉમેરવા એક પેક દૂર કરો."
+  },
+  "mu_phonk": {
+    "message": "🔥 ફંક મોડ"
+  },
+  "mu_phonk_tip": {
+    "message": "સત્તાવાર ફંક ટ્રેક YouTube દ્વારા ચાલે છે, પછી તમારી કૉલમાં જાય છે"
   }
 }

@@ -1557,5 +1557,35 @@
   },
   "op_online_limit": {
     "message": "تم الوصول إلى حد التنزيل اليومي (تمت إضافة $1). يمكن إضافة الباقي غداً."
+  },
+  "tone_normal": {
+    "message": "عادي"
+  },
+  "tone_chipmunk": {
+    "message": "سنجاب"
+  },
+  "tone_villain": {
+    "message": "شرير"
+  },
+  "tone_robot": {
+    "message": "روبوت"
+  },
+  "tone_slowmo": {
+    "message": "حركة بطيئة"
+  },
+  "tone_excited": {
+    "message": "متحمس"
+  },
+  "op_online_space": {
+    "message": "الحزم على هذا الجهاز: $1 من $2 ميغابايت"
+  },
+  "op_online_full": {
+    "message": "امتلأت مساحة الحزم على هذا الجهاز (تمت إضافة $1، المجموع $2 ميغابايت). أزل حزمة لإضافة المزيد."
+  },
+  "mu_phonk": {
+    "message": "🔥 وضع الفونك"
+  },
+  "mu_phonk_tip": {
+    "message": "مقاطع فونك رسمية عبر YouTube ثم تُرسل إلى مكالمتك"
   }
 }

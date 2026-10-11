@@ -1557,5 +1557,35 @@
   },
   "op_online_limit": {
     "message": "Daily download limit reached ($1 added). The rest can be added tomorrow."
+  },
+  "tone_normal": {
+    "message": "Normal"
+  },
+  "tone_chipmunk": {
+    "message": "Chipmunk"
+  },
+  "tone_villain": {
+    "message": "Villain"
+  },
+  "tone_robot": {
+    "message": "Robot"
+  },
+  "tone_slowmo": {
+    "message": "Slow-mo"
+  },
+  "tone_excited": {
+    "message": "Excited"
+  },
+  "op_online_space": {
+    "message": "Packs on this computer: $1 of $2 MB"
+  },
+  "op_online_full": {
+    "message": "This computer's space for packs is full ($1 added, $2 MB in total). Remove a pack to add more."
+  },
+  "mu_phonk": {
+    "message": "🔥 Phonk Mode"
+  },
+  "mu_phonk_tip": {
+    "message": "Official phonk tracks played through YouTube, then sent into your call"
   }
 }
