@@ -68,7 +68,7 @@ function head({ title, desc, url, lang, alternates, image, ld, type = 'website' 
 
 // The paid passes, in rupees and dollars: the same numbers as site/src/shop.js (a test compares them).
 export const PASS_OFFERS = [
-  ['Pro pass, 30 minutes', 9, 1.49], ['Pro pass, 1 hour', 15, 2.49], ['Pro pass, 2 hours', 25, 3.99], ['Pro Max pass, 3 hours', 35, 5.49],
+  ['Pro pass, 30 minutes', 9, 1.49], ['Pro pass, 1 hour', 15, 2.49], ['Pro pass, 2 hours', 25, 3.99], ['Pro Max pass, 1 hour', 25, 3.49], ['Pro Max pass, 3 hours', 49, 6.49],
 ];
 function passOffers(base) {
   return PASS_OFFERS.flatMap(([name, inr, usd]) => [
@@ -292,7 +292,7 @@ function pricingHead(base) {
       appLd(base, `${base}/`, (k) => dict('en')[k], 'en'),
       faqLd([
         ['Is MemeBox free?', 'Yes. The meme soundboard, Hindi and English voices, tones, tab audio, a hanging lamp, 3 filters and 2 music tunes are free forever.'],
-        ['How much do the extras cost?', 'Camera lights, characters, filters and music are paid by the hour: Pro from ₹9 or $1.49 for 30 minutes, Pro Max (all characters and filters) ₹35 or $5.49 for 3 hours. No subscription.'],
+        ['How much do the extras cost?', 'Camera lights, characters, filters and music are paid by the hour: Pro from ₹9 or $1.49 for 30 minutes, Pro Max (all characters and filters) ₹49 or $6.49 for 3 hours. No subscription.'],
         ['Do the hours expire?', 'No. Hours never expire. The clock runs only while you are in a call with your pass switched on, and you can pause it any time.'],
         ['Can I try before I pay?', 'Yes. Every paid item can be previewed on your own screen for 20 seconds. It goes into your call only while you have a pass.'],
         ['Are there refunds?', 'All sales are final, and unused hours stay on your key.'],

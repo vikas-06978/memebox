@@ -5,13 +5,27 @@
 // Prices in rupees. Change them here and deploy again.
 // `usd` is shown on the pricing page (card payment comes with the payment gateway). `proSeconds` / `maxSeconds`
 // are the hours of use a time pass gives (see extension/lib/plan.js). `closed`: not sold any more (existing keys keep working).
+// Characters bought one by one (kept for ever on the key). Free: cat and dog. Pro has the first group too; Pro Max has all.
+export const CHARACTER_PRICES = Object.freeze({
+  bunny: { inr: 29, usd: 0.99 }, panda: { inr: 29, usd: 0.99 }, owl: { inr: 29, usd: 0.99 }, fox: { inr: 29, usd: 0.99 },
+  penguin: { inr: 39, usd: 1.49 }, lion: { inr: 39, usd: 1.49 }, monkey: { inr: 39, usd: 1.49 }, frog: { inr: 39, usd: 1.49 },
+  unicorn: { inr: 49, usd: 1.99 }, robot: { inr: 49, usd: 1.99 },
+});
+const pass = (name, inr, usd, proSeconds, maxSeconds) => Object.freeze({ name, inr, usd, pictureSlots: 0, unlimited: false, proSeconds, maxSeconds, addons: Object.freeze([]) });
+const cap = (id) => id[0].toUpperCase() + id.slice(1);
+const characterProducts = Object.fromEntries(Object.entries(CHARACTER_PRICES).map(([id, pr]) => [`char_${id}`,
+  Object.freeze({ name: `Character: ${cap(id)} (yours for ever)`, inr: pr.inr, usd: pr.usd, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([`character:${id}`]) })]));
+
 export const PRODUCTS = Object.freeze({
-  pass_pro_30: Object.freeze({ name: 'Pro pass: 30 minutes', inr: 9, usd: 1.49, pictureSlots: 0, unlimited: false, proSeconds: 1800, maxSeconds: 0 }),
-  pass_pro_60: Object.freeze({ name: 'Pro pass: 1 hour', inr: 15, usd: 2.49, pictureSlots: 0, unlimited: false, proSeconds: 3600, maxSeconds: 0 }),
-  pass_pro_120: Object.freeze({ name: 'Pro pass: 2 hours', inr: 25, usd: 3.99, pictureSlots: 0, unlimited: false, proSeconds: 7200, maxSeconds: 0 }),
-  pass_max_180: Object.freeze({ name: 'Pro Max pass: 3 hours', inr: 35, usd: 5.49, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 10800 }),
-  pictures5: Object.freeze({ name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false, proSeconds: 0, maxSeconds: 0, closed: true }),
-  pro: Object.freeze({ name: 'MemeBox Pro (lifetime): everything unlimited', inr: 99, pictureSlots: 0, unlimited: true, proSeconds: 0, maxSeconds: 0, closed: true }),
+  pass_pro_30: pass('Pro pass: 30 minutes', 9, 1.49, 1800, 0),
+  pass_pro_60: pass('Pro pass: 1 hour', 15, 2.49, 3600, 0),
+  pass_pro_120: pass('Pro pass: 2 hours', 25, 3.99, 7200, 0),
+  pass_max_60: pass('Pro Max pass: 1 hour', 25, 3.49, 0, 3600),
+  pass_max_180: pass('Pro Max pass: 3 hours', 49, 6.49, 0, 10800),
+  ...characterProducts,
+  chars_all: Object.freeze({ name: 'All 10 extra characters (yours for ever)', inr: 249, usd: 5.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(Object.keys(CHARACTER_PRICES).map((id) => `character:${id}`)) }),
+  pictures5: Object.freeze({ name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([]), closed: true }),
+  pro: Object.freeze({ name: 'MemeBox Pro (lifetime): everything unlimited', inr: 99, pictureSlots: 0, unlimited: true, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([]), closed: true }),
 });
 export const forSale = () => Object.entries(PRODUCTS).filter(([, p]) => !p.closed);
 
@@ -46,6 +60,15 @@ export function upiLink({ upiId, payee, amount, orderId }) {
 
 const now = () => new Date().toISOString();
 
+// Things bought one by one (a character): a list of ids on the key, kept for ever. [{ id, until }] with until 0 = for ever.
+export function parseAddons(text) {
+  try {
+    const a = JSON.parse(text || '[]');
+    return Array.isArray(a) ? a.filter((x) => typeof x === 'string' && /^[a-z]+:[a-z0-9-]{1,30}$/.test(x)).slice(0, 80).map((id) => ({ id, until: 0 })) : [];
+  } catch { return []; }
+}
+const addonText = (ids) => JSON.stringify([...new Set(ids)].slice(0, 80));
+
 export function licenseView(row) {
   return {
     key: row.key,
@@ -54,6 +77,7 @@ export function licenseView(row) {
     pictureSlots: Number(row.picture_slots) || 0,
     proSeconds: Number(row.pro_seconds) || 0,
     maxSeconds: Number(row.max_seconds) || 0,
+    addons: parseAddons(row.addons),
   };
 }
 
@@ -65,11 +89,11 @@ export async function getLicense(db, key) {
 const PASS_CAP = 10 * 24 * 3600; // most seconds of pass a key may hold
 const passSecs = (n) => Math.max(0, Math.min(PASS_CAP, Math.floor(Number(n)) || 0));
 
-export async function createLicense(db, { kind = 'gift', unlimited = false, pictureSlots = 0, proSeconds = 0, maxSeconds = 0, note = '' } = {}) {
+export async function createLicense(db, { kind = 'gift', unlimited = false, pictureSlots = 0, proSeconds = 0, maxSeconds = 0, note = '', addons = [] } = {}) {
   const key = newLicenseKey();
   await db.prepare(
-    'INSERT INTO licenses (key, created_at, kind, unlimited, picture_slots, pro_seconds, max_seconds, status, note) VALUES (?, ?, ?, ?, ?, ?, ?, \'active\', ?)',
-  ).bind(key, now(), kind, unlimited ? 1 : 0, Math.max(0, Math.min(10000, Math.floor(pictureSlots) || 0)), passSecs(proSeconds), passSecs(maxSeconds), String(note).slice(0, 200)).run();
+    'INSERT INTO licenses (key, created_at, kind, unlimited, picture_slots, pro_seconds, max_seconds, status, note, addons) VALUES (?, ?, ?, ?, ?, ?, ?, \'active\', ?, ?)',
+  ).bind(key, now(), kind, unlimited ? 1 : 0, Math.max(0, Math.min(10000, Math.floor(pictureSlots) || 0)), passSecs(proSeconds), passSecs(maxSeconds), String(note).slice(0, 200), addonText(addons)).run();
   return key;
 }
 
@@ -139,9 +163,10 @@ export async function approveOrder(db, id) {
     await db.prepare('UPDATE licenses SET picture_slots = picture_slots + ?, unlimited = MAX(unlimited, ?) WHERE key = ?')
       .bind(p.pictureSlots, p.unlimited ? 1 : 0, existing.key).run();
     if (p.proSeconds || p.maxSeconds) await addPassTime(db, existing.key, { proSeconds: p.proSeconds, maxSeconds: p.maxSeconds });
+    if (p.addons && p.addons.length) await db.prepare('UPDATE licenses SET addons = ? WHERE key = ?').bind(addonText([...parseAddons(existing.addons).map((a) => a.id), ...p.addons]), existing.key).run();
     key = existing.key;
   } else {
-    key = await createLicense(db, { kind: 'paid', unlimited: p.unlimited, pictureSlots: p.pictureSlots, proSeconds: p.proSeconds, maxSeconds: p.maxSeconds, note: `order ${order.id}` });
+    key = await createLicense(db, { kind: 'paid', unlimited: p.unlimited, pictureSlots: p.pictureSlots, proSeconds: p.proSeconds, maxSeconds: p.maxSeconds, note: `order ${order.id}`, addons: p.addons });
   }
   await db.prepare("UPDATE orders SET status = 'approved', license_key = ?, decided_at = ? WHERE id = ?").bind(key, now(), id).run();
   return key;

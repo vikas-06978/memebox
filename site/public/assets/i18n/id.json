@@ -205,7 +205,7 @@
   "pr_pro_2": "Semua animasi lampu, 9 warna, dan 13 pertunjukan lampu sudut",
   "pr_pro_3": "Lampu dan karakter yang mengikuti suara",
   "pr_pro_4": "Pengubah suara, teks kamera, dan mode pesta",
-  "pr_pro_5": "5 filter, 11 lagu, dan satu karakter (kucing, anjing, atau kelinci)",
+  "pr_pro_5": "5 filter, 11 nada musik dan 6 karakter (kucing, anjing, kelinci, panda, burung hantu, rubah)",
   "pr_max": "Pro Max",
   "pr_max_tag": "Semuanya",
   "pr_max_1": "Semua yang ada di Pro",
@@ -233,8 +233,17 @@
   "buy_name_pass_pro_60": "Pass Pro: 1 jam",
   "buy_name_pass_pro_120": "Pass Pro: 2 jam",
   "buy_name_pass_max_180": "Pass Pro Max: 3 jam",
-  "buy_pass_desc_pro": "Jam Pro: semua animasi lampu dan pertunjukan lampu, pengubah suara, teks, mode pesta, 5 filter, 11 lagu, dan satu karakter.",
+  "buy_pass_desc_pro": "Jam Pro: semua animasi lampu dan pertunjukan cahaya, pengubah suara, teks, mode pesta, Follow me dan gestur, 5 filter, 11 nada, dan 6 karakter.",
   "buy_pass_desc_max": "Jam Pro Max: semua di Pro plus 12 karakter dan 20 filter.",
   "buy_topup2": "Sudah punya kunci? Tambahkan jamnya ke sana",
-  "buy_how3": "Buka panel 😂 saat panggilan dan tekan \"Start my pass\"."
+  "buy_how3": "Buka panel 😂 saat panggilan dan tekan \"Start my pass\".",
+  "pr_free_5": "2 karakter: Kucing dan Anjing",
+  "buy_name_pass_max_60": "Pass Pro Max: 1 jam",
+  "pr_chars_title": "Karakter",
+  "pr_chars_intro": "Beli karakter sekali dan jadi milik Anda selamanya. Kucing dan Anjing gratis. Pass Pro membawa enam, Pro Max semua dua belas.",
+  "pr_chars_live": "Follow me, gestur, air mata, bermain di Anda, dan suara butuh pass Pro yang aktif. Karakter Anda tetap duduk di sudut dan bereaksi pada suara tanpa pass.",
+  "pr_chars_bundle": "Semua 10 karakter tambahan",
+  "buy_char_title": "Karakter: $1",
+  "buy_chars_all": "Semua 10 karakter tambahan",
+  "buy_char_desc": "Milik Anda selamanya di kunci Anda. Duduk di sudut dan bereaksi pada suara tanpa pass; Follow me dan trik lainnya butuh pass Pro yang aktif."
 }

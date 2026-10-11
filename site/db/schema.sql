@@ -44,7 +44,8 @@ CREATE TABLE IF NOT EXISTS licenses (
   max_seconds   INTEGER NOT NULL DEFAULT 0,       -- seconds of Pro Max use, spent first
   status        TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'revoked')),
   note          TEXT NOT NULL DEFAULT '',
-  last_seen     TEXT                              -- day of the last check, no IP or device
+  last_seen     TEXT,                             -- day of the last check, no IP or device
+  addons        TEXT NOT NULL DEFAULT '[]'        -- things bought one by one and kept for ever, e.g. ["character:bunny"]
 );
 
 -- UPI orders. The buyer pays by UPI, types the transaction ID (UTR), and the admin approves

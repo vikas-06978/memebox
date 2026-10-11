@@ -205,7 +205,7 @@
   "pr_pro_2": "Todas las animaciones de la lámpara, 9 colores y 13 shows de luces de esquina",
   "pr_pro_3": "Luces y personajes que siguen los sonidos",
   "pr_pro_4": "Cambiador de voz, subtítulos en la cámara y modo fiesta",
-  "pr_pro_5": "5 filtros, 11 melodías y un personaje (gato, perro o conejo)",
+  "pr_pro_5": "5 filtros, 11 melodías y 6 personajes (gato, perro, conejo, panda, búho, zorro)",
   "pr_max": "Pro Max",
   "pr_max_tag": "Todo",
   "pr_max_1": "Todo lo de Pro",
@@ -233,8 +233,17 @@
   "buy_name_pass_pro_60": "Pase Pro: 1 hora",
   "buy_name_pass_pro_120": "Pase Pro: 2 horas",
   "buy_name_pass_max_180": "Pase Pro Max: 3 horas",
-  "buy_pass_desc_pro": "Horas de Pro: todas las animaciones de la lámpara y shows de luces, cambiador de voz, subtítulos, modo fiesta, 5 filtros, 11 melodías y un personaje.",
+  "buy_pass_desc_pro": "Horas de Pro: todas las animaciones de la lámpara y shows de luces, cambiador de voz, subtítulos, modo fiesta, Follow me y gestos, 5 filtros, 11 melodías y 6 personajes.",
   "buy_pass_desc_max": "Horas de Pro Max: todo lo de Pro más los 12 personajes y los 20 filtros.",
   "buy_topup2": "¿Ya tienes una clave? Añádele las horas",
-  "buy_how3": "Abre el panel 😂 en una llamada y pulsa \"Start my pass\"."
+  "buy_how3": "Abre el panel 😂 en una llamada y pulsa \"Start my pass\".",
+  "pr_free_5": "2 personajes: Gato y Perro",
+  "buy_name_pass_max_60": "Pase Pro Max: 1 hora",
+  "pr_chars_title": "Personajes",
+  "pr_chars_intro": "Compra un personaje una vez y es tuyo para siempre. Gato y Perro son gratis. Los pases Pro traen seis, Pro Max los doce.",
+  "pr_chars_live": "Follow me, gestos, lágrimas, jugar contigo y sonidos necesitan un pase Pro activo. Tus personajes siguen en la esquina y reaccionan a los sonidos sin pase.",
+  "pr_chars_bundle": "Los 10 personajes extra",
+  "buy_char_title": "Personaje: $1",
+  "buy_chars_all": "Los 10 personajes extra",
+  "buy_char_desc": "Tuyo para siempre en tu clave. Se sienta en la esquina y reacciona a los sonidos sin pase; Follow me y sus otros trucos necesitan un pase Pro activo."
 }

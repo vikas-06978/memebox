@@ -374,3 +374,7 @@ input.narrow { width: 76px; }
 td audio { width: 220px; max-width: 100%; display: block; margin-bottom: 4px; }
 .itemform label.check { display: flex; flex-direction: row; align-items: center; gap: 6px; white-space: nowrap; }
 .itemform input, .itemform select { width: auto; max-width: 100%; }
+/* pricing: characters */
+.char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 12px 0; }
+.char-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; background: var(--card); }
+.char-card.all { grid-column: 1 / -1; background: var(--bg-2); }

@@ -205,7 +205,7 @@
   "pr_pro_2": "Todas as animações da luminária, 9 cores e 13 shows de luz de canto",
   "pr_pro_3": "Luzes e personagens que seguem os sons",
   "pr_pro_4": "Mudador de voz, legendas na câmera e modo festa",
-  "pr_pro_5": "5 filtros, 11 músicas e um personagem (gato, cachorro ou coelho)",
+  "pr_pro_5": "5 filtros, 11 melodias e 6 personagens (gato, cachorro, coelho, panda, coruja, raposa)",
   "pr_max": "Pro Max",
   "pr_max_tag": "Tudo",
   "pr_max_1": "Tudo do Pro",
@@ -233,8 +233,17 @@
   "buy_name_pass_pro_60": "Passe Pro: 1 hora",
   "buy_name_pass_pro_120": "Passe Pro: 2 horas",
   "buy_name_pass_max_180": "Passe Pro Max: 3 horas",
-  "buy_pass_desc_pro": "Horas de Pro: todas as animações da luminária e shows de luz, mudador de voz, legendas, modo festa, 5 filtros, 11 músicas e um personagem.",
+  "buy_pass_desc_pro": "Horas de Pro: todas as animações da luminária e shows de luz, trocador de voz, legendas, modo festa, Follow me e gestos, 5 filtros, 11 melodias e 6 personagens.",
   "buy_pass_desc_max": "Horas de Pro Max: tudo do Pro mais os 12 personagens e os 20 filtros.",
   "buy_topup2": "Já tem uma chave? Adicione as horas nela",
-  "buy_how3": "Abra o painel 😂 numa chamada e toque em \"Start my pass\"."
+  "buy_how3": "Abra o painel 😂 numa chamada e toque em \"Start my pass\".",
+  "pr_free_5": "2 personagens: Gato e Cachorro",
+  "buy_name_pass_max_60": "Passe Pro Max: 1 hora",
+  "pr_chars_title": "Personagens",
+  "pr_chars_intro": "Compre um personagem uma vez e ele é seu para sempre. Gato e Cachorro são grátis. Os passes Pro trazem seis, o Pro Max todos os doze.",
+  "pr_chars_live": "Follow me, gestos, lágrimas, brincar em você e sons precisam de um passe Pro ativo. Seus personagens continuam no canto e reagem aos sons sem passe.",
+  "pr_chars_bundle": "Os 10 personagens extras",
+  "buy_char_title": "Personagem: $1",
+  "buy_chars_all": "Os 10 personagens extras",
+  "buy_char_desc": "Seu para sempre na sua chave. Fica no canto e reage aos sons sem passe; Follow me e os outros truques precisam de um passe Pro ativo."
 }

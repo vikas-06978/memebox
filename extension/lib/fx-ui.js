@@ -33,8 +33,9 @@
   const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow']; // Pro Max (or one by one)
   // Characters that sit in a bottom corner and react to the sounds. Pro: one of the standard three at a time.
   // Pro Max: all six. Every one is drawn with code (no pictures), so they are small and original.
-  const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny'];
-  const PREMIUM_CHARACTERS = ['panda', 'owl', 'fox', 'penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot'];
+  const FREE_CHARACTERS = ['cat', 'dog'];                                              // free for everybody
+  const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny', 'panda', 'owl', 'fox'];          // with a Pro pass (the free two included)
+  const PREMIUM_CHARACTERS = ['penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot']; // Pro Max only (or bought one by one)
   const CHARACTERS = [...STANDARD_CHARACTERS, ...PREMIUM_CHARACTERS];
   const MOODS = ['suspense', 'excited', 'surprise', 'sad', 'fun', 'awkward'];
 
@@ -2322,7 +2323,7 @@ void main(){
   }
 
   globalThis.MemeFx = Object.freeze({
-    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
+    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, FREE_CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
     sanitize, lockedParts, createRenderer, drawSample, simulate, ACTIONS, FIX_OFF: { lamp: 0.175, discoball: 0.14, lantern: 0.13, chandelier: 0.13, moon: 0.12, star: 0.11, fairy: 0.06, spotlight: 0.07 },
   });
 })();

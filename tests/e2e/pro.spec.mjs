@@ -136,8 +136,8 @@ test('picture meme: add a picture to a line; playing it shows the picture on my 
 test('buy page: QR for memebox@upi with the amount and order note; UTR; admin approves; the key appears', async ({ context, site }) => {
   const buyer = await context.newPage();
   await buyer.goto('https://memebox.pages.dev/buy');
-  await expect(buyer.locator('.product')).toHaveCount(4);
-  await expect(buyer.locator('.product.best')).toHaveCount(1);
+  await expect(buyer.locator('.product')).toHaveCount(16);
+  await expect(buyer.locator('.product.best')).toHaveCount(2);
   await buyer.locator('button[data-product="pass_pro_60"]').click();
   await expect(buyer.locator('#pay')).toBeVisible();
   const qrText = await buyer.locator('#qr').getAttribute('data-text');
@@ -177,16 +177,20 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
   const page = await context.newPage();
   await page.goto('https://memebox.pages.dev/pricing?cur=inr');
   await expect(page.locator('h1')).toHaveText('Plans and prices');
-  await expect(page.locator('.pass')).toHaveCount(4);
+  await expect(page.locator('.pass')).toHaveCount(5);
+  await expect(page.locator('.char-card')).toHaveCount(11);
   await expect(page.locator('#passes-pro .pass-price')).toHaveText(['₹9', '₹15', '₹25']);
-  await expect(page.locator('#passes-max .pass-price')).toHaveText(['₹35']);
-  await expect(page.locator('#passes-max a.button')).toHaveAttribute('href', '/buy?product=pass_max_180');
+  await expect(page.locator('#passes-max .pass-price')).toHaveText(['₹25', '₹49']);
+  await expect(page.locator('#passes-max a.button').nth(1)).toHaveAttribute('href', '/buy?product=pass_max_180');
+  await expect(page.locator('.char-card .pass-price').first()).toHaveText('₹29');
+  await expect(page.locator('.char-card.all .pass-price')).toHaveText('₹249');
   await expect(page.locator('#usd-note')).toBeHidden();
   await page.screenshot({ path: 'tests/.tmp/pricing-inr.png', fullPage: true });
 
   await page.locator('.seg-btn[data-cur="usd"]').click();
   await expect(page.locator('#passes-pro .pass-price')).toHaveText(['$1.49', '$2.49', '$3.99']);
-  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$5.49']);
+  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$3.49', '$6.49']);
+  await expect(page.locator('.char-card .pass-price').first()).toHaveText('$0.99');
   await expect(page.locator('.pass a.button')).toHaveCount(0);
   await expect(page.locator('#usd-note')).toBeVisible();
   await page.screenshot({ path: 'tests/.tmp/pricing-usd.png', fullPage: true });
