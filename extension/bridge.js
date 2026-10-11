@@ -49,6 +49,10 @@
       toRuntime({ type: 'music-state', id: typeof d.id === 'string' ? d.id.slice(0, 20) : '' });
     } else if (d.type === 'fx-status') {
       toRuntime({ type: 'fx-status', active: d.active === true });
+    } else if (d.type === 'cam-caption') {
+      toRuntime({ type: 'cam-caption', fixed: d.fixed === true });
+    } else if (d.type === 'fx-seen') {
+      toRuntime({ type: 'fx-seen', ml: d.ml === true, face: d.face === true, hands: Math.max(0, Math.min(2, Number(d.hands) || 0)), did: typeof d.did === 'string' ? d.did.slice(0, 4) : '', waiting: d.waiting === true, fps: Math.max(0, Math.min(60, Number(d.fps) || 0)), ms: Math.max(0, Math.min(9999, Number(d.ms) || 0)) });
     } else if (d.type === 'tab-audio') {
       toRuntime({ type: 'tab-audio-state', on: d.on === true, error: d.error ? String(d.error) : '' });
     }
@@ -90,7 +94,7 @@
   // frame (the camera may be opened by an iframe), so each bridge passes the setting on.
   try {
     const allowed = () => !globalThis.MemePlan || globalThis.MemePlan.can('captions'); // PRO: camera captions
-    const sendCam = (settings) => toHook({ type: 'cam-captions', value: !!(settings && settings.camCaptions === true) && allowed() });
+    const sendCam = (settings) => toHook({ type: 'cam-captions', value: !!(settings && settings.camCaptions === true) && allowed(), unmirror: !(settings && settings.camUnmirror === false) });
     chrome.storage.local.get('settings').then((r) => sendCam(r.settings)).catch(() => {});
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && changes.settings) sendCam(changes.settings.newValue);

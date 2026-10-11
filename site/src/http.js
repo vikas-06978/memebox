@@ -22,7 +22,7 @@ export function adminResponse(body, { status = 200, type = 'text/html; charset=u
       'Content-Type': type,
       ...SECURITY,
       ...NOINDEX,
-      'Content-Security-Policy': "default-src 'none'; style-src 'self'; img-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+      'Content-Security-Policy': "default-src 'none'; style-src 'self'; img-src 'self'; media-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
       'X-Frame-Options': 'DENY',
       ...headers,
     },

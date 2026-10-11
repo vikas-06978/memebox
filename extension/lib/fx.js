@@ -58,7 +58,11 @@
     safe: true,         // no flashing: slow, gentle changes only
     filter: 'none',
     character: 'none',  // none | cat | dog | bunny | panda | owl | fox | penguin | lion | monkey | frog | unicorn | robot
-    follow: false,      // lights and the character follow where YOU are (left, right, standing up, out of the picture)
+    follow: true,       // lights and the character follow where YOU are (left, right, standing up, out of the picture)
+    masti: true,        // the animal plays on you now and then: sits on your head or shoulder, hangs on your glasses, rolls around your head (needs Follow me)
+    sounds: true,       // the animal makes little sounds (sobbing, sniffing, a cheer, a heartbeat); others in the call hear them
+    gestures: true,     // the character understands your hands and head (thumbs up, heart, OK, rock, stop, clap, nod, shake) and your tongue
+    sens: 'normal',     // how easily those are noticed: low | normal | high
     studio: true,       // brighten a dark room automatically (only while Lights is on)
     awayDance: true,    // when you leave the picture the character dances and the lights party
     charPos: 'right',   // left | right (bottom corner)
@@ -93,7 +97,11 @@
       filter: FILTERS.includes(c.filter) ? c.filter : 'none',
       character: CHARACTERS.includes(c.character) ? c.character : 'none',
       charPos: c.charPos === 'left' ? 'left' : 'right',
-      follow: c.follow === true,
+      follow: c.follow !== false,
+      masti: c.masti !== false,
+      sounds: c.sounds !== false,
+      gestures: c.gestures !== false,
+      sens: ['low', 'high'].includes(c.sens) ? c.sens : 'normal',
       awayDance: c.awayDance !== false,
       studio: c.studio !== false,
       intensity: Number.isFinite(Number(c.intensity)) ? clamp(Number(c.intensity), 0.2, 1) : 0.8,
@@ -117,7 +125,10 @@
     const want = sanitize(cfg, () => true);
     const have = sanitize(cfg, can);
     const locked = [];
-    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character', 'follow', 'enhance']) if (want[k] !== have[k]) locked.push(k);
+    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character', 'follow', 'enhance']) {
+      if (k === 'follow' && !(cfg && cfg.follow === true)) continue; // Follow me is on by default: it is only "previewed" when someone chose it
+      if (want[k] !== have[k]) locked.push(k);
+    }
     return locked;
   }
 
@@ -162,7 +173,7 @@
   // level 0..1. It drains by itself when the level goes down again.
   function drawTears(g, w, h, level, now) {
     if (level < 0.01) return;
-    const t = now / 1000, top = h * (1 - 0.46 * level), N = 36;
+    const t = now / 1000, top = Math.max(-h * 0.02, h * (1 - level)), N = 36;
     g.save();
     const surface = (x) => top + Math.sin((x / w) * 9 + t * 1.8) * h * 0.012 * (0.4 + level) + Math.sin((x / w) * 17 - t * 2.6) * h * 0.006;
     const gr = g.createLinearGradient(0, top, 0, h);
@@ -1131,7 +1142,7 @@ void main(){
     // That is enough to know: left / right, standing up, moving a lot, and out of the picture. No model, no download.
     // Skin, but not a bright orange or yellow wall: skin is paler (less saturated) and has some blue in it.
     const skinPx = (r, g2, b, Y, cb, cr) => Y > 35 && cb > 77 && cb < 127 && cr > 135 && cr < 173 && r > g2 && g2 > b * 0.8 && b > r * 0.38 && (r - b) < r * 0.62;
-    const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, waveAt: -1e9, thumbAt: -1e9, peaceAt: -1e9, kissAt: -1e9, tongueAt: -1e9, tongue: false, bs: null, live: false });
+    const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, waveAt: -1e9, thumbAt: -1e9, peaceAt: -1e9, kissAt: -1e9, tongueAt: -1e9, heartAt: -1e9, okAt: -1e9, rockAt: -1e9, callAt: -1e9, stopAt: -1e9, clapAt: -1e9, nodAt: -1e9, shakeAt: -1e9, tongue: false, bs: null, live: false });
 
     function trackFrame(src, now) {
       const T = R.tr || (R.tr = { ...IDLE_TRACK, live: true, at: -1e9, prev: null, lastSeen: now, wasPresent: true, px: 0.5, py: 0.45, calm: 0 });
@@ -1193,12 +1204,31 @@ void main(){
           if (bs && faceNow) {
             const B = T.bs || (T.bs = { blinkL: 0, blinkR: 0, jaw: 0, smile: 0, tongue: 0, brow: 0, pucker: 0, wide: 0 });
             for (const k of Object.keys(B)) B[k] = lerp(B[k], bs[k] || 0, k.startsWith('blink') ? 0.9 : 0.6);
-            T.tongueN = bs.tongue > 0.5 ? (T.tongueN || 0) + 1 : 0;
-            T.puckerN = bs.pucker > 0.6 ? (T.puckerN || 0) + 1 : 0;
-            const tongueNow = T.tongueN >= 2;
+            const G = R.gestOn !== false, K = R.sensK || 1;
+            T.tongueN = G && bs.tongue > 0.5 * K ? (T.tongueN || 0) + 1 : 0;
+            T.puckerN = G && bs.pucker > 0.6 * K ? (T.puckerN || 0) + 1 : 0;
+            const tongueNow = T.tongueN >= 2 || (G && bs.tongue > 0.75 * K);
             if (tongueNow && !T.tongue) T.tongueAt = now;
             T.tongue = tongueNow;
             if (T.puckerN === 3 && now - T.kissAt > 3000) T.kissAt = now; // a kiss: lips pushed forward for a moment
+            // nodding (yes) and shaking the head (no): the nose swings up and down, or left and right, a few times
+            const pose = faceNow.pose;
+            if (pose) T.yaw = lerp(T.yaw == null ? pose.yaw : T.yaw, pose.yaw, 0.5); // which way your head is turned (nose left or right of the middle of your face)
+            if (G && pose) {
+              const hp = T.hp || (T.hp = []);
+              hp.push({ t: now, yaw: pose.yaw, pitch: pose.pitch });
+              while (hp.length && now - hp[0].t > 1600) hp.shift();
+              const swing = (key, min) => {
+                let turns = 0, dir = 0, last = hp[0][key], lo = last, hi = last;
+                for (const q of hp) { const dv = q[key] - last; if (Math.abs(dv) > min * 0.3) { const nd = Math.sign(dv); if (dir && nd !== dir) turns++; dir = nd; last = q[key]; } lo = Math.min(lo, q[key]); hi = Math.max(hi, q[key]); }
+                return { turns, range: hi - lo };
+              };
+              if (hp.length >= 5) {
+                const nod = swing('pitch', 0.07 * K), shake = swing('yaw', 0.16 * K);
+                if (nod.turns >= 2 && nod.range > 0.07 * K && shake.range < 0.14 * K && now - T.nodAt > 3500) { T.nodAt = now; T.hp = []; }
+                else if (shake.turns >= 3 && shake.range > 0.16 * K && Math.abs(T.vx) < 0.2 && now - T.shakeAt > 3500) { T.shakeAt = now; T.hp = []; }
+              }
+            }
           } else { T.bs = null; T.tongue = false; T.tongueN = 0; T.puckerN = 0; }
           if (R.ml.hands && R.ml.handsAt !== T.handsSeen) { // raised hands (the hand model answers every other time)
             T.handsSeen = R.ml.handsAt;
@@ -1212,27 +1242,55 @@ void main(){
               for (const q of hh) { const dx = q.x - last; if (Math.abs(dx) > 0.02) { const nd = Math.sign(dx); if (dir && nd !== dir) turns++; dir = nd; last = q.x; } lo = Math.min(lo, q.x); hi = Math.max(hi, q.x); }
               if (turns >= 2 && hi - lo > 0.07 && now - (T.waveAt || -1e9) > 3500) { T.waveAt = now; T.hh = []; }
             }
-            T.thumbN = hs.some((h) => h.thumbUp) ? (T.thumbN || 0) + 1 : 0;
-            T.peaceN = hs.some((h) => h.peace) ? (T.peaceN || 0) + 1 : 0;
-            if (T.thumbN === 2 && now - T.thumbAt > 3000) T.thumbAt = now;
-            if (T.peaceN === 2 && now - T.peaceAt > 3000) T.peaceAt = now;
+            const G = R.gestOn !== false;
+            // a shape must be held for two answers in a row (about a fifth of a second), and the same one is not repeated for 3 seconds
+            const hold = (name, at, cond) => { const k = name + 'N'; T[k] = G && cond ? (T[k] || 0) + 1 : 0; if (T[k] === 2 && now - T[at] > 3000) T[at] = now; };
+            hold('thumb', 'thumbAt', hs.some((h) => h.thumbUp));
+            hold('peace', 'peaceAt', hs.some((h) => h.peace));
+            hold('heart', 'heartAt', hs.some((h) => h.fingerHeart || h.heart2));
+            hold('ok', 'okAt', hs.some((h) => h.ok));
+            hold('rock', 'rockAt', hs.some((h) => h.rock));
+            hold('call', 'callAt', hs.some((h) => h.callMe));
+            if (G && open) { // an open hand held up and still: stop
+              const hh = T.hh || [];
+              if (hh.length >= 5 && now - hh[0].t > 1100 && Math.max(...hh.map((q) => q.x)) - Math.min(...hh.map((q) => q.x)) < 0.035 && now - T.stopAt > 4000) { T.stopAt = now; T.hh = []; }
+            }
+            if (G && hs.length >= 2) { // two open hands coming together: a clap
+              const dd = Math.hypot(hs[0].x - hs[1].x, hs[0].y - hs[1].y), cl = T.cl || (T.cl = []);
+              cl.push({ t: now, d: dd });
+              while (cl.length && now - cl[0].t > 800) cl.shift();
+              if (hs[0].open && hs[1].open && Math.max(...cl.map((q) => q.d)) > 0.26 && dd < 0.11 && now - T.clapAt > 2500) { T.clapAt = now; T.cl = []; }
+            } else T.cl = [];
           }
         }
         T.handsOk = mlOk && now - (R.ml.handsAt || -1e9) < 2500;
+        if (!mlOk) { T.hp = []; }
         const wallLike = !mlOk && skinFrac > 0.28; // a skin-coloured wall fills the picture: the colour says nothing about where you are
-        const seen = mlOk ? !!faceNow : wallLike || skinFrac > 0.012 || energy > 0.05;
+        // With the face model, "you are there" is more than "your face was found": looking down, leaning very close, a hand in front of the
+        // face or turning away all lose the face for a while. A raised hand, a lot of movement just after the face was seen, and a last face that
+        // was big or at the edge of the picture (so probably only partly out of it) all mean you are still there.
+        let seen, grace = 1400;
+        if (mlOk) {
+          const handsNow = !!R.ml.hands && R.ml.hands.length > 0 && now - R.ml.handsAt < 1200;
+          if (faceNow) { T.lastFace = now; T.lastFaceBox = faceNow; }
+          const lb = T.lastFaceBox, sinceFace = now - (T.lastFace || -1e9);
+          const nearEdge = !!lb && (lb.w > 0.32 || lb.y - lb.h / 2 < 0.04 || lb.y + lb.h / 2 > 0.96 || lb.x - lb.w / 2 < 0.03 || lb.x + lb.w / 2 > 0.97);
+          seen = !!faceNow || handsNow || (energy > 0.25 && sinceFace < 12000);
+          grace = nearEdge ? 9000 : 2500;
+        } else seen = wallLike || skinFrac > 0.012 || energy > 0.05;
         if (seen) T.lastSeen = now;
-        const present = now - T.lastSeen < (mlOk ? 1500 : 1400);
-        if (seen && !wallLike && (mlOk || skinFrac > 0.012)) {
+        const present = now - T.lastSeen < grace;
+        if (seen && !wallLike && (mlOk ? !!faceNow : skinFrac > 0.012)) {
           const nx = mlOk ? clamp(faceNow.x, 0, 1) : clamp(0.5 + (cx / 64 - 0.5) * 1.25, 0, 1), ny = mlOk ? clamp(faceNow.y, 0, 1) : cy / 36; // your face at the side of the picture reads as the very edge
           T.vx = lerp(T.vx, (nx - T.px) / dt, 0.4); T.vy = lerp(T.vy, (ny - T.py) / dt, 0.4);
           T.px = nx; T.py = ny;
           T.x = lerp(T.x, nx, 0.45); T.y = lerp(T.y, ny, 0.35);
+          if (mlOk) { T.fw = lerp(T.fw == null ? faceNow.w : T.fw, faceNow.w, 0.4); T.fh = lerp(T.fh == null ? faceNow.h : T.fh, faceNow.h, 0.4); } // how big your face is, for the animal that plays on you
         } else { T.vx *= 0.8; T.vy *= 0.8; }
         T.energy = lerp(T.energy, energy, 0.35);
         T.rise = lerp(T.rise, clamp((0.4 - T.y) / 0.2), 0.2);
         // standing up (or jumping): your face is clearly higher than where it has been for the last couple of seconds
-        if (seen && !wallLike && (mlOk || skinFrac > 0.012)) {
+        if (seen && !wallLike && (mlOk ? !!faceNow : skinFrac > 0.012)) {
           if (T.baseY == null) T.baseY = T.y;
           if (T.y < T.baseY - 0.13 && now - T.riseAt > 2000) T.riseAt = now;
           T.baseY = lerp(T.baseY, T.y, 0.03);
@@ -1264,9 +1322,34 @@ void main(){
       robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
     };
 
-    const ACT_LEN = { raspberry: 30, cry: 30, wipe: 2, heartbreak: 3.2, heartbeat: 3.5, miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
+    const ACT_LEN = { nod: 1.8, headshake: 1.8, clap: 2.6, freeze: 3, raspberry: 30, cry: 30, wipe: 2, heartbreak: 3.2, heartbeat: 3.5, miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
     const pulse = (u, a, b) => smooth((u - a) / Math.max(1e-3, (b - a))) * (1 - smooth((u - b) / Math.max(1e-3, (1 - b))));
     const bump = (u) => Math.sin(Math.PI * clamp(u)); // 0 -> 1 -> 0
+
+    // The little sounds that go with what the animal does. The renderer only says which (R.takeSfx); the camera hook plays them.
+    function noteSounds(cfg, kind, act, start, now) {
+      if (cfg.sounds === false || !act) return;
+      const q = R.sfx || (R.sfx = []), at = R.sfxAt || (R.sfxAt = {}), key = act + '|' + start;
+      const once = (k) => { if (R.sfxKey !== key) q.push({ k, a: kind }); };
+      const every = (k, ms) => { if (now - (at[k] || -1e9) > ms) { at[k] = now; q.push({ k, a: kind }); } };
+      switch (act) {
+        case 'cry': every('sob', 2700); break;
+        case 'miss': every('whimper', 3300); break;
+        case 'wipe': once('sniff'); break;
+        case 'greet': case 'cheer': once('cheer'); break;
+        case 'jump': once('boing'); break;
+        case 'heartbeat': every('heart', 900); break;
+        case 'heartbreak': once('crack'); break;
+        case 'raspberry': once('blep'); break;
+        case 'wave': once('hi'); break;
+        case 'clap': every('clap', 450); break;
+        case 'freeze': once('gasp'); break;
+        default: break;
+      }
+      R.sfxKey = key;
+      while (q.length > 8) q.shift();
+    }
+    R.takeSfx = () => { const q = R.sfx || []; R.sfx = []; return q.slice(0, 4); };
 
     // The pose of one animal at one moment: how high it hops, how far its arms are raised, its mouth, its tongue.
     // t = seconds into the action, u = 0..1 through it. Arms: 0 = hanging, about 2.8 = straight up.
@@ -1276,6 +1359,13 @@ void main(){
       switch (act) {
         // ---------- shared ----------
         case 'wave': p.armR = 2.2 + 0.5 * Math.sin(t * 9); p.ex = 'happy'; p.mouth = 0.5; p.lookX = 0; break;
+        case 'sit': p.ex = 'happy'; p.armL = p.armR = 0.35; p.tail = 2.6; p.head = 0.07 * Math.sin(t * 1.8); p.sy = 1 + 0.012 * Math.sin(t * 3); break;      // sitting on you
+        case 'hang': p.armL = p.armR = 2.75; p.tilt = 0.14 * Math.sin(t * 2.1); p.ex = 'happy'; p.mouth = 0.25; break;                                           // hanging on your glasses
+        case 'roll': p.tilt = t * 6.5; p.armL = p.armR = 1.1; p.ex = 'happy'; p.mouth = 0.5; break;                                                                // rolling around your head
+        case 'nod': p.sy = 1 - 0.05 * Math.abs(Math.sin(t * 6.5)); p.hop = -2 * Math.abs(Math.sin(t * 6.5)); p.ex = 'happy'; p.lookX = 0; break;           // yes
+        case 'headshake': p.head = 0.28 * Math.sin(t * 9); p.ex = 'wary'; p.lookX = Math.sin(t * 9); p.mouth = 0; break;                                  // no
+        case 'clap': p.armL = 0.9 + 0.8 * Math.max(0, Math.sin(t * 11)); p.armR = p.armL; p.ex = 'happy'; p.mouth = 0.6; p.hop = Math.abs(Math.sin(t * 5.5)) * 5; break;
+        case 'freeze': p.armR = 2.4; p.armL = 0.3; p.ex = 'wary'; p.lookX = 0; p.mouth = 0; p.sy = 1.02; break;                                          // you said stop
         case 'raspberry': // tongue out, like yours
           p.tongue = 0.95 + 0.05 * Math.sin(t * 12); p.mouth = 0.3; p.ex = 'happy'; p.head = 0.06 * Math.sin(t * 9); p.lookX = 0; p.armL = p.armR = 0.4; break;
         case 'cry': // sobbing: eyes squeezed shut, mouth wide open, shoulders shaking
@@ -1364,6 +1454,26 @@ void main(){
       return p;
     }
 
+    // Where it sits on you (fractions of the picture): the centre of its feet, and how big it is.
+    const perchTarget = (kind, side, tr, t) => {
+      const fw = tr.fw || 0.2, fh = tr.fh || 0.3, x = tr.x, y = tr.y;
+      const size = (m) => clamp(fh * 1.25 * m, 0.26, 0.6); // it is about as big as half your face, whatever your distance from the camera
+      switch (kind) {
+        case 'head': return { x, fy: y - fh * 0.55, sc: size(1.1) };
+        case 'shoulder': return { x: x + side * fw * 0.95, fy: y + fh * 0.95, sc: size(1.2) };
+        case 'glasses': return { x: x + side * fw * 0.55, fy: y - fh * 0.1 + 0.17 * size(0.9) / 0.38, sc: size(0.9) }; // its hands are at the height of your eyes
+        default: { const a = t * 1.5; return { x: x + Math.cos(a) * fw * 0.95, fy: y + Math.sin(a) * fh * 0.7 + 0.07, sc: size(0.85) }; }     // rolling around your head
+      }
+    };
+    const PERCH_ACT = { head: 'sit', shoulder: 'sit', glasses: 'hang', orbit: 'roll' };
+    const GESTURE_SET = new Set(['wave', 'cheer', 'jump', 'heartbeat', 'dance', 'reply', 'freeze', 'clap', 'nod', 'headshake', 'raspberry']);
+    const AWAY_MODES = ['search', 'miss', 'cry', 'party'];
+    // what you do -> the bubble over its head, and what it does about it (seconds)
+    const GESTURE_BUBBLES = [['thumbAt', '👍', 2200], ['peaceAt', '✌️', 2200], ['kissAt', '😘', 2400], ['tongueAt', '😛', 2000], ['heartAt', '💖', 2600], ['okAt', '👌', 2200],
+      ['rockAt', '🤘', 2200], ['callAt', '🤙', 2200], ['stopAt', '✋', 2600], ['clapAt', '👏', 2200], ['nodAt', '✔️', 1800], ['shakeAt', '✖️', 1800]];
+    const GESTURE_ACTS = { thumbAt: ['cheer', 2.4], peaceAt: ['jump', 1.1], kissAt: ['heartbeat', 3], heartAt: ['heartbeat', 3.2], okAt: ['cheer', 2], rockAt: ['dance', 3.5],
+      callAt: ['reply', 2.4], stopAt: ['freeze', 3], clapAt: ['clap', 2.6], nodAt: ['nod', 1.8], shakeAt: ['headshake', 1.8] };
+
     // How the character feels for the sound that is playing (it holds the feeling for 1.6 s).
     function characterMood(audio, now) {
       const lvl = audio ? clamp(audio.level || 0) : 0;
@@ -1379,43 +1489,43 @@ void main(){
     // Normally it peeks from a bottom corner. With "Follow me" it comes out, walks, searches and welcomes you.
     function stageUpdate(cfg, tr, audio, now, pos, S, w) {
       const T = R.stg || (R.stg = { x: null, s: 0, dir: 1, ph: 0, mode: 'peek', tx: 0, until: 0, moving: false, bubble: '', bubbleUntil: 0, last: now,
-        crossAt: now + 18000, patrol: 0, patrolAt: 0, sawExit: -1e9, sawEnter: -1e9, sawRise: -1e9, sawWave: -1e9, sawThumb: -1e9, sawPeace: -1e9, sawKiss: -1e9, sawTongue: -1e9, home: null, homePos: null, tear: 0, welcomeAt: -1e9, wipeUntil: 0, cryAt: 0 });
+        crossAt: now + 18000, patrol: 0, patrolAt: 0, sawExit: -1e9, sawEnter: -1e9, sawRise: -1e9, sawWave: -1e9, sawThumb: -1e9, sawPeace: -1e9, sawKiss: -1e9, sawTongue: -1e9, home: null, homePos: null, tear: 0, welcomeAt: -1e9, wipeUntil: 0, cryAt: 0, perchAt: now + 14000 + Math.random() * 8000, perch: '', perchUntil: 0, side: 1, pf: 0, fy: 0.988, sc: 1, ftx: 0.988, fsc: 1 });
       const dt = clamp((now - T.last) / 1000, 0, 0.1); T.last = now;
       const corner = pos === 'left' ? (S * 0.6) / w : 1 - (S * 0.6) / w;
       if (T.homePos !== pos) { T.homePos = pos; T.home = corner; if (T.x == null) T.x = corner; }
       const follow = cfg.follow === true && tr && tr.live;
+      if (follow && R.forcePerch) { T.mode = 'perch'; T.perch = R.forcePerch; T.perchUntil = now + 1e9; T.side = R.forceSide || 1; } // (for tests and the preview sheet)
       const say = (glyph, ms) => { T.bubble = glyph; T.bubbleUntil = now + ms; };
+      const backAgain = () => { if (tr.present) { T.backT = (T.backT || 0) + dt; return T.backT > 0.9; } T.backT = 0; return false; }; // back for a moment is not enough (the face may just be found again)
       const welcome = () => { T.mode = 'welcome'; T.welcomeAt = now; T.until = now + 5400; T.wipeUntil = now + (T.tear > 0.08 ? 2200 : 0); }; // you are back: wipe the tears (if any), cheer, then the heart beats
       if (!follow) { T.mode = 'peek'; T.tx = T.home = corner; }
       else {
         if (tr.exitAt > T.sawExit) { T.sawExit = tr.exitAt; T.mode = 'search'; T.patrol = -1; T.patrolAt = 0; say('?', 2400); }
-        if (tr.enterAt > T.sawEnter) { T.sawEnter = tr.enterAt; welcome(); say('❤', 3000); }
+        if (tr.enterAt > T.sawEnter) { T.sawEnter = tr.enterAt; if (!AWAY_MODES.includes(T.mode)) { welcome(); say('❤', 3000); } }
         if (tr.riseAt > T.sawRise) { T.sawRise = tr.riseAt; if (T.mode !== 'search' && T.mode !== 'party') { T.mode = 'out'; T.until = now + 5200; say('!', 1800); } }
         if (tr.waveAt > T.sawWave) { T.sawWave = tr.waveAt; say('👋', 2400); } // it only waves when YOU wave
-        if (tr.thumbAt > T.sawThumb) { T.sawThumb = tr.thumbAt; say('👍', 2200); }
-        if (tr.peaceAt > T.sawPeace) { T.sawPeace = tr.peaceAt; say('✌️', 2200); }
-        if (tr.kissAt > T.sawKiss) { T.sawKiss = tr.kissAt; say('😘', 2400); }
-        if (tr.tongueAt > T.sawTongue) { T.sawTongue = tr.tongueAt; say('😛', 2000); }
+        T.saw = T.saw || {};
+        for (const [k, glyph, ms] of GESTURE_BUBBLES) if (tr[k] > (T.saw[k] || -1e9)) { T.saw[k] = tr[k]; say(glyph, ms); } // what it saw you do
         const beside = clamp(tr.x < 0.5 ? tr.x + 0.3 : tr.x - 0.3, 0.12, 0.88);
         if (T.mode === 'search') {
           const P = [0.5, 0.17, 0.83, 0.5, 0.3, 0.7];
           if (now >= T.patrolAt) { T.patrol = (T.patrol + 1) % P.length; T.patrolAt = now + 1800 + Math.random() * 900; say(['?', '🥺', '?', '💔'][Math.floor(Math.random() * 4)], 1700); }
           T.tx = P[Math.max(0, T.patrol)];
           if (tr.away > 3.2) { T.mode = 'miss'; say('🥺', 2200); }
-          if (tr.present) { welcome(); }
+          if (backAgain()) { welcome(); say('❤', 3000); }
         } else if (T.mode === 'miss') { // it wants you back: it waits in the middle, reaches out, looks around
           T.tx = 0.5;
           if (now > T.bubbleUntil - 150) say(['🥺', '💔', '?', '🥺'][Math.floor(Math.random() * 4)], 2200);
           if (tr.away > 7) { T.mode = 'cry'; T.cryAt = now; say('😭', 2400); }
-          if (tr.present) { welcome(); }
+          if (backAgain()) { welcome(); say('❤', 3000); }
         } else if (T.mode === 'cry') { // it cries, and the screen slowly fills with its tears
           T.tx = 0.5;
           if (now > T.bubbleUntil - 150) say(['😭', '💔', '😭', '🥺'][Math.floor(Math.random() * 4)], 2400);
           if (cfg.awayDance && tr.away > 24) { T.mode = 'party'; say('♪', 4200); }
-          if (tr.present) { welcome(); }
+          if (backAgain()) { welcome(); say('❤', 3000); }
         } else if (T.mode === 'party') {
           T.tx = 0.5; if (now > (T.bubbleUntil - 200)) say('♪', 4200);
-          if (tr.present) { welcome(); }
+          if (backAgain()) { welcome(); say('❤', 3000); }
         } else if (T.mode === 'welcome') {
           T.tx = now < T.wipeUntil ? T.x : beside; // first it wipes its tears, standing still
           if (now > T.until) { T.mode = tr.rise > 0.3 ? 'out' : 'return'; T.until = now + 3000; }
@@ -1423,24 +1533,42 @@ void main(){
           T.tx = beside; if (now > T.until && tr.rise < 0.25) T.mode = 'return';
         } else if (T.mode === 'return') {
           T.tx = T.home; if (Math.abs(T.x - T.home) < 0.025) T.mode = 'peek';
+        } else if (T.mode === 'perch') { // on your head, your shoulder or your glasses, or rolling around your head
+          const pt = perchTarget(T.perch, T.side, tr, now / 1000);
+          T.tx = pt.x; T.ftx = pt.fy; T.fsc = pt.sc;
+          if (!tr.present || !tr.ml || now > T.perchUntil || tr.riseAt > T.sawRise) { T.mode = 'return'; T.perchAt = now + 25000 + Math.random() * 20000; }
         } else if (T.mode === 'cross') {
           if (Math.abs(T.x - T.tx) < 0.02) { T.mode = 'peek'; T.home = T.tx; T.crossAt = now + 20000 + Math.random() * 15000; }
         } else { // peek: now and then it sneaks along the bottom to the other corner
           T.tx = T.home;
-          if (now >= T.crossAt && tr.present) { const cL = (S * 0.6) / w; T.mode = 'cross'; T.tx = T.home < 0.5 ? 1 - cL : cL; }
+          // it does not stand in front of your face: if you are near its corner for a moment, it walks to the other one
+          if (tr.present && Math.abs(T.home - tr.x) < 0.24) {
+            T.overlap = (T.overlap || 0) + dt;
+            if (T.overlap > 0.8) { const cL0 = (S * 0.6) / w; T.overlap = 0; T.mode = 'cross'; T.tx = tr.x < 0.5 ? 1 - cL0 : cL0; T.crossAt = now + 12000; }
+          } else T.overlap = 0;
+          if (cfg.masti !== false && tr.ml && tr.present && tr.fw > 0.05 && now >= T.perchAt && T.tear < 0.02) { // now and then it plays on you
+            const kinds = ['head', 'shoulder', 'glasses', 'orbit'].filter((k) => k !== T.lastPerch);
+            T.perch = T.lastPerch = kinds[Math.floor(Math.random() * kinds.length)]; T.side = Math.random() < 0.5 ? -1 : 1;
+            T.perchUntil = now + (T.perch === 'orbit' ? 6500 : 9000 + Math.random() * 5000); T.mode = 'perch';
+          } else if (now >= T.crossAt && tr.present) { const cL = (S * 0.6) / w; T.mode = 'cross'; T.tx = T.home < 0.5 ? 1 - cL : cL; }
         }
       }
-      const standing = T.mode === 'search' || T.mode === 'miss' || T.mode === 'cry' || T.mode === 'party' || T.mode === 'welcome' || T.mode === 'out' || (T.mode === 'return' && Math.abs(T.x - T.home) > 0.03);
+      const standing = T.mode === 'perch' || T.mode === 'search' || T.mode === 'miss' || T.mode === 'cry' || T.mode === 'party' || T.mode === 'welcome' || T.mode === 'out' || (T.mode === 'return' && Math.abs(T.x - T.home) > 0.03);
       T.s += ((standing ? 1 : 0) - T.s) * Math.min(1, dt * 4.5);
-      const wantMove = Math.abs(T.tx - T.x) > 0.012 && (T.s > 0.7 || T.mode === 'cross' || (T.s < 0.05 && T.mode === 'peek'));
+      const wantMove = T.mode !== 'perch' && Math.abs(T.tx - T.x) > 0.012 && (T.s > 0.7 || T.mode === 'cross' || (T.s < 0.05 && T.mode === 'peek'));
       const speed = T.mode === 'cross' ? 0.1 : T.mode === 'party' ? 0.5 : T.mode === 'welcome' ? 0.7 : 0.42;
       T.moving = wantMove;
       if (wantMove) { const d = T.tx - T.x; T.dir = Math.sign(d) || 1; T.x += Math.sign(d) * Math.min(Math.abs(d), speed * dt); T.ph += dt * (T.mode === 'cross' ? 6 : 13); }
       else if (!follow) T.x += (corner - T.x) * Math.min(1, dt * 6);
+      // up on you: it glides to its perch (smaller, on your head / shoulder / glasses), and back down to the floor afterwards
+      const perching = T.mode === 'perch';
+      T.pf += ((perching ? 1 : 0) - T.pf) * Math.min(1, dt * (perching ? 5 : 3.5));
+      if (perching) { const k = Math.min(1, dt * 7); T.x += (T.tx - T.x) * k; T.fy += (T.ftx - T.fy) * k; T.sc += (T.fsc - T.sc) * k; T.moving = false; }
+      else { T.fy = lerp(T.fy, 0.988, 0.2); T.sc = lerp(T.sc, 1, 0.2); }
       // the tears on the screen: they rise while it cries, and drain quickly once you are back
-      if (T.mode === 'cry') T.tear = Math.min(1, T.tear + dt / 14);
-      else if (T.mode === 'search' || T.mode === 'miss') T.tear = Math.max(0, T.tear - dt / 20);
-      else T.tear = Math.max(0, T.tear - dt / (T.mode === 'party' ? 8 : 2.6));
+      if (T.mode === 'cry') T.tear = Math.min(0.92, T.tear + dt / 25); // it fills to nearly the top (92%) and stays there until you are back
+      else if (T.mode === 'search' || T.mode === 'miss' || T.mode === 'party') { /* the water stays */ }
+      else T.tear = Math.max(0, T.tear - dt / 2.6);                    // it drains only when you are back
       if (now > T.bubbleUntil) T.bubble = '';
       return T;
     }
@@ -1470,11 +1598,12 @@ void main(){
         // "hi": you wave, it waves back
         if (tr.waveAt > (R.cSawWave || -1e9)) { R.cSawWave = tr.waveAt; begin('wave', 2.6); return A; }
         // what your face and hands do, it does back: thumbs up -> it cheers, peace -> it jumps, a kiss -> its heart beats, tongue out -> tongue out
-        if (tr.thumbAt > (R.cSawThumb || -1e9)) { R.cSawThumb = tr.thumbAt; begin('cheer', 2.4); return A; }
-        if (tr.peaceAt > (R.cSawPeace || -1e9)) { R.cSawPeace = tr.peaceAt; begin('jump', 1.1); return A; }
-        if (tr.kissAt > (R.cSawKiss || -1e9)) { R.cSawKiss = tr.kissAt; begin('heartbeat', 3); return A; }
+        R.cSaw = R.cSaw || {};
+        for (const k of Object.keys(GESTURE_ACTS)) if (tr[k] > (R.cSaw[k] || -1e9)) { R.cSaw[k] = tr[k]; begin(GESTURE_ACTS[k][0], GESTURE_ACTS[k][1]); return A; }
         if (tr.tongue) { begin('raspberry', 30); return A; }
         if (A.name === 'raspberry') { A.name = ''; A.next = now + 1200; }
+        if (A.name && !done && A.dur < 30 && GESTURE_SET.has(A.name)) return A; // finish what it is doing in answer to you
+        if (st.mode === 'perch') { begin(PERCH_ACT[st.perch] || 'sit', 30); return A; }
         // you talk, it listens (ears up, nodding); when you stop, it answers
         const v = audio ? clamp(audio.voice || 0) : 0;
         const T = R.talk || (R.talk = { on: false, since: 0, last: 0, sawReply: -1e9, replyAt: -1e9 });
@@ -1534,16 +1663,20 @@ void main(){
       const stage = o.stage || { x: pos === 'left' ? (h * 0.24) / w : 1 - (h * 0.24) / w, s: o.charStand || 0, dir: 1, ph: (o.charT || 0) * 13, moving: !!o.charWalk, mode: 'peek', bubble: o.charBubble || '' };
       const sS = clamp(stage.s);
       const t = now / 1000;
-      const S = h * 0.4, u = S / 100;
+      const pf = clamp(stage.pf || 0), sc = lerp(1, stage.sc || 1, pf);
+      const Sfull = h * 0.4, S = Sfull * sc, u = S / 100; // (smaller when it sits on you)
       const { mood, lvl, since } = characterMood(audio, now);
       // what it is doing: a forced action (for the preview sheet) or the scheduler's choice
-      let act, at, au;
+      let act, at, au, actStart = 0;
       if (o.charAct) { act = o.charAct; at = o.charT || 0; au = o.charU == null ? ((at % 3) / 3) : o.charU; }
       else {
         const A = chooseAct(kind, cfg, tr, mood, now, stage, audio);
-        act = A.name; at = (now - A.start) / 1000; au = A.dur ? clamp(at / A.dur) : 0;
+        act = A.name; actStart = A.start; at = (now - A.start) / 1000; au = A.dur ? clamp(at / A.dur) : 0;
       }
       const pz = actPose(kind, act, at, au, t);
+      if (!o.charAct) noteSounds(cfg, kind, act, actStart, now);
+      const deep = clamp(((o.tear || 0) - 0.8) / 0.12); // in water up to the top: it sinks and rises, arms up, glub
+      if (deep > 0.05 && act === 'cry') { pz.armL = pz.armR = 2.3 + 0.35 * Math.sin(t * 3.2); pz.mouth = 0.5 + 0.4 * Math.abs(Math.sin(t * 5)); }
       // your face, mirrored: when nothing else is going on it opens its mouth when you do, smiles when you smile, is amazed when you are
       const bsv = (cfg.follow && tr && tr.live && tr.present && tr.bs) || o.mimic || null;
       if (bsv && !act) {
@@ -1568,18 +1701,32 @@ void main(){
       const follow = cfg.follow && tr && tr.live;
       let lookX = pz.lookX, shift = 0;
       if (follow && tr.present) {
-        if (lookX == null) lookX = clamp((tr.x - (pos === 'left' ? 0.2 : 0.8)) * 2.2, -1, 1);
+        if (lookX == null) lookX = clamp((tr.x - stage.x) * 3.2, -1, 1);
         tilt += clamp(tr.vx * 0.25, -0.12, 0.12);
         shift = clamp((tr.x - 0.5) * (pos === 'left' ? 1 : -1) * 0.0, -0.3, 0.3);
       }
       if (stage.moving && sS > 0.5) { tilt += stage.dir * 0.06; if (lookX == null) lookX = stage.dir * 0.8; }
+      // you turn your head towards it and it turns towards you: it looks at you, tilts its head to you, ears up, a smile
+      let attn = 0;
+      if (follow && tr.present && tr.yaw != null && R.gestOn !== false && !act) {
+        const toward = stage.x < tr.x ? -1 : 1; // your nose goes to the side where the animal is
+        if (Math.sign(tr.yaw) === toward) attn = clamp((Math.abs(tr.yaw) - 0.08) / 0.2);
+      }
+      if (attn > 0.03) {
+        const dirU = tr.x > stage.x ? 1 : -1;
+        lookX = (lookX == null ? 0 : lookX) * (1 - attn) + dirU * attn;
+        tilt += dirU * 0.07 * attn;
+        pz.head += dirU * 0.16 * attn;
+        pz.ear = Math.max(pz.ear, 0.6 * attn);
+        if (attn > 0.6 && ex === 'idle') ex = 'happy';
+      }
       const blink = (now % 3600) < 130 && ex !== 'happy' && !(cfg.follow && tr && tr.live && tr.bs); // it blinks by itself, unless it is copying your blinks
       const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2) * pz.tail);
       const dark = '#23222b';
       const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin';
 
       // The animal is drawn on its own small canvas so it can be lit by your light and get a soft shadow.
-      const cw = Math.ceil(S * 1.7), ch = Math.ceil(S * 1.95);
+      const cw = Math.ceil(Sfull * 1.7), ch = Math.ceil(Sfull * 1.95);
       const groundIn = ch + 2 * u - 8 * u * sS; // where the feet are inside the little canvas
       if (!R.cv || R.cv.width !== cw || R.cv.height !== ch) { R.cv = makeScratch(cw, ch); R.cvg = R.cv.getContext('2d'); }
       const cg0 = g;
@@ -1598,7 +1745,7 @@ void main(){
 
       // legs: when it stands, you see them (and they walk)
       if (sS > 0.03) {
-        const swing = stage.moving ? Math.sin(stage.ph) * 0.55 : 0;
+        const swing = stage.moving ? Math.sin(stage.ph) * 0.55 : act === 'hang' ? 0.4 * Math.sin(t * 3.2) : act === 'roll' ? 0.9 * Math.sin(t * 9) : 0;
         const LEG = { cat: ['#f4a259', '#fff0dc', 11, 6], dog: ['#c98d5c', '#f5dfc3', 11, 6], bunny: ['#f6f1ee', '#ffffff', 15, 6], panda: ['#26262b', '#26262b', 12, 6.5], owl: ['#f2a33a', '#f2a33a', 11, 3.5],
           fox: ['#ee7b30', '#3a2418', 11, 6], penguin: ['#f2a33a', '#f2a33a', 14, 4], lion: ['#f2b96b', '#ffe9c6', 12, 6], monkey: ['#8d5b3d', '#f1cfa6', 12, 6], frog: ['#6cc24a', '#d9f5b8', 16, 5], unicorn: ['#fbeaff', '#ffd54a', 10, 5.5], robot: ['#5d6b7c', '#b4bfcc', 14, 5] }[kind];
         for (const sg of [-1, 1]) {
@@ -1895,8 +2042,14 @@ void main(){
       // onto the picture, with a soft shadow
       cg0.save();
       cg0.shadowColor = 'rgba(0,0,0,0.38)'; cg0.shadowBlur = Math.max(4, h * 0.02); cg0.shadowOffsetY = h * 0.006;
-      const gAbs = (h + 4 * u) + ((h - 0.012 * h) - (h + 4 * u)) * sS; // the feet: below the picture when peeking, on the floor when standing
-      cg0.drawImage(R.cv, w * stage.x - cw / 2, gAbs - (ch + 2 * u - 8 * u * sS));
+      const gAbsFloor = (h + 4 * u) + ((h - 0.012 * h) - (h + 4 * u)) * sS; // the feet: below the picture when peeking, on the floor when standing
+      const gAbs = pf > 0.01 ? lerp(gAbsFloor, h * (stage.fy || 0.988), pf) : gAbsFloor; // or on you
+      const floatUp = Math.max(0, (o.tear || 0) - 0.35) / 0.65 * h * 0.32 * (1 + 0.04 * Math.sin(t * 1.7)) - deep * h * 0.12 * (0.5 + 0.5 * Math.sin(t * 0.55)); // in deep water it floats up, and slowly sinks and rises
+      cg0.drawImage(R.cv, w * stage.x - cw / 2, gAbs - (ch + 2 * u - 8 * u * sS) - floatUp);
+      if (deep > 0.05) for (let k = 0; k < 6; k++) { // bubbles from its mouth
+        const f = (t * 0.45 + k / 6) % 1, bx = w * stage.x + Math.sin(k * 2.3 + t * 2) * u * 8, by = gAbs - floatUp - (ch - 40 * u) * 0.55 - f * h * 0.3;
+        cg0.strokeStyle = `rgba(225,242,255,${0.85 * (1 - f)})`; cg0.lineWidth = 1.5; cg0.beginPath(); cg0.arc(bx, by, u * (2 + (k % 3) * 1.4), 0, TAU); cg0.stroke();
+      }
       cg0.restore();
     }
 
@@ -1972,6 +2125,7 @@ void main(){
         // ---- where YOU are (only when "Follow me" is on) ----
         const follow = cfg.follow === true;
         if (follow) R.followOn = now; // the camera hook asks for face results only while this is fresh
+        R.gestOn = cfg.gestures !== false; R.sensK = { low: 1.25, normal: 1, high: 0.8 }[cfg.sens] || 1;
         const tr = follow ? (opts.track || trackFrame(src, now)) : IDLE_TRACK;
         const party = follow && !tr.present && cfg.awayDance;
         if (follow) {
@@ -1996,8 +2150,12 @@ void main(){
         const dark = darkRaw;                             // measured on the plain camera picture
         const lifted = cfg.studio !== false && !enhanced ? studioLift(g, w, h, dark) : (enhanced ? clamp(dark) * enhK : 0);
         const faceX = w * fx, faceY = h * fy;
+        // The light angle (any hanging light): 90 = straight down on you (a bright pool, shade below your chin), 60 / 45 / 30 = more and more from the side
+        // (it lights the side of your face that faces the lamp, the other side falls into shade). Auto = aimed at you.
+        const angD = [90, 60, 45, 30].includes(cfg.lightAngle) ? cfg.lightAngle : 0, sideK0 = angD ? (90 - angD) / 60 : 0;
+        const aimX0 = follow ? faceX : w / 2 + ls.angle * w * 0.5;
         // The lamp (any hanging light) lights your face; with no lamp there is still a soft light on you.
-        relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp, follow ? faceX : w / 2 + ls.angle * w * 0.5, follow ? faceY : h * 0.48, dark * (1 - 0.5 * lifted));
+        relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp * (angD === 90 ? 1.12 : 1), aimX0 + (lampPos.cx - aimX0) * 0.3 * sideK0, follow ? faceY : h * 0.48, dark * (1 - 0.5 * lifted));
 
         tintWash(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.6) * I * ls.bright * (0.5 + 0.5 * ls.focusRamp), follow ? faceX : w / 2, follow ? faceY : h * 0.46);
         const chromaK = 1 + 0.7 * chromaOf(e.rgb);
@@ -2018,25 +2176,37 @@ void main(){
         const bulbY = drop + ls.dy;
         const sway = ls.angle * 1.2;
         const bx = lampPos.cx + Math.sin(ls.angle) * drop;
+        const ang = angD, sideK = sideK0, tgtX = follow ? faceX : w / 2, sgn = Math.abs(tgtX - bx) < w * 0.02 ? (bx < w / 2 ? 1 : -1) : Math.sign(tgtX - bx);
         if (cfg.lamp && fixture !== 'lamp') {
           fixtureLight(g, w, h, fixture, { cx: lampPos.cx, bx, by: bulbY, ls, e, I, now, fx: follow ? faceX : null, fy: follow ? faceY : null, aim: follow ? [faceX, faceY] : null });
+          if (ang) { // the same angle choice for every kind of light: a key light on the side of your face that faces it
+            const kx = (follow ? faceX : w / 2) + (bx - (follow ? faceX : w / 2)) * 0.4 * sideK, ky = follow ? faceY : h * 0.46;
+            glow(g, kx, ky, h * (ang === 90 ? 0.5 : 0.62), e.rgb, 0.3 * chromaK * I * ls.bright * (1 + 0.9 * dark) * (ang === 90 ? 1.1 : 0.9));
+          }
         } else if (cfg.lamp) {
-          const ang = cfg.lightAngle === 90 || cfg.lightAngle === 60 || cfg.lightAngle === 45 || cfg.lightAngle === 30 ? cfg.lightAngle : 0;
-          const tgtX = follow ? faceX : w / 2, sgn = Math.abs(tgtX - bx) < w * 0.02 ? (bx < w / 2 ? 1 : -1) : Math.sign(tgtX - bx), sideK = ang ? (90 - ang) / 60 : 0;
           let dir = follow ? Math.atan2(-(faceX - bx), Math.max(10, faceY - bulbY)) * 0.9 - ls.angle * 0.9 : -sway * 0.9 + (bx - w / 2) / w * 0.55;
           if (ang) dir = -sgn * ((90 - ang) * Math.PI / 180) - ls.angle * 0.9; // 90 = straight down; the smaller the angle, the more it comes from the side
-          cone(g, bx, bulbY, h * 1.05, w * 0.78, dir, e.rgb, 0.46 * chromaK * I * ls.bright * (1 + 0.5 * dark));
+          const spread = w * (ang === 90 ? 0.52 : ang === 60 ? 0.66 : 0.78);               // straight down is a focused beam, from the side it is a wide wash
+          cone(g, bx, bulbY, h * 1.05, spread, dir, e.rgb, 0.46 * chromaK * I * ls.bright * (1 + 0.5 * dark) * (ang === 90 ? 1.2 : 1));
           const gx0 = follow ? faceX : w / 2 + (bx - w / 2) * 0.3, gy = follow ? faceY : h * 0.46, gx = gx0 + (bx - gx0) * 0.4 * sideK;
           glow(g, gx, gy, h * 0.66, e.rgb, 0.34 * chromaK * I * ls.bright * (1 + 0.9 * dark)); // light on your face (more in a dark room)
         } else {
           glow(g, follow ? faceX : w / 2, follow ? faceY : h * 0.46, h * 0.62, e.rgb, 0.22 * I * (1 + 0.9 * dark)); // no lamp: a soft light on you
         }
         g.restore();
-        if (cfg.lamp && fixture === 'lamp' && (cfg.lightAngle === 60 || cfg.lightAngle === 45 || cfg.lightAngle === 30)) { // light from the side: the far side of the picture falls into shade
-          const sk = (90 - cfg.lightAngle) / 60, ax = follow ? faceX : w / 2, ls0 = lampPos.cx + Math.sin(ls.angle) * drop, sg = ax >= ls0 ? 1 : -1;
-          const sh = g.createLinearGradient(ax, 0, ax + sg * w * 0.6, 0);
-          sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(0,0,0,${0.42 * sk})`);
-          g.save(); g.fillStyle = sh; g.fillRect(0, 0, w, h); g.restore();
+        if (cfg.lamp && angD) { // the shade that goes with the angle
+          g.save();
+          if (angD === 90) { // from straight above: the lower part (under the chin, the shoulders) is darker
+            const sh = g.createLinearGradient(0, follow ? faceY : h * 0.5, 0, h);
+            sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,0.3)');
+            g.fillStyle = sh; g.fillRect(0, 0, w, h);
+          } else { // from the side: the far side falls into shade, the more so the lower the angle
+            const sk = (90 - angD) / 60, ax = follow ? faceX : w / 2, sg = ax >= bx ? 1 : -1;
+            const sh = g.createLinearGradient(ax - sg * w * 0.05, 0, ax + sg * w * 0.5, 0);
+            sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(0,0,0,${0.55 * sk})`);
+            g.fillStyle = sh; g.fillRect(0, 0, w, h);
+          }
+          g.restore();
         }
 
         if (R.mood && MOOD[R.mood] && MOOD[R.mood].burst && R.burstAt >= 0) drawBurst(g, w, h, now);
@@ -2051,10 +2221,11 @@ void main(){
           const cpos = flip ? (cfg.charPos === 'left' ? 'right' : 'left') : cfg.charPos;
           const ck = cfg.character + '|' + cpos;
           if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; R.cAct = null; }
+          R.forcePerch = opts.perch || ''; R.forceSide = opts.perchSide || 1;
           const stg = stageUpdate(cfg, tr, audio, now, cpos, h * 0.4, w);
-          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic });
-          if (opts.charAct === 'cry') drawTears(g, w, h, 0.7, now);
-          else if (!opts.charAct && stg.tear > 0.01) drawTears(g, w, h, stg.tear, now);
+          const tearLv = opts.charAct === 'cry' ? (opts.tear == null ? 0.7 : opts.tear) : opts.charAct ? 0 : stg.tear;
+          if (tearLv > 0.01) drawTears(g, w, h, tearLv, now); // the water is behind the animal, which floats up in it
+          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic, tear: tearLv });
         } else R.charKey = '';
       }
       if (opts.preview) {
@@ -2072,6 +2243,15 @@ void main(){
     };
 
     R.track = trackFrame; // (the tracker on its own, for tests)
+    // What the camera sees right now, for the panel's live line: a face, hands, and the last thing you did.
+    R.seen = (now) => {
+      const T = R.tr, ml = R.ml;
+      if (!T || !ml || now - ml.at > 1800) return { ml: false, face: false, hands: 0, did: '' };
+      let did = '', best = now - 2500;
+      for (const [k, glyph] of GESTURE_BUBBLES) if (T[k] > best) { best = T[k]; did = glyph; }
+      if (T.tongue) did = '😛';
+      return { ml: true, face: !!ml.face, hands: ml.hands ? ml.hands.length : 0, did };
+    };
 
     // Run the lamp's drop again (the "Replay" button in the panel).
     R.replay = (now) => { R.dropStart = now; };
@@ -2136,7 +2316,7 @@ void main(){
       person: { dx: clamp(x, -0.3, 1.1) - 0.5, dy: y - 0.45, visible, wave: waving ? ms : 0 },
       voice: talking ? 0.4 + 0.3 * Math.abs(Math.sin(ms / 170)) : 0,
       track: { present: visible, x: clamp(x, 0, 1), y, energy: moving || waving ? 0.75 : 0.1, side: clamp((x - 0.5) * 2, -1, 1), rise: clamp((0.4 - y) / 0.2), away: visible ? 0 : Math.max(0, (ms - 16400) / 1000), vx: (x - x0) / 0.12, vy: (y - y0) / 0.12,
-        enterAt: at(29000), exitAt: at(16400), exitSide: 1, riseAt: at(14400), waveAt: at(2400), live: true },
+        enterAt: at(29000), exitAt: at(16400), exitSide: 1, riseAt: at(14400), waveAt: at(2400), live: true, ml: true, fw: 0.17, fh: 0.3 },
     };
   }
 

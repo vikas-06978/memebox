@@ -94,7 +94,7 @@ test('the tracker follows the face model: the face decides where you are, and wh
     out.centre = run(1200, { x: 0.5, y: 0.4 });
     out.left = run(1200, { x: 0.12, y: 0.4 });
     out.right = run(1200, { x: 0.88, y: 0.4 });
-    out.gone = run(2200, null);
+    out.gone = run(3200, null);
     out.back = run(1000, { x: 0.3, y: 0.4 });
     return out;
   });
@@ -102,7 +102,7 @@ test('the tracker follows the face model: the face decides where you are, and wh
   expect(Math.abs(r.centre.x - 0.5)).toBeLessThan(0.05);
   expect(r.left.x, 'at the left edge').toBeLessThan(0.18);
   expect(r.right.x, 'at the right edge').toBeGreaterThan(0.82);
-  expect(r.gone.present, 'no face for two seconds').toBe(false);
+  expect(r.gone.present, 'no face for three seconds').toBe(false);
   expect(r.back.present).toBe(true);
   expect(r.back.enterAt).toBeGreaterThan(r.gone.exitAt);
 });
@@ -177,4 +177,118 @@ test('thumbs up and peace are noticed, and a closed hand is not a wave', async (
   expect(r.thumb).toBeGreaterThan(0);
   expect(r.peace).toBeGreaterThan(0);
   expect(r.wave, 'a closed hand is not a wave').toBeLessThan(0);
+});
+
+test('hand shapes and head movements become events: heart, OK, rock, call-me, stop, clap, nod, shake (and not when Gestures is off or Sensitivity is low)', async ({ page }) => {
+  await page.setContent('<body></body>');
+  await page.addScriptTag({ path: 'extension/lib/fx.js' });
+  const r = await page.evaluate(() => {
+    const c = document.createElement('canvas'); c.width = 320; c.height = 180; c.getContext('2d').fillRect(0, 0, 320, 180);
+    const bsOf = (o) => ({ blinkL: 0, blinkR: 0, jaw: 0, smile: 0, tongue: 0, brow: 0, pucker: 0, wide: 0, ...o });
+    const H = (o) => ({ x: 0.5, y: 0.5, s: 0.2, n: 0, open: false, thumbUp: false, peace: false, ok: false, fingerHeart: false, rock: false, callMe: false, heart2: false, ...o });
+    // feeds `n` answers 110 ms apart; `step(i)` gives { hands, face, bs }
+    const run = (n, step, setup) => {
+      const R = MemeFx.createRenderer(); if (setup) setup(R);
+      let now = 100000, T;
+      for (let i = 0; i < n; i++) {
+        now += 110; const s = step(i);
+        R.ml = { at: now, face: { x: 0.5, y: 0.4, w: 0.2, h: 0.3, pose: s.pose || { yaw: 0, pitch: 0 }, ...(s.face || {}) }, bs: bsOf(s.bs), hands: s.hands || null, handsAt: s.hands ? now : -1e9 };
+        T = R.track(c, now);
+      }
+      return { ...T };
+    };
+    const hands = (h) => (i) => ({ hands: h(i) });
+    const out = {};
+    out.heart = run(5, hands(() => [H({ fingerHeart: true })])).heartAt;
+    out.heart2 = run(5, hands(() => [H({ heart2: true }), H({ heart2: true })])).heartAt;
+    out.ok = run(5, hands(() => [H({ ok: true })])).okAt;
+    out.rock = run(5, hands(() => [H({ rock: true })])).rockAt;
+    out.call = run(5, hands(() => [H({ callMe: true })])).callAt;
+    out.stop = run(14, hands(() => [H({ open: true, n: 4, x: 0.5 })])).stopAt;
+    out.waveNotStop = run(14, hands((i) => [H({ open: true, n: 4, x: i % 2 ? 0.4 : 0.55 })])).stopAt;
+    out.clap = run(8, hands((i) => (i < 4 ? [H({ open: true, x: 0.2 }), H({ open: true, x: 0.7 })] : [H({ open: true, x: 0.46 }), H({ open: true, x: 0.52 })]))).clapAt;
+    out.nod = run(14, (i) => ({ pose: { yaw: 0, pitch: i % 4 < 2 ? 0 : 0.1 } })).nodAt;
+    out.shake = run(14, (i) => ({ pose: { yaw: i % 4 < 2 ? -0.15 : 0.15, pitch: 0 } })).shakeAt;
+    out.still = run(14, () => ({ pose: { yaw: 0.01, pitch: 0.01 } }));
+    // switched off
+    out.offHeart = run(5, hands(() => [H({ fingerHeart: true })]), (R) => { R.gestOn = false; }).heartAt;
+    out.offTongue = run(5, () => ({ bs: { tongue: 0.9 } }), (R) => { R.gestOn = false; }).tongue;
+    // low sensitivity needs a clearer tongue
+    out.lowMild = run(5, () => ({ bs: { tongue: 0.55 } }), (R) => { R.sensK = 1.25; }).tongue;
+    out.lowClear = run(5, () => ({ bs: { tongue: 0.9 } }), (R) => { R.sensK = 1.25; }).tongue;
+    out.normalMild = run(5, () => ({ bs: { tongue: 0.55 } })).tongue;
+    return out;
+  });
+  for (const k of ['heart', 'heart2', 'ok', 'rock', 'call', 'stop', 'clap', 'nod', 'shake']) expect(r[k], k).toBeGreaterThan(0);
+  expect(r.waveNotStop, 'a swinging hand is a wave, not stop').toBeLessThan(0);
+  expect(r.still.nodAt, 'a head that stays still does not nod').toBeLessThan(0);
+  expect(r.still.shakeAt).toBeLessThan(0);
+  expect(r.offHeart, 'Gestures off').toBeLessThan(0);
+  expect(r.offTongue).toBe(false);
+  expect(r.lowMild, 'low sensitivity ignores a mild tongue').toBe(false);
+  expect(r.lowClear).toBe(true);
+  expect(r.normalMild).toBe(true);
+});
+
+test('you are "there" even when the face is lost for a while: close to the camera, looking down, a hand up; and gone when really gone', async ({ page }) => {
+  await page.setContent('<body></body>');
+  await page.addScriptTag({ path: 'extension/lib/fx.js' });
+  const r = await page.evaluate(() => {
+    const c = document.createElement('canvas'); c.width = 320; c.height = 180; c.getContext('2d').fillRect(0, 0, 320, 180);
+    const bs = { blinkL: 0, blinkR: 0, jaw: 0, smile: 0, tongue: 0, brow: 0, pucker: 0, wide: 0 };
+    const scene = (faceBox, lostMs, hands) => {
+      const R = MemeFx.createRenderer(); let now = 100000, T;
+      const step = (face, hs) => { now += 100; R.ml = { at: now, face, bs: face ? bs : null, hands: hs || null, handsAt: hs ? now : -1e9 }; T = R.track(c, now); return T; };
+      for (let i = 0; i < 10; i++) step(faceBox);
+      let last;
+      for (let t = 0; t < lostMs; t += 100) last = { ...step(null, hands) };
+      return last;
+    };
+    const small = { x: 0.5, y: 0.4, w: 0.18, h: 0.28 }, big = { x: 0.5, y: 0.5, w: 0.45, h: 0.7 }, edge = { x: 0.5, y: 0.9, w: 0.2, h: 0.3 };
+    return {
+      smallGone: scene(small, 3500).present, smallShort: scene(small, 1500).present,
+      bigStays: scene(big, 6000).present, bigGone: scene(big, 11000).present,
+      edgeStays: scene(edge, 6000).present,
+      handStays: scene(small, 6000, [{ x: 0.5, y: 0.5, s: 0.2, n: 4, open: true }]).present,
+    };
+  });
+  expect(r.smallShort, 'a short loss of a normal face is not leaving').toBe(true);
+  expect(r.smallGone, 'a normal face gone for 3.5 s: you left').toBe(false);
+  expect(r.bigStays, 'very close to the camera: a lost face is just looking down or out of frame').toBe(true);
+  expect(r.bigGone, 'but not for ever').toBe(false);
+  expect(r.edgeStays, 'a face at the bottom edge: leaning out of the picture').toBe(true);
+  expect(r.handStays, 'a raised hand means you are there').toBe(true);
+});
+
+test('the animal sounds: every sound makes noise, sobbing comes while it cries, and nothing when Sounds is off', async ({ page }) => {
+  await page.setContent('<body></body>');
+  await page.addScriptTag({ path: 'extension/lib/fx.js' });
+  await page.addScriptTag({ path: 'extension/lib/animal-sfx.js' });
+  const r = await page.evaluate(async () => {
+    const out = { loud: {} };
+    for (const kind of MemeSfx.KINDS) {
+      const ctx = new OfflineAudioContext(1, 44100 * 2, 44100), master = ctx.createGain(); master.connect(ctx.destination);
+      MemeSfx.play(ctx, master, kind, kind === 'heart' ? 'dog' : 'cat', 0);
+      const buf = await ctx.startRendering(), d = buf.getChannelData(0);
+      let peak = 0; for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i]));
+      out.loud[kind] = peak;
+    }
+    const W = 320, H = 180, frame = document.createElement('canvas'); frame.width = W; frame.height = H;
+    MemeFx.drawSample(frame.getContext('2d'), W, H, 1000, { dx: 0, dy: 0 });
+    const run = (sounds) => {
+      const R = MemeFx.createRenderer(), c = document.createElement('canvas'); c.width = W; c.height = H, g = c.getContext('2d');
+      const cfg = MemeFx.sanitize({ armed: true, on: true, lamp: false, follow: true, character: 'cat', charPos: 'left', sounds, masti: false });
+      let now = 700000, present = true, exitAt = now; const kinds = [];
+      const tr = () => ({ present, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: present ? 0 : (now - exitAt) / 1000, vx: 0, vy: 0, enterAt: -1e9, exitAt, exitSide: 1, riseAt: -1e9, waveAt: -1e9, live: true, ml: true, fw: 0.17, fh: 0.3 });
+      for (let i = 0; i < 20; i++) { R.render(g, frame, W, H, cfg, now, null, { track: tr() }); now += 50; }
+      present = false; exitAt = now;
+      for (let i = 0; i < 12 * 20; i++) { R.render(g, frame, W, H, cfg, now, null, { track: tr() }); now += 50; for (const s of R.takeSfx()) kinds.push(s.k); }
+      return kinds;
+    };
+    out.on = run(true); out.off = run(false);
+    return out;
+  });
+  for (const [k, peak] of Object.entries(r.loud)) expect(peak, 'sound ' + k).toBeGreaterThan(0.02);
+  expect(r.on, 'it whimpers, then sobs while it waits for you').toEqual(expect.arrayContaining(['whimper', 'sob']));
+  expect(r.off).toEqual([]);
 });

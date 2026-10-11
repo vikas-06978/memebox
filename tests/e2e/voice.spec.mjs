@@ -121,3 +121,27 @@ test('options: save a line as a WAV file, and share its text on WhatsApp', async
   expect(text).toContain('MemeBox');
   expect(text).toContain('https://memebox.pages.dev');
 });
+
+test('a caption on my camera: my own (mirrored) tile is flipped back while it shows, so I can read it, and restored after', async ({ context, callPage }) => {
+  const [sw] = context.serviceWorkers();
+  await sw.evaluate(async () => {
+    const { settings } = await chrome.storage.local.get('settings');
+    await chrome.storage.local.set({ settings: { ...settings, camCaptions: true, camUnmirror: true } });
+  });
+  await callPage.waitForTimeout(400);
+  await callPage.evaluate(async () => {
+    window.s = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    await window.measure(window.s);
+    const v = document.createElement('video');
+    v.id = 'selfTile'; v.muted = true; v.srcObject = new MediaStream(window.s.getVideoTracks());
+    v.style.cssText = 'position:fixed;left:10px;top:10px;width:200px;transform:scaleX(-1)';
+    document.body.append(v); await v.play();
+  });
+  await callPage.waitForTimeout(600);
+  const tr = () => callPage.evaluate(() => getComputedStyle(document.getElementById('selfTile')).transform);
+  expect(await tr(), 'mirrored like a call site shows your own tile').toBe('matrix(-1, 0, 0, 1, 0, 0)');
+  await callPage.mouse.click(700, 300);
+  await callPage.keyboard.press('Alt+Digit1');
+  await expect.poll(tr, { timeout: 5000, message: 'flipped back while the caption shows' }).toBe('none');
+  await expect.poll(tr, { timeout: 8000, message: 'mirrored again afterwards' }).toBe('matrix(-1, 0, 0, 1, 0, 0)');
+});

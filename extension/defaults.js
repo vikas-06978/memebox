@@ -74,6 +74,7 @@
     tabVolume: 1,         // another tab's sound in the call, 0-2
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
+    camUnmirror: true,    // while a camera caption shows, flip your own (mirrored) preview back so you can read it too
     theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)
     fx: {},               // Lights & looks (lib/fx.js): lamp, colours, light show, filter. {} = the defaults
     timersEnabled: false, // master switch for timed lines (off by default)

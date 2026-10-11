@@ -88,7 +88,7 @@ test('the voice worklet is the only page-visible file, and only on the call site
 
 test('the pitch shifter and the Lights engine load in the MAIN world before mic-hook', () => {
   const hook = m.content_scripts.find((c) => c.js.includes('mic-hook.js'));
-  assert.deepEqual(hook.js, ['lib/pitch-shift.js', 'lib/fx.js', 'lib/music.js', 'mic-hook.js']);
+  assert.deepEqual(hook.js, ['lib/pitch-shift.js', 'lib/fx.js', 'lib/music.js', 'lib/animal-sfx.js', 'mic-hook.js']);
 });
 
 test('page <-> extension messages use unique, checked sources', () => {

@@ -138,7 +138,7 @@ export function activitySection(a) {
 </div>`;
 }
 
-function page(title, body) {
+export function page(title, body) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -252,6 +252,7 @@ export function dashboardPage(s, shopHtml = '') {
   return page('MemeBox admin', `
 <header class="admin-head">
   <h1>MemeBox admin</h1>
+  <a class="button" href="/admin/packs">Music &amp; meme packs</a>
   <a class="button" href="/admin/csv">Download CSV</a>
   <form method="post" action="/admin/logout"><button type="submit">Sign out</button></form>
 </header>

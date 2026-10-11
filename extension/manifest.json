@@ -52,6 +52,7 @@
         "lib/pitch-shift.js",
         "lib/fx.js",
         "lib/music.js",
+        "lib/animal-sfx.js",
         "mic-hook.js"
       ],
       "world": "MAIN",

@@ -74,7 +74,7 @@ async function findFace(b64, wantHands) {
     if (lm && lm.length) {
       let x0 = 1, x1 = 0, y0 = 1, y1 = 0;
       for (const p of lm) { if (p.x < x0) x0 = p.x; if (p.x > x1) x1 = p.x; if (p.y < y0) y0 = p.y; if (p.y > y1) y1 = p.y; }
-      face = { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 };
+      face = { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0, pose: globalThis.MemeHands.headPose(lm) };
       const cats = fr.faceBlendshapes && fr.faceBlendshapes[0] && fr.faceBlendshapes[0].categories || [];
       const m = {}; for (const c of cats) m[c.categoryName] = c.score;
       bs = {}; for (const [k, names] of Object.entries(BS)) bs[k] = names.reduce((a, n) => a + (m[n] || 0), 0) / names.length;
@@ -85,6 +85,7 @@ async function findFace(b64, wantHands) {
         const handTask = await loadHand();
         lastTs = Math.max(lastTs + 1, Math.round(performance.now()));
         hands = (handTask.detectForVideo(bm, lastTs).landmarks || []).map(globalThis.MemeHands.handInfo);
+        if (globalThis.MemeHands.twoHandHeart(hands)) for (const h of hands) h.heart2 = true;
       } catch { hands = null; }
     }
     return { face, bs, hands };

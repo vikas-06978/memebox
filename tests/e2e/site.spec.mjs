@@ -179,3 +179,55 @@ test('landing page in Hindi has the same tutorial video', async ({ page, site })
   await page.goto(site.url + '/hi/');
   await expect(page.locator('.frame video source')).toHaveCount(2);
 });
+
+test('admin packs: make a pack, upload music with a licence, add India memes with strong language, publish, and the app catalogue shows them', async ({ page, site }) => {
+  await page.goto(`${site.url}/admin`);
+  await page.getByLabel('Admin key').fill(ADMIN_KEY);
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('link', { name: 'Music & meme packs' }).click();
+  await expect(page.locator('h1')).toHaveText('Music & meme packs');
+  await expect(page.getByText('licensed to you in writing')).toBeVisible();
+
+  await page.getByLabel('Name', { exact: true }).fill('Phonk starter pack');
+  await page.getByRole('button', { name: 'Make the pack' }).click();
+  await expect(page.locator('h1')).toHaveText('Phonk starter pack');
+
+  const wav = Buffer.concat([Buffer.from('RIFF$\0\0\0WAVEfmt \x10\0\0\0\x01\0\x01\0\x40\x1f\0\0\x80\x3e\0\0\x02\0\x10\0data\0\0\0\0', 'binary')]);
+  await page.locator('input[name=files]').setInputFiles([{ name: 'drift night.wav', mimeType: 'audio/wav', buffer: wav }]);
+  await page.locator('form:has(input[name=files]) input[name=cleared]').check();
+  await page.locator('form:has(input[name=files]) input[name=licenceNote]').fill('made by me');
+  await page.locator('form:has(input[name=files]) button[type=submit]').click();
+  await expect(page.locator('.notice').first()).toContainText('1 file uploaded');
+  await expect(page.locator('audio')).toHaveCount(1);
+  await expect(page.locator('input[name=title][value="drift night"]')).toBeVisible();
+
+  // publish the pack
+  await page.locator('form:has(input[value=pack-update]) select[name=status]').selectOption('live');
+  await page.locator('form:has(input[value=pack-update]) button[type=submit]').click();
+
+  // India memes
+  await page.getByRole('link', { name: 'All packs' }).click();
+  await page.getByLabel('Name', { exact: true }).fill('India memes');
+  await page.getByLabel('Type').selectOption('memes');
+  await page.getByLabel('For').selectOption('in');
+  await page.getByRole('button', { name: 'Make the pack' }).click();
+  await page.locator('textarea[name=lines]').fill('Bhai tu rehne de | hinglish\nkadak line | hi | strong');
+  await page.locator('form:has(textarea[name=lines]) input[name=cleared]').check();
+  await page.locator('form:has(textarea[name=lines]) input[name=licenceNote]').fill('written by me');
+  await page.locator('form:has(textarea[name=lines]) button[type=submit]').click();
+  await expect(page.locator('.notice').first()).toContainText('2 memes added');
+  await page.locator('form:has(input[value=pack-update]) select[name=status]').selectOption('live');
+  await page.locator('form:has(input[value=pack-update]) button[type=submit]').click();
+  await page.screenshot({ path: 'tests/.tmp/admin-packs.png', fullPage: true });
+
+  const catalog = await (await fetch(`${site.url}/api/packs`)).json();
+  expect(catalog.packs.map((p) => p.id).sort()).toEqual(['india-memes', 'phonk-starter-pack']);
+  const india = catalog.packs.find((p) => p.id === 'india-memes');
+  expect(india.region).toBe('in');
+  expect(india.items.map((i) => [i.text, i.explicit])).toEqual([['Bhai tu rehne de', false], ['kadak line', true]]);
+  const music = catalog.packs.find((p) => p.id === 'phonk-starter-pack');
+  const file = await fetch(`${site.url}/api/pack-file?item=${music.items[0].id}`);
+  expect(file.status).toBe(200);
+  expect(file.headers.get('content-type')).toBe('audio/wav');
+  expect(page.cspErrors).toEqual([]);
+});
