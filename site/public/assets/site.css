@@ -364,3 +364,13 @@ svg.chart { width: 100%; height: auto; display: block; }
 svg.chart .bar { fill: var(--brand-2); }
 svg.chart .bar.zero { fill: var(--line, rgba(127,127,127,.35)); }
 .chart-axis { display: flex; justify-content: space-between; color: var(--muted, #666); font-size: 12px; }
+/* admin: packs pages */
+.row-wrap { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; margin: 6px 0; }
+.itemform label, .keyform label { display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+.itemform label.check, .keyform label.check { flex-direction: row; align-items: center; gap: 8px; }
+.keyform label.wide { flex: 1 1 100%; }
+.keyform textarea, .keyform input[type="file"] { width: 100%; box-sizing: border-box; }
+input.narrow { width: 76px; }
+td audio { width: 220px; max-width: 100%; display: block; margin-bottom: 4px; }
+.itemform label.check { display: flex; flex-direction: row; align-items: center; gap: 6px; white-space: nowrap; }
+.itemform input, .itemform select { width: auto; max-width: 100%; }

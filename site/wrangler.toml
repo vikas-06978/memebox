@@ -11,6 +11,12 @@ binding = "DB"
 database_name = "memebox-feedback"
 database_id = "77518261-7425-4352-838d-f0d474ca67ec"
 
+# Music and meme packs (audio files). Create the bucket once with:  npx wrangler r2 bucket create memebox-packs
+# Then run:  npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-packs.sql
+[[r2_buckets]]
+binding = "PACKS"
+bucket_name = "memebox-packs"
+
 # Settings are NOT kept in this file. Add them in the Cloudflare dashboard:
 # Workers & Pages → memebox → Settings → Variables and secrets → Add (type: Secret).
 # (Or: npx wrangler pages secret put NAME). Values in this file would overwrite the dashboard.

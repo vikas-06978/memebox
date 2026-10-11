@@ -25,3 +25,8 @@
 - GitHub repo private, no repo link on the site or store; the source stays out of the public store listing.
 - Copyright notice and terms ("all rights reserved"), our own music, voices, characters and artwork are ours; check the licences of the third-party parts (THIRD_PARTY_NOTICES).
 - Owner key (MBX-294K-D9VF-9BF6): keep it private; it is unlimited, so rotate it if it ever leaks. Our own account is the main (owner) user of the system.
+
+## Packs (music and memes)
+- Once: `npx wrangler r2 bucket create memebox-packs`, then `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-packs.sql`, then deploy the site. Open `/admin/packs`.
+- You upload: the common-ground music and memes, the phonk tracks (10 free, the rest Pro / Pro Max), India memes, Global memes. For every file write the licence and tick "I may share this" only when it is true.
+- Me, next: the new panel layout (tabs, calmer look) and the packs screen inside the extension (browse, download with size shown, delete, Pro lock, "strong language" switch, suggested by browser language).

@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { D1 } from './d1-sqlite.mjs';
+import { R2Memory } from './r2-memory.mjs';
 
 const SITE = path.resolve(import.meta.dirname, '..', 'site');
 const PUBLIC = path.join(SITE, 'public');
@@ -87,7 +88,7 @@ export function readDevVars(file = path.join(SITE, '.dev.vars')) {
   return env;
 }
 
-export async function startSite({ port = 0, env = {}, db = new D1() } = {}) {
+export async function startSite({ port = 0, env = {}, db = new D1(), bucket = new R2Memory() } = {}) {
   const routes = await loadRoutes();
   const headerRules = loadHeaders();
 
@@ -105,7 +106,7 @@ export async function startSite({ port = 0, env = {}, db = new D1() } = {}) {
           method: req.method, headers,
           body: ['GET', 'HEAD'].includes(req.method) ? undefined : Buffer.concat(chunks),
         });
-        const response = await handler({ request, env: { ...env, DB: db }, params: {}, waitUntil() {}, next: () => new Response('Not found', { status: 404 }) });
+        const response = await handler({ request, env: { PACKS: bucket, ...env, DB: db }, params: {}, waitUntil() {}, next: () => new Response('Not found', { status: 404 }) });
         const out = {};
         response.headers.forEach((v, k) => { if (k !== 'set-cookie') out[k] = v; });
         const cookies = response.headers.getSetCookie();
@@ -131,7 +132,7 @@ export async function startSite({ port = 0, env = {}, db = new D1() } = {}) {
   const url = `http://127.0.0.1:${server.address().port}`;
   // close() also ends kept-alive browser connections, or server.close() can wait on them.
   const close = () => new Promise((r) => { server.close(r); server.closeAllConnections(); });
-  return { url, db, close };
+  return { url, db, bucket, close };
 }
 
 // Run directly: npm run site:dev
