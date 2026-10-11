@@ -275,6 +275,7 @@
 
   bridge.onUiMessage = (msg) => {
     for (const fn of messageCbs) { try { fn(msg); } catch { /* ignore */ } }
+    if (msg.type === 'fx-status') state.camLive = msg.active === true; // your camera is going through MemeBox
     if (msg.type === 'frame-status') onFrameStatus(msg);
     else if (msg.type === 'play-result') onPlayResult(msg);
     else if (msg.type === 'tab-audio-start' && typeof msg.streamId === 'string') {
@@ -876,6 +877,8 @@
   // A canvas (not an <img>), so the call site's image rules (CSP) can't block the picture.
   function showCaption(text, picture) {
     for (const c of shadow.querySelectorAll('.caption')) c.remove();
+    // With "Caption on my camera" the text is already on your own video tile (mirrored by the call site), so a second copy on the page would be a duplicate.
+    if (state.settings.camCaptions === true && state.camLive && plan.can('captions')) { if (picture) picture.close(); return; }
     const c = el('div', { className: 'caption' });
     if (picture) {
       const canvas = el('canvas', { className: 'meme-pic', width: picture.width, height: picture.height });
