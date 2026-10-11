@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "আজকের ডাউনলোড সীমা শেষ ($1টি যোগ হয়েছে)। বাকি কাল যোগ করা যাবে।"
+  },
+  "tone_normal": {
+    "message": "সাধারণ"
+  },
+  "tone_chipmunk": {
+    "message": "চিপমাঙ্ক"
+  },
+  "tone_villain": {
+    "message": "খলনায়ক"
+  },
+  "tone_robot": {
+    "message": "রোবট"
+  },
+  "tone_slowmo": {
+    "message": "ধীর"
+  },
+  "tone_excited": {
+    "message": "উত্তেজিত"
   }
 }

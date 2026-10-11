@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "تم الوصول إلى حد التنزيل اليومي (تمت إضافة $1). يمكن إضافة الباقي غداً."
+  },
+  "tone_normal": {
+    "message": "عادي"
+  },
+  "tone_chipmunk": {
+    "message": "سنجاب"
+  },
+  "tone_villain": {
+    "message": "شرير"
+  },
+  "tone_robot": {
+    "message": "روبوت"
+  },
+  "tone_slowmo": {
+    "message": "حركة بطيئة"
+  },
+  "tone_excited": {
+    "message": "متحمس"
   }
 }

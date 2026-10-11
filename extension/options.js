@@ -31,6 +31,12 @@ function el(tag, props = {}, ...kids) {
   return n;
 }
 
+// A voice style's name in the language MemeBox is shown in.
+function toneName(id) {
+  const m = t('tone_' + id);
+  return m === 'tone_' + id ? (TONES[id] && TONES[id].label) || id : m;
+}
+
 function categoryLabel(id) {
   const m = t('cat_' + id);
   return m === 'cat_' + id ? id : m;
@@ -206,7 +212,7 @@ async function preview(line) {
 
 function fillSelects() {
   for (const sel of document.querySelectorAll('.tone-select')) {
-    sel.replaceChildren(...Object.entries(TONES).map(([id, x]) => el('option', { value: id }, `${x.emoji} ${x.label}`)));
+    sel.replaceChildren(...Object.entries(TONES).map(([id, x]) => el('option', { value: id }, `${x.emoji} ${toneName(id)}`)));
   }
   for (const sel of document.querySelectorAll('.fav-select')) {
     sel.replaceChildren(el('option', { value: '0' }, t('op_none')),
@@ -238,8 +244,9 @@ function renderLines() {
   const q = $('lines-search').value.trim().toLowerCase();
   const cat = $('lines-filter').value;
   const lang = $('lines-lang').value;
-  const own = navigator.language.toLowerCase().split('-')[0];
-  const inLang = (l) => l.kind !== 'tts' || (lang === 'mine' ? l.lang === 'en' || l.lang === own : !lang || l.lang === lang);
+  const own = uiLang();
+  const regional = globalThis.MemeI18n.language !== 'auto' && own !== 'en'; // a regional language is picked: only that language, no English
+  const inLang = (l) => l.kind !== 'tts' || !MEME.isBuiltinLine(l) || (lang === 'mine' ? l.lang === own || (!regional && l.lang === 'en') : !lang || l.lang === lang);
   const shown = lines.filter((l) => inLang(l) && (!cat || l.category === cat) && (!q || l.text.toLowerCase().includes(q) || (l.say || '').toLowerCase().includes(q)));
   $('lines-count').textContent = t('op_count', shown.length, lines.length);
   const editingId = $('line-id').value;
@@ -263,7 +270,7 @@ function renderLines() {
     const vol = Math.round((line.volume ?? 1) * 100);
     const about = el('td', { className: 'about' },
       el('span', { className: 'tag' }, line.kind === 'tts' ? line.lang : '🎵 ' + t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip')),
-      ' ', el('span', { className: 'tag', title: tone.label }, `${tone.emoji} ${tone.label}`),
+      ' ', el('span', { className: 'tag', title: toneName(line.tone) }, `${tone.emoji} ${toneName(line.tone)}`),
       ' ', el('span', { className: 'tag' }, categoryLabel(line.category)),
       vol !== 100 ? el('span', { className: 'tag' }, `🔊 ${vol}%`) : '',
       line.pictureId ? el('span', { className: 'tag', title: t('tag_picture') }, '🖼') : '');
@@ -279,10 +286,13 @@ function renderLines() {
 
 // ---------- lines ----------
 
+// The language MemeBox is shown in (picked in Options, else Chrome's): new lines start in it, and "My languages" follows it.
+const uiLang = () => MEME.langOf(globalThis.MemeI18n.language !== 'auto' ? globalThis.MemeI18n.language : navigator.language);
+
 function resetForm() {
   $('line-form').reset();
   $('line-id').value = '';
-  $('line-lang').value = 'hi';
+  $('line-lang').value = uiLang();
   $('line-tone').value = 'normal';
   $('line-fav').value = '0';
   $('line-cat').value = 'mine';
@@ -860,7 +870,11 @@ const UI_LANGS = [
 ];
 $('ui-lang').replaceChildren(el('option', { value: 'auto' }, t('lang_auto')), ...UI_LANGS.map(([code, name]) => el('option', { value: code }, name)));
 $('ui-lang').value = globalThis.MemeI18n.language;
-$('ui-lang').addEventListener('change', () => {
+$('ui-lang').addEventListener('change', async () => {
+  // Picking a language also brings its built-in lines (once), so the lists are in that language right away.
+  const code = MEME.langOf($('ui-lang').value === 'auto' ? navigator.language : $('ui-lang').value);
+  const fresh = MEME_PACKS.worldFor(code).filter((l) => !lines.some((x) => x.id === l.id));
+  if (fresh.length) { lines.push(...fresh); await saveLines().catch(() => {}); }
   globalThis.MemeI18n.setLanguage($('ui-lang').value).catch((err) => toast(err.message, true));
 });
 

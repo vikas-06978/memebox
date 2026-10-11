@@ -202,3 +202,18 @@ test('English browser: the lines list shows only English (+ my own); other langu
   await expect(page.locator('#lines-body tr').first()).toBeVisible();
   expect(await page.$$eval('#lines-body tr', (r) => r.length)).toBeGreaterThanOrEqual(14);
 });
+
+test('picking Tamil for MemeBox: the lines list is in Tamil only (no English), spoken with the Tamil voice, new lines start in Tamil', async ({ context, extensionId }) => {
+  const page = await openOptions(context, extensionId);
+  await page.selectOption('#ui-lang', 'ta'); // adds the Tamil lines once, then the page reloads in Tamil
+  await page.waitForLoadState('load');
+  await expect(page.locator('#lines-body tr').first()).toBeVisible();
+  await page.waitForFunction(() => document.querySelector('#lines-body tr td .tag') !== null);
+  const tags = [...new Set(await page.$$eval('#lines-body tr td .tag', (els) => els.map((e) => e.textContent.trim()).filter((x) => /^[a-z]{2}$/.test(x))))];
+  expect(tags).toEqual(['ta']);
+  expect(await page.$$eval('#lines-body tr', (r) => r.length)).toBe(16);
+  expect(await page.locator('#line-lang').inputValue()).toBe('ta');
+  await page.screenshot({ path: 'tests/.tmp/options-tamil.png' });
+  await page.selectOption('#lines-lang', ''); // all languages: everything is there again
+  expect(await page.$$eval('#lines-body tr', (r) => r.length)).toBeGreaterThan(60);
+});

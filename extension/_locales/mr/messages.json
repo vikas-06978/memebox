@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "आजची डाउनलोड मर्यादा संपली ($1 जोडले). उरलेले उद्या जोडता येतील."
+  },
+  "tone_normal": {
+    "message": "सामान्य"
+  },
+  "tone_chipmunk": {
+    "message": "चिपमंक"
+  },
+  "tone_villain": {
+    "message": "खलनायक"
+  },
+  "tone_robot": {
+    "message": "रोबोट"
+  },
+  "tone_slowmo": {
+    "message": "संथ"
+  },
+  "tone_excited": {
+    "message": "उत्साही"
   }
 }

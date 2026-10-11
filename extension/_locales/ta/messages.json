@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "இன்றைய பதிவிறக்க வரம்பு முடிந்தது ($1 சேர்க்கப்பட்டது). மீதியை நாளை சேர்க்கலாம்."
+  },
+  "tone_normal": {
+    "message": "இயல்பு"
+  },
+  "tone_chipmunk": {
+    "message": "சிப்மங்க்"
+  },
+  "tone_villain": {
+    "message": "வில்லன்"
+  },
+  "tone_robot": {
+    "message": "ரோபோ"
+  },
+  "tone_slowmo": {
+    "message": "மெதுவாக"
+  },
+  "tone_excited": {
+    "message": "உற்சாகம்"
   }
 }

@@ -195,18 +195,22 @@
 
   // Which meme lines to offer: with "auto", people in India (browser in an Indian language, or India time zone) see everything; everybody else
   // sees English plus the lines in their browser's language. Nothing is sent anywhere: it is read from the browser. Change it with the language chips.
-  const ownLang = () => { const l = String(navigator.language || 'en').toLowerCase().split('-')[0]; return MEME.isLang(l) ? l : 'en'; };
+  // "My language" is the one picked for MemeBox in Options (else Chrome's / the browser's). With a regional language picked, the built-in lines
+  // are shown in that language only (no English), and spoken with that language's voice.
+  const pickedLang = () => (langPack && langPack.code ? MEME.langOf(langPack.code) : '');
+  const ownLang = () => pickedLang() || MEME.langOf(navigator.language);
   function activeLangs() { // null = every language
     const v = state.settings.lineLang;
     if (v === 'all') return null;
     if (MEME.isLang(v)) return new Set([v]);
+    if (pickedLang() && pickedLang() !== 'en') return new Set([pickedLang()]);
     const l = String(navigator.language || 'en').toLowerCase();
     let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* ignore */ }
     if (/^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') return null;
     return new Set(['en', ownLang()]);
   }
   const lineLang = () => { const v = state.settings.lineLang; return v === 'all' || MEME.isLang(v) ? v : 'auto'; };
-  const langLines = (items) => { const set = activeLangs(); return !set ? items : items.filter((l) => l.kind !== 'tts' || set.has(l.lang)); };
+  const langLines = (items) => { const set = activeLangs(); return !set ? items : items.filter((l) => l.kind !== 'tts' || set.has(l.lang) || !MEME.isBuiltinLine(l)); };
 
   function visibleLines() {
     const q = state.query.trim().toLowerCase();
@@ -921,7 +925,7 @@
       const tags = el('span', { className: 'tags' },
         line.kind !== 'tts' ? el('span', { className: 'tag', title: t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip') }, '🎵')
           : el('span', { className: 'tag', title: t('tag_lang') }, line.lang.toUpperCase()),
-        el('span', { title: tone.label }, tone.emoji));
+        el('span', { title: t('tone_' + (TONES[line.tone] ? line.tone : 'normal')) }, tone.emoji));
       if (line.fav) tags.append(el('span', { className: 'tag', title: t('tag_shortcut') }, 'Alt+' + line.fav));
       const play = el('button', { className: 'play', type: 'button', title: t('play') }, '▶');
       play.setAttribute('aria-label', t('play') + ': ' + line.text);

@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "Limite quotidienne de téléchargements atteinte ($1 ajoutés). Le reste pourra être ajouté demain."
+  },
+  "tone_normal": {
+    "message": "Normal"
+  },
+  "tone_chipmunk": {
+    "message": "Tamia"
+  },
+  "tone_villain": {
+    "message": "Méchant"
+  },
+  "tone_robot": {
+    "message": "Robot"
+  },
+  "tone_slowmo": {
+    "message": "Ralenti"
+  },
+  "tone_excited": {
+    "message": "Excité"
   }
 }

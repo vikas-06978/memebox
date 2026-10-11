@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "Se alcanzó el límite diario de descargas ($1 añadidos). El resto se puede añadir mañana."
+  },
+  "tone_normal": {
+    "message": "Normal"
+  },
+  "tone_chipmunk": {
+    "message": "Ardilla"
+  },
+  "tone_villain": {
+    "message": "Villano"
+  },
+  "tone_robot": {
+    "message": "Robot"
+  },
+  "tone_slowmo": {
+    "message": "Cámara lenta"
+  },
+  "tone_excited": {
+    "message": "Emocionado"
   }
 }

@@ -22,6 +22,10 @@
     vi: 'Tiếng Việt', ja: '日本語', ko: '한국어', nl: 'Nederlands', pl: 'Polski', sw: 'Kiswahili', ro: 'Română', sv: 'Svenska', fa: 'فارسی',
   };
   const isLang = (c) => Object.prototype.hasOwnProperty.call(LANGS, c);
+  // "pt_BR", "hi-IN", "ES" -> the meme language code ('pt', 'hi', 'es'), or 'en' if there is none.
+  const langOf = (code) => { const l = String(code || '').toLowerCase().split(/[-_]/)[0]; return isLang(l) ? l : 'en'; };
+  // The lines that come with MemeBox (default pack ids d-… and pack ids p-…): they follow the language you picked, your own lines always show.
+  const isBuiltinLine = (l) => !!l && /^(d|p)-/.test(String(l.id || ''));
 
   // `text` is what is shown and `say` (optional) is what eSpeak pronounces.
   // Hinglish lines get a Devanagari `say` so the Hindi voice reads them naturally.
@@ -169,7 +173,7 @@
   }
 
   globalThis.MEME = Object.freeze({
-    TONES, VOICES, THEMES, LANGS, isLang, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, THEMES, LANGS, isLang, langOf, isBuiltinLine, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

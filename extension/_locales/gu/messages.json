@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "આજની ડાઉનલોડ મર્યાદા પૂરી ($1 ઉમેર્યા). બાકીના કાલે ઉમેરી શકાશે."
+  },
+  "tone_normal": {
+    "message": "સામાન્ય"
+  },
+  "tone_chipmunk": {
+    "message": "ચિપમંક"
+  },
+  "tone_villain": {
+    "message": "વિલન"
+  },
+  "tone_robot": {
+    "message": "રોબોટ"
+  },
+  "tone_slowmo": {
+    "message": "ધીમું"
+  },
+  "tone_excited": {
+    "message": "ઉત્સાહિત"
   }
 }

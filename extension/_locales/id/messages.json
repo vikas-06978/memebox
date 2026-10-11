@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "Batas unduhan harian tercapai ($1 ditambahkan). Sisanya bisa ditambahkan besok."
+  },
+  "tone_normal": {
+    "message": "Biasa"
+  },
+  "tone_chipmunk": {
+    "message": "Tupai"
+  },
+  "tone_villain": {
+    "message": "Penjahat"
+  },
+  "tone_robot": {
+    "message": "Robot"
+  },
+  "tone_slowmo": {
+    "message": "Gerak lambat"
+  },
+  "tone_excited": {
+    "message": "Bersemangat"
   }
 }

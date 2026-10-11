@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "Daily download limit reached ($1 added). The rest can be added tomorrow."
+  },
+  "tone_normal": {
+    "message": "Normal"
+  },
+  "tone_chipmunk": {
+    "message": "Chipmunk"
+  },
+  "tone_villain": {
+    "message": "Villain"
+  },
+  "tone_robot": {
+    "message": "Robot"
+  },
+  "tone_slowmo": {
+    "message": "Slow-mo"
+  },
+  "tone_excited": {
+    "message": "Excited"
   }
 }

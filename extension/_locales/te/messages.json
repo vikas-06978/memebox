@@ -1557,5 +1557,23 @@
   },
   "op_online_limit": {
     "message": "నేటి డౌన్‌లోడ్ పరిమితి పూర్తయింది ($1 జోడించబడ్డాయి). మిగతావి రేపు జోడించవచ్చు."
+  },
+  "tone_normal": {
+    "message": "సాధారణ"
+  },
+  "tone_chipmunk": {
+    "message": "చిప్‌మంక్"
+  },
+  "tone_villain": {
+    "message": "విలన్"
+  },
+  "tone_robot": {
+    "message": "రోబో"
+  },
+  "tone_slowmo": {
+    "message": "నెమ్మది"
+  },
+  "tone_excited": {
+    "message": "ఉత్సాహం"
   }
 }
