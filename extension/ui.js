@@ -752,7 +752,11 @@
   function renderLangChips() {
     const cur = lineLang();
     const set = activeLangs();
-    const pick = (id) => { state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id); renderLangChips(); renderList(); };
+    const pick = (id) => {
+      state.settings = { ...state.settings, lineLang: id }; saveSetting('lineLang', id);
+      if (MEME.isLang(id)) bridge.toRuntime({ type: 'add-lang-lines', lang: id }); // that language's built-in lines, once
+      renderLangChips(); renderList();
+    };
     const shown = ['en', ownLang(), 'hi'].filter((c, i, a) => a.indexOf(c) === i);
     const chip = (id, name) => {
       const on = cur === 'auto' ? (id === 'all' ? !set : !!set && set.has(id) && id === ownLang()) : id === cur;

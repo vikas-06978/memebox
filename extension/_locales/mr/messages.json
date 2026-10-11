@@ -921,5 +921,8 @@
   },
   "guide_btn": {
     "message": "कसे वापरायचे"
+  },
+  "op_lang_mine": {
+    "message": "माझ्या भाषा"
   }
 }

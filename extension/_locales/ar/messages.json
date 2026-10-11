@@ -921,5 +921,8 @@
   },
   "guide_btn": {
     "message": "طريقة الاستخدام"
+  },
+  "op_lang_mine": {
+    "message": "لغاتي"
   }
 }

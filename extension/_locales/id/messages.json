@@ -921,5 +921,8 @@
   },
   "guide_btn": {
     "message": "Cara pakai"
+  },
+  "op_lang_mine": {
+    "message": "Bahasa saya"
   }
 }

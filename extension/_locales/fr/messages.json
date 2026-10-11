@@ -921,5 +921,8 @@
   },
   "guide_btn": {
     "message": "Mode d’emploi"
+  },
+  "op_lang_mine": {
+    "message": "Mes langues"
   }
 }

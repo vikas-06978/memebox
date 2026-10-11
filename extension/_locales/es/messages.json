@@ -921,5 +921,8 @@
   },
   "guide_btn": {
     "message": "Cómo usar"
+  },
+  "op_lang_mine": {
+    "message": "Mis idiomas"
   }
 }

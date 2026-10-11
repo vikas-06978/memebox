@@ -237,7 +237,10 @@ function renderLines() {
   body.replaceChildren();
   const q = $('lines-search').value.trim().toLowerCase();
   const cat = $('lines-filter').value;
-  const shown = lines.filter((l) => (!cat || l.category === cat) && (!q || l.text.toLowerCase().includes(q) || (l.say || '').toLowerCase().includes(q)));
+  const lang = $('lines-lang').value;
+  const own = navigator.language.toLowerCase().split('-')[0];
+  const inLang = (l) => l.kind !== 'tts' || (lang === 'mine' ? l.lang === 'en' || l.lang === own : !lang || l.lang === lang);
+  const shown = lines.filter((l) => inLang(l) && (!cat || l.category === cat) && (!q || l.text.toLowerCase().includes(q) || (l.say || '').toLowerCase().includes(q)));
   $('lines-count').textContent = t('op_count', shown.length, lines.length);
   const editingId = $('line-id').value;
   if (!shown.length) body.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint' }, lines.length ? t('empty_search') : t('op_no_lines'))));
@@ -422,6 +425,13 @@ $('line-preview').addEventListener('click', () => {
   if (line) preview(line); else toast(t('op_err_text'), true);
 });
 $('lines-search').addEventListener('input', renderLines);
+$('lines-lang').replaceChildren(el('option', { value: 'mine' }, t('op_lang_mine')), el('option', { value: '' }, t('chip_lang_all')),
+  ...Object.entries(MEME.LANGS).map(([code, name]) => el('option', { value: code }, name)));
+$('lines-lang').addEventListener('change', async () => { // picking a language adds its built-in lines once
+  const code = $('lines-lang').value;
+  const fresh = MEME.isLang(code) ? MEME_PACKS.worldFor(code).filter((l) => !lines.some((x) => x.id === l.id)) : [];
+  if (fresh.length) { lines.push(...fresh); await saveLines(); } else renderLines();
+});
 $('lines-filter').addEventListener('change', renderLines);
 
 async function removeLine(line) {
@@ -705,7 +715,7 @@ function renderPacks() {
   const list = $('builtin-packs');
   list.replaceChildren();
   const have = new Set(lines.map((l) => l.id));
-  for (const id of MEME_PACKS.ids) {
+  for (const id of MEME_PACKS.ids.filter((x) => x !== 'world')) { // the World pack is added per language (language filter / panel chips), not as a 100-line block
     const packLines = MEME_PACKS.lines(id);
     const n = packLines.filter((l) => have.has(l.id)).length;
     const add = el('button', { type: 'button', className: 'small primary' }, n === packLines.length ? t('op_pack_reset') : t('op_pack_add'));
