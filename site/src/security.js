@@ -33,12 +33,15 @@ export function clientIp(request) {
   return request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For')?.split(',')[0].trim() || 'unknown';
 }
 
-// Counts one hit for (bucket, IP) in this hour and says whether it's allowed.
-// Rows from earlier hours are deleted first, so nothing is kept past the hour.
-export async function rateLimit(db, { salt, ip, bucket = 'feedback', max = 5, now = Date.now() }) {
-  const hour = currentHour(now);
-  const key = await sha256Hex(`${salt}|${hour}|${bucket}|${ip}`);
-  await db.prepare('DELETE FROM rate_limits WHERE hour < ?').bind(hour).run();
+// Counts one hit for (bucket, IP) in this hour (or in the current window of `windowHours` hours, e.g. 24 = a day) and says whether it's allowed.
+// Rows of finished windows are deleted first, so nothing is kept past the window.
+export async function rateLimit(db, { salt, ip, bucket = 'feedback', max = 5, now = Date.now(), windowHours = 1 }) {
+  const nowHour = currentHour(now);
+  const win = Math.floor(nowHour / windowHours);
+  const hour = (win + 1) * windowHours - 1; // the last hour of this window: the row is deleted once the window is over
+  const key = await sha256Hex(`${salt}|${windowHours === 1 ? hour : 'w' + windowHours + '-' + win}|${bucket}|${ip}`);
+  const nowH = nowHour;
+  await db.prepare('DELETE FROM rate_limits WHERE hour < ?').bind(nowH).run();
   const row = await db.prepare(
     'INSERT INTO rate_limits (key, hour, count) VALUES (?, ?, 1) ' +
     'ON CONFLICT(key) DO UPDATE SET count = count + 1 RETURNING count',

@@ -1554,5 +1554,8 @@
   },
   "op_online_more": {
     "message": "Tambah $1 lagi ($2)"
+  },
+  "op_online_limit": {
+    "message": "Batas unduhan harian tercapai ($1 ditambahkan). Sisanya bisa ditambahkan besok."
   }
 }

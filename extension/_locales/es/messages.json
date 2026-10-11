@@ -1554,5 +1554,8 @@
   },
   "op_online_more": {
     "message": "Añadir $1 más ($2)"
+  },
+  "op_online_limit": {
+    "message": "Se alcanzó el límite diario de descargas ($1 añadidos). El resto se puede añadir mañana."
   }
 }

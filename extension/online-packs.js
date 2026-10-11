@@ -78,6 +78,7 @@
     const key = plan.license && plan.license.key;
     if (key) headers['X-MemeBox-Key'] = key;
     const res = await fetch(`${SITE}/api/pack-file?item=${encodeURIComponent(item.id)}`, { headers });
+    if (res.status === 429) { const e = new Error('limit'); e.limit = true; throw e; } // the daily cap on files
     if (!res.ok) throw new Error(`${res.status}`);
     return res.arrayBuffer();
   }
@@ -86,7 +87,7 @@
     const items = openItems(pack).filter((i) => isNew(pack, i));
     const ids = { lines: [], clips: [], music: [], pictures: [], items: [] };
     btn.disabled = true;
-    let done = 0, failed = 0;
+    let done = 0, failed = 0, limited = false;
     const { myMusic } = await chrome.storage.local.get('myMusic');
     let tracks = Array.isArray(myMusic) ? [...myMusic] : [];
     const category = String(pack.title).slice(0, 30);
@@ -119,7 +120,10 @@
           if (line) { ids.clips.push(clipId); ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         }
         done++; ids.items.push(item.id);
-      } catch { failed++; }
+      } catch (e) {
+        if (e && e.limit) { limited = true; break; } // today's limit is reached: keep what was added, the rest can be added tomorrow
+        failed++;
+      }
     }
     if (ids.music.length) await chrome.storage.local.set({ myMusic: tracks });
     if (ids.lines.length) await saveLines();
@@ -129,7 +133,7 @@
       installed[pack.id] = { lines: join('lines'), clips: join('clips'), music: join('music'), pictures: join('pictures'), items: join('items'), at: new Date().toISOString().slice(0, 10) };
       await saveInstalled();
     }
-    toast(done ? t('op_online_done', pack.title, String(done)) + (failed ? ` (${failed} ✗)` : '') : t('op_online_fail'), !done);
+    toast(limited ? t('op_online_limit', String(done)) : done ? t('op_online_done', pack.title, String(done)) + (failed ? ` (${failed} ✗)` : '') : t('op_online_fail'), limited ? false : !done);
     render();
   }
 

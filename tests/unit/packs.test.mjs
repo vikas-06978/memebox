@@ -255,3 +255,23 @@ test('a pictures pack takes png / jpg / webp, serves them with their type, and t
   assert.match(page, /<img class="thumb"/);
   assert.match(page, /That is the 1 free picture you planned/);
 });
+
+test('a daily cap on files per person: the next one is refused with 429; another person and the next day are fine; refused tries do not count', async () => {
+  const id = await makePack({ title: 'Cap test' });
+  await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('A.mp3')], licenceKind: 'own', cleared: 'on' }));
+  await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Cap test', region: 'common', tier: 'free', status: 'live' }));
+  const [item] = await listItems(db, id);
+  const e = env({ PACK_DAILY_LIMIT: '3' });
+  const get = (ip, key) => call(apiPackFile, new Request('https://memebox.pages.dev/api/pack-file?item=' + item.id, { headers: { 'CF-Connecting-IP': ip, ...(key ? { 'X-MemeBox-Key': key } : {}) } }), e);
+  for (let i = 0; i < 3; i++) assert.equal((await get('198.51.100.1')).status, 200);
+  const blocked = await get('198.51.100.1');
+  assert.equal(blocked.status, 429);
+  assert.match((await blocked.json()).error, /Daily download limit/);
+  assert.equal((await get('198.51.100.2')).status, 200, 'another person is not affected');
+  const key = await createLicense(db, { kind: 'paid', proSeconds: 600 });
+  for (let i = 0; i < 3; i++) assert.equal((await get('198.51.100.1', key)).status, 200, 'a key has its own count, whatever the address');
+  assert.equal((await get('198.51.100.9', key)).status, 429, 'and it follows the key to another address');
+  // the day after, the counter starts again
+  await db.prepare('DELETE FROM rate_limits').run();
+  assert.equal((await get('198.51.100.1')).status, 200);
+});
