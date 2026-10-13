@@ -448,6 +448,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendToTab(tabId, { type: 'query-status' });
       break;
 
+    case 'caption-clear':
+      // The camera can be owned by a different frame from the microphone.
+      sendToTab(tabId, { type: 'hook', cmd: { type: 'caption-clear' } });
+      break;
+
     // UI sends a simple command (stop, volume) to one frame.
     case 'to-frame':
       if (msg.inner && typeof msg.inner === 'object' && Number.isInteger(msg.frameId)) {

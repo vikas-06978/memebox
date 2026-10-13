@@ -4,6 +4,7 @@
 //   POST /admin/packs            action = pack-create | pack-update | pack-delete | items-upload | lines-add | links-add | item-update | items-tier | item-delete
 import { adminResponse, adminRedirect } from '../../src/http.js';
 import { isAdmin } from '../../src/security.js';
+import { hostedUsage } from '../../src/content-budget.js';
 import { packsListPage, packPage } from '../../src/packs-admin.js';
 import {
   listPacks, getPack, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, addLinks, storageLimitBytes, storageUsed, PACK_ID_RE,
@@ -35,7 +36,7 @@ export async function onRequest({ request, env }) {
       if (!pack) return adminRedirect('/admin/packs?err=' + encodeURIComponent('That pack does not exist.'));
       return adminResponse(packPage({ pack, items: await listItems(env.DB, id), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
     }
-    return adminResponse(packsListPage({ packs: await listPacks(env.DB), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
+    return adminResponse(packsListPage({ packs: await listPacks(env.DB), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env), delivery: await hostedUsage(env), audioEnabled: env.HOSTED_AUDIO_ENABLED === 'on' } }));
   }
 
   if (request.method !== 'POST') return adminResponse('Method not allowed', { status: 405, type: 'text/plain; charset=utf-8', headers: { Allow: 'GET, POST' } });

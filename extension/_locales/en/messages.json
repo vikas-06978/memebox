@@ -780,7 +780,7 @@
     "message": "Remove picture"
   },
   "op_picture_hint": {
-    "message": "Flashes on your screen while the line plays, and on your camera if \"Caption on my camera\" is on. Use your own pictures, or others' only with their OK."
+    "message": "Your picture stays visible until you close it with ×, Escape or Stop all. Others see it when Caption on my camera is on. Use pictures you own or have permission to share."
   },
   "op_err_picture": {
     "message": "That file isn't a picture MemeBox can use. Try PNG, JPG, WEBP or GIF."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "Unicorn"
+  },
+  "pg_wave": {
+    "message": "Wave"
+  },
+  "pg_cheer": {
+    "message": "Cheer"
+  },
+  "pg_heartbeat": {
+    "message": "Love"
+  },
+  "pg_cry": {
+    "message": "Cry"
+  },
+  "pg_raspberry": {
+    "message": "Tongue"
+  },
+  "pg_dance": {
+    "message": "Dance"
+  },
+  "fx_char_snake": {
+    "message": "Snake"
+  },
+  "fx_char_bird": {
+    "message": "Bird"
   },
   "fx_char_robot": {
     "message": "Robot"

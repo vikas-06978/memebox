@@ -780,7 +780,7 @@
     "message": "Quitar imagen"
   },
   "op_picture_hint": {
-    "message": "Aparece en tu pantalla mientras suena la frase, y en tu cámara si \"Subtítulo en mi cámara\" está activado. Usa tus propias imágenes, o las de otros solo con su permiso."
+    "message": "La imagen permanece hasta cerrarla con ×, Escape o Stop all. Los demás la ven con Caption on my camera activado. Usa imágenes propias o con permiso."
   },
   "op_err_picture": {
     "message": "Ese archivo no es una imagen que MemeBox pueda usar. Prueba con PNG, JPG, WEBP o GIF."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "Unicornio"
+  },
+  "pg_wave": {
+    "message": "Saludar"
+  },
+  "pg_cheer": {
+    "message": "Celebrar"
+  },
+  "pg_heartbeat": {
+    "message": "Amor"
+  },
+  "pg_cry": {
+    "message": "Llorar"
+  },
+  "pg_raspberry": {
+    "message": "Lengua"
+  },
+  "pg_dance": {
+    "message": "Bailar"
+  },
+  "fx_char_snake": {
+    "message": "Serpiente"
+  },
+  "fx_char_bird": {
+    "message": "Pájaro"
   },
   "fx_char_robot": {
     "message": "Robot"

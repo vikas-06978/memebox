@@ -8,9 +8,10 @@ const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods
 export async function onRequest({ request, env }) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
   if (request.method !== 'GET') return methodNotAllowed('GET, OPTIONS');
+  if (env.PACKS_ENABLED === 'off') return json({ ok: true, packs: [] }, 200, { ...CORS, 'Cache-Control': 'no-store' });
   if (!env.DB) return json({ ok: false, error: 'Packs are not set up yet.' }, 503, CORS);
   let packs = [];
   // PHONK_MODE=off in Cloudflare turns Phonk Mode (the YouTube link packs) off for everybody
-  try { packs = await publicCatalog(env.DB, { links: env.PHONK_MODE !== 'off' }); } catch { /* the packs tables are not there yet (migration not run) */ }
+  try { packs = await publicCatalog(env.DB, { links: env.PHONK_MODE !== 'off', audio: env.HOSTED_AUDIO_ENABLED === 'on' }); } catch { /* the packs tables are not there yet (migration not run) */ }
   return json({ ok: true, packs }, 200, { ...CORS, 'Cache-Control': 'public, max-age=60' });
 }

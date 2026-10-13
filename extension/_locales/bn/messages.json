@@ -780,7 +780,7 @@
     "message": "ছবি সরান"
   },
   "op_picture_hint": {
-    "message": "লাইন বাজার সময় আপনার স্ক্রিনে দেখায়, আর \"আমার ক্যামেরায় ক্যাপশন\" চালু থাকলে ক্যামেরাতেও। নিজের ছবি ব্যবহার করুন, অন্যের ছবি শুধু তাদের অনুমতি নিয়ে।"
+    "message": "×, Escape বা Stop all দিয়ে বন্ধ না করা পর্যন্ত ছবি থাকবে। Caption on my camera চালু থাকলে অন্যরাও দেখবেন। নিজের বা অনুমতি পাওয়া ছবি ব্যবহার করুন।"
   },
   "op_err_picture": {
     "message": "এই ফাইলটি এমন ছবি নয় যা MemeBox ব্যবহার করতে পারে। PNG, JPG, WEBP বা GIF দিয়ে চেষ্টা করুন।"
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "ইউনিকর্ন"
+  },
+  "pg_wave": {
+    "message": "হাত নাড়ুন"
+  },
+  "pg_cheer": {
+    "message": "উল্লাস"
+  },
+  "pg_heartbeat": {
+    "message": "ভালোবাসা"
+  },
+  "pg_cry": {
+    "message": "কান্না"
+  },
+  "pg_raspberry": {
+    "message": "জিভ দেখান"
+  },
+  "pg_dance": {
+    "message": "নাচ"
+  },
+  "fx_char_snake": {
+    "message": "সাপ"
+  },
+  "fx_char_bird": {
+    "message": "পাখি"
   },
   "fx_char_robot": {
     "message": "রোবট"

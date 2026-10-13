@@ -10,12 +10,12 @@ import { onRequest as adminPacks } from '../../site/functions/admin/packs.js';
 import { onRequest as adminPackFile } from '../../site/functions/admin/packfile.js';
 import { onRequest as apiPacks } from '../../site/functions/api/packs.js';
 import { onRequest as apiPackFile } from '../../site/functions/api/pack-file.js';
-import { listPacks, listItems, canPublish, slugify, youtubeId } from '../../site/src/packs.js';
+import { listPacks, listItems, canPublish, slugify, youtubeId, addLinks } from '../../site/src/packs.js';
 import { onRequest as apiPackLink } from '../../site/functions/api/pack-link.js';
 
 const ADMIN_KEY = 'admin-key-for-tests';
 let db, bucket, cookie;
-const env = (extra = {}) => ({ DB: db, PACKS: bucket, ADMIN_KEY, RATE_SALT: 'salt', ...extra });
+const env = (extra = {}) => ({ DB: db, PACKS: bucket, ADMIN_KEY, RATE_SALT: 'salt', HOSTED_AUDIO_ENABLED: 'on', ...extra });
 const call = (h, request, e = env()) => h({ request, env: e, params: {}, waitUntil() {} });
 const req = (path, init = {}) => new Request('https://memebox.pages.dev' + path, { ...init, headers: { 'CF-Connecting-IP': '203.0.113.30', ...(init.headers || {}) } });
 const post = (fields) => {
@@ -38,6 +38,48 @@ beforeEach(async () => {
   db = new D1();
   bucket = new R2Memory();
   cookie = `memebox_admin=${await makeSession(ADMIN_KEY)}`;
+});
+
+test('playlist and track limits hold for concurrent admin submissions', async () => {
+  for (let i = 0; i < 10; i++) await makePack({ title: 'Playlist ' + i, kind: 'links' });
+  const refused = await call(adminPacks, post({ action: 'pack-create', title: 'One too many', kind: 'links' }));
+  assert.match(errOf(refused), /playlist limit/);
+  const links = Array.from({ length: 40 }, (_, i) => 'https://youtu.be/' + String(i).padStart(11, '0')).join('\n');
+  const others = Array.from({ length: 40 }, (_, i) => 'https://youtu.be/' + String(i + 40).padStart(11, '0')).join('\n');
+  const results = await Promise.all([addLinks(db, 'playlist-0', links, { cleared: true }), addLinks(db, 'playlist-0', others, { cleared: true })]);
+  assert.equal(results.reduce((n, r) => n + r.added, 0), 50);
+  assert.equal((await listItems(db, 'playlist-0')).length, 50);
+});
+
+test('regional recordings retain their language; unsupported text voices are refused before insertion', async () => {
+  const id = await makePack({ title: 'Regional dialogues', kind: 'memes', region: 'in' });
+  const uploaded = await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('Local reaction.mp3')], licenceKind: 'own', cleared: 'on', lang: 'bho' }));
+  assert.match(msgOf(uploaded), /1 file uploaded/);
+  const [item] = await listItems(db, id);
+  assert.equal(item.lang, 'bho');
+  const rejected = await call(adminPacks, post({ action: 'lines-add', pack: id, lines: 'Hello | en\nA regional line | bho', licenceKind: 'own', cleared: 'on' }));
+  assert.match(errOf(rejected), /recorded audio/);
+  assert.equal((await listItems(db, id)).length, 1);
+});
+
+test('hosted global cap and pause switches refuse downloads before reading R2', async () => {
+  const id = await makePack();
+  await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('Original.mp3')], licenceKind: 'own', cleared: 'on' }));
+  await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Originals', kind: 'music', region: 'common', tier: 'free', status: 'live' }));
+  const [item] = await listItems(db, id);
+  let reads = 0;
+  const originalGet = bucket.get.bind(bucket);
+  bucket.get = (...args) => { reads++; return originalGet(...args); };
+  const request = () => req('/api/pack-file?item=' + item.id);
+  assert.equal((await call(apiPackFile, request(), env({ PACK_GLOBAL_DAILY_FILES: '1' }))).status, 200);
+  assert.equal((await call(apiPackFile, request(), env({ PACK_GLOBAL_DAILY_FILES: '1' }))).status, 429);
+  assert.equal(reads, 1);
+  assert.equal((await call(apiPackFile, request(), env({ PACKS_ENABLED: 'off' }))).status, 503);
+  assert.equal((await call(apiPackFile, request(), env({ HOSTED_AUDIO_ENABLED: 'off' }))).status, 503);
+  assert.equal((await call(apiPackFile, request(), env({ HOSTED_AUDIO_ENABLED: undefined }))).status, 503, 'hosted audio is paused until explicitly enabled');
+  assert.deepEqual((await (await call(apiPacks, req('/api/packs'), env({ HOSTED_AUDIO_ENABLED: undefined }))).json()).packs, [], 'paused audio is not advertised as available');
+  assert.equal(reads, 1);
+  assert.deepEqual((await (await call(apiPacks, req('/api/packs'), env({ PACKS_ENABLED: 'off' }))).json()).packs, []);
 });
 
 test('only the signed-in admin can use the packs pages', async () => {

@@ -34,7 +34,7 @@
   // Pro Max: all six. Every one is drawn with code (no pictures), so they are small and original.
   const FREE_CHARACTERS = ['cat', 'dog'];                                              // free for everybody
   const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny', 'panda', 'owl', 'fox'];          // with a Pro pass (the free two included)
-  const PREMIUM_CHARACTERS = ['penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot']; // Pro Max only (or bought one by one)
+  const PREMIUM_CHARACTERS = ['penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot', 'snake', 'bird'];
   const CHARACTERS = [...STANDARD_CHARACTERS, ...PREMIUM_CHARACTERS];
   const MOODS = ['suspense', 'excited', 'surprise', 'sad', 'fun', 'awkward'];
 
@@ -473,6 +473,8 @@
     lion:    ['roar', 'yawn', 'mane', 'heartbeat'],
     unicorn: ['prance', 'sparkle', 'heartbeat'],
     robot:   ['scan', 'beep', 'popping', 'heartbeat'],
+    snake:   ['headshake', 'raspberry', 'dance', 'heartbeat'],
+    bird:    ['flap', 'turn', 'hop', 'heartbeat'],
   };
 
   // ---------- HD enhance: a small GPU shader that makes the camera picture look better ----------
@@ -1321,6 +1323,8 @@ void main(){
       frog:    { fur: '#6cc24a', light: '#d9f5b8', dark: '#3b8a2c', ear: '#6cc24a' },
       unicorn: { fur: '#fbeaff', light: '#ffffff', dark: '#c9a6e0', ear: '#ffc2e0' },
       robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
+      snake:   { fur: '#6dcc91', light: '#e5ffd0', dark: '#25875f', ear: '#ffd56b' },
+      bird:    { fur: '#58c7eb', light: '#d7f6ff', dark: '#278cb9', ear: '#ffb853' },
     };
 
     const ACT_LEN = { nod: 1.8, headshake: 1.8, clap: 2.6, freeze: 3, raspberry: 30, cry: 30, wipe: 2, heartbreak: 3.2, heartbeat: 3.5, miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
@@ -1392,6 +1396,8 @@ void main(){
           p.armR = 2.3; p.head = 0.12 * Math.sin(t * 2.6); p.lookX = Math.sin(t * 2.6); p.ex = 'wary'; break;
         // ---------- dances: each animal dances the way it moves ----------
         case 'dance':
+          if (kind === 'snake') { p.tilt = Math.sin(t * 4.5) * 0.22; p.head = -p.tilt * 0.7; p.tail = 3; p.tongue = Math.max(0, Math.sin(t * 6)) * 0.7; p.ex = 'happy'; break; }
+          if (kind === 'bird') { p.armL = p.armR = 1.3 + Math.sin(t * 10); p.head = Math.sin(t * 4) * 0.12; bounce(5, 12); p.ex = 'happy'; break; }
           if (kind === 'frog') { bounce(5, 15); p.tongue = pulse((t * 2.5) % 1, 0.1, 0.5) * 0.9; p.fly = 1; p.puff = 0.5 + 0.5 * Math.sin(t * 10); p.armL = 0.6 + Math.sin(t * 5); p.armR = 0.6 - Math.sin(t * 5); }
           else if (kind === 'monkey') { p.armL = 2.0 + 0.8 * Math.sin(t * 6); p.armR = 2.0 - 0.8 * Math.sin(t * 6); p.tilt = Math.sin(t * 3) * 0.1; p.mouth = 0.55 + 0.4 * Math.abs(Math.sin(t * 6)); p.tongue = 0.35; bounce(3, 6); p.tail = 2; }
           else if (kind === 'cat') { p.tilt = Math.sin(t * 3.2) * 0.1; p.armL = 2.2 * Math.max(0, Math.sin(t * 6)); p.armR = 2.2 * Math.max(0, -Math.sin(t * 6)); p.tail = 2.2; p.tongue = pulse((t * 1.5) % 1, 0.4, 0.7) * 0.5; bounce(3.2, 5); }
@@ -1650,6 +1656,10 @@ void main(){
         g.strokeStyle = '#ff6f8a'; g.lineWidth = 5.5; g.lineCap = 'round';
         g.beginPath(); g.moveTo(mx, my); g.quadraticCurveTo((mx + ex) / 2 + 3, (my + ey) / 2 + 6, ex, ey); g.stroke();
         ell(g, ex, ey, 5.5, 5, '#ff4f72');
+      } else if (kind === 'snake') {
+        const tip = my + 8 + len * 18;
+        g.strokeStyle = '#ff6284'; g.lineWidth = 2.8; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(mx, my); g.lineTo(mx, tip); g.lineTo(mx - 4, tip + 4); g.moveTo(mx, tip); g.lineTo(mx + 4, tip + 4); g.stroke();
       } else {
         const L = 5 + 17 * len, W = kind === 'dog' ? 7.5 : 6;
         rrect(g, mx - W / 2, my - 2, W, L, W / 2, '#ff6f8a');
@@ -1724,7 +1734,7 @@ void main(){
       const blink = (now % 3600) < 130 && ex !== 'happy' && !(cfg.follow && tr && tr.live && tr.bs); // it blinks by itself, unless it is copying your blinks
       const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2) * pz.tail);
       const dark = '#23222b';
-      const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin';
+      const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin', isBird = kind === 'bird', isSnake = kind === 'snake';
 
       // The animal is drawn on its own small canvas so it can be lit by your light and get a soft shadow.
       const cw = Math.ceil(Sfull * 1.7), ch = Math.ceil(Sfull * 1.95);
@@ -1745,10 +1755,10 @@ void main(){
       g.lineCap = 'round'; g.lineJoin = 'round';
 
       // legs: when it stands, you see them (and they walk)
-      if (sS > 0.03) {
+      if (sS > 0.03 && !isSnake) {
         const swing = stage.moving ? Math.sin(stage.ph) * 0.55 : act === 'hang' ? 0.4 * Math.sin(t * 3.2) : act === 'roll' ? 0.9 * Math.sin(t * 9) : 0;
         const LEG = { cat: ['#f4a259', '#fff0dc', 11, 6], dog: ['#c98d5c', '#f5dfc3', 11, 6], bunny: ['#f6f1ee', '#ffffff', 15, 6], panda: ['#26262b', '#26262b', 12, 6.5], owl: ['#f2a33a', '#f2a33a', 11, 3.5],
-          fox: ['#ee7b30', '#3a2418', 11, 6], penguin: ['#f2a33a', '#f2a33a', 14, 4], lion: ['#f2b96b', '#ffe9c6', 12, 6], monkey: ['#8d5b3d', '#f1cfa6', 12, 6], frog: ['#6cc24a', '#d9f5b8', 16, 5], unicorn: ['#fbeaff', '#ffd54a', 10, 5.5], robot: ['#5d6b7c', '#b4bfcc', 14, 5] }[kind];
+          fox: ['#ee7b30', '#3a2418', 11, 6], penguin: ['#f2a33a', '#f2a33a', 14, 4], lion: ['#f2b96b', '#ffe9c6', 12, 6], monkey: ['#8d5b3d', '#f1cfa6', 12, 6], frog: ['#6cc24a', '#d9f5b8', 16, 5], unicorn: ['#fbeaff', '#ffd54a', 10, 5.5], robot: ['#5d6b7c', '#b4bfcc', 14, 5], bird: ['#ffb853', '#ffb853', 11, 3.5] }[kind];
         for (const sg of [-1, 1]) {
           g.save();
           g.translate(sg * 14, 4); g.rotate(sg * swing);
@@ -1779,7 +1789,15 @@ void main(){
         g.restore();
       }
       // body
-      if (isRobot) {
+      if (isSnake) {
+        ell(g, 0, 4 + legL, 44, 16, P.dark);
+        ell(g, 0, -1 + legL, 38, 13, P.fur);
+        ell(g, -4, -5 + legL, 24, 7, P.light);
+        g.strokeStyle = P.fur; g.lineWidth = 23; g.beginPath(); g.moveTo(8, -1 + legL); g.bezierCurveTo(28, -23, -22, -26, -2, -46); g.stroke();
+        g.strokeStyle = P.light; g.lineWidth = 10; g.beginPath(); g.moveTo(7, -2 + legL); g.bezierCurveTo(18, -22, -12, -27, -2, -44); g.stroke();
+        const tailRaise = pz.armR + (ex === 'happy' ? 0.6 : 0);
+        g.strokeStyle = P.dark; g.lineWidth = 10; g.beginPath(); g.moveTo(27, 3 + legL); g.quadraticCurveTo(47, -2 + legL, 46 + Math.sin(t * 5) * 4, -8 + legL - tailRaise * 15); g.stroke();
+      } else if (isRobot) {
         rrect(g, -34, -50, 68, 56, 12, P.fur);
         rrect(g, -22, -38, 44, 30, 8, P.dark);
         for (let k = 0; k < 3; k++) ell(g, -12 + k * 12, -23, 3.4, 3.4, ['#5de1ff', '#ffd54a', '#ff7eb6'][k] + (Math.sin(t * 3 + k * 2) > 0 ? '' : '88'));
@@ -1801,10 +1819,11 @@ void main(){
       }
       // arms (flippers, wings, paws): raised by the action; a prop in the right hand
       const waveD = !act && ex === 'happy' ? Math.sin(t * 9) * 0.5 : 0;
-      for (const s of [-1, 1]) {
+      for (const s of isSnake ? [] : [-1, 1]) {
         const raise = (s < 0 ? pz.armL : pz.armR) + (!act && ex === 'happy' ? 0.9 + waveD * s : 0);
         g.save(); g.translate(s * (isRobot ? 38 : 30), -20); g.rotate(-s * (0.25 + raise));
         if (isRobot) rrect(g, -6, -2, 12, 28, 6, P.dark);
+        else if (isBird) { ell(g, 0, 9, 11, 22, P.dark); for (let k = 0; k < 3; k++) ell(g, -5 + k * 5, 18, 3.5, 12, P.fur); }
         else ell(g, 0, 8, isPeng ? 7 : 9, 17, kind === 'panda' || isPeng ? P.dark : P.fur);
         if (s > 0 && pz.prop === 'bamboo') { g.fillStyle = '#7fc96a'; g.fillRect(-3, 8, 6, 30); g.fillStyle = '#4e9a43'; for (const yy of [14, 26]) g.fillRect(-3.6, yy, 7.2, 2); g.fillStyle = '#9ad982'; g.beginPath(); g.ellipse(6, 10, 7, 3, -0.6, 0, TAU); g.fill(); }
         if (s > 0 && pz.prop === 'carrot') { tri(g, [-5, 8], [5, 8], [0, 34], '#ff8a3d'); g.fillStyle = '#58b947'; g.fillRect(-3, 3, 2, 6); g.fillRect(1, 2, 2, 7); }
@@ -1867,12 +1886,18 @@ void main(){
         g.strokeStyle = P.dark; g.lineWidth = 3; g.beginPath(); g.moveTo(0, -92); g.lineTo(0, -108); g.stroke();
         ell(g, 0, -111, 5.5, 5.5, Math.sin(t * 4) > 0 ? '#ff5a5a' : '#8a2a2a');
         for (const s of [-1, 1]) rrect(g, s * 40 - 4, -72, 8, 20, 4, P.dark);
+      } else if (isBird) {
+        for (let k = 0; k < 3; k++) { g.save(); g.translate(-9 + k * 8, -87); g.rotate(-0.35 + k * 0.2 + pz.ear * 0.2); ell(g, 0, -9, 5, 15, k % 2 ? P.light : P.fur); g.restore(); }
       }
 
       // head shape
       if (isRobot) {
         rrect(g, -36, -92, 72, 60, 16, P.fur);
         rrect(g, -30, -86, 60, 34, 10, '#2a3340');
+      } else if (isSnake) {
+        ell(g, 0, -62, 37, 25, P.fur); ell(g, 0, -49, 27, 9, P.light);
+      } else if (isBird) {
+        ell(g, 0, -62, 34, 32, P.fur); ell(g, 0, -55, 28, 20, P.light);
       } else if (isFrog) {
         ell(g, 0, -58, 40, 29, P.fur);
         for (const s of [-1, 1]) ell(g, s * 21, -84, 15, 15, P.fur); // eyes bulge on top of the head
@@ -1961,7 +1986,7 @@ void main(){
       } else if (kind === 'owl') {
         tri(g, [-5, -52], [5, -52], [0, -42 + 3 * open], '#f2a33a');
         if (open > 0.1) tri(g, [-4, -45], [4, -45], [0, -38 - 4 * open], '#e0832a');
-      } else if (isPeng) {
+      } else if (isPeng || isBird) {
         tri(g, [-9, -54], [9, -54], [0, -42], '#f2a33a');
         if (ex === 'happy' || open > 0.2) tri(g, [-6, -46], [6, -46], [0, -38 - 3 * open], '#e0832a');
       } else if (isFrog) {
@@ -2007,9 +2032,9 @@ void main(){
         }
       }
       // the tongue (frogs shoot theirs at the fly)
-      if (!isRobot && (!(kind === 'owl' || isPeng) || pz.tongue > 0.5)) { // (a bird shows it only when copying yours)
+      if (!isRobot && (!(kind === 'owl' || isPeng || isBird) || pz.tongue > 0.5)) { // (a bird shows it only when copying yours)
         const tx = (kind === 'cat' && act === 'lick') ? 5 : 0;
-        drawTongue(g, kind, pz.tongue, tx, isFrog ? -46 : (kind === 'owl' || isPeng) ? -41 : my + 4 + (open > 0.15 ? 4 : 0), pz.flyAt || null);
+        drawTongue(g, kind, pz.tongue, tx, isFrog ? -46 : (kind === 'owl' || isPeng || isBird) ? -41 : my + 4 + (open > 0.15 ? 4 : 0), pz.flyAt || null);
       }
       // cheeks
       if (!isRobot && (ex === 'happy' || ex === 'love' || ex === 'awk' || kind === 'bunny' || isPeng || kind === 'unicorn')) for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');

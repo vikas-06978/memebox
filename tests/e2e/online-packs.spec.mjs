@@ -36,7 +36,7 @@ async function seed(site) {
 test.use({ pro: false }); // a free user: no key
 
 test('online packs: browse, add free music and memes, paid packs are "Coming soon", strong language needs the switch', async ({ context, extensionId }) => {
-  const site = await startSite({ env: { ADMIN_KEY: 'k' } });
+  const site = await startSite({ env: { ADMIN_KEY: 'k', HOSTED_AUDIO_ENABLED: 'on' } });
   try {
     await seed(site);
     await context.route('https://memebox.pages.dev/**', async (route) => {

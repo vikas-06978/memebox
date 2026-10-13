@@ -13,6 +13,13 @@
   const player = $('player'), box = $('player-box'), now = $('now'), msg = $('msg'), list = $('tracks'), status = $('status'), openYt = $('open-yt');
   const playlistBox = $('playlists'), listTitle = $('list-title'), search = $('search');
   let playlists = [], tracks = [], current = -1, activePlaylist = 'all', query = '', shopOpen = false, license = null, playing = false;
+  let playQueue = [], playSequence = 0, pendingPlay = null, skipTimer = 0;
+
+  function setPlaying(value) {
+    playing = value;
+    $('toggle').textContent = value ? '⏸' : '▶';
+    $('toggle').setAttribute('aria-pressed', String(value));
+  }
 
   const tierOk = (tier) => tier === 'free' || (!!license && license.status === 'active'
     && (tier === 'pro' ? license.unlimited || license.maxSeconds > 0 || license.proSeconds > 0 : license.unlimited || license.maxSeconds > 0));
@@ -54,14 +61,22 @@
       const b = document.createElement('button');
       b.type = 'button';
       b.disabled = !ok;
+      if (i === current) b.setAttribute('aria-current', 'true');
+      const icon = document.createElement('span');
+      icon.className = 'track-play';
+      icon.textContent = i === current ? '♫' : ok ? '▶' : '🔒';
+      icon.setAttribute('aria-hidden', 'true');
       const name = document.createElement('span');
       name.className = 'name';
       name.textContent = tr.title;
       const by = document.createElement('span');
       by.className = 'by muted';
       by.textContent = tr.artist ? ' · ' + tr.artist : '';
-      b.append(name, by);
-      b.addEventListener('click', () => play(i));
+      const copy = document.createElement('span');
+      copy.className = 'track-copy';
+      copy.append(name, by);
+      b.append(icon, copy);
+      b.addEventListener('click', () => play(i, true));
       const tag = document.createElement('span');
       tag.className = 'tier tier-' + tr.tier;
       tag.textContent = ok ? tierName(tr.tier) : shopOpen ? t(tr.tier === 'max' ? 'ph_needs_max' : 'ph_needs_pro') : t('ph_soon');
@@ -72,36 +87,45 @@
     status.textContent = shown.length ? '' : query ? t('ph_no_match') : t('ph_none');
   }
 
-  async function play(i) {
+  async function play(i, startQueue = false) {
     if (i < 0 || i >= tracks.length) return;
     const tr = tracks[i];
     if (!tierOk(tr.tier)) { advance(1); return; }
+    if (startQueue) playQueue = visibleIndexes().filter((index) => tierOk(tracks[index].tier));
+    const seq = ++playSequence;
+    if (pendingPlay) pendingPlay.abort();
+    pendingPlay = new AbortController();
+    clearTimeout(skipTimer);
     say('');
     try {
-      const res = await fetch('/api/pack-link?item=' + encodeURIComponent(tr.id), { headers: KEY ? { 'X-MemeBox-Key': KEY } : {} });
+      const res = await fetch('/api/pack-link?item=' + encodeURIComponent(tr.id), { headers: KEY ? { 'X-MemeBox-Key': KEY } : {}, signal: pendingPlay.signal });
+      if (seq !== playSequence) return;
       if (res.status === 429) { say(t('ph_limit')); return; }
       const data = await res.json();
+      if (seq !== playSequence) return;
       if (!res.ok || !data.ok || !/^[A-Za-z0-9_-]{11}$/.test(data.id)) throw new Error('bad');
       current = i;
       box.hidden = false;
+      $('player-idle').hidden = true;
       player.src = `${EMBED}/embed/${data.id}?autoplay=1&enablejsapi=1&rel=0&playsinline=1&origin=${encodeURIComponent(location.origin)}`;
       openYt.href = `https://www.youtube.com/watch?v=${data.id}`;
       openYt.hidden = false;
       now.textContent = tr.title + (tr.artist ? ' · ' + tr.artist : '');
-      playing = true;
+      setPlaying(true);
       render();
-    } catch {
-      say(t('ph_error'));
+    } catch (error) {
+      if (seq === playSequence && error.name !== 'AbortError') say(t('ph_error'));
     }
   }
 
   function advance(step) {
-    const queue = visibleIndexes().filter((i) => tierOk(tracks[i].tier));
-    if (!queue.length) { playing = false; return; }
+    const queue = playQueue.length ? playQueue : visibleIndexes().filter((i) => tierOk(tracks[i].tier));
+    if (!queue.length) { setPlaying(false); return; }
     const at = queue.indexOf(current);
     const next = at < 0 ? (step > 0 ? 0 : queue.length - 1) : at + step;
     if (next >= 0 && next < queue.length) { play(queue[next]); return; }
-    playing = false;
+    // Reaching the end does not pause a still-playing track. The player's ended event
+    // updates the control, while a manual Next at the last track leaves playback alone.
   }
 
   // The player is controlled with YouTube's documented postMessage commands (no script is loaded from YouTube).
@@ -112,10 +136,10 @@
     let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
     if (!d || typeof d !== 'object') return;
     if (d.event === 'onStateChange' && d.info === 0) advance(1); // ended: the next track you may play
-    if (d.event === 'onStateChange') playing = d.info === 1;
-    if (d.event === 'onError') { say(t('ph_blocked')); setTimeout(() => advance(1), 1500); } // the owner does not allow embedding
+    if (d.event === 'onStateChange' && [0, 1, 2].includes(d.info)) setPlaying(d.info === 1);
+    if (d.event === 'onError') { const seq = playSequence; say(t('ph_blocked')); skipTimer = setTimeout(() => { if (seq === playSequence) advance(1); }, 1500); } // the owner does not allow embedding
   });
-  $('toggle').addEventListener('click', () => { if (current < 0) { advance(1); return; } command(playing ? 'pauseVideo' : 'playVideo'); playing = !playing; });
+  $('toggle').addEventListener('click', () => { if (current < 0) { playQueue = visibleIndexes().filter((i) => tierOk(tracks[i].tier)); advance(1); return; } command(playing ? 'pauseVideo' : 'playVideo'); setPlaying(!playing); });
   $('next').addEventListener('click', () => advance(1));
   $('prev').addEventListener('click', () => advance(-1));
   $('volume').addEventListener('input', (e) => command('setVolume', [Number(e.target.value)]));

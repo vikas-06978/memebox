@@ -21,6 +21,7 @@
     <button type="button" id="feedback" class="feedback-btn" data-i18n="op_feedback">💬 Send feedback</button>
   </header>
   <nav class="tabs" aria-label="Sections">
+    <a href="playground.html" data-i18n="op_preview">▶ Preview</a>
     <a href="#lines-card" data-i18n="op_nav_lines">Lines</a>
     <a href="#clips-card" data-i18n="op_nav_clips">Clips</a>
     <a href="#packs-card" data-i18n="op_nav_packs">Packs</a>
@@ -29,6 +30,15 @@
   </nav>
 
   <main>
+    <section class="studio-launch" aria-label="MemeBox">
+      <div class="studio-mascots" aria-hidden="true"><span>😹</span><span>🐶</span><span>🦊</span><span>🎧</span></div>
+      <div class="studio-shortcuts">
+        <a href="#lines-card"><span aria-hidden="true">😂</span><span data-i18n="op_nav_lines">Lines</span></a>
+        <a href="#clips-card"><span aria-hidden="true">🎙️</span><span data-i18n="op_nav_clips">Clips</span></a>
+        <a href="#online-card"><span aria-hidden="true">🌍</span><span data-i18n="op_online">Online packs</span></a>
+        <a href="#party-card"><span aria-hidden="true">🪩</span><span data-i18n="op_nav_party">Party mode</span></a>
+      </div>
+    </section>
     <!-- ============ LINES ============ -->
     <section class="card" id="lines-card">
       <h2 data-i18n="op_lines">Lines</h2>
@@ -59,7 +69,7 @@
               <input type="file" id="line-pic" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label>
             <button type="button" id="line-pic-remove" class="small" hidden data-i18n="op_picture_remove">Remove picture</button>
           </div>
-          <span class="hint" data-i18n="op_picture_hint">Flashes on your screen while the line plays, and on your camera if "Caption on my camera" is on.</span>
+          <span class="hint" data-i18n="op_picture_hint">Your picture stays visible until you close it with ×, Escape or Stop all. Others see it when Caption on my camera is on. Use pictures you own or have permission to share.</span>
         </div>
         <div class="actions wide">
           <button type="submit" class="primary" id="line-submit" data-i18n="op_add_line">Add line</button>

@@ -1,0 +1,30 @@
+import { test, expect } from './fixtures.mjs';
+
+test('Playground previews characters and music without changing call settings', async ({ context, extensionId }) => {
+  const page = await context.newPage();
+  const errors = []; page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto(`chrome-extension://${extensionId}/playground.html`);
+  await expect(page.locator('[data-character]')).toHaveCount(14);
+  await expect(page.locator('[data-tune]')).toHaveCount(13);
+  const before = await page.evaluate(() => chrome.storage.local.get('settings'));
+  const imageBefore = await page.locator('#preview').evaluate((c) => c.toDataURL());
+  await page.locator('[data-character="bird"]').click();
+  await expect(page.locator('#selected-character')).toHaveText('Bird');
+  await page.locator('[data-action="dance"]').click();
+  await expect(page.locator('[data-action="dance"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('#filter').selectOption('neon');
+  await expect.poll(() => page.locator('#preview').evaluate((c) => c.toDataURL())).not.toBe(imageBefore);
+  await page.locator('[data-character="snake"]').click();
+  await expect(page.locator('#selected-character')).toHaveText('Snake');
+  await page.locator('[data-tune="chill"]').click();
+  await expect(page.locator('#music-status')).toContainText('only you hear it');
+  await page.locator('#stop-music').click();
+  await expect(page.locator('[data-tune="chill"]')).toHaveAttribute('aria-pressed', 'false');
+  expect(await page.evaluate(() => chrome.storage.local.get('settings'))).toEqual(before);
+  expect(errors).toEqual([]);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({ path: 'tests/.tmp/playground-desktop.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: 'tests/.tmp/playground-mobile.png', fullPage: true });
+});

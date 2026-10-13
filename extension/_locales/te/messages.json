@@ -780,7 +780,7 @@
     "message": "బొమ్మ తీసివేయి"
   },
   "op_picture_hint": {
-    "message": "లైన్ ప్లే అవుతున్నప్పుడు మీ స్క్రీన్‌పై కనిపిస్తుంది, \"నా కెమెరాపై క్యాప్షన్\" ఆన్‌లో ఉంటే కెమెరాపై కూడా. మీ సొంత బొమ్మలు వాడండి, ఇతరులవి వారి అనుమతితో మాత్రమే."
+    "message": "×, Escape లేదా Stop allతో మూసే వరకు చిత్రం కనిపిస్తుంది. Caption on my camera ఆన్‌లో ఉంటే ఇతరులూ చూస్తారు. మీ సొంత లేదా అనుమతి ఉన్న చిత్రాలను వాడండి."
   },
   "op_err_picture": {
     "message": "ఆ ఫైల్ MemeBox వాడగలిగే బొమ్మ కాదు. PNG, JPG, WEBP లేదా GIF ప్రయత్నించండి."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "యునికార్న్"
+  },
+  "pg_wave": {
+    "message": "చేతి ఊపు"
+  },
+  "pg_cheer": {
+    "message": "సంబరం"
+  },
+  "pg_heartbeat": {
+    "message": "ప్రేమ"
+  },
+  "pg_cry": {
+    "message": "ఏడుపు"
+  },
+  "pg_raspberry": {
+    "message": "నాలుక"
+  },
+  "pg_dance": {
+    "message": "నృత్యం"
+  },
+  "fx_char_snake": {
+    "message": "పాము"
+  },
+  "fx_char_bird": {
+    "message": "పక్షి"
   },
   "fx_char_robot": {
     "message": "రోబో"

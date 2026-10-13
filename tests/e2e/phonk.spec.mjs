@@ -28,7 +28,7 @@ test.use({ channel: 'chromium' });
 
 test('Phonk Mode: free for everybody, paid tracks are "Coming soon" and locked; the free one plays in YouTube\'s embed', async ({ page, site }) => {
   await page.goto(`${site.url}/phonk`);
-  await expect(page.locator('h1')).toHaveText('Phonk Mode');
+  await expect(page.locator('h1 [data-t="ph_title"]')).toHaveText('Phonk Mode');
   await expect(page.locator('#tracks li')).toHaveCount(3);
   await expect(page.locator('#tracks li').nth(0).locator('.tier')).toHaveText('Free');
   await expect(page.locator('#tracks li').nth(1).locator('.tier')).toHaveText('Coming soon'); // the shop is closed: no payments set up
@@ -75,4 +75,27 @@ test('Phonk Mode: switched off (PHONK_MODE=off) the page says it is resting and 
     await expect(page.locator('#status')).toContainText('resting');
     await expect(page.locator('#tracks li')).toHaveCount(0);
   } finally { await site.close(); }
+});
+
+test('playlists, search and playback queue stay independent while browsing', async ({ page, site }) => {
+  const ts = new Date().toISOString();
+  await site.db.prepare("INSERT INTO packs (id, title, kind, region, tier, description, status, sort, created_at, updated_at) VALUES ('regional', 'Regional favourites', 'links', 'in', 'free', '', 'live', 2, ?, ?)").bind(ts, ts).run();
+  await site.db.prepare("INSERT INTO pack_items (id, pack_id, title, kind, text, credit, licence, cleared, status, sort, created_at, tier) VALUES ('i-link000004', 'regional', 'Regional track', 'link', 'ddddddddddd', 'Artist D', 'Official', 1, 'live', 1, ?, 'free')").bind(ts).run();
+  await page.goto(`${site.url}/phonk#k=${site.proKey}`);
+  await page.locator('#playlists').getByRole('button', { name: 'Phonk Mode' }).click();
+  await expect(page.locator('#tracks li')).toHaveCount(3);
+  await page.locator('#tracks li').first().locator('button').click();
+  await expect(page.locator('#player')).toHaveAttribute('src', /aaaaaaaaaaa/);
+  await page.locator('#playlists').getByRole('button', { name: 'Regional favourites' }).click();
+  await expect(page.locator('#tracks li')).toHaveCount(1);
+  await page.locator('#next').click();
+  await expect(page.locator('#player')).toHaveAttribute('src', /bbbbbbbbbbb/);
+  await page.locator('#search').fill('no such song');
+  await expect(page.locator('#tracks li')).toHaveCount(0);
+  await expect(page.locator('#status')).toContainText('No matching tracks');
+  await page.locator('#search').fill('Artist D');
+  await expect(page.locator('#tracks li')).toHaveCount(1);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: 'tests/.tmp/phonk-mobile-upgrade.png', fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

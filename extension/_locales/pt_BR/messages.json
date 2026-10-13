@@ -780,7 +780,7 @@
     "message": "Remover imagem"
   },
   "op_picture_hint": {
-    "message": "Aparece na sua tela enquanto a fala toca, e na sua câmera se \"Legenda na minha câmera\" estiver ligado. Use suas próprias imagens, ou as dos outros só com permissão."
+    "message": "A imagem fica até você fechar com ×, Escape ou Stop all. Os outros a veem com Caption on my camera ativado. Use imagens próprias ou autorizadas."
   },
   "op_err_picture": {
     "message": "Esse arquivo não é uma imagem que o MemeBox consiga usar. Tente PNG, JPG, WEBP ou GIF."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "Unicórnio"
+  },
+  "pg_wave": {
+    "message": "Acenar"
+  },
+  "pg_cheer": {
+    "message": "Celebrar"
+  },
+  "pg_heartbeat": {
+    "message": "Amor"
+  },
+  "pg_cry": {
+    "message": "Chorar"
+  },
+  "pg_raspberry": {
+    "message": "Língua"
+  },
+  "pg_dance": {
+    "message": "Dançar"
+  },
+  "fx_char_snake": {
+    "message": "Cobra"
+  },
+  "fx_char_bird": {
+    "message": "Pássaro"
   },
   "fx_char_robot": {
     "message": "Robô"

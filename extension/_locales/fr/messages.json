@@ -780,7 +780,7 @@
     "message": "Retirer l'image"
   },
   "op_picture_hint": {
-    "message": "S'affiche sur votre écran pendant la réplique, et sur votre caméra si \"Légende sur ma caméra\" est activé. Utilisez vos propres images, ou celles des autres seulement avec leur accord."
+    "message": "L'image reste visible jusqu'à sa fermeture avec ×, Échap ou Stop all. Les autres la voient si Caption on my camera est activé. Utilisez vos images ou celles autorisées."
   },
   "op_err_picture": {
     "message": "Ce fichier n'est pas une image utilisable par MemeBox. Essayez PNG, JPG, WEBP ou GIF."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "Licorne"
+  },
+  "pg_wave": {
+    "message": "Saluer"
+  },
+  "pg_cheer": {
+    "message": "Célébrer"
+  },
+  "pg_heartbeat": {
+    "message": "Amour"
+  },
+  "pg_cry": {
+    "message": "Pleurer"
+  },
+  "pg_raspberry": {
+    "message": "Langue"
+  },
+  "pg_dance": {
+    "message": "Danser"
+  },
+  "fx_char_snake": {
+    "message": "Serpent"
+  },
+  "fx_char_bird": {
+    "message": "Oiseau"
   },
   "fx_char_robot": {
     "message": "Robot"

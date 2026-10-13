@@ -780,7 +780,7 @@
     "message": "चित्र काढा"
   },
   "op_picture_hint": {
-    "message": "ओळ वाजत असताना तुमच्या स्क्रीनवर दिसते, आणि \"माझ्या कॅमेऱ्यावर कॅप्शन\" सुरू असल्यास कॅमेऱ्यावरही. तुमची स्वतःची चित्रे वापरा, इतरांची फक्त त्यांच्या परवानगीने."
+    "message": "×, Escape किंवा Stop all ने बंद करेपर्यंत चित्र दिसेल. Caption on my camera चालू असेल तर इतरांनाही दिसेल. स्वतःची किंवा परवानगी असलेली चित्रे वापरा."
   },
   "op_err_picture": {
     "message": "ही फाइल MemeBox वापरू शकेल असे चित्र नाही. PNG, JPG, WEBP किंवा GIF वापरून पाहा."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "युनिकॉर्न"
+  },
+  "pg_wave": {
+    "message": "हात हलवा"
+  },
+  "pg_cheer": {
+    "message": "आनंद"
+  },
+  "pg_heartbeat": {
+    "message": "प्रेम"
+  },
+  "pg_cry": {
+    "message": "रडणे"
+  },
+  "pg_raspberry": {
+    "message": "जीभ बाहेर"
+  },
+  "pg_dance": {
+    "message": "नृत्य"
+  },
+  "fx_char_snake": {
+    "message": "साप"
+  },
+  "fx_char_bird": {
+    "message": "पक्षी"
   },
   "fx_char_robot": {
     "message": "रोबोट"

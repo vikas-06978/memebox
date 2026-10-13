@@ -780,7 +780,7 @@
     "message": "أزل الصورة"
   },
   "op_picture_hint": {
-    "message": "تظهر على شاشتك أثناء تشغيل العبارة، وعلى كاميرتك إذا كان \"تعليق على كاميرتي\" مفعّلاً. استخدم صورك الخاصة، أو صور الآخرين بإذنهم فقط."
+    "message": "تبقى الصورة حتى إغلاقها بـ × أو Escape أو Stop all. يراها الآخرون عند تفعيل Caption on my camera. استخدم صورك أو صورًا لديك إذن بمشاركتها."
   },
   "op_err_picture": {
     "message": "هذا الملف ليس صورة يستطيع MemeBox استخدامها. جرّب PNG أو JPG أو WEBP أو GIF."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "يونيكورن"
+  },
+  "pg_wave": {
+    "message": "تلويح"
+  },
+  "pg_cheer": {
+    "message": "احتفال"
+  },
+  "pg_heartbeat": {
+    "message": "حب"
+  },
+  "pg_cry": {
+    "message": "بكاء"
+  },
+  "pg_raspberry": {
+    "message": "لسان"
+  },
+  "pg_dance": {
+    "message": "رقص"
+  },
+  "fx_char_snake": {
+    "message": "ثعبان"
+  },
+  "fx_char_bird": {
+    "message": "طائر"
   },
   "fx_char_robot": {
     "message": "روبوت"

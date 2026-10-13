@@ -23,8 +23,14 @@ function notice(msg, err) {
 function storageMeter(storage) {
   if (!storage) return '';
   const pct = Math.min(100, Math.round((storage.used / storage.limit) * 100));
-  return `<p class="storage"><b>Storage:</b> ${mb(storage.used)} MB of ${mb(storage.limit)} MB used (${pct}%). <progress max="100" value="${pct}"></progress>
-    <span class="muted">Uploads stop at the budget so the bucket cannot grow by surprise. Cloudflare R2 gives 10 GB of storage free every month; the budget is set with PACKS_MAX_MB.</span></p>`;
+  const usage = storage.delivery;
+  const rows = usage ? [
+    ['Today: files', usage.dayFiles], ['Today: MB', usage.dayMB],
+    ['This month: files', usage.monthFiles], ['This month: MB', usage.monthMB],
+  ].map(([label, budget]) => `<tr><td>${label}</td><td>${Number(budget.used.toFixed(2))} / ${budget.limit}</td><td>${budget.used >= budget.limit ? 'Capacity reached' : 'Available'}</td></tr>`).join('') : '';
+  return `<div class="storage"><p><b>Storage:</b> ${mb(storage.used)} MB of ${mb(storage.limit)} MB used (${pct}%). <progress max="100" value="${pct}"></progress>
+    <span class="muted">Uploads stop at the budget. This build caps the catalog at 500 MB; PACKS_MAX_MB can lower it. These application limits do not replace Cloudflare billing controls. Keep the account on Free and disable public bucket access.</span></p>
+    ${usage ? `<p><b>Hosted audio:</b> ${storage.audioEnabled ? 'Enabled' : 'Paused (default)'}.</p><div class="table-wrap"><table><thead><tr><th>Shared budget (UTC)</th><th>Reserved / limit</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div><p class="muted">Failed deliveries keep their reservation. This meter is an application budget, not your Cloudflare invoice.</p>` : ''}</div>`;
 }
 
 export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = null }) {
@@ -152,7 +158,7 @@ ${COPYRIGHT}
 ${p.kind === 'links' ? `<section class="card">
   <h2>Add YouTube links</h2>
   <p class="notice" role="note"><b>Nothing is hosted.</b> MemeBox plays these through YouTube's own player, so the artists keep their views. Add only <b>official uploads</b> (the artist's or label's own channel, or a channel that owns the rights) that <b>allow embedding</b>. Never add re-uploads by other people, and remove a track if its owner asks. Phonk Mode can be switched off for everybody at any time (PHONK_MODE=off in Cloudflare).</p>
-  <p class="muted">One per line: <code>link | title | artist</code> (title and artist are optional). Normal YouTube links work (youtube.com/watch?v=..., youtu.be/...).</p>
+  <p class="muted">One per line: <code>link | title | artist</code> (title and artist are optional). Normal YouTube links work (youtube.com/watch?v=..., youtu.be/...). Limits: 10 playlists, 50 tracks each, 500 tracks total, including drafts. Use Free for third-party playlists; paid originals belong in Music packs.</p>
   <form method="post" action="/admin/packs" class="keyform">
     <input type="hidden" name="action" value="links-add"><input type="hidden" name="pack" value="${h(p.id)}">
     <label class="wide">Links <textarea name="links" rows="8" maxlength="30000" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX | Track name | Artist" required></textarea></label>

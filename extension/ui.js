@@ -124,7 +124,7 @@
       bridge.toRuntime({ type: 'warmup' });
       sendAudioSettings();
     }
-    if (!live && state.wasLive) timerState.clear();
+    if (!live && state.wasLive) { timerState.clear(); closePicture(); }
     state.wasLive = live;
     renderStatus();
   }
@@ -152,7 +152,11 @@
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     pictures.set(msg.reqId, createImageBitmap(new Blob([bytes], { type: msg.mime })).catch(() => null));
-    setTimeout(() => pictures.delete(msg.reqId), 20000);
+    setTimeout(() => {
+      const pending = pictures.get(msg.reqId);
+      pictures.delete(msg.reqId);
+      if (pending) pending.then((bmp) => { if (bmp) bmp.close(); });
+    }, 20000);
   }
 
   async function onPlayResult(msg) {
@@ -173,6 +177,7 @@
       }
       if (msg.muted) toast(t('muted_nobody'), 6000);
     } else {
+      if (picture) picture.close();
       toast(msg.reason === 'no-call' ? t('join_first') : t('err_play', msg.reason));
     }
   }
@@ -241,7 +246,13 @@
   function stopAll() {
     sendToHook({ type: 'stop' });
     if (state.tabAudio) sendToHook({ type: 'tab-audio-stop' });
+    closePicture();
     for (const c of shadow.querySelectorAll('.caption')) c.remove();
+  }
+
+  function closePicture() {
+    bridge.toRuntime({ type: 'caption-clear' });
+    for (const c of shadow.querySelectorAll('.caption.pinned')) c.remove();
   }
 
   function sendToHook(cmd) {
@@ -363,6 +374,7 @@
   for (let i = 1; i <= 9; i++) KEY_COMMANDS['Digit' + i] = 'fav-' + i;
 
   window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && shadow.querySelector('.caption.pinned')) { closePicture(); e.preventDefault(); return; }
     if (e.key === 'Escape' && panelOpen) { closePanel(); return; }
     if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
     const command = KEY_COMMANDS[e.code];
@@ -990,7 +1002,8 @@
 
   // A canvas (not an <img>), so the call site's image rules (CSP) can't block the picture.
   function showCaption(text, picture) {
-    for (const c of shadow.querySelectorAll('.caption')) c.remove();
+    for (const c of shadow.querySelectorAll(picture ? '.caption' : '.caption:not(.pinned)')) c.remove();
+    if (!picture && shadow.querySelector('.caption.pinned')) return;
     // PRO: camera captions. With "Caption on my camera" the text is on your own video tile too; when that tile could be flipped back so it reads right, a second copy on the page would be a duplicate.
     if (!picture && state.settings.camCaptions === true && state.camLive && plan.can('captions') && state.settings.camUnmirror !== false && !showCaption.now) {
       setTimeout(() => { showCaption.now = true; if (Date.now() - (state.captionFixedAt || 0) > 800) showCaption(text, picture); else if (picture) picture.close(); showCaption.now = false; }, 250);
@@ -1003,7 +1016,7 @@
       c.setAttribute('aria-label', text || t('tag_picture'));
       const close = el('button', { className: 'picture-close', type: 'button', title: t('close') }, '×');
       close.setAttribute('aria-label', t('close'));
-      close.addEventListener('click', () => { sendToHook({ type: 'caption-clear' }); c.remove(); });
+      close.addEventListener('click', closePicture);
       const canvas = el('canvas', { className: 'meme-pic', width: picture.width, height: picture.height });
       canvas.getContext('2d').drawImage(picture, 0, 0);
       picture.close();

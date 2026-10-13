@@ -787,12 +787,15 @@
   }
 
   function showCamCaption(text, picture) {
+    // A new sound without a picture should not dismiss the photo someone pinned.
+    if (!picture && (camPicture || camTextUntil === Infinity)) return;
     const seq = ++camCaptionSeq;
     camText = String(text).slice(0, 120);
     // A picture stays on the outgoing camera until the person closes it, presses Stop all,
     // plays another picture, or switches camera captions off. Text-only captions still flash.
     camTextUntil = picture ? Infinity : performance.now() + 3000;
     if (camText) post({ type: 'cam-caption', fixed: unmirrorSelf() > 0 }); // the panel shows its own copy of the caption only when your tile could not be flipped
+    if (picture) clearTimeout(unmirrorTimer);
     if (camPicture) { camPicture.close(); camPicture = null; }
     if (picture) {
       createImageBitmap(new Blob([picture.bytes], { type: picture.type })).then((bmp) => {
@@ -993,6 +996,7 @@
     }
 
     function finish() {
+      clearCamCaption();
       stopPipeline();
       if (real.readyState === 'live') origStop.call(real);
       for (const t of s.tracks) {

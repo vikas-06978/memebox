@@ -147,7 +147,7 @@
       const card = document.createElement('article');
       card.className = 'card product' + (p.unlimited || p.maxSeconds ? ' best' : '') + (isChar ? ' char' : '');
       const h = document.createElement('h2');
-      h.textContent = isPass ? T('buy_name_' + id) : isChar ? (id === 'chars_all' ? T('buy_chars_all') : T('buy_char_title', id.replace(/^char_/, '').replace(/^./, (c) => c.toUpperCase()))) : p.unlimited ? 'MemeBox Pro' : T('buy_more_pics', p.pictureSlots);
+      h.textContent = isPass ? T('buy_name_' + id) : isChar ? (id === 'chars_eight' ? T('buy_chars_all') : T('buy_char_title', id.replace(/^char_/, '').replace(/^./, (c) => c.toUpperCase()))) : p.unlimited ? 'MemeBox Pro' : T('buy_more_pics', p.pictureSlots);
       const d = document.createElement('p');
       d.className = 'muted';
       d.textContent = isPass ? T(p.maxSeconds ? 'buy_pass_desc_max' : 'buy_pass_desc_pro')

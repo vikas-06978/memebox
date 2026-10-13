@@ -780,7 +780,7 @@
     "message": "Hapus gambar"
   },
   "op_picture_hint": {
-    "message": "Muncul di layar Anda saat kalimat diputar, dan di kamera Anda jika \"Keterangan di kamera saya\" aktif. Pakai gambar Anda sendiri, atau milik orang lain hanya dengan izin mereka."
+    "message": "Gambar tetap tampil sampai ditutup dengan ×, Escape atau Stop all. Orang lain melihatnya jika Caption on my camera aktif. Gunakan gambar sendiri atau yang diizinkan."
   },
   "op_err_picture": {
     "message": "File itu bukan gambar yang bisa dipakai MemeBox. Coba PNG, JPG, WEBP, atau GIF."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "Unicorn"
+  },
+  "pg_wave": {
+    "message": "Melambai"
+  },
+  "pg_cheer": {
+    "message": "Bersorak"
+  },
+  "pg_heartbeat": {
+    "message": "Cinta"
+  },
+  "pg_cry": {
+    "message": "Menangis"
+  },
+  "pg_raspberry": {
+    "message": "Lidah"
+  },
+  "pg_dance": {
+    "message": "Menari"
+  },
+  "fx_char_snake": {
+    "message": "Ular"
+  },
+  "fx_char_bird": {
+    "message": "Burung"
   },
   "fx_char_robot": {
     "message": "Robot"

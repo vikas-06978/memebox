@@ -13,7 +13,7 @@ const test = base.extend({
       if (String(url) === TURNSTILE_VERIFY) return Response.json({ success: JSON.parse(init.body).response === 'fake-ok' });
       return realFetch(url, init);
     };
-    const site = await startSite({ env: { TURNSTILE_SITE_KEY: 'fake-site-key', TURNSTILE_SECRET_KEY: 'fake-secret', ADMIN_KEY } });
+    const site = await startSite({ env: { TURNSTILE_SITE_KEY: 'fake-site-key', TURNSTILE_SECRET_KEY: 'fake-secret', ADMIN_KEY, HOSTED_AUDIO_ENABLED: 'on' } });
     site.rows = async () => (await site.db.prepare('SELECT * FROM feedback ORDER BY created_at').all()).results;
     await use(site);
     await site.close();

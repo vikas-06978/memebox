@@ -780,7 +780,7 @@
     "message": "तस्वीर हटाएँ"
   },
   "op_picture_hint": {
-    "message": "लाइन चलते समय आपकी स्क्रीन पर दिखती है, और \"मेरे कैमरे पर कैप्शन\" चालू हो तो आपके कैमरे पर भी। अपनी तस्वीरें इस्तेमाल करें, दूसरों की सिर्फ़ उनकी मर्ज़ी से।"
+    "message": "तस्वीर ×, Escape या Stop all से बंद करने तक दिखती रहेगी। Caption on my camera चालू होने पर दूसरे भी देखेंगे। अपनी या अनुमति वाली तस्वीरें इस्तेमाल करें।"
   },
   "op_err_picture": {
     "message": "यह फ़ाइल ऐसी तस्वीर नहीं है जिसे MemeBox इस्तेमाल कर सके। PNG, JPG, WEBP या GIF आज़माएँ।"
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "यूनिकॉर्न"
+  },
+  "pg_wave": {
+    "message": "हाथ हिलाएँ"
+  },
+  "pg_cheer": {
+    "message": "खुशी मनाएँ"
+  },
+  "pg_heartbeat": {
+    "message": "प्यार"
+  },
+  "pg_cry": {
+    "message": "रोना"
+  },
+  "pg_raspberry": {
+    "message": "जीभ निकालें"
+  },
+  "pg_dance": {
+    "message": "नाचें"
+  },
+  "fx_char_snake": {
+    "message": "साँप"
+  },
+  "fx_char_bird": {
+    "message": "पक्षी"
   },
   "fx_char_robot": {
     "message": "रोबोट"

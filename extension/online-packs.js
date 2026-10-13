@@ -22,7 +22,7 @@
     return /^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta';
   };
   const tierOk = (tier) => tier === 'free' || (tier === 'pro' ? plan.isPro() : plan.hasLicense() || plan.passTier() === 'max');
-  const itemLang = (l) => (l === 'hi' ? 'hi' : MEME.isLang(l) ? l : 'en'); // Hinglish (Hindi in Latin letters) is read by the English voice
+  const itemLang = (l) => (l === 'hinglish' ? 'en' : !l ? 'en' : MEME.isLang(l) ? l : null);
 
   async function load() {
     const r = await chrome.storage.local.get(['packsInstalled', 'settings']);
@@ -55,7 +55,8 @@
         t('op_online_free_n', String(open.length))];
       if (locked) tags.push(t(plan.shopOpen() ? 'op_online_paid_n' : 'op_online_soon_n', String(locked)));
       if (p.items.some((i) => i.explicit)) tags.push(t('op_online_strong_tag'));
-      const note = [p.description, [...new Set(all.map((i) => i.licence).filter(Boolean))].join(' · ')].filter(Boolean).join(' — ');
+      const languageNames = [...new Set(all.filter((i) => i.lang).map((i) => i.languageName || MEME.LANGS[i.lang] || i.lang))];
+      const note = [p.description, languageNames.join(' · '), [...new Set(all.map((i) => i.licence).filter(Boolean))].join(' · ')].filter(Boolean).join(' · ');
       const act = el('div', { className: 'actions' });
       if (have) act.append(el('span', { className: 'tag' }, t('op_online_added')));
       if (fresh.length) {
@@ -99,7 +100,9 @@
       btn.textContent = t('op_online_busy', String(done + 1), String(items.length));
       try {
         if (item.kind === 'line') {
-          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.text || item.title, lang: itemLang(item.lang), tone: 'normal', category, fav: 0, volume: 1 });
+          const lang = itemLang(item.lang);
+          if (!lang) throw new Error('This dialogue needs a recorded voice.');
+          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.text || item.title, lang, tone: 'normal', category, fav: 0, volume: 1 });
           if (line) { ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         } else if (item.kind === 'image') { // a meme picture: a line that shows it on your camera while it plays
           const bytes = await fetchFile(item);

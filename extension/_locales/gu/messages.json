@@ -780,7 +780,7 @@
     "message": "ચિત્ર કાઢો"
   },
   "op_picture_hint": {
-    "message": "લાઇન વાગે ત્યારે તમારી સ્ક્રીન પર દેખાય છે, અને \"મારા કૅમેરા પર કૅપ્શન\" ચાલુ હોય તો કૅમેરા પર પણ. તમારાં પોતાનાં ચિત્રો વાપરો, બીજાનાં ફક્ત તેમની મંજૂરીથી."
+    "message": "×, Escape અથવા Stop allથી બંધ કરો ત્યાં સુધી ચિત્ર દેખાશે. Caption on my camera ચાલુ હોય તો બીજા પણ જોઈ શકે. પોતાની અથવા મંજૂરીવાળી તસવીરો વાપરો."
   },
   "op_err_picture": {
     "message": "તે ફાઇલ એવું ચિત્ર નથી જે MemeBox વાપરી શકે. PNG, JPG, WEBP કે GIF અજમાવો."
@@ -1179,6 +1179,30 @@
   },
   "fx_char_unicorn": {
     "message": "યુનિકોર્ન"
+  },
+  "pg_wave": {
+    "message": "હાથ હલાવો"
+  },
+  "pg_cheer": {
+    "message": "ઉલ્લાસ"
+  },
+  "pg_heartbeat": {
+    "message": "પ્રેમ"
+  },
+  "pg_cry": {
+    "message": "રડવું"
+  },
+  "pg_raspberry": {
+    "message": "જીભ બતાવો"
+  },
+  "pg_dance": {
+    "message": "નૃત્ય"
+  },
+  "fx_char_snake": {
+    "message": "સાપ"
+  },
+  "fx_char_bird": {
+    "message": "પક્ષી"
   },
   "fx_char_robot": {
     "message": "રોબોટ"

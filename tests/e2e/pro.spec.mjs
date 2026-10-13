@@ -98,10 +98,15 @@ test.describe('free plan (no key)', () => {
 
 test('picture meme: add a picture to a line; playing it shows the picture on my camera', async ({ context, extensionId, callPage }) => {
   const page = await openOptions(context, extensionId);
+  const picture = await page.evaluate(() => {
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 128;
+    const g = canvas.getContext('2d'); g.fillStyle = '#ff00b4'; g.fillRect(0, 0, 128, 128);
+    return canvas.toDataURL('image/png').split(',')[1];
+  });
   // The first line ("Bhai tu rehne de") is on Alt+1. (The list shows English by default in an English browser: pick all languages.)
   await page.selectOption('#lines-lang', '');
   await page.locator('#lines-body tr').first().getByRole('button', { name: 'Edit' }).click();
-  await page.setInputFiles('#line-pic', { name: 'monkey.png', mimeType: 'image/png', buffer: ICON });
+  await page.setInputFiles('#line-pic', { name: 'picture.png', mimeType: 'image/png', buffer: Buffer.from(picture, 'base64') });
   await expect(page.locator('#line-pic-preview')).toBeVisible();
   await page.locator('#line-submit').click();
   await expect(page.locator('#toast')).toHaveText('Line saved');
@@ -127,6 +132,32 @@ test('picture meme: add a picture to a line; playing it shows the picture on my 
   await callPage.keyboard.press('Alt+Digit1');
   await expect.poll(() => callPage.logs.some((l) => l.includes('meme picture ready 128x128')), { timeout: 10000 }).toBe(true);
 
+  // Inspect the outgoing stream, not only a log or the sender's local overlay.
+  await callPage.evaluate(async () => {
+    const video = document.createElement('video'); video.muted = true; video.srcObject = window.s; await video.play();
+    window.pictureFraction = () => {
+      const canvas = document.createElement('canvas'); canvas.width = 160; canvas.height = 120;
+      const g = canvas.getContext('2d'); g.drawImage(video, 0, 0, 160, 120);
+      const pixels = g.getImageData(0, 0, 160, 120).data;
+      let pink = 0;
+      for (let i = 0; i < pixels.length; i += 4) if (pixels[i] > 200 && pixels[i + 1] < 60 && pixels[i + 2] > 130) pink++;
+      return pink / (160 * 120);
+    };
+  });
+  await expect.poll(() => callPage.evaluate(() => pictureFraction())).toBeGreaterThan(0.2);
+  await callPage.waitForTimeout(3500);
+  expect(await callPage.evaluate(() => pictureFraction())).toBeGreaterThan(0.2);
+  // A sound without a picture must not remove the pinned picture.
+  await callPage.evaluate(() => window.beep());
+  await callPage.waitForTimeout(300);
+  expect(await callPage.evaluate(() => pictureFraction())).toBeGreaterThan(0.2);
+  await callPage.keyboard.press('Escape');
+  await expect.poll(() => callPage.evaluate(() => pictureFraction())).toBeLessThan(0.05);
+  await callPage.keyboard.press('Alt+Digit1');
+  await expect.poll(() => callPage.evaluate(() => pictureFraction())).toBeGreaterThan(0.2);
+  await callPage.keyboard.press('Alt+Digit0');
+  await expect.poll(() => callPage.evaluate(() => pictureFraction())).toBeLessThan(0.05);
+
   // Removing the picture deletes it once no line uses it.
   await page.locator('#lines-body tr').first().getByRole('button', { name: 'Edit' }).click();
   await page.locator('#line-pic-remove').click();
@@ -138,7 +169,7 @@ test('buy page: QR for memebox@upi with the amount and order note; UTR; admin ap
   const buyer = await context.newPage();
   await buyer.goto('https://memebox.pages.dev/buy');
   await expect(buyer.locator('.product')).toHaveCount(16);
-  await expect(buyer.locator('.product.best')).toHaveCount(2);
+  await expect(buyer.locator('.product.best')).toHaveCount(3);
   await buyer.locator('button[data-product="pass_pro_60"]').click();
   await expect(buyer.locator('#pay')).toBeVisible();
   const qrText = await buyer.locator('#qr').getAttribute('data-text');
@@ -178,19 +209,19 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
   const page = await context.newPage();
   await page.goto('https://memebox.pages.dev/pricing?cur=inr');
   await expect(page.locator('h1')).toHaveText('Plans and prices');
-  await expect(page.locator('.pass')).toHaveCount(5);
-  await expect(page.locator('.char-card')).toHaveCount(11);
-  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['₹9', '₹15', '₹25']);
-  await expect(page.locator('#passes-max .pass-price')).toHaveText(['₹25', '₹49']);
+  await expect(page.locator('.pass')).toHaveCount(7);
+  await expect(page.locator('.char-card')).toHaveCount(9);
+  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['₹9', '₹15', '₹25', '₹49']);
+  await expect(page.locator('#passes-max .pass-price')).toHaveText(['₹25', '₹49', '₹99']);
   await expect(page.locator('#passes-max a.button').nth(1)).toHaveAttribute('href', '/buy?product=pass_max_180');
   await expect(page.locator('.char-card .pass-price').first()).toHaveText('₹29');
-  await expect(page.locator('.char-card.all .pass-price')).toHaveText('₹249');
+  await expect(page.locator('.char-card.all .pass-price')).toHaveText('₹199');
   await expect(page.locator('#usd-note')).toBeHidden();
   await page.screenshot({ path: 'tests/.tmp/pricing-inr.png', fullPage: true });
 
   await page.locator('.seg-btn[data-cur="usd"]').click();
-  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['$1.49', '$2.49', '$3.99']);
-  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$3.49', '$6.49']);
+  await expect(page.locator('#passes-pro .pass-price')).toHaveText(['$1.49', '$2.49', '$3.99', '$7.99']);
+  await expect(page.locator('#passes-max .pass-price')).toHaveText(['$3.49', '$6.49', '$14.99']);
   await expect(page.locator('.char-card .pass-price').first()).toHaveText('$0.99');
   await expect(page.locator('.pass a.button')).toHaveCount(0);
   await expect(page.locator('#usd-note')).toBeVisible();
