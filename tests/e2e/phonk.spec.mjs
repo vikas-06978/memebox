@@ -141,3 +141,11 @@ test('thirty free songs are available equally and owner metadata edits appear af
   await page.locator('#playlists').getByRole('button', { name: 'Phonk Mode' }).click();
   await expect(page.locator('#tracks li').first()).toContainText('New owner choice');
 });
+
+test('adult tracks are opt-in and removed from the active player and queue when hidden',async({page,site})=>{
+ await site.db.prepare("UPDATE pack_items SET explicit=1 WHERE id='i-link000003'").run();
+ await page.goto(site.url+'/phonk');await expect(page.locator('#tracks')).not.toContainText('Max track');
+ await page.locator('#adult-content').check();await expect(page.locator('#tracks')).toContainText('Max track');
+ await page.locator('#tracks button',{hasText:'Max track'}).click();await expect(page.locator('#player')).toHaveAttribute('src',/ccccccccccc/);
+ await page.locator('#adult-content').uncheck();await expect(page.locator('#tracks')).not.toContainText('Max track');await expect(page.locator('#player')).not.toHaveAttribute('src',/ccccccccccc/);
+});

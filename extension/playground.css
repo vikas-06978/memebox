@@ -17,3 +17,11 @@
 .tune-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .tune-grid button[aria-pressed=true] { background: var(--sel); border-color: var(--brand-2); }
 @media (max-width: 800px) { .playground-layout { grid-template-columns: minmax(0, 1fr); } .preview-stage { position: static; } }
+
+.reaction-controls button { font-size: 13px; } .presence-controls { display:grid; gap:10px; margin:12px 0; padding:14px; border-radius:14px; background:var(--sel); } .presence-controls label { display:grid; gap:6px; } #picture-preview { margin-top:14px; } #picture-image { max-width:100%; max-height:420px; border-radius:16px; object-fit:contain; } .preview-library input[type=range] { width:100%; }
+
+@media (min-width:801px) { .preview-stage { max-height:calc(100vh - 48px); overflow-y:auto; scrollbar-width:thin; } }
+
+.top { flex-wrap:wrap; } .preview-nav { display:flex; flex-wrap:wrap; gap:8px; } .preview-nav a { white-space:nowrap; }
+
+.ownership-links { display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:14px; }

@@ -43,6 +43,7 @@
   const sessions = new Set();
   const mixedTracks = new WeakSet(); // tracks we produced (and their clones)
   const playing = new Set();
+  let playGeneration = 0;
 
   // ---------- messaging ----------
 
@@ -309,6 +310,7 @@
   // ---------- playback into the soundboard ----------
 
   async function play(reqId, starter, label, caption, picture) {
+    const generation = ++playGeneration;
     if (!isActive() || !ctx) {
       post({ type: 'played', reqId, ok: false, reason: 'no-call' });
       return;
@@ -316,7 +318,13 @@
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
     try {
       const node = await starter();
-      stopAll(); // one meme at a time
+      if (generation !== playGeneration) {
+        try { node.stop(); } catch {}
+        node.disconnect();
+        post({ type: 'played', reqId, ok: false, reason: 'cancelled' });
+        return;
+      }
+      stopAll(false); // one meme at a time; keep this request valid
       playing.add(node);
       duckTick(true); // if you're already talking, start the meme ducked (no loud first moment)
       startDuckWatch();
@@ -394,7 +402,8 @@
     return o;
   }
 
-  function stopAll() {
+  function stopAll(invalidate = true) {
+    if (invalidate) playGeneration++;
     for (const n of playing) { try { n.stop(); } catch {} }
     playing.clear();
   }
@@ -410,9 +419,11 @@
   let musicPlayer = null;
   let musicVolume = 0.5;
   let musicMoodTimer = 0;
+  let musicGeneration = 0;
   const MUSIC_MOOD = { funky: 'fun', party: 'excited', suspense: 'suspense', retro: 'fun', jazz: 'fun', epic: 'suspense', tropical: 'excited', disco: 'fun', club: 'excited', bass: 'excited', desi: 'excited', house: 'fun', phonk_desi: 'fun', phonk_drift: 'excited', phonk_midnight: 'suspense' };
 
   function startMusic(id, vol) {
+    musicGeneration++;
     if (!globalThis.MemeMusic || !MemeMusic.TUNES[id] || !isActive() || !ctx) { post({ type: 'music-state', id: '' }); return; }
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
     if (!musicPlayer) musicPlayer = MemeMusic.createPlayer(ctx, board);
@@ -428,7 +439,8 @@
     post({ type: 'music-state', id });
   }
 
-  function stopMusic() {
+  function stopMusic(invalidate = true) {
+    if (invalidate) musicGeneration++;
     clearInterval(musicMoodTimer);
     let was = false;
     if (musicPlayer && musicPlayer.playing) { musicPlayer.stop(); was = true; }
@@ -445,11 +457,13 @@
   let mineSrc = null;
   let mineGain = null;
   async function startMine(d) {
+    const generation = ++musicGeneration;
     if (!isActive() || !ctx || !(d.bytes instanceof ArrayBuffer)) { post({ type: 'music-state', id: '' }); return; }
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
     try {
       const buffer = await ctx.decodeAudioData(d.bytes);
-      stopMusic();
+      if (generation !== musicGeneration) return;
+      stopMusic(false);
       const src = ctx.createBufferSource();
       src.buffer = buffer;
       src.loop = true;

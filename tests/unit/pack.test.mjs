@@ -146,3 +146,12 @@ test('the language you pick decides which built-in lines show: a regional langua
   assert.ok(ta.every((l) => l.lang === 'ta' && /[஀-௿]/.test(l.text)), 'written in Tamil script, spoken by the Tamil voice');
   for (const lang of ['bn', 'mr', 'te', 'gu', 'es', 'ar', 'pt', 'fr', 'id']) assert.equal(H.MEME_PACKS.worldFor(lang).length, 16, lang);
 });
+
+test('adult and source-language metadata survives strict pack export/import, malformed markers are rejected', () => {
+  const data=good();Object.assign(data.lines[0],{explicit:true,packId:'india-reactions',region:'in'});
+  const imported=P.validate(data);assert.equal(imported.ok,true);
+  assert.equal(imported.pack.lines[0].explicit,true);
+  const exported=P.build('Round trip',imported.pack.lines,imported.pack.clips);
+  const again=P.validate(exported);assert.equal(again.ok,true);assert.equal(again.pack.lines[0].explicit,true);assert.equal(again.pack.lines[0].packId,'india-reactions');
+  data.lines[0].explicit='false';assert.equal(P.validate(data).ok,false);
+});

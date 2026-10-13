@@ -15,6 +15,15 @@ const cap = (id) => id[0].toUpperCase() + id.slice(1);
 const characterProducts = Object.fromEntries(Object.entries(CHARACTER_PRICES).map(([id, pr]) => [`char_${id}`,
   Object.freeze({ name: `Character: ${cap(id)} (yours for ever)`, inr: pr.inr, usd: pr.usd, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([`character:${id}`]) })]));
 
+// Draft cosmetic catalog; closed until the owner selects prices and approves sales.
+export const COSMETIC_DRAFTS = Object.freeze({
+  filters: Object.freeze(['vintage','cool','noir','dream','sunset','neon','pixel','vhs','glam','sepia','peach','teal','soft','dusk','contrast']),
+  outfits: Object.freeze(['hoodie','bow','glasses']),
+  maxFilters: Object.freeze(['cyber','comic','matrix','night','film','wave','heat','snow','prism','startrail']),
+  maxOutfits: Object.freeze(['astronaut','wizard','superhero']),
+});
+const cosmeticDrafts = Object.fromEntries(['filter','outfit'].flatMap(type => COSMETIC_DRAFTS[type + 's'].map(id => [type+'_'+id, Object.freeze({ name: `${cap(type)}: ${cap(id)} (yours for ever)`, inr: type === 'filter' ? 19 : 29, usd: .99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([type+':'+id]), closed: true })])));
+
 export const PRODUCTS = Object.freeze({
   pass_pro_30: pass('Pro pass: 30 minutes', 9, 1.49, 1800, 0),
   pass_pro_60: pass('Pro pass: 1 hour', 15, 2.49, 3600, 0),
@@ -24,6 +33,7 @@ export const PRODUCTS = Object.freeze({
   pass_pro_300: pass('Pro pass: 5 hours', 49, 7.99, 18000, 0),
   pass_max_480: pass('Pro Max pass: 8 hours', 99, 14.99, 0, 28800),
   ...characterProducts,
+  ...cosmeticDrafts,
   chars_eight: Object.freeze({ name: 'All 8 purchasable characters (yours for ever)', inr: 199, usd: 4.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(Object.keys(CHARACTER_PRICES).map((id) => `character:${id}`)) }),
   // Retain closed products so previously created orders can be fulfilled correctly.
   char_unicorn: Object.freeze({ name: 'Character: Unicorn (legacy purchase)', inr: 49, usd: 1.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(['character:unicorn']), closed: true }),

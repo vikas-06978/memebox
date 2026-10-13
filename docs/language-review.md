@@ -1,6 +1,6 @@
 # Language coverage
 
-The extension and site offer 16 interface choices. Arabic, Bengali, English, French, Gujarati, Hindi, Indonesian, Marathi, Portuguese, Spanish, Tamil and Telugu have complete dictionaries.
+The extension and site offer 16 interface choices. Arabic, Bengali, English, French, Gujarati, Hindi, Indonesian, Marathi, Portuguese, Spanish, Tamil and Telugu have complete baseline dictionaries. New long helper/personality/Plans text still uses English in several bundles; the new core movement, music, picture and adult controls have localized strings. These additions need native review too.
 
 German, Italian, Japanese and Punjabi are explicitly marked **Beta**. Their basic playback, settings, reaction and playlist controls are translated. Advanced controls, payment instructions and other untranslated text fall back to English. These are partial bundles, not four fully localized interfaces. Native speakers should review tone, terminology and clarity before removing the Beta label.
 

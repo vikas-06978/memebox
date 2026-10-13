@@ -84,8 +84,10 @@
       if (changes.langPack) toast(t('lang_reload'));
       const r = {};
       for (const k of Object.keys(changes)) r[k] = changes[k].newValue;
+      const hadAdult = state.settings.showStrong === true && state.settings.adultConfirmed === true;
       if ('lines' in r && !Array.isArray(r.lines)) r.lines = MEME.defaultLines();
       applyStored(r);
+      if (hadAdult && !(state.settings.showStrong && state.settings.adultConfirmed)) stopAll();
       renderAll();
       if (r.settings && r.settings.panelTab && r.settings.panelTab !== panel.dataset.tab) showPage(r.settings.panelTab, false); // another tab changed the page
       if ('settings' in r) { sendAudioSettings(); for (const fn of settingsCbs) { try { fn(); } catch { /* ignore */ } } }
@@ -137,6 +139,7 @@
 
   function playLine(line) {
     if (!line) return;
+    if (!MEME.contentAllowed(line,state.settings)) { toast(t('adult_blocked')); return; }
     const f = activeFrame();
     if (!f) { toast(t('join_first')); return; }
     const reqId = ++state.reqId;
@@ -147,7 +150,9 @@
 
   // Meme pictures arrive just before the sound (by request id) and show with the caption.
   const pictures = new Map(); // reqId -> Promise<ImageBitmap|null>
+  let captionGeneration = 0;
   function keepPicture(msg) {
+    if (!state.pending.has(msg.reqId)) return;
     const bin = atob(msg.b64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -160,10 +165,13 @@
   }
 
   async function onPlayResult(msg) {
+    const generation = captionGeneration;
     const line = state.pending.get(msg.reqId);
     state.pending.delete(msg.reqId);
     const picture = pictures.has(msg.reqId) ? await pictures.get(msg.reqId) : null;
     pictures.delete(msg.reqId);
+    if (generation !== captionGeneration || (line && !MEME.contentAllowed(line, state.settings))) { if (picture) picture.close(); return; }
+    if (msg.reason === 'cancelled') { if (picture) picture.close(); return; }
     if (msg.ok) {
       if (!startCard.hidden) { startCard.hidden = true; try { chrome.storage.local.set({ startDone: true }); } catch { /* orphaned */ } } // you found out how it works
       celebrate();
@@ -198,10 +206,8 @@
     sendToHook({ type: 'beep', reqId });
   }
 
-  // Which meme lines to offer: with "auto", people in India (browser in an Indian language, or India time zone) see everything; everybody else
-  // sees English plus the lines in their browser's language. Nothing is sent anywhere: it is read from the browser. Change it with the language chips.
-  // "My language" is the one picked for MemeBox in Options (else Chrome's / the browser's). With a regional language picked, the built-in lines
-  // are shown in that language only (no English), and spoken with that language's voice.
+  // Preferred interface/browser language controls discovery, never country or timezone.
+  // Personal additions and universal effects remain available when language changes.
   const pickedLang = () => (langPack && langPack.code ? MEME.langOf(langPack.code) : '');
   const ownLang = () => pickedLang() || MEME.langOf(navigator.language);
   function activeLangs() { // null = every language
@@ -209,17 +215,15 @@
     if (v === 'all') return null;
     if (MEME.isLang(v)) return new Set([v]);
     if (pickedLang() && pickedLang() !== 'en') return new Set([pickedLang()]);
-    const l = String(navigator.language || 'en').toLowerCase();
-    let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* ignore */ }
-    if (/^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') return null;
     return new Set(['en', ownLang()]);
   }
   const lineLang = () => { const v = state.settings.lineLang; return v === 'all' || MEME.isLang(v) ? v : 'auto'; };
-  const langLines = (items) => { const set = activeLangs(); return !set ? items : items.filter((l) => l.kind !== 'tts' || set.has(l.lang) || !MEME.isBuiltinLine(l)); };
+  const langLines = (items) => MEME.libraryLines(items,state.settings,activeLangs());
 
   function visibleLines() {
     const q = state.query.trim().toLowerCase();
     let items = langLines(state.lines);
+    if (state.settings.panelTab === 'pictures') items = state.lines.filter(line => line.pictureId && MEME.contentAllowed(line,state.settings));
     if (state.filter === 'star') items = items.filter((l) => l.star);
     else if (state.filter === 'recent') items = state.recent.map((id) => items.find((l) => l.id === id)).filter(Boolean);
     else if (state.filter !== 'all') items = items.filter((l) => l.category === state.filter);
@@ -251,6 +255,8 @@
   }
 
   function closePicture() {
+    captionGeneration++;
+    state.pending.clear();
     bridge.toRuntime({ type: 'caption-clear' });
     for (const c of shadow.querySelectorAll('.caption.pinned')) c.remove();
   }
@@ -582,10 +588,12 @@
     .panel[data-tab="music"] :is(.search, .chips, .memes-row, .list, .packs-link, details[data-page]:not([data-page="music"])),
     .panel[data-tab="lights"] :is(.search, .chips, .memes-row, .list, .packs-link, details[data-page]:not([data-page="lights"])),
     .panel[data-tab="sound"] :is(.search, .chips, .memes-row, .list, .packs-link, details[data-page]:not([data-page="sound"])),
+    .panel[data-tab="pictures"] details[data-page],
     .panel[data-tab="memes"] details[data-page] { display: none; }
     details[data-page] > summary { display: none; }
     details[data-page] { border-top: 0; padding-top: 0; }
     details[data-page] .settings-body { padding-top: 2px; }
+    .adult-preference { font-size:11px; line-height:1.35; margin:8px 0; } .panel:not([data-tab=memes]):not([data-tab=pictures]) .adult-preference { display:none; } .pictures-tools { display:none; } .panel[data-tab="pictures"] .pictures-tools { display:grid; gap:10px; padding:10px 0; } .panel[data-tab="pictures"] :is(.chips,.langchips,.memes-row,.packs-link) { display:none; } .pagetabs { flex-wrap:wrap; } .ptab { min-width:62px; } .toggle-help { display:block; font-size:11px; line-height:1.4; color:var(--p-muted); margin-top:3px; }
     .panel[data-tab="memes"] .foot { display: block; }
     .panel:not([data-tab="memes"]) > .foot, .panel:not([data-tab="memes"]) > .start { display: none; }
     .langchips { margin-top: -4px; }
@@ -742,21 +750,30 @@
     if (panelOpen) placePanel();
   });
   try { chrome.storage.local.get('startDone').then((r) => { startCard.hidden = r.startDone === true; }).catch(() => { startCard.hidden = false; }); } catch { startCard.hidden = false; }
-  // The panel has four pages, one at a time: Memes, Music, Lights, Sound. (Music and Lights add their own sections; see MemeUiMounts.)
-  const PAGES = [['memes', '😂', 'tab_memes'], ['music', '🎵', 'tab_music'], ['lights', '💡', 'tab_lights'], ['sound', '🎛', 'tab_sound']];
+  // The panel has five pages: Memes, Music, Lights, Pictures and Sound. (Music and Lights add their own sections; see MemeUiMounts.)
+  const PAGES = [['memes', '😂', 'tab_memes'], ['music', '🎵', 'tab_music'], ['lights', '💡', 'tab_lights'], ['pictures', '🖼', 'tab_pictures'], ['sound', '🎛', 'tab_sound']];
   const pageTabs = el('div', { className: 'pagetabs', role: 'tablist' });
   const pageBtns = {};
   for (const [id, emoji, key] of PAGES) {
     const b = el('button', { className: 'ptab', type: 'button', role: 'tab' }, el('span', { className: 'pti' }, emoji), el('span', {}, t(key)));
+    b.dataset.tab = id;
     b.addEventListener('click', () => showPage(id));
     pageBtns[id] = b; pageTabs.append(b);
   }
   settings.dataset.page = 'sound';
+  const pictureAdd = el('button', { className: 'chip', type:'button' },t('pictures_add'));
+  pictureAdd.addEventListener('click',()=>bridge.toRuntime({type:'open-options',hash:'pictures'}));
+  const adultBox = el('input',{type:'checkbox'});
+  const adultPreference = el('label',{className:'check adult-preference'},adultBox,t('adult_optin'));
+  adultBox.addEventListener('change',()=>{state.settings={...state.settings,showStrong:adultBox.checked,adultConfirmed:adultBox.checked};update('settings',old=>({...MEME.defaultSettings(),...old,showStrong:adultBox.checked,adultConfirmed:adultBox.checked}));if(!adultBox.checked)stopAll();renderChips();renderList()});
+  const pictureTools = el('div', { className:'pictures-tools' }, el('div',{className:'fx-how'},t('pictures_help')),pictureAdd);
   const panel = el('div', { className: 'panel' },
     el('div', { className: 'head' }, el('h1', {}, '😂 MemeBox'), feedbackBtn, optionsBtn, closeBtn),
     statusBox,
     startCard,
     pageTabs,
+    adultPreference,
+    pictureTools,
     tabBar,
     search,
     chips,
@@ -797,7 +814,7 @@
     placePanel: () => placePanel(),
     panelIsOpen: () => panelOpen,
     openPacks: () => { if (!bridge.toRuntime({ type: 'open-options', hash: 'online' })) orphaned(); },
-    openSite: (path) => { if (!bridge.toRuntime({ type: 'open-site', path })) orphaned(); },
+    openSite: (path) => { const local=(MEMEBOX_CONFIG.SITE_URL||'').startsWith('http://127.0.0.1:') || MEMEBOX_CONFIG.SHOP_OPEN===false; if(!bridge.toRuntime(local&&['/buy','/pricing'].includes(path)?{type:'open-options',hash:'plans'}:{type:'open-site',path}))orphaned(); },
     inCall: () => !!activeFrame(),
     frameId: () => { const f = activeFrame(); return f ? f.id : null; },
     ask: (msg) => bridge.ask(msg),
@@ -818,10 +835,13 @@
   function showPage(id, save = true) {
     if (!pageBtns[id]) id = 'memes';
     panel.dataset.tab = id;
+    state.settings = { ...state.settings, panelTab: id };
+    if (id === 'pictures') state.filter = 'all';
+    renderList();
     for (const [pid, b] of Object.entries(pageBtns)) { b.classList.toggle('on', pid === id); b.setAttribute('aria-selected', String(pid === id)); }
     for (const d of panel.querySelectorAll('details[data-page]')) { const want = d.dataset.page === id; if (d.open !== want) d.open = want; }
     panel.classList.toggle('fx-open', id === 'lights' || id === 'music');
-    if (save && state.settings.panelTab !== id) { state.settings = { ...state.settings, panelTab: id }; saveSetting('panelTab', id); }
+    if (save) { state.settings = { ...state.settings, panelTab: id }; saveSetting('panelTab', id); }
     if (panelOpen) placePanel();
   }
   panel.dataset.tab = 'memes'; // (showPage runs again once the saved settings are read)
@@ -845,6 +865,7 @@
   }
 
   function renderSettingsSummary() {
+    adultBox.checked = state.settings.showStrong === true && state.settings.adultConfirmed === true;
     const pct = Math.round((Number(state.settings.volume) || 0) * 100);
     const v = VOICES[state.voice] || VOICES.off;
     settingsSum.textContent = `🔊 ${pct}% · ${v.emoji} ${t('voice_' + state.voice)}`;
@@ -882,6 +903,7 @@
     const chip = (id, name) => {
       const on = cur === 'auto' ? (id === 'all' ? !set : !!set && set.has(id) && id === ownLang()) : id === cur;
       const b = el('button', { className: 'chip small' + (on ? ' on' : ''), type: 'button' }, name);
+      b.dataset.lang = id;
       b.addEventListener('click', () => pick(id));
       return b;
     };
@@ -894,7 +916,7 @@
 
   function renderChips() {
     renderLangChips();
-    const cats = [...new Set(state.lines.map((l) => l.category).filter(Boolean))];
+    const cats = [...new Set(langLines(state.lines).map((l) => l.category).filter(Boolean))];
     const filters = [['all', t('chip_all')], ['star', '⭐ ' + t('chip_star')], ['recent', '🕘 ' + t('chip_recent')],
       ...cats.map((c) => [c, categoryLabel(c)])];
     if (!filters.some(([id]) => id === state.filter)) state.filter = 'all';
@@ -934,7 +956,7 @@
     queueMicrotask(() => { list.scrollTop = scroll; });
     list.replaceChildren();
     if (!items.length) {
-      const why = state.filter === 'star' ? t('empty_star') : state.filter === 'recent' ? t('empty_recent')
+      const why = state.settings.panelTab === 'pictures' ? t('pictures_empty') : state.filter === 'star' ? t('empty_star') : state.filter === 'recent' ? t('empty_recent')
         : state.lines.length ? t('empty_search') : t('no_lines');
       list.append(el('li', { className: 'empty' }, why));
       return;
@@ -945,6 +967,7 @@
         line.kind !== 'tts' ? el('span', { className: 'tag', title: t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip') }, '🎵')
           : el('span', { className: 'tag', title: t('tag_lang') }, line.lang.toUpperCase()),
         el('span', { title: t('tone_' + (TONES[line.tone] ? line.tone : 'normal')) }, tone.emoji));
+      if (line.pictureId) tags.prepend(el('span', { className:'tag', title:t('tag_picture') }, '🖼'));
       if (line.fav) tags.append(el('span', { className: 'tag', title: t('tag_shortcut') }, 'Alt+' + line.fav));
       const play = el('button', { className: 'play', type: 'button', title: t('play') }, '▶');
       play.setAttribute('aria-label', t('play') + ': ' + line.text);
@@ -1006,7 +1029,8 @@
     if (!picture && shadow.querySelector('.caption.pinned')) return;
     // PRO: camera captions. With "Caption on my camera" the text is on your own video tile too; when that tile could be flipped back so it reads right, a second copy on the page would be a duplicate.
     if (!picture && state.settings.camCaptions === true && state.camLive && plan.can('captions') && state.settings.camUnmirror !== false && !showCaption.now) {
-      setTimeout(() => { showCaption.now = true; if (Date.now() - (state.captionFixedAt || 0) > 800) showCaption(text, picture); else if (picture) picture.close(); showCaption.now = false; }, 250);
+      const generation = captionGeneration;
+      setTimeout(() => { if (generation !== captionGeneration) return; showCaption.now = true; if (Date.now() - (state.captionFixedAt || 0) > 800) showCaption(text, picture); else if (picture) picture.close(); showCaption.now = false; }, 250);
       return;
     }
     const c = el('div', { className: 'caption' });

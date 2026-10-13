@@ -5,7 +5,7 @@ import { cleanKey, getLicense, LICENSE_RE } from './shop.js';
 export const KINDS = ['music', 'memes', 'pictures', 'links'];
 export const LINK_LIMITS = Object.freeze({ playlists: 10, perPlaylist: 50, total: 500 });
 export const TIERS = ['free', 'pro', 'max'];
-export const REGIONS = { common: 'Common (everyone)', in: 'India', global: 'Global / English' };
+export const REGIONS = { common: 'For everyone', in: 'India (regional)', global: 'Worldwide' };
 export const LICENCES = {
   own: 'Own work',
   cc0: 'CC0 / public domain',

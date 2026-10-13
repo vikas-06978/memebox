@@ -1,9 +1,19 @@
 {
-  "fx_outfit": { "message": "Outfit" },
-  "fx_outfit_none": { "message": "None" },
-  "fx_outfit_party": { "message": "🎉 Party hat" },
-  "fx_outfit_crown": { "message": "👑 Crown" },
-  "fx_outfit_scarf": { "message": "🧣 Scarf" },
+  "fx_outfit": {
+    "message": "Outfit"
+  },
+  "fx_outfit_none": {
+    "message": "None"
+  },
+  "fx_outfit_party": {
+    "message": "🎉 Party hat"
+  },
+  "fx_outfit_crown": {
+    "message": "👑 Crown"
+  },
+  "fx_outfit_scarf": {
+    "message": "🧣 Scarf"
+  },
   "extName": {
     "message": "MemeBox: Meme Soundboard & Voice Changer for Calls"
   },
@@ -1066,7 +1076,7 @@
     "message": "No pass yet. Preview is free; a pass lets others see it in your call."
   },
   "fx_character": {
-    "message": "Character (reacts to the sounds)"
+    "message": "Companion"
   },
   "fx_char_none": {
     "message": "None"
@@ -1093,7 +1103,7 @@
     "message": "🎵 Music"
   },
   "mu_how": {
-    "message": "Original tunes with no copyright. They play into your call like a meme and get quieter when you talk."
+    "message": "Our original tunes play into your call and get quieter while you talk."
   },
   "mu_stop": {
     "message": "Stop"
@@ -1285,10 +1295,10 @@
     "message": "Key $1: $2 of pass time left."
   },
   "fx_follow": {
-    "message": "Follow me (lights and animal move with me)"
+    "message": "Stay with me"
   },
   "fx_follow_tip": {
-    "message": "Uses your camera picture on your own computer only. Nothing is saved or sent. Works best in good light."
+    "message": "Tracks your face locally so the companion follows you and notices when you leave or return."
   },
   "fx_away": {
     "message": "Party when I leave the picture"
@@ -1420,10 +1430,10 @@
     "message": "Like a mirror: your Left is the left of your own video. Untick if it looks the wrong way round."
   },
   "fx_gest": {
-    "message": "It understands my hands, head and tongue"
+    "message": "React to my face and hands"
   },
   "fx_gest_tip": {
-    "message": "Thumbs up, heart, OK, rock, call-me, stop, clap, nod, shake your head, tongue out, kiss. Needs Follow me."
+    "message": "Copies supported waves, smiles and gestures. Keep your face and hands in view; adjust sensitivity if reactions are missed."
   },
   "fx_sens": {
     "message": "How easily it notices them"
@@ -1456,16 +1466,16 @@
     "message": "While a caption shows on your camera, your own tile (which the call site mirrors) is flipped back for 3 seconds so you can read it. Others always see it the right way."
   },
   "fx_masti": {
-    "message": "It plays on me (head, shoulder, glasses, rolling)"
+    "message": "Explore my head and shoulders"
   },
   "fx_masti_tip": {
-    "message": "Now and then the animal sits on your head or shoulder, hangs on your glasses or rolls around your head. Needs Follow me."
+    "message": "On: climbs, flies or hops between resting places. Off: returns to your selected resting place, with gentle idle movements."
   },
   "fx_sounds": {
-    "message": "It makes sounds (crying, cheering, heartbeat)"
+    "message": "Companion sounds in the call"
   },
   "fx_sounds_tip": {
-    "message": "Little sounds like sobbing, sniffing, a cheer or a heartbeat. Others in the call hear them too."
+    "message": "Plays short synthesized reactions, including cheers and sobs, into your microphone. Turn off for silent reactions."
   },
   "fx_seen_off": {
     "message": "The face model is not answering yet. Wait a few seconds; if it stays like this, reload the call tab."
@@ -1534,7 +1544,7 @@
     "message": "Needs Pro"
   },
   "op_online_strong": {
-    "message": "Show packs with strong language (18+)"
+    "message": "I’m 18+; show strong-language memes"
   },
   "op_online_strong_tag": {
     "message": "18+"
@@ -1617,7 +1627,340 @@
   "mu_phonk_tip": {
     "message": "Official phonk tracks played through YouTube, then sent into your call"
   },
-  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
-  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
-  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
+  "mu_t_phonk_desi": {
+    "message": "🔥 MemeBox Desi Phonk"
+  },
+  "mu_t_phonk_drift": {
+    "message": "🏎️ MemeBox Drift Phonk"
+  },
+  "mu_t_phonk_midnight": {
+    "message": "🌙 MemeBox Midnight Phonk"
+  },
+  "pg_natural": {
+    "message": "Natural behavior"
+  },
+  "pg_leave": {
+    "message": "I leave the frame"
+  },
+  "pg_return": {
+    "message": "I come back"
+  },
+  "pg_move": {
+    "message": "Move the person"
+  },
+  "pg_personality": {
+    "message": "Signature action"
+  },
+  "pg_jump": {
+    "message": "Jump"
+  },
+  "pg_roll": {
+    "message": "Roll"
+  },
+  "pg_sit": {
+    "message": "Sit / rest"
+  },
+  "pg_head": {
+    "message": "On my head"
+  },
+  "pg_shoulder": {
+    "message": "On my shoulder"
+  },
+  "pg_corner": {
+    "message": "On the screen"
+  },
+  "pg_personality_help": {
+    "message": "Try the signature action, then leave and return. This uses the same companion engine as your camera."
+  },
+  "pg_away_status": {
+    "message": "Waiting for you. Music will not turn the companion happy while you are away."
+  },
+  "pg_home_status": {
+    "message": "You are here. Your companion can explore, listen and react."
+  },
+  "fx_home": {
+    "message": "Resting place"
+  },
+  "fx_home_tip": {
+    "message": "When exploring is off, the companion stays here. A face must be detected for head and shoulder positions."
+  },
+  "fx_commands": {
+    "message": "Tell your companion what to do"
+  },
+  "fx_commands_tip": {
+    "message": "These controls affect the character in your outgoing camera. Waiting and crying still take priority when you leave."
+  },
+  "fx_away_explain": {
+    "message": "When you leave, your companion looks for you, waits and cries. It stays sad or floats in its tears until you return."
+  },
+  "fx_outfit_hoodie": {
+    "message": "Cozy hoodie"
+  },
+  "fx_outfit_bow": {
+    "message": "Bow tie"
+  },
+  "fx_outfit_glasses": {
+    "message": "Round glasses"
+  },
+  "fx_outfit_astronaut": {
+    "message": "Space explorer"
+  },
+  "fx_outfit_wizard": {
+    "message": "Magic stars"
+  },
+  "fx_outfit_superhero": {
+    "message": "Hero cape"
+  },
+  "fx_tier_free": {
+    "message": "Free"
+  },
+  "fx_tier_pro": {
+    "message": "Pro or owned forever"
+  },
+  "fx_tier_max": {
+    "message": "Pro Max only"
+  },
+  "fx_outfit_help": {
+    "message": "Basic accessories are free. Pro designs can be owned forever when their shop opens. Interactive Pro Max designs are exclusive to the pass."
+  },
+  "fx_filter_sepia": {
+    "message": "Sepia"
+  },
+  "fx_filter_peach": {
+    "message": "Peach"
+  },
+  "fx_filter_teal": {
+    "message": "Teal"
+  },
+  "fx_filter_soft": {
+    "message": "Soft focus"
+  },
+  "fx_filter_dusk": {
+    "message": "Dusk"
+  },
+  "fx_filter_contrast": {
+    "message": "High contrast"
+  },
+  "fx_filter_prism": {
+    "message": "Prism light"
+  },
+  "fx_filter_startrail": {
+    "message": "Star trails"
+  },
+  "pg_music_title": {
+    "message": "Music listening room"
+  },
+  "pg_music_help": {
+    "message": "All 16 bundled tunes are here, including 3 original Phonk tracks. Preview on your speakers; music in the call is under the Music tab."
+  },
+  "pg_add_memes": {
+    "message": "Add my memes and pictures"
+  },
+  "pg_add_music": {
+    "message": "How to add my music"
+  },
+  "pg_music_add_help": {
+    "message": "In a browser call: open the MemeBox panel, select Music, then Add my music. Select an audio file you own or may share. Original Phonk is already bundled; YouTube playlists need the site and verified links."
+  },
+  "pg_preview_seconds": {
+    "message": "Preview length"
+  },
+  "pg_volume": {
+    "message": "Listening volume"
+  },
+  "pg_free_music": {
+    "message": "Free tunes"
+  },
+  "pg_pro_music": {
+    "message": "Pro tunes"
+  },
+  "pg_max_music": {
+    "message": "Pro Max originals and tunes"
+  },
+  "pg_pictures": {
+    "message": "Picture mode"
+  },
+  "pg_pictures_help": {
+    "message": "Add a picture to a meme in Options. Play it from the Pictures tab during a call. It stays until you close it with ×, Escape or Stop all. Enable camera captions to send it to other callers."
+  },
+  "pg_picture_choose": {
+    "message": "Try a local picture"
+  },
+  "pg_picture_close": {
+    "message": "Close picture"
+  },
+  "pg_picture_privacy": {
+    "message": "This preview stays on this device. No upload or storage service is used."
+  },
+  "pg_collection_help": {
+    "message": "For everyone is the default. India and other regions are optional collections, available to everyone; your interface language stays your choice."
+  },
+  "ob_try_characters": {
+    "message": "Try characters and reactions"
+  },
+  "ob_listen_music": {
+    "message": "Listen to original music"
+  },
+  "ob_add_content": {
+    "message": "Add memes and pictures"
+  },
+  "tab_pictures": {
+    "message": "Pictures"
+  },
+  "pictures_help": {
+    "message": "Your picture memes, in one place. Pictures stay until ×, Escape or Stop all. Camera captions must be on for other callers to see them."
+  },
+  "pictures_add": {
+    "message": "Add a picture meme"
+  },
+  "pictures_empty": {
+    "message": "No picture memes yet. Add a picture to a meme in Options, then come back here."
+  },
+  "mu_phonk_local_tip": {
+    "message": "Listen to our three original Phonk tracks in the Playground. Free YouTube playlists require the site and verified official links."
+  },
+  "mu_collection_help": {
+    "message": "Original tunes run on your device. Add your own audio below; no hosted music subscription is required."
+  },
+  "pg_persona_cat": {
+    "message": "Quiet paws, grooming and stretching. Climbs to your shoulder."
+  },
+  "pg_persona_dog": {
+    "message": "A playful trot, panting and wagging. Waits for you to return."
+  },
+  "pg_persona_bunny": {
+    "message": "Springy hops, ear wiggles and nibbling."
+  },
+  "pg_persona_panda": {
+    "message": "Slow steps, bamboo munching and relaxed rolls."
+  },
+  "pg_persona_owl": {
+    "message": "Flies between perches, turns its head and hoots."
+  },
+  "pg_persona_fox": {
+    "message": "Soft prowling, a swishing tail and pouncing."
+  },
+  "pg_persona_penguin": {
+    "message": "Side-to-side waddling and flipper movements."
+  },
+  "pg_persona_lion": {
+    "message": "A measured prowl, mane shakes and yawns."
+  },
+  "pg_persona_monkey": {
+    "message": "Climbs with alternating hands, scratches and swings."
+  },
+  "pg_persona_frog": {
+    "message": "Hops, croaks and catches a little fly."
+  },
+  "pg_persona_unicorn": {
+    "message": "Prances with a rainbow tail and sparkles."
+  },
+  "pg_persona_robot": {
+    "message": "Marches in measured steps, scans and beeps."
+  },
+  "pg_persona_snake": {
+    "message": "Slithers, coils and flicks its forked tongue."
+  },
+  "pg_persona_bird": {
+    "message": "Flies with flapping wings, preens and pecks."
+  },
+  "pg_animate": {
+    "message": "Animate preview"
+  },
+  "pg_picture_too_big": {
+    "message": "Choose an image smaller than 8 MB."
+  },
+  "pg_picture_invalid": {
+    "message": "Choose a valid PNG, JPEG, WebP or GIF image."
+  },
+  "adult_optin": {
+    "message": "I’m 18+; show strong-language memes"
+  },
+  "adult_mark": {
+    "message": "Contains strong language (18+)"
+  },
+  "adult_help": {
+    "message": "Off by default. This is a self-declared preference, not verified age. Turning it off hides marked content and stops current MemeBox playback. Unmarked content cannot be classified automatically."
+  },
+  "adult_blocked": {
+    "message": "Adult memes are hidden. Enable the 18+ preference first."
+  },
+  "content_title": {
+    "message": "Your meme library"
+  },
+  "content_help": {
+    "message": "Recommended uses your chosen meme language. Explore all opens every language and region. Regions are collections, not restrictions."
+  },
+  "content_language": {
+    "message": "Language"
+  },
+  "content_recommended": {
+    "message": "Recommended language"
+  },
+  "content_all": {
+    "message": "All languages"
+  },
+  "content_private": {
+    "message": "Your personal additions stay private on this device and appear with your memes across language views. Categories keep related memes together. Only admin-published packs become available to other users."
+  },
+  "plans_title": {
+    "message": "Plans and ownership"
+  },
+  "plans_link": {
+    "message": "Plans, prices and how to buy"
+  },
+  "plans_closed": {
+    "message": "Payments are not open in this local review. You can preview all features here. No purchase will be made."
+  },
+  "plans_forever": {
+    "message": "Owned forever"
+  },
+  "plans_draft": {
+    "message": "Draft price, not on sale yet"
+  },
+  "plans_max_only": {
+    "message": "Included only with Pro Max; never individually sold"
+  },
+  "plans_passes": {
+    "message": "Time passes"
+  },
+  "plans_filters": {
+    "message": "Filters: Free, Pro and Pro Max"
+  },
+  "plans_outfits": {
+    "message": "Costumes and accessories"
+  },
+  "plans_characters": {
+    "message": "Character ownership"
+  },
+  "plans_music": {
+    "message": "Bundled music"
+  },
+  "plans_open_checkout": {
+    "message": "Open checkout"
+  },
+  "plans_checkout_help": {
+    "message": "Checkout opens on the MemeBox site when the shop is enabled. International payment methods depend on provider approval."
+  },
+  "plans_ownership_help": {
+    "message": "A costume does not unlock its animal. Owned Pro filters and costumes work without a pass; automatic tracking and gestures need a running pass."
+  },
+  "plans_free_count": {
+    "message": "3 free filters and 3 basic accessories"
+  },
+  "plans_pro_count": {
+    "message": "18 filters and 10 standard characters; 7 regular tunes plus Desi Phonk"
+  },
+  "plans_max_count": {
+    "message": "28 filters, all 14 characters and all 16 bundled tunes; exclusive reactive costumes"
+  },
+  "pk_manage_help": {
+    "message": "Published packs are added by the owner in the admin console. You choose which packs to keep locally; your own imports never publish automatically."
+  },
+  "plans_view_max": {
+    "message": "View Pro Max passes"
+  },
+  "plans_availability": {
+    "message": "Checkout availability"
+  }
 }

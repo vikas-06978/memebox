@@ -2,6 +2,7 @@
 // The MemeBox site runs locally (real Pages Functions on SQLite) and stands in for
 // https://memebox.pages.dev, so the extension talks to it exactly as it would online.
 import { test as base, expect } from './fixtures.mjs';
+import { clickPanel, panelElement } from './closed-panel.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { startSite } from '../../tools/site-dev.mjs';
@@ -129,7 +130,11 @@ test('picture meme: add a picture to a line; playing it shows the picture on my 
   await callPage.evaluate(async () => { window.s = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }); await window.measure(window.s); });
   await callPage.waitForTimeout(600);
   await callPage.mouse.click(700, 300);
-  await callPage.keyboard.press('Alt+Digit1');
+  await callPage.mouse.click(42,574,{button:'right'});
+  await clickPanel(callPage,'.ptab[data-tab=pictures]');
+  const gallery = await panelElement(callPage,'.list');
+  expect(gallery.text).toContain(line.text);
+  await clickPanel(callPage,'.list .play');
   await expect.poll(() => callPage.logs.some((l) => l.includes('meme picture ready 128x128')), { timeout: 10000 }).toBe(true);
 
   // Inspect the outgoing stream, not only a log or the sender's local overlay.

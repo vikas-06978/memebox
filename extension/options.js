@@ -82,6 +82,7 @@ function download(name, blob) {
 
 let ctx = null;
 let previewSrc = null;
+let previewGeneration = 0;
 let worker = null;
 const pendingSynth = new Map();
 
@@ -125,6 +126,7 @@ async function lineBytes(line) {
 }
 
 function stopPreview() {
+  previewGeneration++;
   if (previewSrc) try { previewSrc.stop(); } catch { /* already stopped */ }
   previewSrc = null;
 }
@@ -200,8 +202,12 @@ function shareWhatsApp(line) {
 }
 
 async function preview(line) {
+  if(!MEME.contentAllowed(line,settings)){toast(t('adult_blocked'),true);return;}
+  stopPreview();
+  const generation = previewGeneration;
   try {
     const buffer = await audioCtx().decodeAudioData(await lineBytes(line));
+    if (generation !== previewGeneration || !MEME.contentAllowed(line, settings)) return;
     playBuffer(buffer, line.tone, line.volume ?? 1);
   } catch (err) {
     toast(t('op_err_preview', err.message), true);
@@ -247,7 +253,7 @@ function renderLines() {
   const own = uiLang();
   const regional = globalThis.MemeI18n.language !== 'auto' && own !== 'en'; // a regional language is picked: only that language, no English
   const inLang = (l) => l.kind !== 'tts' || !MEME.isBuiltinLine(l) || (lang === 'mine' ? l.lang === own || (!regional && l.lang === 'en') : !lang || l.lang === lang);
-  const shown = lines.filter((l) => inLang(l) && (!cat || l.category === cat) && (!q || l.text.toLowerCase().includes(q) || (l.say || '').toLowerCase().includes(q)));
+  const shown = lines.filter((l) => MEME.contentAllowed(l,settings) && inLang(l) && (!cat || l.category === cat) && (!q || l.text.toLowerCase().includes(q) || (l.say || '').toLowerCase().includes(q)));
   $('lines-count').textContent = t('op_count', shown.length, lines.length);
   const editingId = $('line-id').value;
   if (!shown.length) body.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint' }, lines.length ? t('empty_search') : t('op_no_lines'))));
@@ -362,6 +368,7 @@ $('line-pic-remove').addEventListener('click', () => {
 });
 
 function startEdit(line) {
+  $('line-explicit').checked = line.explicit===true;
   $('line-id').value = line.id;
   $('line-text').value = line.text;
   $('line-say').value = line.say || '';
@@ -392,6 +399,7 @@ function formLine() {
   const existing = lines.find((l) => l.id === $('line-id').value);
   return sanitizeLine({
     ...(existing || { id: newId('l'), kind: 'tts' }),
+    explicit: $('line-explicit').checked,
     text: $('line-text').value,
     say: $('line-say').value,
     lang: $('line-lang').value,
@@ -703,7 +711,7 @@ $('clip-form').addEventListener('submit', async (e) => {
     const line = sanitizeLine({
       id: newId('l'), kind: 'clip', clipId, lang: 'en',
       text: $('clip-name').value.trim() || source.name,
-      tone: $('clip-tone').value, category: $('clip-cat').value || 'clips', fav: Number($('clip-fav').value),
+      explicit: $('clip-explicit').checked, tone: $('clip-tone').value, category: $('clip-cat').value || 'clips', fav: Number($('clip-fav').value),
     });
     claimSlot(line.fav, line.id);
     lines.push(line);
@@ -806,7 +814,7 @@ $('import').addEventListener('change', async () => {
 function renderTimerLineOptions() {
   const s = $('timer-line');
   const keep = s.value;
-  s.replaceChildren(...lines.map((l) => el('option', { value: l.id }, l.text)));
+  s.replaceChildren(...lines.filter(l=>MEME.contentAllowed(l,settings)).map((l) => el('option', { value: l.id }, l.text)));
   if (lines.some((l) => l.id === keep)) s.value = keep;
 }
 
@@ -818,6 +826,7 @@ function renderTimers() {
   if (!timers.length) list.append(el('li', { className: 'empty' }, t('op_no_timers')));
   for (const x of timers) {
     const line = lines.find((l) => l.id === x.lineId);
+    if(line && !MEME.contentAllowed(line,settings))continue;
     const when = x.mode === 'clock' ? t('op_daily_at', x.time) : t('op_every', x.minutes);
     const on = el('input', { type: 'checkbox', checked: x.enabled, title: t('op_enabled') });
     on.addEventListener('change', () => { x.enabled = on.checked; saveSettings(); });
@@ -993,3 +1002,13 @@ chrome.storage.onChanged.addListener((changes, area) => {
   resetForm();
   $('clip-cat').value = 'clips';
 })();
+
+// Country-independent discovery; private additions are never published automatically.
+const contentLanguage=$('content-language'),contentStrong=$('content-strong');
+let hadAdultPreference=false;
+contentLanguage.replaceChildren(new Option(t('content_recommended'),'auto'),new Option(t('content_all'),'all'),...Object.entries(MEME.LANGS).map(([id,name])=>new Option(name,id)));
+function syncContent(){const allowed=settings.showStrong===true&&settings.adultConfirmed===true;if(hadAdultPreference&&!allowed)stopPreview();hadAdultPreference=allowed;contentLanguage.value=settings.lineLang||'auto';contentStrong.checked=settings.showStrong===true&&settings.adultConfirmed===true;renderLines();renderTimerLineOptions();renderTimers()}
+contentLanguage.addEventListener('change',async()=>{const stored=await chrome.storage.local.get('settings');settings={...MEME.defaultSettings(),...stored.settings,lineLang:contentLanguage.value};await chrome.storage.local.set({settings});if(MEME.isLang(settings.lineLang)){for(const line of MEME_PACKS.worldFor(settings.lineLang))if(!lines.some(old=>old.id===line.id))lines.push(line);await saveLines();}syncContent()});
+contentStrong.addEventListener('change',async()=>{const stored=await chrome.storage.local.get('settings');settings={...MEME.defaultSettings(),...stored.settings,showStrong:contentStrong.checked,adultConfirmed:contentStrong.checked};await chrome.storage.local.set({settings});syncContent()});
+chrome.storage.onChanged.addListener((changes,area)=>{if(area==='local'&&changes.settings){settings={...MEME.defaultSettings(),...changes.settings.newValue};syncContent()}});
+chrome.storage.local.get('settings').then(r=>{settings={...MEME.defaultSettings(),...r.settings};syncContent()});

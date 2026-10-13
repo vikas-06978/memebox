@@ -16,25 +16,23 @@
   const usedBytes = () => Object.values(installed).reduce((a, p) => a + (Number(p.bytes) || 0), 0);
   const mb = (bytes) => (bytes / 1048576 >= 0.1 ? (bytes / 1048576).toFixed(1) : '<0.1') + ' MB';
   const suffix = (id) => String(id).replace(/^i-/, '');
-  const inIndia = () => {
-    const l = String(navigator.language || '').toLowerCase();
-    let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* ignore */ }
-    return /^(hi|mr|gu|bn|ta|te|pa|kn|ml|ur)/.test(l) || tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta';
-  };
-  const tierOk = (tier) => tier === 'free' || (tier === 'pro' ? plan.isPro() : plan.hasLicense() || plan.passTier() === 'max');
+  const tierOk = (tier) => tier === 'free' || (tier === 'pro' ? plan.isPro() : plan.canFx('characters'));
   const itemLang = (l) => (l === 'hinglish' ? 'en' : !l ? 'en' : MEME.isLang(l) ? l : null);
 
   async function load() {
     const r = await chrome.storage.local.get(['packsInstalled', 'settings']);
     installed = r.packsInstalled && typeof r.packsInstalled === 'object' ? r.packsInstalled : {};
-    showStrong = !!(r.settings && r.settings.showStrong === true);
+    showStrong = !!(r.settings && r.settings.showStrong === true && r.settings.adultConfirmed === true);
     strongBox.checked = showStrong;
   }
   const saveInstalled = () => chrome.storage.local.set({ packsInstalled: installed });
 
   // What a pack offers: the items you may see (strong language is off by default), the ones you can add now (their plan allows it),
   // and the rest (a Pro or Pro Max item: "Coming soon" while the shop is closed).
-  const visible = (pack) => pack.items.filter((i) => showStrong || !i.explicit);
+  const languageSel=$('online-language');
+  languageSel.replaceChildren(new Option(t('content_all'),''),...Object.entries(MEME.LANGS).map(([id,name])=>new Option(name,id)));
+  languageSel.addEventListener('change',render);
+  const visible = (pack) => pack.items.filter(i=>(showStrong||!i.explicit)&&(!languageSel.value||pack.kind==='music'||pack.kind==='pictures'||!i.lang||i.lang===languageSel.value||(i.lang==='hinglish'&&['hi','en'].includes(languageSel.value))));
   const openItems = (pack) => visible(pack).filter((i) => tierOk(i.tier || pack.tier));
   const isNew = (pack, i) => !((installed[pack.id] || {}).items || []).includes(i.id);
   const regionName = (r) => t('pk_region_' + (REGIONS.includes(r) ? r || 'all' : 'global'));
@@ -43,7 +41,7 @@
     list.replaceChildren();
     if (!catalog) return;
     const want = regionSel.value;
-    const mine = inIndia() ? ['in', 'common', 'global'] : ['common', 'global', 'in'];
+    const mine = ['common','global','in']; // preferred language, not country, controls the call library
     const packs = catalog.filter((p) => visible(p).length && (!want || p.region === want))
       .sort((a, b) => mine.indexOf(a.region) - mine.indexOf(b.region));
     if (!packs.length) { status.textContent = t('op_online_none'); return; }
@@ -102,28 +100,28 @@
         if (item.kind === 'line') {
           const lang = itemLang(item.lang);
           if (!lang) throw new Error('This dialogue needs a recorded voice.');
-          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.text || item.title, lang, tone: 'normal', category, fav: 0, volume: 1 });
+          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.text || item.title, lang, tone: 'normal', category, fav: 0, volume: 1, explicit:item.explicit===true, packId:pack.id, region:pack.region, universal:item.kind!=='line'&&!item.lang });
           if (line) { ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         } else if (item.kind === 'image') { // a meme picture: a line that shows it on your camera while it plays
           const bytes = await fetchFile(item);
           const shrunk = await shrinkPicture(new File([bytes], item.title + '.img', { type: item.mime || 'image/png' }));
           const pictureId = 'p-pk' + suffix(item.id);
           await MemeDB.putPicture({ id: pictureId, name: item.title.slice(0, 120), ...shrunk });
-          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.title, lang: 'en', tone: 'normal', category, fav: 0, volume: 1 });
+          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'tts', text: item.title, lang: itemLang(item.lang)||'en', tone: 'normal', category, fav: 0, volume: 1, explicit:item.explicit===true, packId:pack.id, region:pack.region, universal:item.kind!=='line'&&!item.lang });
           if (line) { line.pictureId = pictureId; ids.pictures.push(pictureId); ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         } else if (pack.kind === 'music') {
           if (tracks.filter((x) => x.pack).length >= MAX_PACK_TRACKS) throw new Error('too many');
           const bytes = await fetchFile(item);
           const id = 'm-' + suffix(item.id);
           await MemeDB.putClip({ id, name: item.title.slice(0, 120), type: item.mime || 'audio/mpeg', bytes });
-          tracks = [...tracks.filter((x) => x.id !== id), { id, name: item.title.slice(0, 60), size: bytes.byteLength, pack: pack.id }];
+          tracks = [...tracks.filter((x) => x.id !== id), { id, name: item.title.slice(0, 60), size: bytes.byteLength, pack: pack.id, explicit:item.explicit===true }];
           ids.music.push(id);
         } else { // an audio meme: a clip line
           if (item.bytes > MAX_MEME_CLIP) throw new Error('too big');
           const bytes = await fetchFile(item);
           const clipId = 'c-pk' + suffix(item.id);
           await MemeDB.putClip({ id: clipId, name: item.title.slice(0, 120), type: item.mime || 'audio/mpeg', bytes });
-          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'clip', clipId, text: item.title, lang: 'en', tone: 'normal', category, fav: 0, volume: 1 });
+          const line = sanitizeLine({ id: 'pk-' + suffix(item.id), kind: 'clip', clipId, text: item.title, lang: itemLang(item.lang)||'en', tone: 'normal', category, fav: 0, volume: 1, explicit:item.explicit===true, packId:pack.id, region:pack.region, universal:item.kind!=='line'&&!item.lang });
           if (line) { ids.clips.push(clipId); ids.lines.push(line.id); lines = [...lines.filter((x) => x.id !== line.id), line]; }
         }
         done++; ids.items.push(item.id); ids.bytes += item.bytes || 0;
@@ -179,12 +177,13 @@
     }
   }
 
+  chrome.storage.onChanged.addListener((changes,area)=>{if(area==='local'&&changes.settings){const v=changes.settings.newValue;showStrong=v?.showStrong===true&&v?.adultConfirmed===true;strongBox.checked=showStrong;render()}});
   regionSel.replaceChildren(...REGIONS.map((r) => el('option', { value: r }, regionName(r))));
   regionSel.addEventListener('change', render);
   strongBox.addEventListener('change', async () => {
     showStrong = strongBox.checked;
     const { settings } = await chrome.storage.local.get('settings');
-    await chrome.storage.local.set({ settings: { ...MEME.defaultSettings(), ...(settings || {}), showStrong } });
+    await chrome.storage.local.set({ settings: { ...MEME.defaultSettings(), ...(settings || {}), showStrong, adultConfirmed:showStrong } });
     render();
   });
   browse.addEventListener('click', open);

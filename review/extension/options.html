@@ -32,7 +32,7 @@
   <main>
     <section class="studio-launch" aria-label="MemeBox">
       <div class="studio-mascots" aria-hidden="true"><span>😹</span><span>🐶</span><span>🦊</span><span>🎧</span></div>
-      <div class="studio-shortcuts">
+      <div class="studio-shortcuts"><a href="playground.html#music-library"><span aria-hidden="true">🎵</span><span data-i18n="pg_music_title">Music listening room</span></a><a href="playground.html#picture-library"><span aria-hidden="true">🖼</span><span data-i18n="pg_pictures">Picture mode</span></a>
         <a href="#lines-card"><span aria-hidden="true">😂</span><span data-i18n="op_nav_lines">Lines</span></a>
         <a href="#clips-card"><span aria-hidden="true">🎙️</span><span data-i18n="op_nav_clips">Clips</span></a>
         <a href="#online-card"><span aria-hidden="true">🌍</span><span data-i18n="op_online">Online packs</span></a>
@@ -44,6 +44,7 @@
       <h2 data-i18n="op_lines">Lines</h2>
       <form id="line-form" class="grid-form" autocomplete="off">
         <input type="hidden" id="line-id">
+        <label class="check wide"><input id="line-explicit" type="checkbox"><span data-i18n="adult_mark">Contains strong language (18+)</span></label>
         <label class="wide"><span data-i18n="op_text">Text shown in the caption</span>
           <input id="line-text" maxlength="300" required data-i18n-placeholder="op_text_ph" placeholder="e.g. Bhai tu rehne de">
         </label>
@@ -131,6 +132,7 @@
           <label class="wide"><span data-i18n="op_caption">Caption text</span>
             <input id="clip-name" maxlength="300" required>
           </label>
+          <label class="check wide"><input id="clip-explicit" type="checkbox"><span data-i18n="adult_mark">Contains strong language (18+)</span></label>
           <label><span data-i18n="op_tone_speed">Tone (speed only)</span> <select id="clip-tone" class="tone-select"></select></label>
           <label><span data-i18n="op_category">Category</span> <input id="clip-cat" maxlength="30" list="cat-list" value="clips"></label>
           <label><span data-i18n="op_shortcut">Shortcut</span> <select id="clip-fav" class="fav-select"></select></label>
@@ -155,13 +157,14 @@
       <p class="hint" data-i18n="op_packs_hint">A pack holds lines and their clips. Importing adds to your lines, and lines with the same id are replaced. Files are checked strictly.</p>
     </section>
 
+    <section class="card" id="content-card"><h2 data-i18n="content_title">Your meme library</h2><p data-i18n="content_help"></p><label><span data-i18n="content_language">Meme language</span><select id="content-language"></select></label><label class="check"><input id="content-strong" type="checkbox"><span data-i18n="adult_optin">I’m 18+; show strong-language memes</span></label><p class="hint" data-i18n="adult_help"></p><p class="hint" data-i18n="content_private"></p></section>
     <!-- ============ ONLINE PACKS ============ -->
     <section class="card" id="online-card">
       <h2 data-i18n="op_online">Online packs</h2>
       <p class="hint" data-i18n="op_online_hint">Free music and memes for everyone. Nothing is contacted until you press Browse; downloads come from the MemeBox site.</p>
       <div class="actions">
         <button type="button" id="online-browse" class="primary" data-i18n="op_online_browse">Browse packs</button>
-        <select id="online-region" aria-label="Region"></select>
+        <select id="online-region" aria-label="Collection region"></select><select id="online-language" aria-label="Pack language"></select>
         <label class="check"><input type="checkbox" id="online-strong"> <span data-i18n="op_online_strong">Show packs with strong language (18+)</span></label>
       </div>
       <p id="online-status" class="hint" role="status" aria-live="polite"></p>
@@ -187,7 +190,7 @@
 
     <!-- ============ PRO ============ -->
     <section class="card" id="pro-card">
-      <h2 data-i18n="op_pro">MemeBox Pro</h2>
+      <h2 data-i18n="op_pro">MemeBox Pro</h2><a class="button" href="plans.html" data-i18n="plans_link">Plans, prices and how to buy</a>
       <p id="pro-status"></p>
       <form id="license-form" class="linkrow" autocomplete="off">
         <input id="license-key" data-i18n-placeholder="op_license_ph" placeholder="MBX-XXXX-XXXX-XXXX" spellcheck="false" aria-label="License key">

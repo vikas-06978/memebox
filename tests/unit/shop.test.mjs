@@ -314,3 +314,21 @@ test('buying a character: new purchases and the eight-character bundle add perma
   assert.match(dash, /characters: /);
   assert.match(dash, /Character: Panda/);
 });
+
+test('cosmetic draft purchases stay closed and Max-only cosmetics have no individual product', async () => {
+  const {PRODUCTS, COSMETIC_DRAFTS, forSale}=await import('../../site/src/shop.js');
+  for(const id of COSMETIC_DRAFTS.filters) assert.equal(PRODUCTS['filter_'+id].closed,true);
+  for(const id of COSMETIC_DRAFTS.outfits) assert.equal(PRODUCTS['outfit_'+id].closed,true);
+  for(const id of COSMETIC_DRAFTS.maxFilters) assert.equal(PRODUCTS['filter_'+id],undefined);
+  for(const id of COSMETIC_DRAFTS.maxOutfits) assert.equal(PRODUCTS['outfit_'+id],undefined);
+  assert.ok(forSale().every(([id])=>!id.startsWith('filter_')&&!id.startsWith('outfit_')));
+});
+
+test('the local public catalog uses authoritative server prices and keeps draft cosmetics closed', async()=>{
+  const {loadScript}=await import('./helpers.mjs');const {PRODUCTS}=await import('../../site/src/shop.js');
+  const {MemeShop}=loadScript('lib/shop-catalog.js');
+  for(const [id,product] of Object.entries(MemeShop.products)){
+    assert.equal(product.inr,PRODUCTS[id].inr,id+' INR');assert.equal(product.usd,PRODUCTS[id].usd,id+' USD');assert.equal(product.closed,!!PRODUCTS[id].closed,id+' availability');
+  }
+  assert.equal(MemeShop.products.filter_prism,undefined);
+});

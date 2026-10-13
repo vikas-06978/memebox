@@ -1,6 +1,6 @@
 # MemeBox upgrade
 
-Work stays on `feature/memebox-2-global`. The live site and Web Store release are separate deployments.
+The current local review is on `review/memebox-local-2026-10-14`; older development started on `feature/memebox-2-global`. The live site and Web Store release are separate deployments.
 
 ## Product decisions
 
@@ -87,3 +87,11 @@ No live payment activation, production migration, site deployment or Web Store p
 - Review build and separate shipping ZIP succeeded. Environment secrets, local databases and previously documented plaintext license keys are excluded from the current files. Git history still needs the previously noted owner-key rotation.
 - Push uses the `[skip ci]` commit prefix. Cloudflare's official Pages GitHub integration documentation lists `[Skip CI]` as a deployment-skip prefix (case insensitive): https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/ . GitHub Actions also skips this push. Repository workflows only test/build/upload artifacts; they contain no deploy job. No pull request, merge, production migration, site deployment or store publication is requested.
 - Actual provider payment tests, verified official YouTube IDs/embedding rights, full native-language review and real-call/weak-laptop testing remain pending.
+
+## Companion and core-library follow-up, 2026-10-14
+
+The current checklist is `local-review-checklist.md`. Shared preview/camera movement now has species gaits/signatures, explicit emote commands and shoulder/head resting. Absence remains sad through long sessions, including happy music, until a stable return. Filters use 3 Free + 15 Pro + 10 Max; Max extras have no individual product. Nine costumes follow the same tier structure. Pro includes ten standard characters; Max includes all fourteen. New individual cosmetic prices are closed drafts.
+
+Pictures has its own call-panel tab. Local Plans shows prices, ownership rules and checkout availability without depending on the website. Music is exposed from Welcome/Options/Playground and the review Phonk button opens the bundled listening room. Bass-heavy original revisions remain synthesized locally. Regional collections are optional for everybody; a user can change meme language during a call while personal/universal additions remain available. Adult content is default-off, self-declared and retains its marker on installation/import/export; hiding it stops active/pending audio. Longer new translations, original regional recordings, verified YouTube links, provider tests and real calls remain external review work.
+
+Final follow-up validation: 201 unit tests passed. The source browser run covered 125 cases (124 passed initially); the failed shoulder override was corrected and all 12 focused source cases passed. The packaged review covered 20 Music/Playground/UI/content cases: 19 passed initially, then all three content cases passed after replacing a timing-sensitive decode-delay test with a controlled pending-decode gate. All three offline WAVs play from the supplied GitHub folder, with no HTTP requests. Details and remaining owner work are in `local-review.md` and `local-review-checklist.md`.

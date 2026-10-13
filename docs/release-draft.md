@@ -6,7 +6,7 @@ No deployment or store upload is authorized yet. Keep the version at 1.3.0 until
 
 Make calls more playful with MemeBox: meme sounds, original music, camera lights and animated characters for supported browser calls.
 
-Free includes the soundboard, offline voices, Cat and Dog, a still lamp, three filters and two tunes. Pro time passes add lights, voice effects, camera captions, Follow me, six characters, eight filters and seven tunes, plus original Desi Phonk. Pro Max adds all 14 characters, 20 filters, 13 tunes and all three original Phonk loops. Purchased pass time has no calendar expiry and runs while enabled in a supported call.
+Free includes the soundboard, offline voices, Cat and Dog, a still lamp, three filters and two tunes. Pro time passes add lights, voice effects, camera captions, Follow me, ten standard characters, eighteen filters and seven tunes, plus original Desi Phonk. Pro Max adds all 14 characters, 28 filters, 13 tunes and all three original Phonk loops. Purchased pass time has no calendar expiry and runs while enabled in a supported call.
 
 Eight optional characters can be bought permanently. Unicorn, Robot, Snake and Bird are Pro Max exclusives for new purchases. Existing unlimited keys and previously purchased character entitlements remain supported.
 

@@ -12,3 +12,5 @@ for (const name of ['fx', 'music']) {
   console.log(`lib/${name}-ui.js updated`);
   if (name === 'music') fs.writeFileSync(path.resolve(lib, '../../site/public/assets/music.js'), header + fs.readFileSync(path.join(lib, 'music.js'), 'utf8'));
 }
+
+await import('./sync-shop.mjs');

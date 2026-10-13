@@ -56,3 +56,32 @@ test('the panel has a Music section (look at tests/.tmp/music-panel.png)', async
   await callPage.waitForTimeout(700);
   await callPage.screenshot({ path: 'tests/.tmp/music-panel1.png' });
 });
+
+test('Stop all cancels meme and personal music while their audio decode is still pending', async ({ callPage }) => {
+  await callPage.evaluate(async () => {
+    await window.joinCall(); await window.noDuck();
+    const decode = AudioContext.prototype.decodeAudioData;
+    window.pendingDecodes = 0;
+    AudioContext.prototype.decodeAudioData = async function (...args) {
+      window.pendingDecodes++;
+      const buffer = await decode.apply(this, args);
+      await new Promise(resolve => setTimeout(resolve, 450));
+      return buffer;
+    };
+    window.testWave = () => {
+      const sr = 48000, n = sr * 2, bytes = new ArrayBuffer(44 + n * 2), v = new DataView(bytes);
+      const ascii = (at, text) => [...text].forEach((c, i) => v.setUint8(at + i, c.charCodeAt(0)));
+      ascii(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); ascii(8, 'WAVEfmt '); v.setUint32(16, 16, true);
+      v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true);
+      v.setUint16(32, 2, true); v.setUint16(34, 16, true); ascii(36, 'data'); v.setUint32(40, n * 2, true);
+      for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.sin(2 * Math.PI * 440 * i / sr) * 16000, true);
+      return bytes;
+    };
+  });
+  for (const [index, type] of ['play-audio', 'music-bytes'].entries()) {
+    await callPage.evaluate(type => window.postMessage({ source: 'memebox-bridge-9c1e', type, reqId: 901, mid: 'm-test', bytes: window.testWave(), volume: .8 }, '*'), type);
+    await expect.poll(() => callPage.evaluate(() => window.pendingDecodes)).toBe(index + 1);
+    await send(callPage, { type: 'stop' });
+    expect(await callPage.evaluate(() => window.peakOver(1000)), type + ' cannot start after Stop all').toBeLessThan(.1);
+  }
+});

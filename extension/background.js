@@ -238,6 +238,9 @@ function toBase64(buf) {
 
 async function audioFor(item) {
   if (!item || typeof item !== 'object') throw new Error('Nothing to play');
+  const {settings,lines} = await chrome.storage.local.get(['settings','lines']);
+  const stored = Array.isArray(lines) ? lines.find(line=>line?.id===item.id || (item.clipId && line.clipId===item.clipId) || (item.pictureId && line.pictureId===item.pictureId)) : null;
+  if (!MEME.contentAllowed({ explicit: stored?.explicit === true || item.explicit === true }, settings)) throw new Error('Adult memes are hidden. Enable the 18+ preference first.');
   const tone = Object.prototype.hasOwnProperty.call(TONES, item.tone) ? item.tone : 'normal';
   if (item.kind === 'sfx') {
     if (!MEME.SFX.includes(item.sfx)) throw new Error('Unknown sound effect');
@@ -254,7 +257,10 @@ async function audioFor(item) {
   return { b64: await tts(text, MEME.isLang(item.lang) ? item.lang : 'en', tone), tone };
 }
 
+const playbackEpoch = new Map();
+
 async function handlePlay(tabId, { frameId, reqId, item }) {
+  const epoch = playbackEpoch.get(tabId) || 0;
   try {
     const { b64, tone } = await audioFor(item);
     const t = TONES[tone];
@@ -265,6 +271,12 @@ async function handlePlay(tabId, { frameId, reqId, item }) {
       const p = await MemeDB.getPicture(String(item.pictureId)).catch(() => null);
       if (p && /^image\/(webp|png|jpeg|gif)$/.test(p.type)) picture = { b64: toBase64(p.bytes), type: p.type };
     }
+    if (epoch !== (playbackEpoch.get(tabId) || 0)) return;
+    // Storage can change while synthesis or picture loading is pending.
+    const { settings, lines } = await chrome.storage.local.get(['settings', 'lines']);
+    const stored = Array.isArray(lines) ? lines.find(line => line?.id === item.id || (item.clipId && line.clipId === item.clipId) || (item.pictureId && line.pictureId === item.pictureId)) : null;
+    if (!MEME.contentAllowed({ explicit: stored?.explicit === true || item.explicit === true }, settings)) throw new Error('Adult memes are hidden. Enable the 18+ preference first.');
+    if (epoch !== (playbackEpoch.get(tabId) || 0)) return;
     if (picture) sendToTab(tabId, { type: 'show-picture', reqId, b64: picture.b64, mime: picture.type }, 0);
     sendToTab(tabId, {
       type: 'hook',
@@ -297,7 +309,7 @@ async function callPanelStore(msg) {
     await MemeDB.putClip({ id: clipId, name, type: 'audio/wav', bytes });
     const { lines } = await chrome.storage.local.get('lines');
     const list = Array.isArray(lines) ? lines : MEME.defaultLines();
-    const line = MEME.sanitizeLine({ id: newId('l'), kind: 'clip', clipId, lang: 'en', text: name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim().slice(0, 300) || name, tone: 'normal', category: 'clips', fav: 0 });
+    const line = MEME.sanitizeLine({ id: newId('l'), kind: 'clip', clipId, lang: 'en', explicit:msg.explicit===true, text: name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim().slice(0, 300) || name, tone: 'normal', category: 'clips', fav: 0 });
     await chrome.storage.local.set({ lines: [...list, line] });
     return { ok: true, id: line.id };
   }
@@ -322,8 +334,15 @@ async function callPanelStore(msg) {
 }
 
 async function playMine(tabId, { frameId, id, volume }) {
+  const epoch = playbackEpoch.get(tabId) || 0;
+  const {settings,myMusic}=await chrome.storage.local.get(['settings','myMusic']);
+  const track=Array.isArray(myMusic)?myMusic.find(track=>track.id===id):null;
+  if (!MEME.contentAllowed(track,settings)) throw new Error('Adult music is hidden. Enable the 18+ preference first.');
   const clip = /^m-[a-z0-9]+$/i.test(String(id)) ? await MemeDB.getClip(String(id)) : null;
   if (!clip) throw new Error('That track was not found.');
+  const fresh = await chrome.storage.local.get('settings');
+  if (!MEME.contentAllowed(track, fresh.settings)) throw new Error('Adult music is hidden. Enable the 18+ preference first.');
+  if (epoch !== (playbackEpoch.get(tabId) || 0)) return;
   sendToTab(tabId, { type: 'hook', cmd: { type: 'music-bytes', mid: String(id), b64: toBase64(clip.bytes), volume: Number.isFinite(Number(volume)) ? Number(volume) : 0.5 } }, frameId);
 }
 
@@ -349,6 +368,7 @@ function updateCallTab(tabId, fn) {
 }
 
 chrome.tabs.onRemoved.addListener(async (tabId) => {
+  playbackEpoch.delete(tabId);
   await updateCallTab(tabId, (e) => { e.frames = {}; });
   // A video tab that was feeding a call was closed: the capture ends by itself.
   const all = await getCallTabs();
@@ -410,6 +430,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.type === 'open-options') {
     if (msg.hash === 'online') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#online-card') }).catch(() => {});
+    else if (msg.hash === 'pictures') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#lines-card') }).catch(() => {});
+    else if (msg.hash === 'plans') chrome.tabs.create({ url: chrome.runtime.getURL('plans.html') }).catch(() => {});
+    else if (msg.hash === 'music-preview') chrome.tabs.create({ url: chrome.runtime.getURL('playground.html#music-library') }).catch(() => {});
     else chrome.runtime.openOptionsPage();
     return;
   }
@@ -536,6 +559,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // UI sends a simple command (stop, volume) to one frame.
     case 'to-frame':
       if (msg.inner && typeof msg.inner === 'object' && Number.isInteger(msg.frameId)) {
+        if (msg.inner.type === 'hook' && ['stop', 'music-stop'].includes(msg.inner.cmd?.type)) playbackEpoch.set(tabId, (playbackEpoch.get(tabId) || 0) + 1);
         sendToTab(tabId, msg.inner, msg.frameId);
       }
       break;

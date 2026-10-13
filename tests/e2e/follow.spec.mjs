@@ -170,7 +170,7 @@ test('the tears stay (up to 92%) while you are away, even if your face flickers 
   expect(r.back2.tear, 'and it is empty a few seconds later').toBeLessThan(0.05);
 });
 
-test('the animal plays on you: head, shoulder, glasses and rolling, bigger when you are closer (and not when Play is switched off)', async ({ page }) => {
+test('the animal plays on you: head, shoulder, glasses and rolling, bigger when you are closer; paused exploring rests on the shoulder', async ({ page }) => {
   await page.setContent('<body></body>');
   await page.addScriptTag({ content: FX });
   const r = await page.evaluate(() => {
@@ -198,7 +198,9 @@ test('the animal plays on you: head, shoulder, glasses and rolling, bigger when 
   expect(r.shoulder.fy, 'below the chin').toBeGreaterThan(0.6);
   expect(r.glasses.x).toBeGreaterThan(0.5);
   expect(r.near.sc, 'bigger when your face is bigger').toBeGreaterThan(r.head.sc);
-  expect(r.none.mode, 'no playing when switched off').not.toBe('perch');
+  expect(r.none.mode, 'paused exploration rests on the selected shoulder').toBe('perch');
+  expect(r.none.x).toBeLessThan(0.45);
+  expect(r.none.fy).toBeGreaterThan(0.6);
 });
 
 test('a different light angle really changes the picture, for every kind of light (lamp and star)', async ({ page }) => {

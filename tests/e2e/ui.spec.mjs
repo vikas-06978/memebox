@@ -1,5 +1,6 @@
 // Step 3 on-call UI: shortcuts, auto-duck, per-site position.
 import { test, expect } from './fixtures.mjs';
+import { clickPanel } from './closed-panel.mjs';
 
 const FAB = { x: 16 + 26, y: 720 - 120 - 26 }; // centre of the 😂 button at its default spot
 
@@ -74,7 +75,7 @@ test.describe('Hindi UI', () => {
   });
 });
 
-test('the panel has four pages (Memes, Music, Lights, Sound); the page you leave open is remembered, and the meme language can be chosen', async ({ context, callPage }) => {
+test('the panel has five pages (Memes, Music, Lights, Pictures, Sound); the page you leave open is remembered, and the meme language can be chosen', async ({ context, callPage }) => {
   const [sw] = context.serviceWorkers();
   const store = async (k) => (await sw.evaluate((k) => chrome.storage.local.get(k), k))[k];
   await sw.evaluate(() => chrome.storage.local.set({ startDone: true })); // (the "Start here" card would move the tabs)
@@ -84,7 +85,7 @@ test('the panel has four pages (Memes, Music, Lights, Sound); the page you leave
   await callPage.mouse.click(16 + 26, 720 - 120 - 26, { button: 'right' }); // open the panel
   await callPage.waitForTimeout(900);
   const shotMemes = await callPage.screenshot();
-  await callPage.mouse.click(215, 231); // the Music tab
+  await clickPanel(callPage, '.ptab[data-tab=music]'); // select the actual tab, independent of its layout
   await expect.poll(async () => ((await store('settings')) || {}).panelTab, { message: 'music tab saved' }).toBe('music');
   await callPage.waitForTimeout(500);
   const shotMusic = await callPage.screenshot();
@@ -99,8 +100,8 @@ test('the panel has four pages (Memes, Music, Lights, Sound); the page you leave
   for (const [a, b] of [['lights', 'sound'], ['sound', 'memes'], ['lights', 'memes']]) expect(Buffer.compare(shots[a], shots[b]), `${a} and ${b} look different`).not.toBe(0);
   expect(Buffer.compare(shotMusic, shots.memes), 'back on Memes it is not the Music page any more').not.toBe(0);
   // meme language: the chip row is under the category chips
-  await callPage.mouse.click(307, 358); // हिन्दी
+  await clickPanel(callPage, '.langchips [data-lang=hi]');
   await expect.poll(async () => ((await store('settings')) || {}).lineLang).toBe('hi');
-  await callPage.mouse.click(150, 358); // All languages
+  await clickPanel(callPage, '.langchips [data-lang=all]');
   await expect.poll(async () => ((await store('settings')) || {}).lineLang).toBe('all');
 });

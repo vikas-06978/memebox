@@ -9,6 +9,7 @@
 (() => {
   'use strict';
 
+  const driveCurve = Float32Array.from({length:1024},(_,i)=>Math.tanh((i/1023*2-1)*2.8)/Math.tanh(2.8));
   const midi = (n) => 440 * 2 ** ((n - 69) / 12);
 
   // Free: chill and funky. The rest is Pro.
@@ -32,8 +33,10 @@
         env(g, t, opts.attack || 0.012, len, peak);
         let node = g;
         if (opts.lowpass) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = opts.lowpass; g.connect(f); node = f; }
-        o.connect(g); node.connect(opts.side && side ? side : out);
-        o.onended = () => { o.disconnect(); g.disconnect(); if (node !== g) node.disconnect(); };
+        let drive = null;
+        if (opts.drive) { drive = ctx.createWaveShaper(); drive.curve = driveCurve; drive.oversample = '2x'; node.connect(drive); }
+        o.connect(g); (drive || node).connect(opts.side && side ? side : out);
+        o.onended = () => { o.disconnect(); g.disconnect(); if (node !== g) node.disconnect(); if(drive) drive.disconnect(); };
         o.start(t); o.stop(t + len + 0.05);
       },
       bell(n, t, len = 0.22, peak = 0.06) {
@@ -345,20 +348,21 @@
         const root = roots[Math.floor(bar / 2) % roots.length];
         const intro = section === 0, build = section === 1, drop = section === 2, breakDown = section === 3;
         const kicks = breakDown ? [0] : intro ? [0, 8] : halfTime ? [0, 10] : desi ? [0, 6, 10] : [0, 4, 8, 12];
-        if (kicks.includes(i)) h.kick(t, drop ? 0.62 : 0.44, halfTime ? 40 : 44);
+        if (kicks.includes(i)) { h.kick(t, drop ? .76 : .48, halfTime ? 38 : 42); h.pump(t,.18,.16); }
         if (!intro && !breakDown && (halfTime ? i === 8 : i === 4 || i === 12)) { h.snare(t, 0.2); h.clap(t, 0.08); }
         if (i % (intro || breakDown ? 4 : 2) === 0) h.hat(t, i % 4 === 2 ? 0.055 : 0.03);
         if (drop && i >= 14 && bar % 2) h.hat(t + q / 2, 0.025);
         if (build && bar % 8 >= 6 && i % (bar % 8 === 7 ? 1 : 2) === 0) h.snare(t, 0.035 + i * 0.003);
         const bassSteps = intro || breakDown ? [0, 8] : [0, 6, 10, 14];
         if (bassSteps.includes(i)) {
-          h.note(root, t, q * (i === 14 ? 1.7 : 4.5), 'sine', drop ? 0.38 : 0.27, { slideTo: root - (i === 10 ? 2 : 0), side: true });
-          if (!intro) h.note(root + 12, t, q * 2.5, 'sawtooth', 0.04, { lowpass: 520, side: true });
+          h.note(root, t, q * (i === 14 ? 1.7 : 3.8), 'sine', drop ? .36 : .24, { slideTo: root - (i === 10 ? 2 : 0), side: true, drive: true });
+          if (!breakDown) h.note(root-12, t, q*3.5, 'sine', drop ? .19 : .1, {side:true});
+          if (!intro) h.note(root + 12, t, q * 2.5, 'sawtooth', drop ? .065 : .035, { lowpass: 650, side: true });
         }
         const melodicSteps = drop ? [0, 2, 3, 6, 8, 10, 11, 14] : breakDown ? [0, 8] : [0, 3, 6, 10];
         if (melodicSteps.includes(i)) {
           const note = root + 36 + melody[(i + (bar % 2) * 4) % melody.length];
-          h.bell(note, t, q * (halfTime ? 2 : 1.4), drop ? 0.043 : 0.028);
+          h.bell(note, t, q * (halfTime ? 2 : 1.4), drop ? 0.055 : 0.033);
           if (desi && drop) h.note(note + 12, t + 0.012, q, 'triangle', 0.02, { attack: 0.003 });
         }
         if (desi && [3, 7, 11, 14].includes(i)) h.noise(t, 0.06, 0.07, 'bandpass', 2200, 2);

@@ -14,6 +14,9 @@
   const playlistBox = $('playlists'), listTitle = $('list-title'), search = $('search');
   let playlists = [], tracks = [], current = -1, activePlaylist = 'all', query = '', shopOpen = false, license = null, playing = false;
   let playQueue = [], playSequence = 0, pendingPlay = null, skipTimer = 0;
+  let showAdult = false;
+  try { showAdult=localStorage.getItem('memebox-phonk-adult')==='on'; } catch {}
+  $('adult-content').checked=showAdult;
   let shuffle = false;
   try { shuffle = localStorage.getItem('memebox-phonk-shuffle') === 'on'; } catch { /* optional storage */ }
   $('shuffle').setAttribute('aria-pressed', String(shuffle));
@@ -42,6 +45,7 @@
 
   const visibleIndexes = () => tracks.map((_, i) => i).filter((i) => {
     const tr = tracks[i];
+    if(tr.explicit && !showAdult)return false;
     if (activePlaylist !== 'all' && tr.playlist !== activePlaylist) return false;
     const q = query.trim().toLocaleLowerCase();
     return !q || `${tr.title} ${tr.artist}`.toLocaleLowerCase().includes(q);
@@ -49,7 +53,7 @@
 
   function renderPlaylists() {
     playlistBox.replaceChildren();
-    const choices = [{ id: 'all', title: t('ph_all'), count: tracks.length }, ...playlists.map((p) => ({ id: p.id, title: p.title, count: p.count }))];
+    const choices = [{ id: 'all', title: t('ph_all'), count: tracks.filter(track=>showAdult||!track.explicit).length }, ...playlists.map((p) => ({ id: p.id, title: p.title, count: tracks.filter(track=>track.playlist===p.id&&(showAdult||!track.explicit)).length }))];
     for (const p of choices) {
       const b = document.createElement('button');
       b.type = 'button';
@@ -104,6 +108,7 @@
   async function play(i, startQueue = false) {
     if (i < 0 || i >= tracks.length) return;
     const tr = tracks[i];
+    if(tr.explicit&&!showAdult)return;
     if (!tierOk(tr.tier)) { advance(1); return; }
     if (startQueue) {
       const available = availableIndexes();
@@ -194,6 +199,7 @@
   });
   $('volume').addEventListener('input', (e) => { command('setVolume', [Number(e.target.value)]); if (originalPlayer) originalPlayer.setVolume(Number(e.target.value) / 200); });
   window.addEventListener('pagehide', () => { stopOriginal(); originalContext?.close(); });
+  $('adult-content').addEventListener('change',()=>{showAdult=$('adult-content').checked;try{localStorage.setItem('memebox-phonk-adult',showAdult?'on':'off')}catch{};if(!showAdult){playSequence++;pendingPlay?.abort();playQueue=playQueue.filter(i=>!tracks[i].explicit);if(current>=0&&tracks[current].explicit){player.removeAttribute('src');openYt.hidden=true;box.hidden=true;current=-1;setPlaying(false);now.textContent='';}}render()});
   search.addEventListener('input', () => { query = search.value; render(); });
 
   async function start() {
@@ -207,7 +213,7 @@
       license = lic && lic.ok && lic.license ? lic.license : null;
       const linkPacks = (packs.packs || []).filter((p) => p.kind === 'links');
       playlists = linkPacks.map((p) => ({ id: p.id, title: p.title, count: p.items.length }));
-      tracks = linkPacks.flatMap((p) => p.items.map((i) => ({ id: i.id, title: i.title, artist: i.credit, tier: 'free', videoId: i.videoId, playlist: p.id })));
+      tracks = linkPacks.flatMap((p) => p.items.map((i) => ({ id: i.id, title: i.title, artist: i.credit, tier: 'free', explicit:i.explicit===true, videoId: i.videoId, playlist: p.id })));
       if (cfg.phonkEnabled !== false) {
         playlists.push({ id: 'memebox-originals', title: '🔥 MemeBox Originals', count: 3 });
         tracks.push(...MemeMusic.PHONK_IDS.map((id, index) => ({ id, title: ['Desi Phonk', 'Drift Phonk', 'Midnight Phonk'][index], artist: 'MemeBox', tier: index === 0 ? 'pro' : 'max', playlist: 'memebox-originals', original: true })));
