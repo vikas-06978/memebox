@@ -1,3 +1,9 @@
+# Order of work (agreed 2026-10-13)
+1. Finish the app and the site (all features, characters, packs and content, more languages).
+2. Buy the domain and put it in `extension/config.js` (SITE_URL) and the site before the first public release.
+3. Razorpay: account, test mode, signed webhooks, automatic keys, refunds, dollar payments; then launch to everyone.
+Done 2026-10-13: plan ladder (passes 5 h / 8 h, Pro Max-only characters incl. Snake and Bird, filters 3 / 8 / 20, tunes 2 / 7 / 13), pack content files in `docs/pack-content/` (India and Global memes, India and Global dialogues; paste into /admin/packs → Add text memes).
+
 # Launch plan (Wednesday 2026-10-14)
 
 ## Already built (in branch claude/affectionate-brown-4sabry, version 1.3.0)

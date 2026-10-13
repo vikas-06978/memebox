@@ -13,7 +13,11 @@ export const LICENCES = {
   free: 'Copyright-free / royalty-free (paste the link that says so in Source)',
   other: 'Other (explain)',
 };
-export const LANGS = { '': 'Any language', en: 'English', hi: 'Hindi', hinglish: 'Hinglish' };
+export const LANGS = {
+  '': 'Any language', en: 'English', hi: 'Hindi', hinglish: 'Hinglish (Hindi in English letters)', es: 'Spanish', fr: 'French', de: 'German', pt: 'Portuguese', it: 'Italian',
+  id: 'Indonesian', tr: 'Turkish', ar: 'Arabic', bn: 'Bengali', ta: 'Tamil', te: 'Telugu', mr: 'Marathi', gu: 'Gujarati', pa: 'Punjabi', ur: 'Urdu', vi: 'Vietnamese',
+  ja: 'Japanese', ko: 'Korean', nl: 'Dutch', pl: 'Polish', sw: 'Swahili', ro: 'Romanian', sv: 'Swedish', fa: 'Persian',
+};
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 // How much the packs may hold in total (MB). Cloudflare's free R2 storage is 10 GB: stay well under it. PACKS_MAX_MB in Cloudflare changes it.
