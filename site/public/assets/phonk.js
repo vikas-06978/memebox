@@ -11,16 +11,43 @@
   if (location.hash) history.replaceState(null, '', location.pathname + location.search);
 
   const player = $('player'), box = $('player-box'), now = $('now'), msg = $('msg'), list = $('tracks'), status = $('status'), openYt = $('open-yt');
-  let tracks = [], current = -1, shopOpen = false, license = null, playing = false;
+  const playlistBox = $('playlists'), listTitle = $('list-title'), search = $('search');
+  let playlists = [], tracks = [], current = -1, activePlaylist = 'all', query = '', shopOpen = false, license = null, playing = false;
 
   const tierOk = (tier) => tier === 'free' || (!!license && license.status === 'active'
     && (tier === 'pro' ? license.unlimited || license.maxSeconds > 0 || license.proSeconds > 0 : license.unlimited || license.maxSeconds > 0));
   const tierName = (x) => t(x === 'max' ? 'ph_max' : x === 'pro' ? 'ph_pro' : 'ph_free');
   const say = (text) => { msg.textContent = text || ''; };
 
+  const visibleIndexes = () => tracks.map((_, i) => i).filter((i) => {
+    const tr = tracks[i];
+    if (activePlaylist !== 'all' && tr.playlist !== activePlaylist) return false;
+    const q = query.trim().toLocaleLowerCase();
+    return !q || `${tr.title} ${tr.artist}`.toLocaleLowerCase().includes(q);
+  });
+
+  function renderPlaylists() {
+    playlistBox.replaceChildren();
+    const choices = [{ id: 'all', title: t('ph_all'), count: tracks.length }, ...playlists.map((p) => ({ id: p.id, title: p.title, count: p.count }))];
+    for (const p of choices) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'playlist' + (p.id === activePlaylist ? ' on' : '');
+      b.setAttribute('aria-pressed', String(p.id === activePlaylist));
+      b.append(document.createTextNode(p.title), Object.assign(document.createElement('span'), { textContent: String(p.count) }));
+      b.addEventListener('click', () => { activePlaylist = p.id; render(); });
+      playlistBox.append(b);
+    }
+  }
+
   function render() {
+    renderPlaylists();
+    const shown = visibleIndexes();
+    const selected = playlists.find((p) => p.id === activePlaylist);
+    listTitle.textContent = selected ? selected.title : t('ph_all');
     list.replaceChildren();
-    tracks.forEach((tr, i) => {
+    for (const i of shown) {
+      const tr = tracks[i];
       const ok = tierOk(tr.tier);
       const li = document.createElement('li');
       li.className = 'track' + (i === current ? ' on' : '') + (ok ? '' : ' locked');
@@ -40,13 +67,15 @@
       tag.textContent = ok ? tierName(tr.tier) : shopOpen ? t(tr.tier === 'max' ? 'ph_needs_max' : 'ph_needs_pro') : t('ph_soon');
       li.append(b, tag);
       list.append(li);
-    });
+    }
+    status.hidden = shown.length > 0;
+    status.textContent = shown.length ? '' : query ? t('ph_no_match') : t('ph_none');
   }
 
   async function play(i) {
     if (i < 0 || i >= tracks.length) return;
     const tr = tracks[i];
-    if (!tierOk(tr.tier)) { next(i + 1, 1); return; }
+    if (!tierOk(tr.tier)) { advance(1); return; }
     say('');
     try {
       const res = await fetch('/api/pack-link?item=' + encodeURIComponent(tr.id), { headers: KEY ? { 'X-MemeBox-Key': KEY } : {} });
@@ -66,8 +95,12 @@
     }
   }
 
-  function next(from, step) {
-    for (let i = from; i >= 0 && i < tracks.length; i += step) if (tierOk(tracks[i].tier)) { play(i); return; }
+  function advance(step) {
+    const queue = visibleIndexes().filter((i) => tierOk(tracks[i].tier));
+    if (!queue.length) { playing = false; return; }
+    const at = queue.indexOf(current);
+    const next = at < 0 ? (step > 0 ? 0 : queue.length - 1) : at + step;
+    if (next >= 0 && next < queue.length) { play(queue[next]); return; }
     playing = false;
   }
 
@@ -78,14 +111,15 @@
     if (e.origin !== EMBED || e.source !== player.contentWindow) return;
     let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
     if (!d || typeof d !== 'object') return;
-    if (d.event === 'onStateChange' && d.info === 0) next(current + 1, 1); // ended: the next track you may play
+    if (d.event === 'onStateChange' && d.info === 0) advance(1); // ended: the next track you may play
     if (d.event === 'onStateChange') playing = d.info === 1;
-    if (d.event === 'onError') { say(t('ph_blocked')); setTimeout(() => next(current + 1, 1), 1500); } // the owner does not allow embedding
+    if (d.event === 'onError') { say(t('ph_blocked')); setTimeout(() => advance(1), 1500); } // the owner does not allow embedding
   });
-  $('toggle').addEventListener('click', () => { if (current < 0) { next(0, 1); return; } command(playing ? 'pauseVideo' : 'playVideo'); playing = !playing; });
-  $('next').addEventListener('click', () => next(current + 1, 1));
-  $('prev').addEventListener('click', () => next(current - 1, -1));
+  $('toggle').addEventListener('click', () => { if (current < 0) { advance(1); return; } command(playing ? 'pauseVideo' : 'playVideo'); playing = !playing; });
+  $('next').addEventListener('click', () => advance(1));
+  $('prev').addEventListener('click', () => advance(-1));
   $('volume').addEventListener('input', (e) => command('setVolume', [Number(e.target.value)]));
+  search.addEventListener('input', () => { query = search.value; render(); });
 
   async function start() {
     try {
@@ -96,7 +130,9 @@
       ]);
       shopOpen = !!(cfg && cfg.payments);
       license = lic && lic.ok && lic.license ? lic.license : null;
-      tracks = (packs.packs || []).filter((p) => p.kind === 'links').flatMap((p) => p.items.map((i) => ({ id: i.id, title: i.title, artist: i.credit, tier: i.tier || p.tier })));
+      const linkPacks = (packs.packs || []).filter((p) => p.kind === 'links');
+      playlists = linkPacks.map((p) => ({ id: p.id, title: p.title, count: p.items.length }));
+      tracks = linkPacks.flatMap((p) => p.items.map((i) => ({ id: i.id, title: i.title, artist: i.credit, tier: i.tier || p.tier, playlist: p.id })));
       if (!tracks.length) { status.textContent = t('ph_none'); return; }
       status.hidden = true;
       render();

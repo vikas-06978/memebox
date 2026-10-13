@@ -241,6 +241,7 @@
   function stopAll() {
     sendToHook({ type: 'stop' });
     if (state.tabAudio) sendToHook({ type: 'tab-audio-stop' });
+    for (const c of shadow.querySelectorAll('.caption')) c.remove();
   }
 
   function sendToHook(cmd) {
@@ -628,13 +629,18 @@
       opacity: 0; transform: translateY(4px); transition: opacity .15s, transform .15s; pointer-events: none; }
     .toast.show { opacity: 1; transform: none; }
 
-    .caption { position: fixed; left: 50%; top: 14vh; transform: translateX(-50%); width: max-content; max-width: 90vw;
+    .caption { position: fixed; left: 50%; top: 8vh; transform: translateX(-50%); width: max-content; max-width: 92vw;
       text-align: center; pointer-events: none; font: 900 clamp(30px, 6vw, 72px)/1.05 Impact, "Anton", "Arial Black", "Nirmala UI", sans-serif;
       text-transform: uppercase; color: #fff; -webkit-text-stroke: 2px #000; paint-order: stroke fill;
       text-shadow: 0 0 2px #000, 3px 3px 0 #000, -1px -1px 0 #000, 0 6px 16px rgba(0,0,0,.5); overflow-wrap: anywhere;
       animation: pop 3s ease forwards; }
-    .caption .meme-pic { display: block; margin: 0 auto 10px; max-width: min(46vw, 520px); max-height: 38vh; width: auto; height: auto;
+    .caption.pinned { pointer-events: auto; animation: picture-pop .25s ease-out both; padding: 34px 14px 14px; }
+    .caption.pinned .meme-pic { display: block; margin: 0 auto 10px; max-width: min(76vw, 900px); max-height: 64vh; width: auto; height: auto;
       border-radius: 14px; box-shadow: 0 8px 26px rgba(0,0,0,.45); }
+    .caption .picture-close { position: absolute; inset-block-start: 0; inset-inline-end: 0; width: 38px; height: 38px; border: 2px solid #fff;
+      border-radius: 999px; background: #17151c; color: #fff; cursor: pointer; font: 700 20px/1 system-ui, sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,.45); }
+    .caption .picture-close:focus-visible { outline: 3px solid #ffd43b; outline-offset: 3px; }
+    @keyframes picture-pop { from { opacity: 0; transform: translateX(-50%) scale(.92); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
     @keyframes pop {
       0% { opacity: 0; transform: translateX(-50%) scale(.6) rotate(-3deg); }
       10% { opacity: 1; transform: translateX(-50%) scale(1.08) rotate(1deg); }
@@ -642,7 +648,8 @@
       85% { opacity: 1; }
       100% { opacity: 0; transform: translateX(-50%) scale(1); }
     }    @media (prefers-reduced-motion: reduce) {
-      .caption { animation: fade 3s linear forwards; } @keyframes fade { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
+      .caption:not(.pinned) { animation: fade 3s linear forwards; } .caption.pinned { animation: none; }
+      @keyframes fade { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
       .burst { display: none; } .fab.playing, .fab.playing::after { animation: none; }
     }
   `;
@@ -985,21 +992,27 @@
   function showCaption(text, picture) {
     for (const c of shadow.querySelectorAll('.caption')) c.remove();
     // PRO: camera captions. With "Caption on my camera" the text is on your own video tile too; when that tile could be flipped back so it reads right, a second copy on the page would be a duplicate.
-    if (state.settings.camCaptions === true && state.camLive && plan.can('captions') && state.settings.camUnmirror !== false && !showCaption.now) {
+    if (!picture && state.settings.camCaptions === true && state.camLive && plan.can('captions') && state.settings.camUnmirror !== false && !showCaption.now) {
       setTimeout(() => { showCaption.now = true; if (Date.now() - (state.captionFixedAt || 0) > 800) showCaption(text, picture); else if (picture) picture.close(); showCaption.now = false; }, 250);
       return;
     }
     const c = el('div', { className: 'caption' });
     if (picture) {
+      c.classList.add('pinned');
+      c.setAttribute('role', 'dialog');
+      c.setAttribute('aria-label', text || t('tag_picture'));
+      const close = el('button', { className: 'picture-close', type: 'button', title: t('close') }, '×');
+      close.setAttribute('aria-label', t('close'));
+      close.addEventListener('click', () => { sendToHook({ type: 'caption-clear' }); c.remove(); });
       const canvas = el('canvas', { className: 'meme-pic', width: picture.width, height: picture.height });
       canvas.getContext('2d').drawImage(picture, 0, 0);
       picture.close();
-      c.append(canvas);
+      c.append(close, canvas);
     }
     c.append(text);
-    c.setAttribute('aria-hidden', 'true');
+    if (!picture) c.setAttribute('aria-hidden', 'true');
     shadow.append(c);
-    setTimeout(() => c.remove(), 3000);
+    if (!picture) setTimeout(() => c.remove(), 3000);
   }
 
   // ---------- floating button: position (per site), drag, click, long-press ----------

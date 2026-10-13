@@ -32,8 +32,16 @@
       <p id="msg" class="hint" role="status" aria-live="polite"></p>
     </section>
 
-    <section class="card">
-      <h2 id="list-title" data-t="ph_title">Phonk Mode</h2>
+    <section class="card phonk-library">
+      <div class="library-head">
+        <div>
+          <h2 data-t="ph_playlists">Choose a playlist</h2>
+          <p class="muted" data-t="ph_playlist_help">Pick a mood, then press a track. MemeBox keeps the music going.</p>
+        </div>
+        <label class="track-search"><span class="sr-only" data-t="ph_search">Search tracks</span><input id="search" type="search" data-t-ph="ph_search" placeholder="Search tracks" autocomplete="off"></label>
+      </div>
+      <nav id="playlists" class="playlists" data-t-aria="ph_playlists" aria-label="Choose a playlist"></nav>
+      <h2 id="list-title" data-t="ph_all">All tracks</h2>
       <p id="status" class="muted" role="status"><span data-t="ph_loading">Loading tracks…</span></p>
       <ol id="tracks" class="tracks"></ol>
     </section>

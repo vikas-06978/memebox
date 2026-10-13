@@ -11,7 +11,7 @@
   const HOOK = 'memebox-hook-9c1e';
   const BRIDGE = 'memebox-bridge-9c1e';
   const HOOK_COMMANDS = new Set(['query-status', 'beep', 'stop', 'volume', 'duck', 'monitor', 'resume',
-    'tab-audio-start', 'tab-audio-stop', 'tab-audio-volume', 'music-play', 'music-stop', 'music-volume']);
+    'tab-audio-start', 'tab-audio-stop', 'tab-audio-volume', 'music-play', 'music-stop', 'music-volume', 'caption-clear']);
 
   function toRuntime(msg) {
     try {

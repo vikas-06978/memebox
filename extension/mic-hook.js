@@ -80,7 +80,7 @@
       case 'query-status': announce(); break;
       case 'beep': play(d.reqId, beep, '(test beep)'); break;
       case 'play-audio': playAudio(d); break;
-      case 'stop': stopAll(); stopMusic(); break;
+      case 'stop': stopAll(); stopMusic(); clearCamCaption(); break;
       case 'music-play': startMusic(String(d.value), d.volume); break;
       case 'music-bytes': startMine(d); break;
       case 'music-stop': stopMusic(); break;
@@ -93,7 +93,8 @@
       case 'tab-audio-stop': stopTabAudio(); break;
       case 'tab-audio-volume': setTabVolume(d.value); break;
       case 'voice': setVoice(String(d.value), d.url); break;
-      case 'cam-captions': camCaptions = d.value === true; camUnmirror = d.unmirror !== false; break;
+      case 'cam-captions': camCaptions = d.value === true; camUnmirror = d.unmirror !== false; if (!camCaptions) clearCamCaption(); break;
+      case 'caption-clear': clearCamCaption(); break;
       case 'face-result': { // where the face is, how it looks (blendshapes 0..1), and raised hands (every other result)
         const n = performance.now(), prev = faceMl;
         if (faceBusy) { const rt = n - faceBusy; faceMs = faceMs ? faceMs * 0.7 + rt * 0.3 : rt; }
@@ -775,14 +776,27 @@
   let camText = '';
   let camTextUntil = 0;
   let camPicture = null; // ImageBitmap of the playing line's meme picture
+  let camCaptionSeq = 0;
+
+  function clearCamCaption() {
+    camCaptionSeq++;
+    camText = '';
+    camTextUntil = 0;
+    if (camPicture) { camPicture.close(); camPicture = null; }
+    restoreMirror();
+  }
 
   function showCamCaption(text, picture) {
+    const seq = ++camCaptionSeq;
     camText = String(text).slice(0, 120);
-    camTextUntil = performance.now() + 3000;
+    // A picture stays on the outgoing camera until the person closes it, presses Stop all,
+    // plays another picture, or switches camera captions off. Text-only captions still flash.
+    camTextUntil = picture ? Infinity : performance.now() + 3000;
     if (camText) post({ type: 'cam-caption', fixed: unmirrorSelf() > 0 }); // the panel shows its own copy of the caption only when your tile could not be flipped
     if (camPicture) { camPicture.close(); camPicture = null; }
     if (picture) {
       createImageBitmap(new Blob([picture.bytes], { type: picture.type })).then((bmp) => {
+        if (seq !== camCaptionSeq) { bmp.close(); return; }
         camPicture = bmp;
         console.log(LOG, 'meme picture ready', bmp.width + 'x' + bmp.height);
       }, () => {});
@@ -791,8 +805,8 @@
 
   // The meme picture in the upper part of the frame, above the caption.
   function drawCamPicture(g, w, h) {
-    const maxW = w * 0.6;
-    const maxH = h * 0.55;
+    const maxW = w * 0.78;
+    const maxH = h * 0.72;
     const s = Math.min(maxW / camPicture.width, maxH / camPicture.height);
     const pw = camPicture.width * s;
     const ph = camPicture.height * s;

@@ -428,10 +428,24 @@ body.admin .tile span { position: static; background: none; padding: 0; color: v
 .phonk .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .phonk .controls button { min-width: 44px; }
 .phonk .controls input[type=range] { flex: 1 1 120px; max-width: 220px; }
+.library-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.library-head h2, .library-head p { margin-block: 0 4px; }
+.track-search input { width: min(280px, 70vw); }
+.playlists { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 12px; scrollbar-width: thin; }
+.playlist { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: var(--bg-2); color: var(--text); cursor: pointer; }
+.playlist span { min-width: 1.5em; padding: 1px 6px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 18%, transparent); font-size: .78rem; }
+.playlist.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+.phonk-library > h2 { margin-top: 8px; }
 .tracks { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
 .track { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 12px; border: 1px solid var(--line); }
 .track.on { background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: var(--accent); }
 .track.locked { opacity: .65; }
 .track button { flex: 1; text-align: start; background: none; border: 0; padding: 6px 0; cursor: pointer; font: inherit; color: inherit; }
 .track button:disabled { cursor: default; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 640px) {
+  .library-head { align-items: stretch; flex-direction: column; }
+  .track-search input { width: 100%; }
+  .track { align-items: flex-start; }
+}
 .steps ol { padding-inline-start: 22px; }
