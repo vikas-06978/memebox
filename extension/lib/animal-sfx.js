@@ -3,7 +3,7 @@
 (() => {
   'use strict';
   // How high or low each animal's voice is.
-  const PITCH = { cat: 1.15, dog: 0.8, bunny: 1.3, panda: 0.7, owl: 0.95, fox: 1.05, penguin: 1.0, lion: 0.55, monkey: 1.2, frog: 0.65, unicorn: 1.3, robot: 0.9 };
+  const PITCH = { cat: 1.15, dog: 0.8, bunny: 1.3, panda: 0.7, owl: 0.95, fox: 1.05, penguin: 1.0, lion: 0.55, monkey: 1.2, frog: 0.65, unicorn: 1.3, robot: 0.9, snake: 0.85, bird: 1.45 };
   const KINDS = ['sob', 'whimper', 'sniff', 'cheer', 'boing', 'heart', 'crack', 'blep', 'hi', 'clap', 'gasp'];
 
   function noiseBuffer(ctx, sec) {

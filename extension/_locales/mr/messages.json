@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "अधिकृत फंक ट्रॅक YouTube वरून चालतात, मग तुमच्या कॉलमध्ये जातात"
+  },
+  "fx_char_snake": {
+    "message": "साप"
+  },
+  "fx_char_bird": {
+    "message": "पक्षी"
   }
 }

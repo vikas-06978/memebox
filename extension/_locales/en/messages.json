@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "Official phonk tracks played through YouTube, then sent into your call"
+  },
+  "fx_char_snake": {
+    "message": "Snake"
+  },
+  "fx_char_bird": {
+    "message": "Bird"
   }
 }

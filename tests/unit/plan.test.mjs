@@ -134,16 +134,17 @@ test('time pass: a permanent key still has everything, and a giant balance is ca
   assert.equal(plan.license.proSeconds, plan.PASS_MAX_SECONDS);
 });
 
-test('characters: Cat and Dog are free, Pro has six, Pro Max and a permanent key have all twelve, and any can be bought for ever; the lists match the engine', () => {
+test('characters: Cat and Dog are free, Pro has six, Pro Max and a permanent key have all of them, the four for sale can be bought for ever and the Pro Max-only ones cannot; the lists match the engine', () => {
   const now = Date.UTC(2026, 9, 1);
   const plan = withConfig({ PRO_ENABLED: true });
   const fx = loadScript('lib/fx.js').MemeFx;
   assert.deepEqual([...plan.STANDARD_CHARACTERS], [...fx.STANDARD_CHARACTERS]);
   assert.deepEqual([...plan.FREE_CHARACTERS], [...fx.FREE_CHARACTERS]);
-  assert.equal(fx.CHARACTERS.length, 12);
+  assert.deepEqual([...plan.MAX_ONLY_CHARACTERS], [...fx.MAX_ONLY_CHARACTERS]);
+  assert.equal(fx.CHARACTERS.length, 14); // 6 standard + 4 for sale + 4 Pro Max only (unicorn, robot, snake, bird; more come as drops)
   assert.deepEqual([...fx.FREE_CHARACTERS], ['cat', 'dog']);
   assert.equal(fx.STANDARD_CHARACTERS.length, 6);
-  assert.deepEqual(fx.PREMIUM_CHARACTERS.length, 6);
+  assert.equal(fx.PREMIUM_CHARACTERS.length, 4);
   const lic = (o) => plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: false, checkedAt: now - 1000, ...o });
   // nobody, no key at all: the two free ones only
   assert.equal(plan.canFx('character:cat', now), true);
@@ -156,8 +157,9 @@ test('characters: Cat and Dog are free, Pro has six, Pro Max and a permanent key
   lic({ maxSeconds: 600 });
   for (const id of fx.CHARACTERS) assert.equal(plan.canFx('character:' + id, now), true, id + ' with Pro Max');
   // bought for ever: works without any pass
-  lic({ addons: [{ id: 'character:lion', until: 0 }] });
+  lic({ addons: [{ id: 'character:lion', until: 0 }, { id: 'character:robot', until: 0 }] });
   assert.equal(plan.canFx('character:lion', now), true);
+  assert.equal(plan.canFx('character:robot', now), false, 'a Pro Max-only character is not for sale: an add-on on a key does not open it');
   assert.equal(plan.canFx('character:frog', now), false);
   const can = (f) => plan.canFx(f, now);
   assert.equal(fx.sanitize({ character: 'lion' }, can).character, 'lion');

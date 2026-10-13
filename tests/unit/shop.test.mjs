@@ -43,26 +43,27 @@ test('UPI link has the payee, amount in rupees, INR and the order code as the no
   assert.throws(() => upiLink({ upiId: 'not a vpa', amount: 1, orderId: 'x' }));
 });
 
-test('prices: Pro ₹9 / 15 / 25 and Pro Max ₹25 / 49 (dollars 1.49 / 2.49 / 3.99 and 3.49 / 6.49); characters ₹29 / 39 / 49 and all ten for ₹249; Pro Max costs more per hour than any Pro pass', () => {
+test('prices: Pro ₹9 / 15 / 25 / 49 and Pro Max ₹25 / 49 / 99 (dollars 1.49 / 2.49 / 3.99 / 7.99 and 3.49 / 6.49 / 14.99); eight characters ₹29 / 39 and all eight for ₹199; Pro Max costs more per hour than any Pro pass', () => {
   const p = PRODUCTS;
-  assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_60.inr, p.pass_max_180.inr], [9, 15, 25, 25, 49]);
-  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_60.usd, p.pass_max_180.usd], [1.49, 2.49, 3.99, 3.49, 6.49]);
-  assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_max_60.maxSeconds, p.pass_max_180.maxSeconds], [1800, 3600, 7200, 3600, 10800]);
+  assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_pro_300.inr, p.pass_max_60.inr, p.pass_max_180.inr, p.pass_max_480.inr], [9, 15, 25, 49, 25, 49, 99]);
+  assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_pro_300.usd, p.pass_max_60.usd, p.pass_max_180.usd, p.pass_max_480.usd], [1.49, 2.49, 3.99, 7.99, 3.49, 6.49, 14.99]);
+  assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_pro_300.proSeconds, p.pass_max_60.maxSeconds, p.pass_max_180.maxSeconds, p.pass_max_480.maxSeconds], [1800, 3600, 7200, 18000, 3600, 10800, 28800]);
   const perHour = (x) => x.inr / ((x.proSeconds + x.maxSeconds) / 3600), perHourUsd = (x) => x.usd / ((x.proSeconds + x.maxSeconds) / 3600);
-  const cheapestPro = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120'].map((id) => perHour(p[id])));
-  const cheapestProUsd = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120'].map((id) => perHourUsd(p[id])));
-  for (const id of ['pass_max_60', 'pass_max_180']) { assert.ok(perHour(p[id]) > cheapestPro, id + ' costs more per hour than Pro (rupees)'); assert.ok(perHourUsd(p[id]) > cheapestProUsd, id + ' costs more per hour than Pro (dollars)'); }
+  const cheapestPro = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_pro_300'].map((id) => perHour(p[id])));
+  const cheapestProUsd = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_pro_300'].map((id) => perHourUsd(p[id])));
+  for (const id of ['pass_max_60', 'pass_max_180', 'pass_max_480']) { assert.ok(perHour(p[id]) > cheapestPro, id + ' costs more per hour than Pro (rupees)'); assert.ok(perHourUsd(p[id]) > cheapestProUsd, id + ' costs more per hour than Pro (dollars)'); }
   assert.equal(p.pro.closed, true);
   assert.equal(p.pictures5.closed, true);
   assert.deepEqual(['bunny', 'panda', 'owl', 'fox'].map((c) => p['char_' + c].inr), [29, 29, 29, 29]);
   assert.deepEqual(['penguin', 'lion', 'monkey', 'frog'].map((c) => p['char_' + c].inr), [39, 39, 39, 39]);
-  assert.deepEqual(['unicorn', 'robot'].map((c) => p['char_' + c].inr), [49, 49]);
-  assert.equal(p.chars_all.inr, 249);
-  assert.equal(p.chars_all.addons.length, 10);
+  assert.ok(!p.char_unicorn && !p.char_robot && !p.char_snake && !p.char_bird, 'the Pro Max-only characters are not for sale');
+  assert.equal(p.chars_all.inr, 199);
+  assert.equal(p.chars_all.usd, 4.99);
+  assert.equal(p.chars_all.addons.length, 8);
   const separately = Object.entries(p).filter(([id]) => id.startsWith('char_')).reduce((a, [, x]) => a + x.inr, 0);
   assert.ok(p.chars_all.inr < separately, 'the bundle is cheaper than buying one by one');
-  assert.deepEqual(forSale().map(([id]) => id).slice(0, 5), ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_60', 'pass_max_180']);
-  assert.equal(forSale().length, 5 + 10 + 1);
+  assert.deepEqual(forSale().map(([id]) => id).slice(0, 7), ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_pro_300', 'pass_max_60', 'pass_max_180', 'pass_max_480']);
+  assert.equal(forSale().length, 7 + 8 + 1);
 });
 
 test('wrangler.toml has no UPI ID or other settings, so the dashboard values are never overwritten', () => {
@@ -253,7 +254,7 @@ test('admin shows an activity section: earned, funnel, charts and pass time from
   assert.doesNotMatch(html, /style="/, 'the admin page CSP blocks inline styles');
 });
 
-test('buying a character: a new key owns it; buying on an existing key adds it (and the bundle adds all ten); the key tells the extension', async () => {
+test('buying a character: a new key owns it; buying on an existing key adds it (and the bundle adds all eight); the key tells the extension', async () => {
   const buy = async (product, forKey = '') => {
     const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product, forKey }))).json();
     assert.ok(created.ok, JSON.stringify(created));
@@ -272,7 +273,7 @@ test('buying a character: a new key owns it; buying on an existing key adds it (
   assert.deepEqual(view.addons.map((a) => a.id).sort(), ['character:lion', 'character:panda']);
   await buy('chars_all', key);
   view = (await (await call(licenseApi, postJson('/api/license', { key }))).json()).license;
-  assert.equal(view.addons.length, 10);
+  assert.equal(view.addons.length, 8);
   assert.ok(view.addons.every((a) => /^character:[a-z]+$/.test(a.id)));
   const dash = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
   assert.match(dash, /characters: /);

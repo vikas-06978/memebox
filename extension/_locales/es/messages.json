@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "Temas phonk oficiales por YouTube, enviados luego a tu llamada"
+  },
+  "fx_char_snake": {
+    "message": "Serpiente"
+  },
+  "fx_char_bird": {
+    "message": "Pájaro"
   }
 }

@@ -5,12 +5,12 @@
 // Prices in rupees. Change them here and deploy again.
 // `usd` is shown on the pricing page (card payment comes with the payment gateway). `proSeconds` / `maxSeconds`
 // are the hours of use a time pass gives (see extension/lib/plan.js). `closed`: not sold any more (existing keys keep working).
-// Characters bought one by one (kept for ever on the key). Free: cat and dog. Pro has the first group too; Pro Max has all.
+// Characters bought one by one (kept for ever on the key). Free: cat and dog. Pro has the first group too; Pro Max has all (and four more that are not for sale).
 export const CHARACTER_PRICES = Object.freeze({
   bunny: { inr: 29, usd: 0.99 }, panda: { inr: 29, usd: 0.99 }, owl: { inr: 29, usd: 0.99 }, fox: { inr: 29, usd: 0.99 },
   penguin: { inr: 39, usd: 1.49 }, lion: { inr: 39, usd: 1.49 }, monkey: { inr: 39, usd: 1.49 }, frog: { inr: 39, usd: 1.49 },
-  unicorn: { inr: 49, usd: 1.99 }, robot: { inr: 49, usd: 1.99 },
 });
+// Pro Max only, never sold one by one (that is what makes Pro Max worth having): unicorn, robot, snake, bird. See extension/lib/fx.js MAX_ONLY_CHARACTERS.
 const pass = (name, inr, usd, proSeconds, maxSeconds) => Object.freeze({ name, inr, usd, pictureSlots: 0, unlimited: false, proSeconds, maxSeconds, addons: Object.freeze([]) });
 const cap = (id) => id[0].toUpperCase() + id.slice(1);
 const characterProducts = Object.fromEntries(Object.entries(CHARACTER_PRICES).map(([id, pr]) => [`char_${id}`,
@@ -20,10 +20,12 @@ export const PRODUCTS = Object.freeze({
   pass_pro_30: pass('Pro pass: 30 minutes', 9, 1.49, 1800, 0),
   pass_pro_60: pass('Pro pass: 1 hour', 15, 2.49, 3600, 0),
   pass_pro_120: pass('Pro pass: 2 hours', 25, 3.99, 7200, 0),
+  pass_pro_300: pass('Pro pass: 5 hours', 49, 7.99, 18000, 0),
   pass_max_60: pass('Pro Max pass: 1 hour', 25, 3.49, 0, 3600),
   pass_max_180: pass('Pro Max pass: 3 hours', 49, 6.49, 0, 10800),
+  pass_max_480: pass('Pro Max pass: 8 hours', 99, 14.99, 0, 28800),
   ...characterProducts,
-  chars_all: Object.freeze({ name: 'All 10 extra characters (yours for ever)', inr: 249, usd: 5.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(Object.keys(CHARACTER_PRICES).map((id) => `character:${id}`)) }),
+  chars_all: Object.freeze({ name: 'All 8 extra characters (yours for ever)', inr: 199, usd: 4.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(Object.keys(CHARACTER_PRICES).map((id) => `character:${id}`)) }),
   pictures5: Object.freeze({ name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([]), closed: true }),
   pro: Object.freeze({ name: 'MemeBox Pro (lifetime): everything unlimited', inr: 99, pictureSlots: 0, unlimited: true, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([]), closed: true }),
 });

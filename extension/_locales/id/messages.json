@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "Lagu phonk resmi lewat YouTube, lalu dikirim ke panggilanmu"
+  },
+  "fx_char_snake": {
+    "message": "Ular"
+  },
+  "fx_char_bird": {
+    "message": "Burung"
   }
 }

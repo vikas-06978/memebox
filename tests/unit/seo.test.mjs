@@ -90,7 +90,7 @@ test('the social preview image exists at 1200x630', () => {
 });
 
 test('the prices in the structured data and the pricing page are the ones the shop charges', () => {
-  const sold = ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_60', 'pass_max_180'].map((id) => [PRODUCTS[id].inr, PRODUCTS[id].usd]);
+  const sold = ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_pro_300', 'pass_max_60', 'pass_max_180', 'pass_max_480'].map((id) => [PRODUCTS[id].inr, PRODUCTS[id].usd]);
   assert.deepEqual(PASS_OFFERS.map(([, inr, usd]) => [inr, usd]), sold);
   const pricing = files['pricing.html'];
   assert.match(pricing, /<link rel="canonical" href="[^"]+\/pricing">/);

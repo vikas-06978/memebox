@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "অফিসিয়াল ফঙ্ক ট্র্যাক YouTube থেকে চলে, তারপর আপনার কলে যায়"
+  },
+  "fx_char_snake": {
+    "message": "সাপ"
+  },
+  "fx_char_bird": {
+    "message": "পাখি"
   }
 }

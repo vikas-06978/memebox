@@ -12,8 +12,9 @@
 
   const midi = (n) => 440 * 2 ** ((n - 69) / 12);
 
-  // Free: chill and funky. The rest is Pro.
+  // Free: chill and funky. Pro adds five more (7 in all); Pro Max has all thirteen.
   const FREE_TUNES = ['chill', 'funky'];
+  const PRO_TUNES = ['party', 'suspense', 'retro', 'jazz', 'tropical'];
 
   // `h` is a helper for one tune: h.note(midiNote, startSec, lengthSec, wave, gain), h.kick / snare / hat / clap(start, gain).
   // `s` is the 16th-note step counted from 0 (it loops by itself), `t` is when that step sounds.
@@ -392,5 +393,5 @@
     return { play, stop, setVolume, get id() { return id; }, get playing() { return !!id; } };
   }
 
-  globalThis.MemeMusic = Object.freeze({ IDS, FREE_TUNES, TUNES, createPlayer, scheduleTune });
+  globalThis.MemeMusic = Object.freeze({ IDS, FREE_TUNES, PRO_TUNES, TUNES, createPlayer, scheduleTune });
 })();

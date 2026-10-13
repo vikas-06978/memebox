@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "Faixas de phonk oficiais pelo YouTube, enviadas depois para sua chamada"
+  },
+  "fx_char_snake": {
+    "message": "Cobra"
+  },
+  "fx_char_bird": {
+    "message": "Pássaro"
   }
 }

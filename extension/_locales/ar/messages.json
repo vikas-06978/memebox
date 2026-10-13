@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "مقاطع فونك رسمية عبر YouTube ثم تُرسل إلى مكالمتك"
+  },
+  "fx_char_snake": {
+    "message": "ثعبان"
+  },
+  "fx_char_bird": {
+    "message": "طائر"
   }
 }

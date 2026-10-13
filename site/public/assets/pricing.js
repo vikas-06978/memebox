@@ -4,20 +4,21 @@
 (() => {
   'use strict';
   const T = (key, ...subs) => (window.MemeSite ? window.MemeSite.t(key, ...subs) : key);
-  const DUR = { pass_pro_30: 'pr_dur_30', pass_pro_60: 'pr_dur_60', pass_pro_120: 'pr_dur_120', pass_max_60: 'pr_dur_60', pass_max_180: 'pr_dur_180' };
+  const DUR = { pass_pro_30: 'pr_dur_30', pass_pro_60: 'pr_dur_60', pass_pro_120: 'pr_dur_120', pass_pro_300: 'pr_dur_300', pass_max_60: 'pr_dur_60', pass_max_180: 'pr_dur_180', pass_max_480: 'pr_dur_480' };
   // Used only if /api/config cannot be reached: the same list prices as site/src/shop.js.
   const FALLBACK = {
     pass_pro_30: { inr: 9, usd: 1.49, proSeconds: 1800, maxSeconds: 0 },
     pass_pro_60: { inr: 15, usd: 2.49, proSeconds: 3600, maxSeconds: 0 },
     pass_pro_120: { inr: 25, usd: 3.99, proSeconds: 7200, maxSeconds: 0 },
+    pass_pro_300: { inr: 49, usd: 7.99, proSeconds: 18000, maxSeconds: 0 },
     pass_max_60: { inr: 25, usd: 3.49, proSeconds: 0, maxSeconds: 3600 },
     pass_max_180: { inr: 49, usd: 6.49, proSeconds: 0, maxSeconds: 10800 },
+    pass_max_480: { inr: 99, usd: 14.99, proSeconds: 0, maxSeconds: 28800 },
     char_bunny: { inr: 29, usd: 0.99, addons: ['character:bunny'] }, char_panda: { inr: 29, usd: 0.99, addons: ['character:panda'] },
     char_owl: { inr: 29, usd: 0.99, addons: ['character:owl'] }, char_fox: { inr: 29, usd: 0.99, addons: ['character:fox'] },
     char_penguin: { inr: 39, usd: 1.49, addons: ['character:penguin'] }, char_lion: { inr: 39, usd: 1.49, addons: ['character:lion'] },
     char_monkey: { inr: 39, usd: 1.49, addons: ['character:monkey'] }, char_frog: { inr: 39, usd: 1.49, addons: ['character:frog'] },
-    char_unicorn: { inr: 49, usd: 1.99, addons: ['character:unicorn'] }, char_robot: { inr: 49, usd: 1.99, addons: ['character:robot'] },
-    chars_all: { inr: 249, usd: 5.99, addons: new Array(10).fill('x') },
+    chars_all: { inr: 199, usd: 4.99, addons: new Array(8).fill('x') },
   };
   const isChar = (id) => /^char_/.test(id);
 

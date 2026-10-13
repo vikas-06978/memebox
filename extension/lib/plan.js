@@ -32,6 +32,8 @@
   const FREE_CHARACTERS = Object.freeze(['cat', 'dog']); // free for everybody; same list as MemeFx.FREE_CHARACTERS (a test checks)
   const STANDARD_CHARACTERS = Object.freeze(['cat', 'dog', 'bunny', 'panda', 'owl', 'fox']); // with a Pro pass; same list as MemeFx.STANDARD_CHARACTERS (a test checks)
   const FREE_TUNES = Object.freeze(['chill', 'funky']); // same list as MemeMusic.FREE_TUNES (a test checks)
+  const PRO_TUNES = Object.freeze(['party', 'suspense', 'retro', 'jazz', 'tropical']); // Pro adds these (7 in all); same list as MemeMusic.PRO_TUNES (a test checks)
+  const MAX_ONLY_CHARACTERS = Object.freeze(['unicorn', 'robot', 'snake', 'bird']); // never sold one by one; same list as MemeFx.MAX_ONLY_CHARACTERS (a test checks)
   const PASS_MAX_SECONDS = 10 * 24 * 3600;
   const LICENSE_MAX_AGE_MS = 30 * 24 * 3600 * 1000;
 
@@ -108,10 +110,10 @@
     const max = config().PRO_ENABLED !== true || hasLicense(now) || passTier(now) === 'max';
     if (feature.startsWith('filter:')) return max || hasAddon(feature, now);
     if (feature === 'characters') return max;
-    if (feature.startsWith('music:')) return FREE_TUNES.includes(feature.slice(6)) || isPro(now);
+    if (feature.startsWith('music:')) { const id = feature.slice(6); return FREE_TUNES.includes(id) || max || (PRO_TUNES.includes(id) && isPro(now)); } // free 2, Pro 7, Pro Max all 13
     // One character at a time: the free two for everybody, Pro has six, Pro Max (or a permanent key) has all twelve,
     // and any character can be bought for ever (an add-on on the key).
-    if (feature.startsWith('character:')) { const id = feature.slice(10); return FREE_CHARACTERS.includes(id) || max || (isPro(now) && STANDARD_CHARACTERS.includes(id)) || hasAddon(feature, now); }
+    if (feature.startsWith('character:')) { const id = feature.slice(10); return FREE_CHARACTERS.includes(id) || max || (isPro(now) && STANDARD_CHARACTERS.includes(id)) || (!MAX_ONLY_CHARACTERS.includes(id) && hasAddon(feature, now)); }
     return isPro(now);
   }
 
@@ -142,7 +144,7 @@
   globalThis.MemePlan = Object.freeze({
     shopOpen,
     PRO_FEATURES, FREE_LIMITS, LICENSE_MAX_AGE_MS,
-    PASS_MAX_SECONDS, FREE_CHARACTERS, STANDARD_CHARACTERS, FREE_TUNES, isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, setPass, validLicense, passTier, passLeft,
+    PASS_MAX_SECONDS, FREE_CHARACTERS, STANDARD_CHARACTERS, MAX_ONLY_CHARACTERS, FREE_TUNES, PRO_TUNES, isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, setPass, validLicense, passTier, passLeft,
     get ready() { return ready; },
     get license() { return license; },
   });

@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "అధికారిక ఫంక్ ట్రాక్‌లు YouTube ద్వారా ప్లే అయి, తర్వాత మీ కాల్‌కు వెళ్తాయి"
+  },
+  "fx_char_snake": {
+    "message": "పాము"
+  },
+  "fx_char_bird": {
+    "message": "పక్షి"
   }
 }

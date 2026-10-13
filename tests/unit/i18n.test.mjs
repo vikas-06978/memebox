@@ -114,7 +114,7 @@ test('keys the site scripts ask for exist', () => {
       assert.ok(key in siteEn, `${f}: missing "${key}"`);
     }
   }
-  for (const p of ['pro', 'pictures5', 'pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_180']) assert.ok(siteEn['buy_name_' + p]);
+  for (const p of ['pro', 'pictures5', 'pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_pro_300', 'pass_max_180', 'pass_max_480']) assert.ok(siteEn['buy_name_' + p]);
   for (const k of ['pr_dur_30', 'pr_dur_60', 'pr_dur_120', 'pr_dur_180']) assert.ok(siteEn[k]);
   for (const th of ['auto', 'light', 'dark', 'sunny', 'neon', 'candy']) assert.ok(siteEn['theme_' + th]);
 });

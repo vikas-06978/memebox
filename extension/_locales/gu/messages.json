@@ -1587,5 +1587,11 @@
   },
   "mu_phonk_tip": {
     "message": "સત્તાવાર ફંક ટ્રેક YouTube દ્વારા ચાલે છે, પછી તમારી કૉલમાં જાય છે"
+  },
+  "fx_char_snake": {
+    "message": "સાપ"
+  },
+  "fx_char_bird": {
+    "message": "પક્ષી"
   }
 }
