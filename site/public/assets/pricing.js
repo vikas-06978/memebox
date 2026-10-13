@@ -28,12 +28,15 @@
   const asked = new URLSearchParams(location.search).get('cur');
   let cur = asked === 'usd' || asked === 'inr' ? asked : fromTimezone();
   let products = FALLBACK;
+  let checkoutCurrencies = ['INR'];
+  const canBuy = () => checkoutCurrencies.includes(cur.toUpperCase());
+  const buyLink = id => '/buy?product=' + id + (cur === 'usd' ? '&currency=USD' : '');
 
   const money = (p) => (cur === 'inr' ? '₹' + p.inr : '$' + Number(p.usd).toFixed(2));
 
   function render() {
     for (const b of document.querySelectorAll('.seg-btn')) b.setAttribute('aria-pressed', String(b.dataset.cur === cur));
-    document.getElementById('usd-note').hidden = cur !== 'usd';
+    document.getElementById('usd-note').hidden = cur !== 'usd' || canBuy();
     for (const [boxId, tier] of [['passes-pro', 'pro'], ['passes-max', 'max']]) {
       const box = document.getElementById(boxId);
       box.replaceChildren();
@@ -48,10 +51,10 @@
         price.className = 'pass-price';
         price.textContent = money(p);
         row.append(dur, price);
-        if (cur === 'inr') {
+        if (canBuy()) {
           const a = document.createElement('a');
           a.className = 'button primary small';
-          a.href = '/buy?product=' + id;
+          a.href = buyLink(id);
           a.textContent = T('pr_buy');
           row.append(a);
         }
@@ -77,10 +80,10 @@
       price.className = 'pass-price';
       price.textContent = money(p);
       card.append(name, price);
-      if (cur === 'inr') {
+      if (canBuy()) {
         const a = document.createElement('a');
         a.className = 'button primary small';
-        a.href = '/buy?product=' + id;
+        a.href = buyLink(id);
         a.textContent = T('pr_buy');
         card.append(a);
       }
@@ -93,6 +96,7 @@
   Promise.all([fetch('/api/config').then((r) => r.json()).catch(() => ({})), translations]).then(([c]) => {
     const sold = c && c.products ? Object.fromEntries(Object.entries(c.products).filter(([id]) => Object.hasOwn(FALLBACK, id))) : {};
     if (Object.keys(sold).length === Object.keys(FALLBACK).length) products = sold;
+    if (c.checkout?.mode === 'test') checkoutCurrencies = c.checkout.currencies;
     render();
   });
   render();

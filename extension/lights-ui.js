@@ -133,6 +133,8 @@
     const charG = group(t('fx_character'));
     const charChips = chipRow();
     const charPosChips = chipRow();
+    const outfitChips = chipRow();
+    const outfitRow = el('div', {}, el('div', { className: 'fx-how' }, t('fx_outfit')), outfitChips);
     const lampLine = el('label', { className: 'check' }, lampBox, t('fx_lamp_show'));
     const cornersLine = el('label', { className: 'check' }, cornersBox, t('fx_corners_show'));
     lampG.append(lampLine, fixChips, animChips, posChips, el('div', { className: 'fx-how' }, t('fx_angle')), angChips, el('div', { className: 'row' }, el('span', {}, t('fx_lampsize')), sizeRange, resetPos));
@@ -147,7 +149,7 @@
       el('label', { className: 'check', title: t('fx_masti_tip') }, mastiBox, t('fx_masti')),
       el('label', { className: 'check', title: t('fx_sounds_tip') }, soundsBox, t('fx_sounds')),
       el('label', { className: 'check', title: t('fx_away_tip') }, awayBox, t('fx_away')));
-    charG.append(charChips, charPosChips, animalOpts);
+    charG.append(charChips, outfitRow, charPosChips, animalOpts);
     const extras = el('details', { className: 'fx-adv' }, el('summary', {}, t('fx_more')),
       el('div', { className: 'checks' },
         el('label', { className: 'check', title: t('fx_focus_tip') }, focusBox, t('fx_focus')),
@@ -257,6 +259,8 @@
         chip(t('fx_char_' + id), c.character === id, id !== 'none' && !can('character:' + id), () => set({ character: id }, true))));
       put(charPosChips, ['left', 'right'].map((p) =>
         chip(t('fx_pos_' + p), c.charPos === p, false, () => set({ charPos: p }))));
+      put(outfitChips, Fx.OUTFITS.map(id => chip(t('fx_outfit_' + id), c.outfit === id, false, () => set({ outfit: id }))));
+      outfitRow.hidden = c.character === 'none';
       put(filterChips, Fx.FILTERS.map((f) => {
         const locked = f !== 'none' && !Fx.FREE_FILTERS.includes(f)
           && !(Fx.PRO_FILTERS.includes(f) ? can('filtersPro') : can('filter:' + f));

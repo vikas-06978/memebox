@@ -15,6 +15,7 @@ export async function onRequest({ request, env }) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
   if (request.method !== 'GET') return methodNotAllowed('GET, OPTIONS');
   if (env.PACKS_ENABLED === 'off') return json({ ok: false, error: 'Hosted packs are paused. Please try again later.' }, 503, CORS);
+  if (env.HOSTED_FILES_ENABLED !== 'on') return json({ ok: false, error: 'Hosted files are paused.' }, 503, CORS);
   if (!env.DB || !env.PACKS) return json({ ok: false, error: 'Packs are not set up yet.' }, 503, CORS);
 
   const limit = await rateLimit(env.DB, { salt: env.RATE_SALT || env.ADMIN_KEY || '', ip: clientIp(request), bucket: 'pack-file', max: 400 });

@@ -52,6 +52,7 @@ for (const [element, property, values, prefix] of [
   ['fixture', 'fixture', MemeFx.FIXTURES, 'fx_fix_'],
   ['filter', 'filter', MemeFx.FILTERS, 'fx_filter_'],
   ['colour', 'color', Object.keys(MemeFx.COLORS), 'fx_color_'],
+  ['outfit', 'outfit', MemeFx.OUTFITS, 'fx_outfit_'],
 ]) {
   const select = document.getElementById(element);
   for (const value of values) { const label = t(prefix + value); select.add(new Option(label === prefix + value ? value : label, value, false, value === cfg[property])); }
@@ -70,7 +71,7 @@ function stopMusic() {
   document.getElementById('music-status').textContent = '';
   for (const b of document.querySelectorAll('[data-tune]')) b.setAttribute('aria-pressed', 'false');
 }
-for (const id of MemeMusic.IDS) {
+for (const id of [...MemeMusic.IDS, ...MemeMusic.PHONK_IDS]) {
   const button = document.createElement('button'); button.type = 'button'; button.dataset.tune = id; button.textContent = t('mu_t_' + id); button.setAttribute('aria-pressed', 'false');
   button.addEventListener('click', async () => {
     stopMusic();

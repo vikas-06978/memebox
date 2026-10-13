@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "అలంకరణ" },
+  "fx_outfit_none": { "message": "ఏదీ లేదు" },
+  "fx_outfit_party": { "message": "🎉 పార్టీ టోపీ" },
+  "fx_outfit_crown": { "message": "👑 కిరీటం" },
+  "fx_outfit_scarf": { "message": "🧣 కండువా" },
   "extName": {
     "message": "MemeBox: కాల్స్ కోసం మీమ్ సౌండ్‌బోర్డ్ & వాయిస్ ఛేంజర్"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "అధికారిక ఫంక్ ట్రాక్‌లు YouTube ద్వారా ప్లే అయి, తర్వాత మీ కాల్‌కు వెళ్తాయి"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

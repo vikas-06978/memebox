@@ -1,0 +1,137 @@
+{
+  "fx_outfit": { "message": "Outfit" },
+  "fx_outfit_none": { "message": "Keines" },
+  "fx_outfit_party": { "message": "🎉 Partyhut" },
+  "fx_outfit_crown": { "message": "👑 Krone" },
+  "fx_outfit_scarf": { "message": "🧣 Schal" },
+  "extName": {
+    "message": "MemeBox"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "Meme soundboard and voice changer for browser calls."
+  },
+  "actionTitle": {
+    "message": "MemeBox: Ton dieses Tabs an deinen Anruf senden"
+  },
+  "cmdToggleUi": {
+    "message": "😂-Schaltfläche anzeigen / ausblenden"
+  },
+  "cmdFav1": {
+    "message": "Favorit 1 abspielen"
+  },
+  "cmdFav2": {
+    "message": "Favorit 2 abspielen"
+  },
+  "cmdFav3": {
+    "message": "Favorit 3 abspielen"
+  },
+  "cmdFav4": {
+    "message": "Favorit 4 abspielen"
+  },
+  "cmdFav5": {
+    "message": "Favorit 5 abspielen"
+  },
+  "cmdFav6": {
+    "message": "Favorit 6 abspielen"
+  },
+  "cmdFav7": {
+    "message": "Favorit 7 abspielen"
+  },
+  "cmdFav8": {
+    "message": "Favorit 8 abspielen"
+  },
+  "cmdFav9": {
+    "message": "Favorit 9 abspielen"
+  },
+  "cmdToggleVoice": { "message": "Stimmenverzerrer ein- / ausschalten" },
+  "lang_code": {
+    "message": "de"
+  },
+  "text_dir": {
+    "message": "ltr"
+  },
+  "cmdStopAll": {
+    "message": "Alle Memes stoppen"
+  },
+  "join_first": {
+    "message": "Tritt zuerst dem Anruf bei und drücke dann 😂"
+  },
+  "st_live": {
+    "message": "Memes werden über dein Mikrofon übertragen"
+  },
+  "options": {
+    "message": "Einstellungen"
+  },
+  "close": {
+    "message": "Schließen (Esc)"
+  },
+  "cat_general": {
+    "message": "Allgemein"
+  },
+  "cat_college": {
+    "message": "Studium"
+  },
+  "cat_cricket": {
+    "message": "Cricket"
+  },
+  "cat_effects": {
+    "message": "Soundeffekte"
+  },
+  "cat_office": {
+    "message": "Büro"
+  },
+  "cat_party": {
+    "message": "Party"
+  },
+  "cat_clips": {
+    "message": "Clips"
+  },
+  "cat_mine": {
+    "message": "Meine Sprüche"
+  },
+  "play": {
+    "message": "Abspielen"
+  },
+  "theme_auto": {
+    "message": "Automatisch"
+  },
+  "theme_light": {
+    "message": "Hell"
+  },
+  "theme_dark": {
+    "message": "Dunkel"
+  },
+  "lang_auto": {
+    "message": "Automatisch (wie Chrome)"
+  },
+  "mu_title": {
+    "message": "🎵 Musik"
+  },
+  "mu_stop": {
+    "message": "Stoppen"
+  },
+  "pg_wave": {
+    "message": "Winken"
+  },
+  "pg_cheer": {
+    "message": "Jubeln"
+  },
+  "pg_heartbeat": {
+    "message": "Liebe"
+  },
+  "pg_cry": {
+    "message": "Weinen"
+  },
+  "pg_raspberry": {
+    "message": "Zunge"
+  },
+  "pg_dance": {
+    "message": "Tanzen"
+  },
+  "search_ph": {
+    "message": "Memes suchen"
+  }
+}

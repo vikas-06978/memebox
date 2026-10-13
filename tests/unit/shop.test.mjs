@@ -3,6 +3,7 @@ import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   PRODUCTS, forSale, newLicenseKey, newOrderId, LICENSE_RE, ORDER_RE, upiLink, cleanKey, createLicense, getLicense,
+  createOrder, claimOrder, approveOrder,
 } from '../../site/src/shop.js';
 import { makeSession } from '../../site/src/security.js';
 import { onRequest as licenseApi } from '../../site/functions/api/license.js';
@@ -15,6 +16,19 @@ import { D1 } from '../../tools/d1-sqlite.mjs';
 import { readTomlVars } from '../../tools/site-dev.mjs';
 
 const ADMIN_KEY = 'admin-key-for-tests';
+
+test('concurrent manual approval creates one license and applies one top-up', async () => {
+  const local = new D1(), order = await createOrder(local, { product: 'pass_pro_60' });
+  await claimOrder(local, order.id, '123456789012');
+  const keys = await Promise.all(Array.from({ length: 8 }, () => approveOrder(local, order.id)));
+  assert.equal(new Set(keys).size, 1);
+  assert.equal((await getLicense(local, keys[0])).pro_seconds, 3600);
+  const topup = await createOrder(local, { product: 'pass_pro_60', forKey: keys[0] });
+  await claimOrder(local, topup.id, '123456789013');
+  await Promise.all(Array.from({ length: 8 }, () => approveOrder(local, topup.id)));
+  assert.equal((await getLicense(local, keys[0])).pro_seconds, 7200);
+  assert.equal((await local.prepare('SELECT COUNT(*) AS n FROM licenses').first()).n, 1);
+});
 let db;
 const env = (extra = {}) => ({ DB: db, ADMIN_KEY, RATE_SALT: 'salt', UPI_ID: 'memebox@upi', UPI_NAME: 'MemeBox', ...extra });
 const call = (h, request, e = env()) => h({ request, env: e, params: {}, waitUntil() {} });

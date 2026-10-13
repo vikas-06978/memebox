@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "সাজ" },
+  "fx_outfit_none": { "message": "কিছু নয়" },
+  "fx_outfit_party": { "message": "🎉 পার্টির টুপি" },
+  "fx_outfit_crown": { "message": "👑 মুকুট" },
+  "fx_outfit_scarf": { "message": "🧣 মাফলার" },
   "extName": {
     "message": "MemeBox: কলের জন্য মিম সাউন্ডবোর্ড ও ভয়েস চেঞ্জার"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "অফিসিয়াল ফঙ্ক ট্র্যাক YouTube থেকে চলে, তারপর আপনার কলে যায়"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

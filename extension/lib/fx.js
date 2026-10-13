@@ -28,14 +28,15 @@
   const PATTERNS = ['auto', 'steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle', 'aurora', 'fire', 'laser', 'neonframe', 'police', 'heart', 'party', 'equalizer', 'club']; // corner light shows (Pro)
   const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow'];
   const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];             // 3 free
-  const PRO_FILTERS = ['vintage', 'cool'];                         // + 2 in Pro = 5
-  const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow']; // Pro Max (or one by one)
+  const PRO_FILTERS = ['vintage', 'cool', 'noir', 'dream', 'sunset']; // + 5 in Pro = 8
+  const ADDON_FILTERS = ['neon', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow']; // Pro Max (or one by one)
   // Characters that sit in a bottom corner and react to the sounds. Pro: one of the standard three at a time.
   // Pro Max: all six. Every one is drawn with code (no pictures), so they are small and original.
   const FREE_CHARACTERS = ['cat', 'dog'];                                              // free for everybody
   const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny', 'panda', 'owl', 'fox'];          // with a Pro pass (the free two included)
   const PREMIUM_CHARACTERS = ['penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot', 'snake', 'bird'];
   const CHARACTERS = [...STANDARD_CHARACTERS, ...PREMIUM_CHARACTERS];
+  const OUTFITS = ['none', 'party', 'crown', 'scarf'];
   const MOODS = ['suspense', 'excited', 'surprise', 'sad', 'fun', 'awkward'];
 
   const DEFAULTS = Object.freeze({
@@ -59,6 +60,7 @@
     safe: true,         // no flashing: slow, gentle changes only
     filter: 'none',
     character: 'none',  // none | cat | dog | bunny | panda | owl | fox | penguin | lion | monkey | frog | unicorn | robot
+    outfit: 'none',     // free accessories for any character the user can use
     follow: true,       // lights and the character follow where YOU are (left, right, standing up, out of the picture)
     masti: true,        // the animal plays on you now and then: sits on your head or shoulder, hangs on your glasses, rolls around your head (needs Follow me)
     sounds: true,       // the animal makes little sounds (sobbing, sniffing, a cheer, a heartbeat); others in the call hear them
@@ -97,6 +99,7 @@
       safe: c.safe !== false,
       filter: FILTERS.includes(c.filter) ? c.filter : 'none',
       character: CHARACTERS.includes(c.character) ? c.character : 'none',
+      outfit: OUTFITS.includes(c.outfit) ? c.outfit : 'none',
       charPos: c.charPos === 'left' ? 'left' : 'right',
       follow: c.follow !== false,
       masti: c.masti !== false,
@@ -2038,6 +2041,25 @@ void main(){
       }
       // cheeks
       if (!isRobot && (ex === 'happy' || ex === 'love' || ex === 'awk' || kind === 'bunny' || isPeng || kind === 'unicorn')) for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');
+      // Accessories move with the head and leave the eyes/mouth clear for reactions.
+      if (cfg.outfit === 'party') {
+        tri(g, [-18, -91], [18, -91], [2, -130], '#a78bfa');
+        g.strokeStyle = '#fde68a'; g.lineWidth = 3;
+        for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-13 + k * 4, -97 - k * 8); g.lineTo(13 - k * 3, -97 - k * 8); g.stroke(); }
+        ell(g, 2, -130, 4, 4, '#fb7185');
+      } else if (cfg.outfit === 'crown') {
+        g.beginPath(); g.moveTo(-22, -94); g.lineTo(-25, -114); g.lineTo(-11, -104);
+        g.lineTo(0, -120); g.lineTo(11, -104); g.lineTo(25, -114); g.lineTo(22, -94); g.closePath();
+        g.fillStyle = '#fbbf24'; g.fill(); g.strokeStyle = '#b45309'; g.lineWidth = 1.5; g.stroke();
+        for (const x of [-13, 0, 13]) ell(g, x, -99, 2.5, 2.5, x ? '#a78bfa' : '#fb7185');
+      } else if (cfg.outfit === 'scarf') {
+        rrect(g, -23, -35, 46, 10, 5, '#fb7185');
+        g.save(); g.translate(12, -27); g.rotate(0.12 + Math.sin(t * 2) * 0.07);
+        rrect(g, -5, 0, 10, 24, 3, '#f43f5e');
+        g.strokeStyle = '#fda4af'; g.lineWidth = 2;
+        for (const y of [7, 14, 21]) { g.beginPath(); g.moveTo(-4, y); g.lineTo(4, y); g.stroke(); }
+        g.restore();
+      }
       g.restore(); // the head
       g.restore(); // the whole animal
 
@@ -2251,7 +2273,7 @@ void main(){
           const stg = stageUpdate(cfg, tr, audio, now, cpos, h * 0.4, w);
           const tearLv = opts.charAct === 'cry' ? (opts.tear == null ? 0.7 : opts.tear) : opts.charAct ? 0 : stg.tear;
           if (tearLv > 0.01) drawTears(g, w, h, tearLv, now); // the water is behind the animal, which floats up in it
-          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic, tear: tearLv });
+          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, charStand: opts.charStand, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic, tear: tearLv });
         } else R.charKey = '';
       }
       if (opts.preview) {
@@ -2347,7 +2369,7 @@ void main(){
   }
 
   globalThis.MemeFx = Object.freeze({
-    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, FREE_CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
+    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, OUTFITS, FREE_CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
     sanitize, lockedParts, createRenderer, drawSample, simulate, ACTIONS, FIX_OFF: { lamp: 0.175, discoball: 0.14, lantern: 0.13, chandelier: 0.13, moon: 0.12, star: 0.11, fairy: 0.06, spotlight: 0.07 },
   });
 })();

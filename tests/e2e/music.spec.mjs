@@ -4,6 +4,18 @@ import { test, expect } from './fixtures.mjs';
 
 const send = (page, msg) => page.evaluate((m) => window.postMessage({ source: 'memebox-bridge-9c1e', ...m }, '*'), msg);
 
+test('all three original Phonk arrangements produce audio in the outgoing call stream', async ({ callPage }) => {
+  await callPage.evaluate(async () => { await window.joinCall(); await window.noDuck(); });
+  const quiet = await callPage.evaluate(() => window.peakOver(500));
+  for (const id of ['phonk_desi', 'phonk_drift', 'phonk_midnight']) {
+    await send(callPage, { type: 'music-play', value: id, volume: 0.7 });
+    await callPage.waitForTimeout(400);
+    const peak = await callPage.evaluate(() => window.peakOver(2000)); // Includes a full sparse intro beat cycle.
+    expect(peak, id + ' produces audible output').toBeGreaterThan(Math.max(0.08, quiet * 2));
+    await send(callPage, { type: 'music-stop' }); await callPage.waitForTimeout(300);
+  }
+});
+
 test('a tune plays into the mic stream and stops; the music is audible, not just silence', async ({ callPage }) => {
   await callPage.evaluate(async () => { await window.joinCall(); await window.noDuck(); });
   const quiet = await callPage.evaluate(() => window.peakOver(600));

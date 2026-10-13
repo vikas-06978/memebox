@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "वेशभूषा" },
+  "fx_outfit_none": { "message": "काही नाही" },
+  "fx_outfit_party": { "message": "🎉 पार्टी टोपी" },
+  "fx_outfit_crown": { "message": "👑 मुकुट" },
+  "fx_outfit_scarf": { "message": "🧣 मफलर" },
   "extName": {
     "message": "MemeBox: कॉलसाठी मीम साउंडबोर्ड आणि व्हॉइस चेंजर"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "अधिकृत फंक ट्रॅक YouTube वरून चालतात, मग तुमच्या कॉलमध्ये जातात"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

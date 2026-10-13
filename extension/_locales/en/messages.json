@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "Outfit" },
+  "fx_outfit_none": { "message": "None" },
+  "fx_outfit_party": { "message": "🎉 Party hat" },
+  "fx_outfit_crown": { "message": "👑 Crown" },
+  "fx_outfit_scarf": { "message": "🧣 Scarf" },
   "extName": {
     "message": "MemeBox: Meme Soundboard & Voice Changer for Calls"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "Official phonk tracks played through YouTube, then sent into your call"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

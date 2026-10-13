@@ -410,7 +410,7 @@
   let musicPlayer = null;
   let musicVolume = 0.5;
   let musicMoodTimer = 0;
-  const MUSIC_MOOD = { funky: 'fun', party: 'excited', suspense: 'suspense', retro: 'fun', jazz: 'fun', epic: 'suspense', tropical: 'excited', disco: 'fun', club: 'excited', bass: 'excited', desi: 'excited', house: 'fun' };
+  const MUSIC_MOOD = { funky: 'fun', party: 'excited', suspense: 'suspense', retro: 'fun', jazz: 'fun', epic: 'suspense', tropical: 'excited', disco: 'fun', club: 'excited', bass: 'excited', desi: 'excited', house: 'fun', phonk_desi: 'fun', phonk_drift: 'excited', phonk_midnight: 'suspense' };
 
   function startMusic(id, vol) {
     if (!globalThis.MemeMusic || !MemeMusic.TUNES[id] || !isActive() || !ctx) { post({ type: 'music-state', id: '' }); return; }

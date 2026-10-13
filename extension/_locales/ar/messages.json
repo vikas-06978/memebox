@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "الزي" },
+  "fx_outfit_none": { "message": "بدون" },
+  "fx_outfit_party": { "message": "🎉 قبعة حفلة" },
+  "fx_outfit_crown": { "message": "👑 تاج" },
+  "fx_outfit_scarf": { "message": "🧣 وشاح" },
   "extName": {
     "message": "MemeBox: لوحة أصوات الميمز ومغيّر الصوت للمكالمات"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "مقاطع فونك رسمية عبر YouTube ثم تُرسل إلى مكالمتك"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

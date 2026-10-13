@@ -1,0 +1,27 @@
+{
+  "receivedDate": "2026-10-14",
+  "status": "awaiting-source-verification",
+  "notes": "User-provided discovery sources. The current environment returned HTTP 403 for YouTube. Playlist titles, tracks, views, official upload sources and embedding permissions have not been verified. No tracks are approved for publication.",
+  "sources": [
+    {
+      "id": "PLNMH5TG547qkMqLjy9l2yn4Yaf-X5yAzN",
+      "url": "https://www.youtube.com/playlist?list=PLNMH5TG547qkMqLjy9l2yn4Yaf-X5yAzN"
+    },
+    {
+      "id": "PL9mEo4EdiFzPjTxoUxx4L3bSpp-GCImeN",
+      "url": "https://www.youtube.com/playlist?list=PL9mEo4EdiFzPjTxoUxx4L3bSpp-GCImeN"
+    },
+    {
+      "id": "PLRBp0Fe2GpgluLnaBf1dSvXqIg974OGvi",
+      "url": "https://www.youtube.com/playlist?list=PLRBp0Fe2GpgluLnaBf1dSvXqIg974OGvi"
+    },
+    {
+      "id": "PLRBp0Fe2Gpgk7YGcZD1BxL4-a-3ws1OZ_",
+      "url": "https://www.youtube.com/playlist?list=PLRBp0Fe2Gpgk7YGcZD1BxL4-a-3ws1OZ_"
+    },
+    {
+      "id": "PLGBKsNyGY-afmc5ff3n1HOYGTmZO1xJGw",
+      "url": "https://www.youtube.com/playlist?list=PLGBKsNyGY-afmc5ff3n1HOYGTmZO1xJGw"
+    }
+  ]
+}

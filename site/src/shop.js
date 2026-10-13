@@ -114,13 +114,9 @@ export const MAX_SPEND_PER_CALL = 600;
 export async function spendPassTime(db, row, seconds) {
   let s = Math.max(0, Math.min(MAX_SPEND_PER_CALL, Math.floor(Number(seconds)) || 0));
   if (!s) return row;
-  const fromMax = Math.min(Number(row.max_seconds) || 0, s);
-  s -= fromMax;
-  const fromPro = Math.min(Number(row.pro_seconds) || 0, s);
-  if (fromMax || fromPro) {
-    await db.prepare('UPDATE licenses SET max_seconds = MAX(0, max_seconds - ?), pro_seconds = MAX(0, pro_seconds - ?) WHERE key = ?')
-      .bind(fromMax, fromPro, row.key).run();
-  }
+  // SQL reads the current balance, even if another device spent time after the caller's read.
+  await db.prepare("UPDATE licenses SET pro_seconds = MAX(0, pro_seconds - MAX(0, ? - max_seconds)), max_seconds = MAX(0, max_seconds - ?) WHERE key = ? AND status = 'active'")
+    .bind(s, s, row.key).run();
   return getLicense(db, row.key);
 }
 
@@ -162,19 +158,28 @@ export async function approveOrder(db, id) {
   const order = await getOrder(db, id);
   if (!order || order.status !== 'waiting') return null;
   const p = PRODUCTS[order.product];
-  let key = '';
+  if (!p) return null;
   const existing = order.for_key ? await getLicense(db, order.for_key) : null;
+  const key = existing?.status === 'active' ? existing.key : newLicenseKey();
+  const marker = crypto.randomUUID(), at = now();
+  const guard = "EXISTS (SELECT 1 FROM orders WHERE id = ? AND decided_at = ? AND status = 'approved')";
+  const steps = [db.prepare("UPDATE orders SET status = 'approved', license_key = ?, decided_at = ? WHERE id = ? AND status = 'waiting'").bind(key, marker, id)];
   if (existing && existing.status === 'active') {
-    await db.prepare('UPDATE licenses SET picture_slots = picture_slots + ?, unlimited = MAX(unlimited, ?) WHERE key = ?')
-      .bind(p.pictureSlots, p.unlimited ? 1 : 0, existing.key).run();
-    if (p.proSeconds || p.maxSeconds) await addPassTime(db, existing.key, { proSeconds: p.proSeconds, maxSeconds: p.maxSeconds });
-    if (p.addons && p.addons.length) await db.prepare('UPDATE licenses SET addons = ? WHERE key = ?').bind(addonText([...parseAddons(existing.addons).map((a) => a.id), ...p.addons]), existing.key).run();
-    key = existing.key;
+    steps.push(db.prepare(`UPDATE licenses SET picture_slots = MIN(10000, picture_slots + ?), unlimited = MAX(unlimited, ?),
+      pro_seconds = MIN(864000, pro_seconds + ?), max_seconds = MIN(864000, max_seconds + ?),
+      addons = (SELECT json_group_array(value) FROM (SELECT value FROM json_each(licenses.addons) UNION SELECT value FROM json_each(?)))
+      WHERE key = ? AND status = 'active' AND ${guard}`)
+      .bind(p.pictureSlots, p.unlimited ? 1 : 0, p.proSeconds, p.maxSeconds, JSON.stringify(p.addons), key, id, marker));
   } else {
-    key = await createLicense(db, { kind: 'paid', unlimited: p.unlimited, pictureSlots: p.pictureSlots, proSeconds: p.proSeconds, maxSeconds: p.maxSeconds, note: `order ${order.id}`, addons: p.addons });
+    steps.push(db.prepare(`INSERT INTO licenses (key, created_at, kind, unlimited, picture_slots, pro_seconds, max_seconds, status, note, addons)
+      SELECT ?, ?, 'paid', ?, ?, ?, ?, 'active', ?, ? WHERE ${guard}`)
+      .bind(key, at, p.unlimited ? 1 : 0, p.pictureSlots, p.proSeconds, p.maxSeconds, `order ${id}`, JSON.stringify(p.addons), id, marker));
   }
-  await db.prepare("UPDATE orders SET status = 'approved', license_key = ?, decided_at = ? WHERE id = ?").bind(key, now(), id).run();
-  return key;
+  steps.push(db.prepare("UPDATE orders SET status = 'waiting', license_key = '', decided_at = NULL WHERE id = ? AND decided_at = ? AND NOT EXISTS (SELECT 1 FROM licenses WHERE key = ? AND status = 'active')").bind(id, marker, key));
+  steps.push(db.prepare('UPDATE orders SET decided_at = ? WHERE id = ? AND decided_at = ?').bind(at, id, marker));
+  await db.batch(steps);
+  const fresh = await getOrder(db, id);
+  return fresh.status === 'approved' ? fresh.license_key : null;
 }
 
 export async function rejectOrder(db, id) {

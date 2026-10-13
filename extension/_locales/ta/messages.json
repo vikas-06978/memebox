@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "அலங்காரம்" },
+  "fx_outfit_none": { "message": "இல்லை" },
+  "fx_outfit_party": { "message": "🎉 விழா தொப்பி" },
+  "fx_outfit_crown": { "message": "👑 கிரீடம்" },
+  "fx_outfit_scarf": { "message": "🧣 கழுத்துத் துணி" },
   "extName": {
     "message": "MemeBox: அழைப்புகளுக்கான மீம் சவுண்ட்போர்டு & குரல் மாற்றி"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "அதிகாரப்பூர்வ ஃபங்க் ட்ராக்குகள் YouTube வழியாக இயங்கி, பிறகு உங்கள் அழைப்பிற்குச் செல்லும்"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

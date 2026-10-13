@@ -1,0 +1,137 @@
+{
+  "fx_outfit": { "message": "アクセサリー" },
+  "fx_outfit_none": { "message": "なし" },
+  "fx_outfit_party": { "message": "🎉 パーティーハット" },
+  "fx_outfit_crown": { "message": "👑 王冠" },
+  "fx_outfit_scarf": { "message": "🧣 マフラー" },
+  "extName": {
+    "message": "MemeBox"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "Meme soundboard and voice changer for browser calls."
+  },
+  "actionTitle": {
+    "message": "MemeBox: このタブの音声を通話に送信"
+  },
+  "cmdToggleUi": {
+    "message": "😂 ボタンを表示 / 非表示"
+  },
+  "cmdFav1": {
+    "message": "お気に入り 1 を再生"
+  },
+  "cmdFav2": {
+    "message": "お気に入り 2 を再生"
+  },
+  "cmdFav3": {
+    "message": "お気に入り 3 を再生"
+  },
+  "cmdFav4": {
+    "message": "お気に入り 4 を再生"
+  },
+  "cmdFav5": {
+    "message": "お気に入り 5 を再生"
+  },
+  "cmdFav6": {
+    "message": "お気に入り 6 を再生"
+  },
+  "cmdFav7": {
+    "message": "お気に入り 7 を再生"
+  },
+  "cmdFav8": {
+    "message": "お気に入り 8 を再生"
+  },
+  "cmdFav9": {
+    "message": "お気に入り 9 を再生"
+  },
+  "cmdToggleVoice": { "message": "ボイスチェンジャーを切り替える" },
+  "lang_code": {
+    "message": "ja"
+  },
+  "text_dir": {
+    "message": "ltr"
+  },
+  "cmdStopAll": {
+    "message": "すべてのミームを停止"
+  },
+  "join_first": {
+    "message": "通話に参加してから 😂 を押してください"
+  },
+  "st_live": {
+    "message": "ミーム音声をマイクに送信中"
+  },
+  "options": {
+    "message": "設定"
+  },
+  "close": {
+    "message": "閉じる (Esc)"
+  },
+  "cat_general": {
+    "message": "一般"
+  },
+  "cat_college": {
+    "message": "大学"
+  },
+  "cat_cricket": {
+    "message": "クリケット"
+  },
+  "cat_effects": {
+    "message": "効果音"
+  },
+  "cat_office": {
+    "message": "仕事"
+  },
+  "cat_party": {
+    "message": "パーティー"
+  },
+  "cat_clips": {
+    "message": "クリップ"
+  },
+  "cat_mine": {
+    "message": "自分のセリフ"
+  },
+  "play": {
+    "message": "再生"
+  },
+  "theme_auto": {
+    "message": "自動"
+  },
+  "theme_light": {
+    "message": "ライト"
+  },
+  "theme_dark": {
+    "message": "ダーク"
+  },
+  "lang_auto": {
+    "message": "自動 (Chrome と同じ)"
+  },
+  "mu_title": {
+    "message": "🎵 音楽"
+  },
+  "mu_stop": {
+    "message": "停止"
+  },
+  "pg_wave": {
+    "message": "手を振る"
+  },
+  "pg_cheer": {
+    "message": "応援"
+  },
+  "pg_heartbeat": {
+    "message": "愛"
+  },
+  "pg_cry": {
+    "message": "泣く"
+  },
+  "pg_raspberry": {
+    "message": "舌"
+  },
+  "pg_dance": {
+    "message": "ダンス"
+  },
+  "search_ph": {
+    "message": "ミームを検索"
+  }
+}

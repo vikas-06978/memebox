@@ -14,7 +14,7 @@
     <header class="page-head phonk-hero">
       <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
       <h1><span aria-hidden="true">🎧</span> <span data-t="ph_title">Phonk Mode</span></h1>
-      <p class="muted" data-t="ph_intro">Official phonk tracks, played through YouTube. MemeBox does not host or copy any music.</p>
+      <p class="muted" data-t="ph_intro">Original MemeBox Phonk loops, plus free official YouTube playlists. Original loops play locally without ads or downloads.</p>
       <div class="phonk-hero-art" aria-hidden="true"><div class="vinyl"><span>😂</span></div><span class="music-spark spark-one">✦</span><span class="music-spark spark-two">♫</span></div>
     </header>
 
@@ -29,6 +29,7 @@
         <button type="button" id="prev" data-t-aria="ph_prev" aria-label="Previous">⏮</button>
         <button type="button" id="toggle" class="primary" data-t-aria="ph_play" aria-label="Play / pause" aria-pressed="false">▶</button>
         <button type="button" id="next" data-t-aria="ph_next" aria-label="Next">⏭</button>
+        <button type="button" id="shuffle" data-t-aria="ph_shuffle" aria-label="Shuffle" aria-pressed="false">🔀</button>
         <input type="range" id="volume" min="0" max="100" value="100" aria-label="Volume">
         <a id="open-yt" class="button" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" hidden data-t="ph_open">Open on YouTube</a>
       </div>
@@ -62,6 +63,7 @@
 
     <footer class="foot"><a href="/privacy" data-t="privacy">Privacy</a> <div class="prefs" data-prefs></div></footer>
   </main>
+  <script src="/assets/music.js"></script>
   <script src="/assets/phonk.js"></script>
 </body>
 </html>

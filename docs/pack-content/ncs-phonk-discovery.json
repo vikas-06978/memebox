@@ -1,0 +1,31 @@
+{
+  "checkedDate": "2026-10-14",
+  "networkStatus": {
+    "ncsWebsite": "accessible",
+    "youtubePlaylistAndOembed": "cloud-proxy-CONNECT-403",
+    "savedYoutubeDomains": "present"
+  },
+  "tracks": [
+    {
+      "title": "Kapoeira Phonk",
+      "artists": ["DYNAMIS", "HXDES"],
+      "officialCatalogUrl": "https://ncs.io/KapoeiraPhonk",
+      "catalogTitleVerified": true,
+      "youtubeVideoId": null,
+      "views": null,
+      "embeddingVerified": false,
+      "approvedForPublication": false
+    },
+    {
+      "title": "Bad Habit (feat. Zaug) - Phonk Version",
+      "artists": ["Zaug", "Jéja"],
+      "officialCatalogUrl": "https://ncs.io/BadHabit-Phonk",
+      "catalogTitleVerified": true,
+      "youtubeVideoId": null,
+      "views": null,
+      "embeddingVerified": false,
+      "approvedForPublication": false
+    }
+  ],
+  "notes": "Official NCS catalog pages are now accessible. These are discovery candidates, not a ranking or a verified selection from the user's five playlists. NCS's page describes free use in creators' videos with credit; that statement alone does not establish licensing for other uses. Verify the applicable policy, official YouTube upload and embedding before publishing. No audio downloaded or deployment performed."
+}

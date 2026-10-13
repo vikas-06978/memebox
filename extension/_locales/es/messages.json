@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "Atuendo" },
+  "fx_outfit_none": { "message": "Ninguno" },
+  "fx_outfit_party": { "message": "🎉 Gorro de fiesta" },
+  "fx_outfit_crown": { "message": "👑 Corona" },
+  "fx_outfit_scarf": { "message": "🧣 Bufanda" },
   "extName": {
     "message": "MemeBox: botonera de memes y cambiador de voz para llamadas"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "Temas phonk oficiales por YouTube, enviados luego a tu llamada"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

@@ -1,4 +1,9 @@
 {
+  "fx_outfit": { "message": "Aksesori" },
+  "fx_outfit_none": { "message": "Tidak ada" },
+  "fx_outfit_party": { "message": "🎉 Topi pesta" },
+  "fx_outfit_crown": { "message": "👑 Mahkota" },
+  "fx_outfit_scarf": { "message": "🧣 Syal" },
   "extName": {
     "message": "MemeBox: Soundboard Meme & Pengubah Suara untuk Panggilan"
   },
@@ -1611,5 +1616,8 @@
   },
   "mu_phonk_tip": {
     "message": "Lagu phonk resmi lewat YouTube, lalu dikirim ke panggilanmu"
-  }
+  },
+  "mu_t_phonk_desi": { "message": "🔥 MemeBox Desi Phonk" },
+  "mu_t_phonk_drift": { "message": "🏎️ MemeBox Drift Phonk" },
+  "mu_t_phonk_midnight": { "message": "🌙 MemeBox Midnight Phonk" }
 }

@@ -1,5 +1,5 @@
 // MemeBox site: Phonk Mode. A list of official tracks and YouTube's own embedded player (visible, never hidden, no audio-only tricks).
-// Nothing is hosted here: /api/pack-link only gives the video id of a track the person's plan allows. The extension opens this page with the
+// YouTube audio is never hosted here. The free catalog carries video IDs; older catalogs use /api/pack-link. The extension opens this page with the
 // license key in the part of the link after "#" (it is never sent to any server) and this script removes it from the address right away.
 (() => {
   'use strict';
@@ -14,6 +14,20 @@
   const playlistBox = $('playlists'), listTitle = $('list-title'), search = $('search');
   let playlists = [], tracks = [], current = -1, activePlaylist = 'all', query = '', shopOpen = false, license = null, playing = false;
   let playQueue = [], playSequence = 0, pendingPlay = null, skipTimer = 0;
+  let shuffle = false;
+  try { shuffle = localStorage.getItem('memebox-phonk-shuffle') === 'on'; } catch { /* optional storage */ }
+  $('shuffle').setAttribute('aria-pressed', String(shuffle));
+  function shuffled(values) {
+    const result = [...values];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+  const availableIndexes = () => visibleIndexes().filter(index => tierOk(tracks[index].tier));
+  let originalContext = null, originalPlayer = null, originalTimer = 0;
+  function stopOriginal() { clearTimeout(originalTimer); if (originalPlayer) originalPlayer.stop(); }
 
   function setPlaying(value) {
     playing = value;
@@ -91,24 +105,46 @@
     if (i < 0 || i >= tracks.length) return;
     const tr = tracks[i];
     if (!tierOk(tr.tier)) { advance(1); return; }
-    if (startQueue) playQueue = visibleIndexes().filter((index) => tierOk(tracks[index].tier));
+    if (startQueue) {
+      const available = availableIndexes();
+      playQueue = shuffle ? [i, ...shuffled(available.filter(index => index !== i))] : available;
+    }
     const seq = ++playSequence;
     if (pendingPlay) pendingPlay.abort();
     pendingPlay = new AbortController();
     clearTimeout(skipTimer);
+    stopOriginal();
     say('');
     try {
-      const res = await fetch('/api/pack-link?item=' + encodeURIComponent(tr.id), { headers: KEY ? { 'X-MemeBox-Key': KEY } : {}, signal: pendingPlay.signal });
-      if (seq !== playSequence) return;
-      if (res.status === 429) { say(t('ph_limit')); return; }
-      const data = await res.json();
-      if (seq !== playSequence) return;
-      if (!res.ok || !data.ok || !/^[A-Za-z0-9_-]{11}$/.test(data.id)) throw new Error('bad');
+      if (tr.original) {
+        player.removeAttribute('src'); box.hidden = true; openYt.hidden = true;
+        $('player-idle').hidden = false;
+        if (!originalContext) { originalContext = new AudioContext(); originalPlayer = MemeMusic.createPlayer(originalContext, originalContext.destination); }
+        await originalContext.resume();
+        if (seq !== playSequence) return;
+        originalPlayer.setVolume(Number($('volume').value) / 200);
+        originalPlayer.play(tr.id);
+        current = i; now.textContent = tr.title + ' · MemeBox'; setPlaying(true); render();
+        const tune = MemeMusic.TUNES[tr.id];
+        originalTimer = setTimeout(() => { stopOriginal(); setPlaying(false); advance(1); }, tune.bars * 4 * 60000 / tune.bpm);
+        return;
+      }
+      let videoId = tr.videoId;
+      if (!/^[A-Za-z0-9_-]{11}$/.test(videoId || '')) {
+        // Compatibility with the older deployed catalog; new catalogs need no per-play database request.
+        const res = await fetch('/api/pack-link?item=' + encodeURIComponent(tr.id), { signal: pendingPlay.signal });
+        if (seq !== playSequence) return;
+        if (res.status === 429) { say(t('ph_limit')); return; }
+        const data = await res.json();
+        if (seq !== playSequence) return;
+        if (!res.ok || !data.ok || !/^[A-Za-z0-9_-]{11}$/.test(data.id)) throw new Error('bad');
+        videoId = data.id;
+      }
       current = i;
       box.hidden = false;
       $('player-idle').hidden = true;
-      player.src = `${EMBED}/embed/${data.id}?autoplay=1&enablejsapi=1&rel=0&playsinline=1&origin=${encodeURIComponent(location.origin)}`;
-      openYt.href = `https://www.youtube.com/watch?v=${data.id}`;
+      player.src = `${EMBED}/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0&playsinline=1&origin=${encodeURIComponent(location.origin)}`;
+      openYt.href = `https://www.youtube.com/watch?v=${videoId}`;
       openYt.hidden = false;
       now.textContent = tr.title + (tr.artist ? ' · ' + tr.artist : '');
       setPlaying(true);
@@ -132,6 +168,7 @@
   const command = (func, args = []) => { if (player.contentWindow) player.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args }), EMBED); };
   player.addEventListener('load', () => { if (player.contentWindow) player.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), EMBED); });
   window.addEventListener('message', (e) => {
+    if (tracks[current]?.original) return;
     if (e.origin !== EMBED || e.source !== player.contentWindow) return;
     let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
     if (!d || typeof d !== 'object') return;
@@ -139,10 +176,24 @@
     if (d.event === 'onStateChange' && [0, 1, 2].includes(d.info)) setPlaying(d.info === 1);
     if (d.event === 'onError') { const seq = playSequence; say(t('ph_blocked')); skipTimer = setTimeout(() => { if (seq === playSequence) advance(1); }, 1500); } // the owner does not allow embedding
   });
-  $('toggle').addEventListener('click', () => { if (current < 0) { playQueue = visibleIndexes().filter((i) => tierOk(tracks[i].tier)); advance(1); return; } command(playing ? 'pauseVideo' : 'playVideo'); setPlaying(!playing); });
+  $('toggle').addEventListener('click', () => {
+    if (current < 0) { const available = availableIndexes(); playQueue = shuffle ? shuffled(available) : available; advance(1); return; }
+    if (tracks[current]?.original) { if (playing) { stopOriginal(); setPlaying(false); } else play(current); return; }
+    command(playing ? 'pauseVideo' : 'playVideo'); setPlaying(!playing);
+  });
   $('next').addEventListener('click', () => advance(1));
   $('prev').addEventListener('click', () => advance(-1));
-  $('volume').addEventListener('input', (e) => command('setVolume', [Number(e.target.value)]));
+  $('shuffle').addEventListener('click', () => {
+    shuffle = !shuffle; $('shuffle').setAttribute('aria-pressed', String(shuffle));
+    try { localStorage.setItem('memebox-phonk-shuffle', shuffle ? 'on' : 'off'); } catch { /* optional storage */ }
+    const at = playQueue.indexOf(current);
+    if (at >= 0) {
+      const remaining = playQueue.slice(at + 1);
+      playQueue = [...playQueue.slice(0, at + 1), ...(shuffle ? shuffled(remaining) : remaining.sort((a, b) => a - b))];
+    }
+  });
+  $('volume').addEventListener('input', (e) => { command('setVolume', [Number(e.target.value)]); if (originalPlayer) originalPlayer.setVolume(Number(e.target.value) / 200); });
+  window.addEventListener('pagehide', () => { stopOriginal(); originalContext?.close(); });
   search.addEventListener('input', () => { query = search.value; render(); });
 
   async function start() {
@@ -156,7 +207,11 @@
       license = lic && lic.ok && lic.license ? lic.license : null;
       const linkPacks = (packs.packs || []).filter((p) => p.kind === 'links');
       playlists = linkPacks.map((p) => ({ id: p.id, title: p.title, count: p.items.length }));
-      tracks = linkPacks.flatMap((p) => p.items.map((i) => ({ id: i.id, title: i.title, artist: i.credit, tier: i.tier || p.tier, playlist: p.id })));
+      tracks = linkPacks.flatMap((p) => p.items.map((i) => ({ id: i.id, title: i.title, artist: i.credit, tier: 'free', videoId: i.videoId, playlist: p.id })));
+      if (cfg.phonkEnabled !== false) {
+        playlists.push({ id: 'memebox-originals', title: '🔥 MemeBox Originals', count: 3 });
+        tracks.push(...MemeMusic.PHONK_IDS.map((id, index) => ({ id, title: ['Desi Phonk', 'Drift Phonk', 'Midnight Phonk'][index], artist: 'MemeBox', tier: index === 0 ? 'pro' : 'max', playlist: 'memebox-originals', original: true })));
+      }
       if (!tracks.length) { status.textContent = t('ph_none'); return; }
       status.hidden = true;
       render();

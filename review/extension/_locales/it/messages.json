@@ -1,0 +1,137 @@
+{
+  "fx_outfit": { "message": "Accessori" },
+  "fx_outfit_none": { "message": "Nessuno" },
+  "fx_outfit_party": { "message": "🎉 Cappello da festa" },
+  "fx_outfit_crown": { "message": "👑 Corona" },
+  "fx_outfit_scarf": { "message": "🧣 Sciarpa" },
+  "extName": {
+    "message": "MemeBox"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "Meme soundboard and voice changer for browser calls."
+  },
+  "actionTitle": {
+    "message": "MemeBox: invia l'audio di questa scheda alla chiamata"
+  },
+  "cmdToggleUi": {
+    "message": "Mostra / nascondi il pulsante 😂"
+  },
+  "cmdFav1": {
+    "message": "Riproduci preferito 1"
+  },
+  "cmdFav2": {
+    "message": "Riproduci preferito 2"
+  },
+  "cmdFav3": {
+    "message": "Riproduci preferito 3"
+  },
+  "cmdFav4": {
+    "message": "Riproduci preferito 4"
+  },
+  "cmdFav5": {
+    "message": "Riproduci preferito 5"
+  },
+  "cmdFav6": {
+    "message": "Riproduci preferito 6"
+  },
+  "cmdFav7": {
+    "message": "Riproduci preferito 7"
+  },
+  "cmdFav8": {
+    "message": "Riproduci preferito 8"
+  },
+  "cmdFav9": {
+    "message": "Riproduci preferito 9"
+  },
+  "cmdToggleVoice": { "message": "Attiva / disattiva il cambia voce" },
+  "lang_code": {
+    "message": "it"
+  },
+  "text_dir": {
+    "message": "ltr"
+  },
+  "cmdStopAll": {
+    "message": "Ferma tutti i meme"
+  },
+  "join_first": {
+    "message": "Entra prima nella chiamata, poi premi 😂"
+  },
+  "st_live": {
+    "message": "I meme vengono trasmessi dal tuo microfono"
+  },
+  "options": {
+    "message": "Impostazioni"
+  },
+  "close": {
+    "message": "Chiudi (Esc)"
+  },
+  "cat_general": {
+    "message": "Generale"
+  },
+  "cat_college": {
+    "message": "Università"
+  },
+  "cat_cricket": {
+    "message": "Cricket"
+  },
+  "cat_effects": {
+    "message": "Effetti sonori"
+  },
+  "cat_office": {
+    "message": "Ufficio"
+  },
+  "cat_party": {
+    "message": "Festa"
+  },
+  "cat_clips": {
+    "message": "Clip"
+  },
+  "cat_mine": {
+    "message": "Le mie battute"
+  },
+  "play": {
+    "message": "Riproduci"
+  },
+  "theme_auto": {
+    "message": "Automatico"
+  },
+  "theme_light": {
+    "message": "Chiaro"
+  },
+  "theme_dark": {
+    "message": "Scuro"
+  },
+  "lang_auto": {
+    "message": "Automatico (come Chrome)"
+  },
+  "mu_title": {
+    "message": "🎵 Musica"
+  },
+  "mu_stop": {
+    "message": "Ferma"
+  },
+  "pg_wave": {
+    "message": "Saluta"
+  },
+  "pg_cheer": {
+    "message": "Esulta"
+  },
+  "pg_heartbeat": {
+    "message": "Amore"
+  },
+  "pg_cry": {
+    "message": "Piangi"
+  },
+  "pg_raspberry": {
+    "message": "Linguaccia"
+  },
+  "pg_dance": {
+    "message": "Balla"
+  },
+  "search_ph": {
+    "message": "Cerca meme"
+  }
+}

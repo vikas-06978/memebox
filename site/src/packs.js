@@ -42,7 +42,7 @@ export async function storageUsed(db) {
 const IMAGE_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/webp': 'webp' };
 const IMAGE_EXT = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
 // The plan of one item: its own (free / pro / max) if you set one, else the pack's.
-export const itemTier = (item, pack) => (TIERS.includes(item.tier) ? item.tier : pack.tier);
+export const itemTier = (item, pack) => item.kind === 'link' ? 'free' : (TIERS.includes(item.tier) ? item.tier : pack.tier);
 export const cleanItemTier = (t) => (TIERS.includes(t) ? t : '');
 const AUDIO_TYPES = {
   'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/opus': 'opus',
@@ -277,16 +277,17 @@ export async function deleteItem(db, bucket, id) {
 // ---------- what users get ----------
 
 // Live packs with their live items (no file addresses: the extension asks /api/pack-file for each file).
-export async function publicCatalog(db, { links = true, audio = true } = {}) {
+export async function publicCatalog(db, { links = true, audio = true, files = true } = {}) {
   const packs = (await db.prepare("SELECT * FROM packs WHERE status = 'live' ORDER BY sort, title").all()).results.filter((p) => links || p.kind !== 'links'); // links = false is the kill switch of Phonk Mode
   const items = (await db.prepare("SELECT i.* FROM pack_items i JOIN packs p ON p.id = i.pack_id WHERE p.status = 'live' AND i.status = 'live' ORDER BY i.sort, i.created_at, i.title").all()).results;
   return packs.map((p) => {
-    const mine = items.filter((i) => i.pack_id === p.id && (audio || i.kind !== 'audio'));
+    const mine = items.filter((i) => i.pack_id === p.id && (files || !i.file_key) && (audio || i.kind !== 'audio') && (i.kind !== 'link' || (canPublish(i) && VIDEO_ID_RE.test(i.text))));
     return {
-      id: p.id, title: p.title, kind: p.kind, region: p.region, tier: p.tier, description: p.description,
+      id: p.id, title: p.title, kind: p.kind, region: p.region, tier: p.kind === 'links' ? 'free' : p.tier, description: p.description,
       bytes: mine.reduce((a, i) => a + Number(i.bytes || 0), 0),
       items: mine.map((i) => ({
-        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.kind === 'link' ? '' : i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p), // a video id is only given by /api/pack-link, to people whose plan allows it
+        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.kind === 'link' ? '' : i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p),
+        ...(i.kind === 'link' ? { videoId: i.text } : {}),
         languageName: LANGS[i.lang] || i.lang || '',
         explicit: Number(i.explicit) === 1, credit: i.credit, licence: i.licence,
       })),

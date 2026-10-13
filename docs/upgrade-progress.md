@@ -25,7 +25,18 @@ Work stays on `feature/memebox-2-global`. The live site and Web Store release ar
 - Admin pack page displays daily/monthly reserved usage and whether hosted audio is paused.
 - Storage maximum of 500 MB and default per-user limits of 5 files and 30 MB per day.
 - Shared reservations are atomic, happen before R2 access and remain consumed if delivery fails. This intentionally errs toward lower capacity.
-- `PACKS_ENABLED=off` pauses hosted file delivery/catalog. Hosted audio is disabled unless `HOSTED_AUDIO_ENABLED=on` is explicitly set after billing review. `PHONK_MODE=off` pauses YouTube links.
+- `PACKS_ENABLED=off` pauses hosted file delivery/catalog. All hosted file uploads, playback and file deletion are disabled unless `HOSTED_FILES_ENABLED=on` is explicitly set. This is an application guard, not a Cloudflare billing cap. Hosted audio additionally remains disabled unless `HOSTED_AUDIO_ENABLED=on` is explicitly set after billing review. `PHONK_MODE=off` pauses YouTube links.
+- Three locally synthesized original Phonk loops: Desi (Pro), Drift and Midnight (Max). They work in the extension's outgoing mic, Playground and website player without hosted audio files. YouTube tracks are always free, including old paid catalog labels.
+- Test-only Razorpay checkout with server prices, signed raw-byte webhooks, captured-payment confirmation, atomic fulfillment, browser recovery for the last 100 orders and an authenticated admin ledger. Live mode is deliberately refused.
+- Idempotent refund records and conservative review for shared purchases; manual UPI approval also grants atomically under retries.
+- Signed cumulative usage receipts, atomic Max-first deductions, session renewal, persistent retry targets and offline-debt reconciliation before changing keys.
+- Sixteen interface choices: twelve complete languages and German, Italian, Japanese and Punjabi Beta bundles with native core controls and English advanced fallbacks. See `language-review.md`.
+- Regional recording scripts are prepared in `pack-content/`; nothing has been uploaded or published.
+- The free music review shortlist contains 30 tracks across style-based collections. Specific YouTube IDs/embedding/credit checks are still pending; the review manifest is not seeded as live content.
+- Owner-managed playlists remain editable through `/admin/packs`. Free playlists appear first, with optional localized Shuffle and unchanged catalog caps. New free catalog video IDs remove per-play D1 lookups/writes; old clients can still use the legacy endpoint.
+- Original Phonk arrangements now have 32-bar sections, synthesized cowbell, fills, pads, stereo detail and audio-node cleanup. Full local review WAVs are rendered from the shared engine. See `original-music.md` and `pack-content/manage-phonk.md`.
+- Three free accessories for every available character: party hat, crown and scarf. They use the shared preview/outgoing-camera renderer and preserve the character's reactions.
+- `npm run build:release` prepares a minified extension locally, preserves license notices and emits no source maps. This is packaging preparation, not publication or copy protection.
 
 ## Cost limits and their boundaries
 
@@ -39,19 +50,40 @@ Razorpay fees, domain renewals and store fees are separate costs. Payment approv
 
 ## Still pending
 
-- Additional reviewed interface translations and curated regional dialogue content.
-- Original music and free playlists with attribution and confirmed rights.
-- Razorpay test orders, verified idempotent webhooks, automatic fulfillment and recovery.
-- Signed pass sessions, admin payment reporting, refund handling.
-- Live call/weak laptop tests and final integrated beta validation.
+- Full translation and native review of beta bundles, localized gateway states, and original regional recordings.
+- Specific official YouTube/NCS playlists with verified embedding permissions and required attribution.
+- Actual Razorpay test-environment validation with securely supplied test credentials and a separate test database. Live gateway support remains a later explicitly authorized change, following account/international approval.
+- Refund initiation and settlement reconciliation through the provider; shared-license refunds still need manual entitlement review.
+- Final store wording/screenshots/video and the final owner-selected version number. Existing source/license obligations need review before promising a closed-source release.
+- Real Meet/weak-laptop validation. Automated fake-call stream tests do not establish real-call performance.
 
 No live payment activation, production migration, site deployment or Web Store publication is included in local development.
 
 ## Validation for this development milestone
 
-- 173 unit tests passed, including atomic shared caps, concurrent playlist limits, regional voice handling and legacy purchases.
-- A full Chromium run executed 104 tests: 101 passed initially. Three failures were diagnosed: live feedback navigation under restricted networking, a language reload race in the test, and a hosted-audio test fixture needing explicit opt-in. All three passed on targeted reruns after correction.
+- 193 unit tests passed, including payment signatures, bounded request bodies, unrelated-site webhooks, transactional rollback, concurrent/manual fulfillment, shared refunds, signed replay/renewal, content caps, language fallbacks, outfits and legacy purchases.
+- A full Chromium run passed all 110 tests available at that point. The later minified-ZIP run executed 115 tests: 113 passed initially. The language-menu test still expected 12 languages plus Auto, and the shared renderer did not forward the forced standing-pose option. Both were corrected. A final 19-test run against the rebuilt/extracted minified ZIP passed, covering both failures, all 14 characters' outfit rendering, language/theme switching, checkout, recovery and signed/offline usage.
 - Playground, Phonk, pack browsing, pricing and outgoing-camera picture behavior passed focused browser tests. Picture tests inspect the actual outgoing stream after the old timeout, then verify Escape and Stop all remove it.
 - Desktop/mobile screenshots reviewed. The production copy build and ZIP succeeded. This ZIP still uses development version 1.3.0 and is not the final release package.
 - Playground and outgoing-picture browser tests also passed against the extracted ZIP, verifying the packaged files.
-- The full beta remains incomplete until the pending payment, content, localization and real-call work is done. Do not ask the owner to repeatedly load each development milestone.
+- The local site was restarted on an unused port with the current Functions/schema, and landing, feedback, checkout, config and admin responded correctly. Gateway test checkout is still disabled without credentials. Frozen-lockfile installation was rechecked with a writable npm cache.
+- Cloud environment install/start instructions were refreshed in the saved draft, including the working pinned Chromium setup. Custom-domain/Razorpay network destinations were added to the draft without dropping existing domains. These changes have not been applied or published. The current proxy refused the memebox.site check, so custom-domain health remains unverified and the extension API/SEO address was not changed.
+- The full beta remains incomplete until the pending provider, content, full localization, release and real-call work is done. Do not ask the owner to repeatedly load each development milestone.
+
+## Music follow-up, 2026-10-14
+
+- 193 unit tests passed after the free catalog/video-ID and music-engine changes.
+- 12 focused browser tests passed for shuffle, zero per-play link-API requests on the new catalog, 30 free fixture songs, owner metadata updates, original/call-stream playback, Stop all and Playground.
+- Full stereo review WAVs for all three originals were rendered locally from the shared engine. Peaks were below 0.34 at the conservative export gain; samples were finite/non-silent, and drop RMS was higher than intro/break RMS. These technical checks do not replace listening/mastering or real-call performance review.
+- The updated minified extension build/ZIP succeeded, and all four music browser tests passed against the packaged build, including actual synthesized Phonk in the outgoing fake-call stream and Stop all cleanup.
+- The review manifest has 30 selections, not 30 verified playable YouTube uploads. All actual video IDs and embedding/credit checks remain pending. No remote catalog, hosted audio, deployment or publication was performed.
+
+## GitHub local review, 2026-10-14
+
+- Dedicated download branch: `review/memebox-local-2026-10-14`. `START-HERE.md` explains loading `review/extension` without any build commands and opening `review/listen.html` offline. The source license settings are unchanged; only the explicitly named review copy is unlocked. Never publish that copy.
+- All hosted-file uploads, delivery and admin previews are default-off behind `HOSTED_FILES_ENABLED=on`; hosted audio additionally requires `HOSTED_AUDIO_ENABLED=on`. Stored-object deletion is paused with hosting disabled to preserve cleanup records. This does not change Cloudflare account billing settings.
+- 195 unit tests passed. The full browser run exercised 117 cases: 116 passed and the old admin-upload fixture failed because it did not opt into the new default-off hosting flag. Both hosted browser fixtures now explicitly opt in. The failing admin-upload case passed on its targeted rerun. No unresolved failure remains from that run.
+- The separate ready-to-load review folder was checked in Chrome with no license: exclusive characters, filters and original music are unlocked, Buy is hidden and the site address uses loopback. Its three local WAVs play one at a time without external HTTP requests.
+- Review build and separate shipping ZIP succeeded. Environment secrets, local databases and previously documented plaintext license keys are excluded from the current files. Git history still needs the previously noted owner-key rotation.
+- Push uses the `[skip ci]` commit prefix. Cloudflare's official Pages GitHub integration documentation lists `[Skip CI]` as a deployment-skip prefix (case insensitive): https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/ . GitHub Actions also skips this push. Repository workflows only test/build/upload artifacts; they contain no deploy job. No pull request, merge, production migration, site deployment or store publication is requested.
+- Actual provider payment tests, verified official YouTube IDs/embedding rights, full native-language review and real-call/weak-laptop testing remain pending.

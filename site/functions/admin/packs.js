@@ -7,7 +7,7 @@ import { isAdmin } from '../../src/security.js';
 import { hostedUsage } from '../../src/content-budget.js';
 import { packsListPage, packPage } from '../../src/packs-admin.js';
 import {
-  listPacks, getPack, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, addLinks, storageLimitBytes, storageUsed, PACK_ID_RE,
+  listPacks, getPack, getItem, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, addLinks, storageLimitBytes, storageUsed, PACK_ID_RE,
 } from '../../src/packs.js';
 
 const MESSAGES = {
@@ -24,7 +24,7 @@ const back = (id, msg, err) => {
 
 export async function onRequest({ request, env }) {
   if (!env.ADMIN_KEY || !env.DB || !(await isAdmin(request, env))) return adminRedirect('/admin');
-  const hasBucket = !!env.PACKS;
+  const hasBucket = !!env.PACKS && env.HOSTED_FILES_ENABLED === 'on';
 
   if (request.method === 'GET') {
     const q = new URL(request.url).searchParams;
@@ -58,9 +58,15 @@ export async function onRequest({ request, env }) {
       await updatePack(env.DB, packId, { title: form.get('title'), region: form.get('region'), tier: form.get('tier'), description: form.get('description'), status: form.get('status'), sort: form.get('sort') });
       return back(packId, 'saved');
     }
+    if (!hasBucket && (action === 'pack-delete' || action === 'item-delete')) {
+      const candidates = action === 'pack-delete' ? await listItems(env.DB, packId) : [await getItem(env.DB, String(form.get('item') || ''))];
+      const files = candidates.filter(item => item?.file_key);
+      if (files.length) return back(packId, '', 'Hosted files are paused. Enable hosted files before deleting stored objects.');
+    }
     if (action === 'pack-delete') { await deletePack(env.DB, env.PACKS, packId); return back('', 'deleted'); }
     if (action === 'items-upload') {
-      if (!hasBucket) return back(packId, '', 'File storage is not set up yet (see the packs list page).');
+      if (!env.PACKS) return back(packId, '', 'File storage is not set up yet (see the packs list page).');
+      if (!hasBucket) return back(packId, '', 'Hosted uploads are paused. Enable HOSTED_FILES_ENABLED only after reviewing storage billing.');
       const r = await addAudio(env.DB, env.PACKS, packId, form.getAll('files'), meta, storageLimitBytes(env));
       const live = r.added ? ` ${meta.licenceKind === 'free' && !meta.source.trim() ? 'They are drafts: for "Copyright-free" paste the link that says so in Source, then set them live.' : meta.cleared && (meta.licenceKind || meta.licenceNote) ? 'They are live.' : 'They are drafts: tick "I may share this" and write the licence, then set them live.'}` : '';
       return back(packId, `${r.added} file${r.added === 1 ? '' : 's'} uploaded.${live}${r.skipped.length ? ' Skipped: ' + r.skipped.join('; ') : ''}`);

@@ -7,6 +7,15 @@ const fx = loadScript('lib/fx.js').MemeFx;
 const free = (f) => false;
 const all = () => true;
 
+test('outfits are free cosmetics and cannot unlock a character', () => {
+  for (const outfit of fx.OUTFITS) {
+    const cfg = fx.sanitize({ character: 'cat', outfit }, feature => feature === 'character:cat');
+    assert.equal(cfg.outfit, outfit); assert.equal(cfg.character, 'cat');
+  }
+  assert.equal(fx.sanitize({ outfit: 'unknown' }).outfit, 'none');
+  assert.equal(fx.sanitize({ character: 'bird', outfit: 'crown' }, free).character, 'none');
+});
+
 test('free people keep the still lamp: other fixtures and animations fall back, the lamp itself is free', () => {
   const c = fx.sanitize({ fixture: 'discoball', lampAnim: 'bounce' }, free);
   assert.equal(c.fixture, 'lamp');

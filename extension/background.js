@@ -60,12 +60,13 @@ async function refreshLicense() {
   if (!license || typeof license.key !== 'string' || Date.now() - (Number(license.checkedAt) || 0) < LICENSE_CHECK_MS) return;
   const res = await fetch(SITE_URL + '/api/license', {
     method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key: license.key }),
+    signal: AbortSignal.timeout(15000),
   });
   const data = await res.json().catch(() => ({}));
   if (res.ok && data.ok) await chrome.storage.local.set({ license: { ...data.license, checkedAt: Date.now() } });
   else if (res.status === 404) await chrome.storage.local.set({ license: { ...license, status: 'revoked', checkedAt: Date.now() } });
 }
-refreshLicense().catch(() => {}); // offline: try again next time
+refreshLicense().then(() => { passQueue = passQueue.then(() => flushPassDebt()).catch(() => {}); }).catch(() => {});
 
 // ---------- time pass (Pro / Pro Max hours) ----------
 // The panel in the call tab reports "a call with the pass on" every PASS_TICK_MS. The seconds are taken off
@@ -78,17 +79,75 @@ let passQueue = Promise.resolve();
 
 async function reportPassTime(license, seconds) {
   try {
+    if (license.usageProtocol === 'signed-v1') {
+      const post = async body => {
+        const response = await fetch(SITE_URL + '/api/pass-session', {
+          method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key: license.key, ...body }),
+          signal: AbortSignal.timeout(15000),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error('Usage report failed');
+        return data;
+      };
+      let { passUsage: usage } = await chrome.storage.local.get('passUsage');
+      if (!usage || usage.key !== license.key) {
+        const { session } = await post({ action: 'open' });
+        usage = { key: license.key, token: session.token, acknowledged: 0, pending: 0 };
+      }
+      if (Number(usage.token.split('.')[1]) <= Date.now() + 60000) {
+        const { session } = await post({ action: 'open', token: usage.token });
+        usage.token = session.token;
+        // Preserve acknowledged/pending totals: the renewed session retains its server receipt.
+      }
+      if (!usage.pending && usage.acknowledged + Math.min(600, seconds) > 864000) {
+        const { session } = await post({ action: 'open' });
+        usage = { key: license.key, token: session.token, acknowledged: 0, pending: 0 };
+      }
+      // Persist the cumulative target BEFORE sending. A lost response retries the same target.
+      const amount = usage.pending || Math.min(600, seconds);
+      usage.pending = amount;
+      await chrome.storage.local.set({ passUsage: usage });
+      const data = await post({ action: 'report', token: usage.token, total: usage.acknowledged + amount });
+      usage.acknowledged += amount; usage.pending = 0;
+      await chrome.storage.local.set({ passUsage: usage });
+      return { license: data.license, acknowledged: amount };
+    }
+    const amount = Math.min(600, seconds);
     const res = await fetch(SITE_URL + '/api/license', {
-      method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key: license.key, spend: seconds }),
+      method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key: license.key, spend: amount }),
+      signal: AbortSignal.timeout(15000),
     });
     const data = await res.json().catch(() => ({}));
-    return res.ok && data.ok ? data.license : null;
+    return res.ok && data.ok ? { license: data.license, acknowledged: amount } : null;
   } catch { return null; } // offline: keep counting, report later
+}
+
+async function flushPassDebt(maxChunks = 60) {
+  for (let i = 0; i < maxChunks; i++) {
+    const { license, pass } = await chrome.storage.local.get(['license', 'pass']);
+    const owed = Math.max(0, Number(pass?.unsynced) || 0);
+    if (!owed) return true;
+    if (!license || (pass.debtKey && pass.debtKey !== license.key)) return false;
+    if (license.status !== 'active') {
+      await chrome.storage.local.set({ pass: { ...pass, on: false, unsynced: 0 } });
+      return true;
+    }
+    const result = await reportPassTime(license, owed);
+    if (!result) return false;
+    const remaining = Math.max(0, owed - result.acknowledged);
+    const fresh = { ...license, ...result.license, checkedAt: Date.now() };
+    const fromMax = Math.min(fresh.maxSeconds, remaining);
+    fresh.maxSeconds -= fromMax;
+    fresh.proSeconds = Math.max(0, fresh.proSeconds - (remaining - fromMax));
+    await chrome.storage.local.set({ license: fresh, pass: { ...pass, debtKey: license.key, unsynced: remaining, syncedAt: Date.now(), on: pass.on && fresh.maxSeconds + fresh.proSeconds > 0 } });
+  }
+  return false; // Large backlogs stay recorded; another worker wake can continue.
 }
 
 async function passTick(now = Date.now()) {
   const { license, pass } = await chrome.storage.local.get(['license', 'pass']);
   if (!pass || pass.on !== true || !license || license.status !== 'active') return;
+  if (pass.unsynced > 0 && pass.debtKey && pass.debtKey !== license.key) return;
   if (now - lastPassTick < PASS_TICK_MS * 0.8) return; // another frame of the same call already counted this
   const seconds = lastPassTick ? Math.min(30, Math.round((now - lastPassTick) / 1000)) : PASS_TICK_MS / 1000;
   lastPassTick = now;
@@ -102,12 +161,19 @@ async function passTick(now = Date.now()) {
   let owed = unsynced;
   if (max + pro <= 0 || now - (Number(pass.syncedAt) || 0) >= PASS_SYNC_MS) {
     const fresh = await reportPassTime(license, unsynced);
-    if (fresh) { next = { ...license, ...fresh, checkedAt: now }; owed = 0; }
+    if (fresh) {
+      owed = Math.max(0, unsynced - fresh.acknowledged);
+      next = { ...license, ...fresh.license, checkedAt: now };
+      // Keep unreported offline usage deducted locally, instead of restoring time after a partial sync.
+      const pendingMax = Math.min(next.maxSeconds, owed);
+      next.maxSeconds -= pendingMax;
+      next.proSeconds = Math.max(0, next.proSeconds - (owed - pendingMax));
+    }
   }
   const empty = next.maxSeconds + next.proSeconds <= 0;
   await chrome.storage.local.set({
     license: next,
-    pass: { on: !empty, unsynced: owed, syncedAt: owed === 0 ? now : Number(pass.syncedAt) || 0 },
+    pass: { on: !empty, debtKey: license.key, unsynced: owed, syncedAt: owed === 0 ? now : Number(pass.syncedAt) || 0 },
   });
 }
 
@@ -367,6 +433,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   // The toolbar popup: an extension page (also when popup.html is opened in a tab).
   const fromExtensionPage = typeof sender.url === 'string' && sender.url.startsWith(chrome.runtime.getURL(''));
+  if (fromExtensionPage && msg.type === 'license-prepare') {
+    passQueue = passQueue.then(async () => {
+      const ok = await flushPassDebt();
+      if (ok) {
+        const { pass } = await chrome.storage.local.get('pass');
+        await chrome.storage.local.set({ pass: { ...pass, on: false } });
+      }
+      sendResponse({ ok });
+    }).catch(() => sendResponse({ ok: false }));
+    return true;
+  }
   if (fromExtensionPage && /^popup-/.test(msg.type)) {
     popupMessage(msg, sendResponse);
     return true; // async response
@@ -396,7 +473,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // A frame's mic hook reported something -> tell the UI in the top frame.
     // The call tab says: a call is running with the pass switched on.
     case 'pass-tick':
-      passQueue = passQueue.then(() => passTick()).catch(() => {});
+      {
+        const at = Date.now();
+        passQueue = passQueue.then(() => passTick(at)).catch(() => {});
+      }
       break;
 
     case 'music-state':

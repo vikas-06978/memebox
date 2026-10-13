@@ -1,0 +1,137 @@
+{
+  "fx_outfit": { "message": "ਪਹਿਰਾਵਾ" },
+  "fx_outfit_none": { "message": "ਕੋਈ ਨਹੀਂ" },
+  "fx_outfit_party": { "message": "🎉 ਪਾਰਟੀ ਟੋਪੀ" },
+  "fx_outfit_crown": { "message": "👑 ਤਾਜ" },
+  "fx_outfit_scarf": { "message": "🧣 ਮਫ਼ਲਰ" },
+  "extName": {
+    "message": "MemeBox"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "Meme soundboard and voice changer for browser calls."
+  },
+  "actionTitle": {
+    "message": "MemeBox: ਇਸ ਟੈਬ ਦੀ ਆਵਾਜ਼ ਕਾਲ ਵਿੱਚ ਭੇਜੋ"
+  },
+  "cmdToggleUi": {
+    "message": "😂 ਬਟਨ ਦਿਖਾਓ / ਲੁਕਾਓ"
+  },
+  "cmdFav1": {
+    "message": "ਮਨਪਸੰਦ 1 ਚਲਾਓ"
+  },
+  "cmdFav2": {
+    "message": "ਮਨਪਸੰਦ 2 ਚਲਾਓ"
+  },
+  "cmdFav3": {
+    "message": "ਮਨਪਸੰਦ 3 ਚਲਾਓ"
+  },
+  "cmdFav4": {
+    "message": "ਮਨਪਸੰਦ 4 ਚਲਾਓ"
+  },
+  "cmdFav5": {
+    "message": "ਮਨਪਸੰਦ 5 ਚਲਾਓ"
+  },
+  "cmdFav6": {
+    "message": "ਮਨਪਸੰਦ 6 ਚਲਾਓ"
+  },
+  "cmdFav7": {
+    "message": "ਮਨਪਸੰਦ 7 ਚਲਾਓ"
+  },
+  "cmdFav8": {
+    "message": "ਮਨਪਸੰਦ 8 ਚਲਾਓ"
+  },
+  "cmdFav9": {
+    "message": "ਮਨਪਸੰਦ 9 ਚਲਾਓ"
+  },
+  "cmdToggleVoice": { "message": "ਆਵਾਜ਼ ਬਦਲਣ ਵਾਲਾ ਚਾਲੂ / ਬੰਦ ਕਰੋ" },
+  "lang_code": {
+    "message": "pa"
+  },
+  "text_dir": {
+    "message": "ltr"
+  },
+  "cmdStopAll": {
+    "message": "ਸਾਰੇ ਮੀਮ ਬੰਦ ਕਰੋ"
+  },
+  "join_first": {
+    "message": "ਪਹਿਲਾਂ ਕਾਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ, ਫਿਰ 😂 ਦਬਾਓ"
+  },
+  "st_live": {
+    "message": "ਮੀਮ ਤੁਹਾਡੇ ਮਾਈਕ ਰਾਹੀਂ ਵੱਜ ਰਹੇ ਹਨ"
+  },
+  "options": {
+    "message": "ਸੈਟਿੰਗਾਂ"
+  },
+  "close": {
+    "message": "ਬੰਦ ਕਰੋ (Esc)"
+  },
+  "cat_general": {
+    "message": "ਆਮ"
+  },
+  "cat_college": {
+    "message": "ਕਾਲਜ"
+  },
+  "cat_cricket": {
+    "message": "ਕ੍ਰਿਕਟ"
+  },
+  "cat_effects": {
+    "message": "ਆਵਾਜ਼ ਦੇ ਪ੍ਰਭਾਵ"
+  },
+  "cat_office": {
+    "message": "ਦਫ਼ਤਰ"
+  },
+  "cat_party": {
+    "message": "ਪਾਰਟੀ"
+  },
+  "cat_clips": {
+    "message": "ਕਲਿੱਪਾਂ"
+  },
+  "cat_mine": {
+    "message": "ਮੇਰੇ ਡਾਇਲਾਗ"
+  },
+  "play": {
+    "message": "ਚਲਾਓ"
+  },
+  "theme_auto": {
+    "message": "ਆਪਣੇ ਆਪ"
+  },
+  "theme_light": {
+    "message": "ਹਲਕਾ"
+  },
+  "theme_dark": {
+    "message": "ਗੂੜ੍ਹਾ"
+  },
+  "lang_auto": {
+    "message": "ਆਪਣੇ ਆਪ (Chrome ਵਾਂਗ)"
+  },
+  "mu_title": {
+    "message": "🎵 ਸੰਗੀਤ"
+  },
+  "mu_stop": {
+    "message": "ਰੋਕੋ"
+  },
+  "pg_wave": {
+    "message": "ਹੱਥ ਹਿਲਾਓ"
+  },
+  "pg_cheer": {
+    "message": "ਹੌਸਲਾ ਵਧਾਓ"
+  },
+  "pg_heartbeat": {
+    "message": "ਪਿਆਰ"
+  },
+  "pg_cry": {
+    "message": "ਰੋਣਾ"
+  },
+  "pg_raspberry": {
+    "message": "ਜੀਭ"
+  },
+  "pg_dance": {
+    "message": "ਨੱਚੋ"
+  },
+  "search_ph": {
+    "message": "ਮੀਮ ਲੱਭੋ"
+  }
+}

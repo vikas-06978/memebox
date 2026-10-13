@@ -1,0 +1,1 @@
+import{synthesizeWav as n}from"./lib/tts.js";self.onmessage=async a=>{const{id:s,text:t,lang:o,espeak:r={}}=a.data||{};try{const e=await n(t,o,r);self.postMessage({id:s,ok:!0,wav:e},[e])}catch(e){self.postMessage({id:s,ok:!1,error:String(e&&e.message||e)})}};

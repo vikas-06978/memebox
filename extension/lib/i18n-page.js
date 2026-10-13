@@ -63,8 +63,12 @@
   async function setLanguage(code) {
     let stored = null;
     if (code && code !== 'auto') {
-      const res = await fetch(chrome.runtime.getURL(`_locales/${code}/messages.json`));
-      const raw = await res.json();
+      const [res, fallback] = await Promise.all([
+        fetch(chrome.runtime.getURL(`_locales/${code}/messages.json`)),
+        fetch(chrome.runtime.getURL('_locales/en/messages.json')),
+      ]);
+      if (!res.ok || !fallback.ok) throw new Error('Could not load this language.');
+      const raw = { ...await fallback.json(), ...await res.json() };
       stored = { code, messages: Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v.message])) };
     }
     syncPack(stored);

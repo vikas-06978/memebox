@@ -7,6 +7,26 @@ const SECURITY = {
   'Cache-Control': 'no-store',
 };
 
+export class RequestBodyError extends Error {
+  constructor(message, status) { super(message); this.status = status; }
+}
+export async function readJsonLimited(request, maxBytes = 4096) {
+  if (Number(request.headers.get('Content-Length')) > maxBytes) throw new RequestBodyError('Request too large.', 413);
+  const reader = request.body?.getReader();
+  if (!reader) throw new RequestBodyError('Send JSON.', 400);
+  const chunks = []; let length = 0;
+  while (true) {
+    const { value, done } = await reader.read(); if (done) break;
+    length += value.byteLength;
+    if (length > maxBytes) { await reader.cancel(); throw new RequestBodyError('Request too large.', 413); }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(length); let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  try { return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
+  catch { throw new RequestBodyError('Send JSON.', 400); }
+}
+
 export function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data), {
     status,

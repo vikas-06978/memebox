@@ -8,3 +8,7 @@ RATE_SALT=another-long-random-string
 # A made-up UPI ID for trying /buy locally. Put your real one in Cloudflare, not here.
 UPI_ID=memebox@upi
 UPI_NAME=MemeBox
+
+# Hosted files stay off unless deliberately enabled after billing review.
+HOSTED_FILES_ENABLED=off
+HOSTED_AUDIO_ENABLED=off

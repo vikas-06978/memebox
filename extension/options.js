@@ -867,6 +867,7 @@ $('line-lang').replaceChildren(...Object.entries(MEME.LANGS).map(([code, name]) 
 const UI_LANGS = [
   ['en', 'English'], ['hi', 'हिन्दी'], ['bn', 'বাংলা'], ['mr', 'मराठी'], ['ta', 'தமிழ்'], ['te', 'తెలుగు'],
   ['gu', 'ગુજરાતી'], ['es', 'Español'], ['ar', 'العربية'], ['pt_BR', 'Português'], ['fr', 'Français'], ['id', 'Bahasa Indonesia'],
+  ['pa', 'ਪੰਜਾਬੀ (Beta)'], ['de', 'Deutsch (Beta)'], ['it', 'Italiano (Beta)'], ['ja', '日本語 (Beta)'],
 ];
 $('ui-lang').replaceChildren(el('option', { value: 'auto' }, t('lang_auto')), ...UI_LANGS.map(([code, name]) => el('option', { value: code }, name)));
 $('ui-lang').value = globalThis.MemeI18n.language;
@@ -924,6 +925,7 @@ function renderPro() {
 async function checkLicense(key) {
   const res = await fetch(MEMEBOX_CONFIG.SITE_URL + '/api/license', {
     method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ key }),
+    signal: AbortSignal.timeout(15000),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.ok) throw new Error(data.error || t('op_license_offline'));
@@ -941,12 +943,18 @@ $('license-form').addEventListener('submit', async (e) => {
     toast(err instanceof TypeError ? t('op_license_offline') : err.message, true);
     return;
   }
+  const prepared = await chrome.runtime.sendMessage({ type: 'license-prepare' }).catch(() => null);
+  if (!prepared?.ok) { toast(t('op_license_offline'), true); return; }
   await chrome.storage.local.set({ license: { ...license, checkedAt: Date.now() } });
   $('license-key').value = '';
   toast(license.status === 'active' ? t('op_license_ok') : t('op_license_revoked', license.key), license.status !== 'active');
 });
 
-$('license-remove').addEventListener('click', () => chrome.storage.local.remove('license'));
+$('license-remove').addEventListener('click', async () => {
+  const prepared = await chrome.runtime.sendMessage({ type: 'license-prepare' }).catch(() => null);
+  if (!prepared?.ok) { toast(t('op_license_offline'), true); return; }
+  await chrome.storage.local.remove('license');
+});
 $('buy').addEventListener('click', () => {
   chrome.tabs.create({ url: `${MEMEBOX_CONFIG.SITE_URL}/buy?v=${encodeURIComponent(chrome.runtime.getManifest().version)}` });
 });

@@ -1,10 +1,12 @@
 # MemeBox: Meme Soundboard & Voice Changer for Calls
 
+**Local testing branch:** follow [START-HERE.md](START-HERE.md). The ready-to-load unlocked test copy is `review/extension`; open `review/listen.html` for offline original music. Do not deploy this branch or publish its review build.
+
 MemeBox plays meme lines, clips and sound effects **into your microphone** during browser video calls, so everyone in the call hears them. Only you need the extension.
 
 It works in the browser versions of Google Meet, Zoom (web client), Microsoft Teams and Discord.
 
-Version 1.2.0. See [CHANGELOG.md](CHANGELOG.md) for what's in it, and [STORE.md](STORE.md) for the store listing and publishing checklists.
+Development version 1.3.0; final release version remains pending. See [CHANGELOG.md](CHANGELOG.md) for what's in it, and [STORE.md](STORE.md) for the store listing and publishing checklists.
 
 **Before you publish, fill in these placeholders:**
 - `extension/config.js`: `SITE_URL` (your Cloudflare Pages address) and, after approval, `STORE_URL`.
@@ -100,7 +102,7 @@ Each Pro feature is marked in the code with `// PRO:` next to a `MemePlan.can(..
 | All packs | General and College | `options.js` |
 | Party mode / timed lines | playing by hand | `options.js`, `ui.js` |
 
-Prices are in `site/src/shop.js` (the one place): time passes **Pro 30 min ₹9 / 1 h ₹15 / 2 h ₹25** and **Pro Max 1 h ₹25 / 3 h ₹49** (dollars: $1.49 / 2.49 / 3.99 and $3.49 / 6.49), and characters bought for ever (**₹29 / 39 / 49** each, all ten for **₹249**). Hours never expire. Cat and Dog are free; Pro has six characters, Pro Max all twelve. The old lifetime Pro and the picture packs are marked `closed`. Before the character shop goes live, run `db/migrations/2026-10-characters.sql` once. Change a price there, run `npm run seo` (the structured data repeats it) and deploy again; a test checks both agree.
+Prices and entitlements are authoritative in `site/src/shop.js`. Pro passes: 30 min ₹9 / 1 h ₹15 / 2 h ₹25 / 5 h ₹49 ($1.49 / 2.49 / 3.99 / 7.99). Pro Max: 1 h ₹25 / 3 h ₹49 / 8 h ₹99 ($3.49 / 6.49 / 14.99). Pass balances do not expire and count only in a call. Cat and Dog are free; Pro includes six characters and Pro Max all fourteen. Bunny, Panda, Owl and Fox cost ₹29 ($0.99) each; Penguin, Lion, Monkey and Frog cost ₹39 ($1.49) each; those eight together cost ₹199 ($4.99). Unicorn, Robot, Snake and Bird are Pro Max exclusives, unavailable for new permanent purchase. Legacy purchases remain honored. Provider integration is test-only; see `docs/payment-testing.md`. Do not run production migrations or deployments while reviewing this branch.
 
 ### How buying works (UPI straight to your bank)
 

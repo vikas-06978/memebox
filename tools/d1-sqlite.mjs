@@ -45,7 +45,18 @@ export class D1 {
   }
 
   async batch(statements) {
-    return Promise.all(statements.map((s) => s.run()));
+    this.db.exec('BEGIN');
+    try {
+      const results = statements.map((s) => {
+        const r = this.db.prepare(s.sql).run(...s.args);
+        return { success: true, meta: { changes: Number(r.changes) } };
+      });
+      this.db.exec('COMMIT');
+      return results;
+    } catch (error) {
+      this.db.exec('ROLLBACK');
+      throw error;
+    }
   }
 
   async exec(sql) {

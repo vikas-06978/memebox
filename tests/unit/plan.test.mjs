@@ -174,7 +174,7 @@ test('characters: Free has two, Pro six, Max fourteen; new exclusives require Ma
   assert.equal(plan.canFx('character:unicorn', now), true, 'preserve an existing purchase');
 });
 
-test('music: Chill and Funky are free, the other tunes need Pro (a pass or a key); the lists match the engine', () => {
+test('music: Free has two tunes, Pro seven, Max thirteen; the lists match the engine', () => {
   const now = Date.UTC(2026, 9, 1);
   const plan = withConfig({ PRO_ENABLED: true });
   const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
@@ -185,4 +185,22 @@ test('music: Chill and Funky are free, the other tunes need Pro (a pass or a key
   plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now - 1000 });
   plan.setPass({ on: true });
   assert.equal(plan.canFx('music:party', now), true);
+  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 7);
+  assert.equal(plan.canFx('music:bass', now), false);
+  assert.equal(plan.canFx('music:phonk_desi', now), true);
+  assert.equal(plan.canFx('music:phonk_drift', now), false);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', maxSeconds: 60, checkedAt: now });
+  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 13);
+  for (const id of music.PHONK_IDS) assert.equal(plan.canFx('music:' + id, now), true);
+});
+
+test('filters: Free has three, Pro eight, Max twenty, excluding the no-filter choice', () => {
+  const now = Date.now(), plan = withConfig({ PRO_ENABLED: true }), fx = loadScript('lib/fx.js').MemeFx;
+  assert.equal(fx.FREE_FILTERS.length - 1, 3);
+  assert.equal(fx.FREE_FILTERS.length - 1 + fx.PRO_FILTERS.length, 8);
+  assert.equal(fx.FILTERS.length - 1, 20);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now });
+  plan.setPass({ on: true });
+  for (const id of fx.PRO_FILTERS) assert.equal(fx.sanitize({ filter: id }, f => plan.canFx(f, now)).filter, id);
+  assert.equal(fx.sanitize({ filter: 'neon' }, f => plan.canFx(f, now)).filter, 'none');
 });

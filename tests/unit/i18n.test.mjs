@@ -9,17 +9,19 @@ const LOCALES = fs.readdirSync(path.join(EXT, '_locales'));
 const load = (lang) => JSON.parse(fs.readFileSync(path.join(EXT, '_locales', lang, 'messages.json'), 'utf8'));
 const all = Object.fromEntries(LOCALES.map((l) => [l, load(l)]));
 const en = all.en;
+const BETA = new Set(['de', 'it', 'ja', 'pa']);
 const read = (f) => fs.readFileSync(path.join(EXT, f), 'utf8');
 const jsFiles = fs.readdirSync(EXT).filter((f) => f.endsWith('.js'));
 const htmlFiles = fs.readdirSync(EXT).filter((f) => f.endsWith('.html'));
 const subs = (s) => [...String(s).matchAll(/\$(\d)/g)].map((m) => m[1]).sort().join();
 
-test('the extension ships 12 languages', () => {
-  assert.deepEqual(LOCALES.sort(), ['ar', 'bn', 'en', 'es', 'fr', 'gu', 'hi', 'id', 'mr', 'pt_BR', 'ta', 'te']);
+test('the extension ships twelve complete languages and four explicit beta languages', () => {
+  assert.deepEqual(LOCALES.sort(), ['ar', 'bn', 'de', 'en', 'es', 'fr', 'gu', 'hi', 'id', 'it', 'ja', 'mr', 'pa', 'pt_BR', 'ta', 'te']);
 });
 
 test('every language has exactly the English keys, none empty, same $1…$9 placeholders', () => {
   for (const [lang, msgs] of Object.entries(all)) {
+    if (BETA.has(lang)) continue; // Intentionally partial beta bundles are checked separately.
     assert.deepEqual(Object.keys(msgs).sort(), Object.keys(en).sort(), `${lang} keys`);
     for (const [k, v] of Object.entries(en)) {
       assert.ok(msgs[k].message && msgs[k].message.trim(), `${lang} ${k} empty`);
@@ -76,9 +78,10 @@ const siteLangs = fs.readdirSync(I18N).map((f) => f.replace('.json', ''));
 const siteDict = (l) => JSON.parse(fs.readFileSync(path.join(I18N, l + '.json'), 'utf8'));
 const siteEn = siteDict('en');
 
-test('the website ships the same 12 languages, all with exactly the English keys', () => {
-  assert.deepEqual(siteLangs.sort(), ['ar', 'bn', 'en', 'es', 'fr', 'gu', 'hi', 'id', 'mr', 'pt', 'ta', 'te']);
+test('the website ships sixteen languages; complete bundles retain every English key', () => {
+  assert.deepEqual(siteLangs.sort(), ['ar', 'bn', 'de', 'en', 'es', 'fr', 'gu', 'hi', 'id', 'it', 'ja', 'mr', 'pa', 'pt', 'ta', 'te']);
   for (const l of siteLangs) {
+    if (BETA.has(l)) continue;
     const d = siteDict(l);
     assert.deepEqual(Object.keys(d).sort(), Object.keys(siteEn).sort(), `${l} keys`);
     for (const [k, v] of Object.entries(siteEn)) {
@@ -129,7 +132,24 @@ test('every Lights filter, character and music tune has a name in every language
     ...fx.LAMP_ANIMS.map((a) => 'fx_anim_' + a),
     ...fx.PATTERNS.map((p) => 'fx_pat_' + p),
     ...fx.FIXTURES.map((f) => 'fx_fix_' + f),
-    ...music.IDS.map((id) => 'mu_t_' + id),
+    ...fx.OUTFITS.map(id => 'fx_outfit_' + id),
+    ...[...music.IDS, ...music.PHONK_IDS].map((id) => 'mu_t_' + id),
   ];
-  for (const [lang, msgs] of Object.entries(all)) for (const k of keys) assert.ok(msgs[k] && msgs[k].message, `${lang} is missing ${k}`);
+  for (const [lang, msgs] of Object.entries(all)) for (const k of keys) assert.ok((msgs[k] || (BETA.has(lang) && en[k]))?.message, `${lang} is missing ${k}`);
+});
+
+test('beta bundles use known nonempty keys, matching placeholders and native core controls', () => {
+  for (const lang of BETA) {
+    const messages = all[lang];
+    for (const key of ['options', 'close', 'play', 'mu_stop', 'search_ph', 'pg_wave', 'pg_dance']) {
+      assert.ok(messages[key]?.message); assert.notEqual(messages[key].message, en[key].message, `${lang}: native ${key}`);
+    }
+    for (const [key, value] of Object.entries(messages)) {
+      assert.ok(en[key], `${lang}: unknown key ${key}`);
+      assert.ok(value.message.trim()); assert.equal(subs(value.message), subs(en[key].message));
+    }
+    for (const [key, value] of Object.entries(siteDict(lang))) {
+      assert.ok(key in siteEn); assert.ok(value.trim()); assert.equal(subs(value), subs(siteEn[key]));
+    }
+  }
 });

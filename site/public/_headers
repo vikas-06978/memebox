@@ -7,6 +7,9 @@
 /uninstall
   X-Robots-Tag: noindex
 
+/buy
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://checkout.razorpay.com; frame-src https://api.razorpay.com https://checkout.razorpay.com; connect-src 'self' https://api.razorpay.com; img-src 'self' data:; style-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+
 /phonk
   X-Robots-Tag: noindex
   Content-Security-Policy: default-src 'self'; script-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self'; img-src 'self' data:; style-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemeBox Playground</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="playground.css">
+  <script src="lib/theme.js"></script>
+</head>
+<body>
+  <header class="top">
+    <img src="icons/icon48.png" alt="" width="48" height="48">
+    <div><h1>MemeBox <span data-i18n="fx_watermark">PREVIEW</span></h1><p class="sub" data-i18n="fx_locked">🔒 Preview only: not sent to your call.</p></div>
+    <a class="button" href="options.html" data-i18n="options">Options</a>
+  </header>
+  <main class="playground-layout">
+    <section class="preview-stage card">
+      <canvas id="preview" width="960" height="540" data-i18n-aria-label="fx_title" aria-label="Lights and looks"></canvas>
+      <div class="preview-controls">
+        <strong id="selected-character" aria-live="polite"></strong>
+        <label class="switch"><input id="animate" type="checkbox" checked><span data-i18n="fx_state_on">On</span></label>
+      </div>
+      <div class="reaction-controls" role="group" aria-label="Reactions">
+        <button type="button" data-action="wave" aria-label="Wave">👋</button>
+        <button type="button" data-action="cheer" aria-label="Cheer">🎉</button>
+        <button type="button" data-action="heartbeat" aria-label="Love">💗</button>
+        <button type="button" data-action="cry" aria-label="Cry">😭</button>
+        <button type="button" data-action="raspberry" aria-label="Tongue">😛</button>
+        <button type="button" data-action="dance" aria-label="Dance">🪩</button>
+      </div>
+      <p class="hint" data-i18n="mu_locked">🔒 Preview only (on your speakers, not in the call).</p>
+      <p id="music-status" class="hint" role="status" aria-live="polite"></p>
+    </section>
+    <div class="preview-library">
+      <section class="card"><h2 data-i18n="fx_character">Character</h2><div id="characters" class="character-grid"></div><label><span data-i18n="fx_outfit">Outfit</span><select id="outfit"></select></label></section>
+      <section class="card"><h2 data-i18n="fx_title">💡 Lights &amp; looks</h2>
+        <label><span data-i18n="fx_lamp">Hanging lamp</span><select id="fixture"></select></label>
+        <label><span data-i18n="fx_looks">Looks (filters)</span><select id="filter"></select></label>
+        <label><span data-i18n="fx_colors">Light colour</span><select id="colour"></select></label>
+      </section>
+      <section class="card"><h2 data-i18n="mu_title">🎵 Music</h2><div id="tunes" class="tune-grid"></div><button id="stop-music" type="button" data-i18n="mu_stop">Stop</button></section>
+    </div>
+  </main>
+  <script src="lib/i18n-page.js"></script>
+  <script src="lib/fx.js"></script>
+  <script src="lib/music.js"></script>
+  <script src="playground.js"></script>
+</body>
+</html>

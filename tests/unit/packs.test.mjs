@@ -15,7 +15,7 @@ import { onRequest as apiPackLink } from '../../site/functions/api/pack-link.js'
 
 const ADMIN_KEY = 'admin-key-for-tests';
 let db, bucket, cookie;
-const env = (extra = {}) => ({ DB: db, PACKS: bucket, ADMIN_KEY, RATE_SALT: 'salt', HOSTED_AUDIO_ENABLED: 'on', ...extra });
+const env = (extra = {}) => ({ DB: db, PACKS: bucket, ADMIN_KEY, RATE_SALT: 'salt', HOSTED_AUDIO_ENABLED: 'on', HOSTED_FILES_ENABLED: 'on', ...extra });
 const call = (h, request, e = env()) => h({ request, env: e, params: {}, waitUntil() {} });
 const req = (path, init = {}) => new Request('https://memebox.pages.dev' + path, { ...init, headers: { 'CF-Connecting-IP': '203.0.113.30', ...(init.headers || {}) } });
 const post = (fields) => {
@@ -381,7 +381,7 @@ test('Phonk Mode: YouTube links are stored (nothing hosted), need the official-u
   assert.doesNotMatch(page, /<iframe/, 'the admin page embeds nothing');
 });
 
-test('Phonk Mode: the catalogue hides the video ids, /api/pack-link gives one only to people whose plan allows it, and PHONK_MODE=off switches it all off', async () => {
+test('YouTube playlists are always free, even with legacy paid labels; PHONK_MODE=off switches them off', async () => {
   const id = await makePack({ title: 'Phonk Mode', kind: 'links', tier: 'max' });
   await call(adminPacks, post({ action: 'links-add', pack: id, links: 'https://youtu.be/aaaaaaaaaaa | Free one | A\nhttps://youtu.be/bbbbbbbbbbb | Pro one | B\nhttps://youtu.be/ccccccccccc | Max one | C', official: 'on' }));
   const [a, b] = await listItems(db, id);
@@ -390,23 +390,28 @@ test('Phonk Mode: the catalogue hides the video ids, /api/pack-link gives one on
   await call(adminPacks, post({ action: 'pack-update', pack: id, title: 'Phonk Mode', region: 'common', tier: 'max', description: '', status: 'live', sort: '1' }));
   const cat = await (await call(apiPacks, req('/api/packs'))).json();
   assert.equal(cat.packs[0].items.length, 3);
-  assert.deepEqual(cat.packs[0].items.map((i) => i.tier), ['free', 'pro', 'max']);
-  assert.ok(cat.packs[0].items.every((i) => i.text === '' && i.bytes === 0), 'no video id in the public list');
-  assert.doesNotMatch(JSON.stringify(cat), /aaaaaaaaaaa|bbbbbbbbbbb|ccccccccccc/);
+  assert.deepEqual(cat.packs[0].items.map((i) => i.tier), ['free', 'free', 'free']);
+  assert.ok(cat.packs[0].items.every((i) => i.text === '' && i.bytes === 0));
+  assert.deepEqual(cat.packs[0].items.map(i => i.videoId).sort(), ['aaaaaaaaaaa', 'bbbbbbbbbbb', 'ccccccccccc'], 'free public video IDs avoid per-play D1 requests');
+  assert.equal(cat.packs[0].tier, 'free');
 
   const items = await listItems(db, id);
   const link = (item, key, e = env()) => call(apiPackLink, req('/api/pack-link?item=' + item, { headers: key ? { 'X-MemeBox-Key': key } : {} }), e);
   const ok = await link(items[0].id);
   assert.equal(ok.status, 200);
   assert.deepEqual(await ok.json(), { ok: true, id: 'aaaaaaaaaaa', title: 'Free one', artist: 'A' });
-  assert.equal((await link(items[1].id)).status, 403, 'a Pro track needs a key');
-  assert.equal((await link(items[2].id)).status, 403);
+  assert.equal((await link(items[1].id)).status, 200, 'third-party YouTube embeds never require a paid key');
+  assert.equal((await link(items[2].id)).status, 200);
   const proKey = await createLicense(db, { kind: 'paid', proSeconds: 600 });
   const maxKey = await createLicense(db, { kind: 'paid', maxSeconds: 600 });
   assert.equal((await link(items[1].id, proKey)).status, 200);
-  assert.equal((await link(items[2].id, proKey)).status, 403, 'Pro does not open a Pro Max track');
+  assert.equal((await link(items[2].id, proKey)).status, 200);
   assert.equal((await link(items[2].id, maxKey)).status, 200);
   assert.equal((await link('i-doesnotexist')).status, 404);
+  await db.prepare('UPDATE pack_items SET cleared = 0 WHERE id = ?').bind(items[0].id).run();
+  assert.equal((await link(items[0].id)).status, 404, 'an uncleared live record cannot bypass rights checks through the legacy endpoint');
+  const restricted = await (await call(apiPacks, req('/api/packs'))).json();
+  assert.ok(restricted.packs[0].items.every(i => i.id !== items[0].id), 'uncleared records are excluded from the public video catalog');
   // the kill switch
   const off = env({ PHONK_MODE: 'off' });
   assert.equal((await link(items[0].id, '', off)).status, 503);
@@ -414,4 +419,18 @@ test('Phonk Mode: the catalogue hides the video ids, /api/pack-link gives one on
   assert.equal(cat2.packs.length, 0, 'the catalogue has no Phonk Mode packs while it is off');
   // a link item is never served as a file
   assert.equal((await call(apiPackFile, req('/api/pack-file?item=' + items[0].id))).status, 404);
+});
+
+// No R2 calls are permitted when hosting has not been explicitly enabled.
+test('hosted files default off before database or bucket access', async () => {
+  const disabled = env({ HOSTED_FILES_ENABLED: undefined, DB: { prepare() { throw Error('Unexpected database access'); } }, PACKS: { get() { throw Error('Unexpected R2 access'); } } });
+  assert.equal((await call(apiPackFile, req('/api/pack-file?item=anything'), disabled)).status, 503);
+});
+test('disabled hosting rejects uploads without writing an R2 object', async () => {
+  const id = await makePack();
+  const before = await listItems(db, id);
+  const disabled = env({ HOSTED_FILES_ENABLED: undefined, PACKS: { put() { throw Error('Unexpected R2 upload'); } } });
+  const response = await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('paused.mp3')] }), disabled);
+  assert.match(errOf(response), /Hosted uploads are paused/);
+  assert.deepEqual(await listItems(db, id), before);
 });
