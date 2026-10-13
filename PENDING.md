@@ -1,3 +1,30 @@
+# Launch plan (Wednesday 2026-10-14)
+
+## Already built (in branch claude/affectionate-brown-4sabry, version 1.3.0)
+- Panel (4 pages), 26 meme languages with voices, the regional language rule, the How-to-use card, free-only mode (`SHOP_OPEN: false`).
+- Lights, characters, tunes, filters, 12 more sounds, Phonk Mode (YouTube links, kill switch `PHONK_MODE=off`), online packs with per-item plans, picture packs, cost caps, admin dashboard, feedback pages.
+
+## Must do for launch day
+Me:
+1. Plan ladder in code and on the pricing page: characters 2 / 6 / 12, filters 3 / 8 / 15, tunes 2 / 7 / 13, packs 10 / 25 / 50 per plan; Phonk Mode free.
+2. Open the shop: `SHOP_OPEN: true`, buy page tested end to end with UPI (order, UTR, approve, key, pass time), clear wording and a refund / support note on /buy, terms and privacy updated (payments, YouTube player and its cookies, packs).
+3. Regional meme packs: India (Hinglish, Hindi, regional languages, strong language flagged 18+) and Global (English), plus original "dialogue" lines (our own, never film quotes) for college, office, cricket, festivals-free fun, travel, food.
+4. Release build: version 2.0.0 (or keep 1.3.0 if you prefer), remove tests and tools, minify, store listing text, screenshots list, privacy answers, permission explanations.
+5. Real-call fixes from your testing.
+You:
+1. Deploy the site and run all D1 scripts; R2 bucket `memebox-packs`; secrets ADMIN_KEY, UPI_ID (and PACK_DAILY_* / PACKS_MAX_MB if you want other numbers).
+2. Upload packs at /admin/packs (only what you own or have written permission for); YouTube links only from official channels.
+3. Test on a real Google Meet call (and Zoom / Teams in the browser if you can), on a normal laptop.
+4. Record or approve the tutorial video; upload the zip and the listing to the Web Store (trusted testers first if you like).
+
+## Should do (if time allows)
+- Original phonk loops (10 free, 15 Pro, 25 Pro Max) made with the music engine.
+- Character outfits as one-time buys (Rs 29-49).
+- Server-signed pass sessions (anti-cheat), rate limits on /api/license and /api/order.
+
+## After launch
+- Razorpay (UPI and cards, automatic keys), monthly plans, gift keys, seasonal drops, creator plan, model download-on-demand, more UI languages, `.site` domain.
+
 # Pending (for Wednesday)
 
 ## You (owner)
