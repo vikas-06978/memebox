@@ -117,8 +117,8 @@
   const trimSource = $('#trim-source');
   if (trimSource) {
     const audio = $('#trim-preview'), start = $('#trim-start'), end = $('#trim-end');
-    const play = $('#trim-play'), use = $('#trim-use'), status = $('#trim-status'), upload = $('#pack-upload-files');
-    let sourceFile = null, sourceUrl = '', previewEnd = 0;
+    const play = $('#trim-play'), use = $('#trim-use'), download = $('#trim-download'), status = $('#trim-status'), upload = $('#pack-upload-files');
+    let sourceFile = null, sourceUrl = '', downloadUrl = '', previewEnd = 0;
     const seconds = (v) => Math.max(0, Number(v) || 0);
     const range = () => {
       const duration = Number(audio.duration) || 0;
@@ -146,6 +146,8 @@
       sourceFile = trimSource.files[0] || null;
       previewEnd = 0;
       if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+      if (downloadUrl) { URL.revokeObjectURL(downloadUrl); downloadUrl = ''; }
+      download.hidden = true;
       if (!sourceFile) { audio.removeAttribute('src'); status.textContent = 'Choose an audio file first.'; return; }
       if (sourceFile.size > 50 * 1048576) { sourceFile = null; audio.removeAttribute('src'); status.textContent = 'That source is over 50 MB. Use a shorter audio file.'; return; }
       sourceUrl = URL.createObjectURL(sourceFile); audio.src = sourceUrl;
@@ -189,6 +191,7 @@
         const base = sourceFile.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9 _-]+/gi, '').trim() || 'meme';
         const file = new File([wav(mono, decoded.sampleRate)], `${base}-clip.wav`, { type: 'audio/wav' });
         const transfer = new DataTransfer(); transfer.items.add(file); upload.files = transfer.files;
+        downloadUrl = URL.createObjectURL(file); download.href = downloadUrl; download.download = file.name; download.hidden = false;
         upload.scrollIntoView({ behavior: 'smooth', block: 'center' });
         status.textContent = `${file.name} is ready in Files below (${(file.size / 1024).toFixed(0)} KB). Fill credit/source/licence, then Upload.`;
       } catch {

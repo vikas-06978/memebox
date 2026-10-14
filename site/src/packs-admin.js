@@ -251,6 +251,7 @@ ${p.kind === 'links' ? `<section class="card">
         <label>End (seconds) <input type="number" id="trim-end" min="0.1" step="0.1" value="1"></label>
         <button type="button" id="trim-play">Preview main part</button>
         <button type="button" id="trim-use" class="primary">Use this trimmed clip</button>
+        <a id="trim-download" class="button" hidden>Save trimmed WAV</a>
       </div>
       <p class="muted" id="trim-status" role="status">Choose an audio file first.</p>
     </div>

@@ -25,6 +25,8 @@ test('admin can trim the main meme part locally and place it in the upload field
     await page.locator('#trim-end').fill('0.8');
     await page.locator('#trim-use').click();
     await expect(page.locator('#trim-status')).toContainText('full-clip.wav is ready');
+    await expect(page.locator('#trim-download')).toBeVisible();
+    await expect(page.locator('#trim-download')).toHaveAttribute('download', 'full-clip.wav');
     const file = await page.locator('#pack-upload-files').evaluate((input) => ({ name: input.files[0]?.name, size: input.files[0]?.size }));
     expect(file.name).toBe('full-clip.wav');
     expect(file.size).toBeGreaterThan(50000);
