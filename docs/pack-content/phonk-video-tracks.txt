@@ -1,0 +1,5 @@
+# Admin-controlled Phonk/music catalog candidates
+# Admin import format: URL | title | artist/creator
+# YouTube-hosted visible playback only; do not download or put these in R2.
+
+https://www.youtube.com/watch?v=j9V78UbdzWI | Coffin Dance | Astronomia / verify official recording and channel before Live
