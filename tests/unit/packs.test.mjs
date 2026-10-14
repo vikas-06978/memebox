@@ -8,6 +8,7 @@ import { makeSession } from '../../site/src/security.js';
 import { createLicense } from '../../site/src/shop.js';
 import { onRequest as adminPacks } from '../../site/functions/admin/packs.js';
 import { onRequest as adminPackFile } from '../../site/functions/admin/packfile.js';
+import { onRequest as adminPackExport } from '../../site/functions/admin/pack-export.js';
 import { onRequest as apiPacks } from '../../site/functions/api/packs.js';
 import { onRequest as apiPackFile } from '../../site/functions/api/pack-file.js';
 import { listPacks, listItems, canPublish, slugify, youtubeId, addLinks } from '../../site/src/packs.js';
@@ -96,7 +97,7 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   assert.equal(id, 'phonk-starter-pack');
   const list = await call(adminPacks, req('/admin/packs', { headers: { Cookie: cookie } }));
   const html = await list.text();
-  assert.match(html, /Meme candidates \(3\)/);
+  assert.match(html, /Research references \(3\)/);
   assert.match(html, /Planned global meme packs/);
   assert.match(html, /Universal Reactions &amp; SFX/);
   assert.match(html, /Global After Dark/);
@@ -112,11 +113,25 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   assert.match(one, /Upload audio/);
   assert.match(one, /Trim a full audio file to its main meme part/);
   assert.match(one, /id="pack-upload-files"/);
+  assert.match(one, /Download inventory CSV/);
   assert.doesNotMatch(one, /Add text memes/, 'text memes belong to memes packs');
   assert.match(one, /You planned 10 free tracks/, 'the free plan counter');
   const row = await db.prepare('SELECT * FROM packs WHERE id = ?').bind(id).first();
   assert.equal(row.status, 'draft');
   assert.equal(slugify('Indian Memes: Desi 😂!'), 'indian-memes-desi');
+});
+
+test('admin exports exact pack titles, credits, sources and licence metadata as CSV', async () => {
+  const id = await makePack({ kind: 'memes' });
+  await call(adminPacks, post({ action: 'lines-add', pack: id, lines: 'A global meme | en', licenceKind: 'ccby', licenceNote: 'Creator permission', credit: 'Creator Name', source: 'https://example.com/original', cleared: 'on' }));
+  const response = await call(adminPackExport, req('/admin/pack-export?id=' + id, { headers: { Cookie: cookie } }));
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('Content-Disposition'), /phonk-starter-pack-inventory\.csv/);
+  const csv = await response.text();
+  assert.match(csv, /"A global meme"/);
+  assert.match(csv, /"Creator Name"/);
+  assert.match(csv, /"https:\/\/example\.com\/original"/);
+  assert.match(csv, /"CC BY: Creator permission"/);
 });
 
 test('global meme pack folders are created once as free drafts', async () => {

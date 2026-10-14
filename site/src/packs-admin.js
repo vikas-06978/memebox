@@ -51,13 +51,13 @@ function candidateQueue() {
     <td><b>${h(m.title)}</b><div class="muted">${h(m.evidence)}</div></td>
     <td>${h(m.pack)}<div class="muted">${h(m.origin)}</div></td>
     <td>${h(m.status)}</td>
-    <td><a class="button" href="${h(m.url)}" target="_blank" rel="noopener noreferrer">Preview on YouTube</a></td>
+    <td><a class="button" href="${h(m.url)}" target="_blank" rel="noopener noreferrer">Open research link</a></td>
   </tr>`).join('');
-  return `<section class="card">
-    <h2>Meme candidates (${MEME_CANDIDATES.length})</h2>
-    <p class="muted">References supplied for pack planning. Preview uses the source on YouTube; MemeBox has not downloaded or hosted these recordings. Move a clip into a public audio pack only after its owner and reuse permission are recorded.</p>
+  return `<details class="card">
+    <summary><b>Research references (${MEME_CANDIDATES.length}) · not uploaded pack audio</b></summary>
+    <p class="muted">These links only identify the memes you supplied. They are not the clips users receive. Your downloaded and trimmed audio is uploaded separately inside a Draft pack below.</p>
     <div class="table-wrap"><table><thead><tr><th>Meme</th><th>Planned pack</th><th>Before publishing</th><th>Reference</th></tr></thead><tbody>${rows}</tbody></table></div>
-  </section>`;
+  </details>`;
 }
 
 function memePackBlueprints() {
@@ -193,7 +193,7 @@ export function packPage({ pack: p, packs = [p], items, hasBucket, msg = '', err
   return page(`${p.title} · packs · MemeBox admin`, `
 <header class="admin-head">
   <h1>${h(p.title)}</h1>
-  <a class="button" href="/admin/packs">All packs</a>
+  <div class="actions"><a class="button" href="/admin/packs">All packs</a><a class="button" href="/admin/pack-export?id=${h(p.id)}">Download inventory CSV</a></div>
 </header>
 ${notice(msg, err)}
 ${packPicker(packs, p.id)}

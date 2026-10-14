@@ -8,6 +8,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { D1 } from './d1-sqlite.mjs';
 import { R2Memory } from './r2-memory.mjs';
+import { R2Disk } from './r2-disk.mjs';
 
 const SITE = path.resolve(import.meta.dirname, '..', 'site');
 const PUBLIC = path.join(SITE, 'public');
@@ -140,8 +141,10 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const env = readDevVars();
   const dbFile = path.join(SITE, '.wrangler', 'dev.sqlite');
   fs.mkdirSync(path.dirname(dbFile), { recursive: true });
-  const { url } = await startSite({ port: Number(process.env.PORT) || 8788, env, db: new D1(dbFile) });
+  const r2Dir = path.join(SITE, '.wrangler', 'r2');
+  const { url } = await startSite({ port: Number(process.env.PORT) || 8788, env, db: new D1(dbFile), bucket: new R2Disk(r2Dir) });
   console.log(`MemeBox site running at ${url}`);
+  console.log(`  Local pack uploads persist in ${r2Dir}`);
   for (const k of ['TURNSTILE_SITE_KEY', 'TURNSTILE_SECRET_KEY', 'ADMIN_KEY']) {
     if (!env[k]) console.log(`  (no ${k} in site/.dev.vars: see README "Run the site locally")`);
   }
