@@ -115,6 +115,21 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   assert.equal(slugify('Indian Memes: Desi 😂!'), 'indian-memes-desi');
 });
 
+test('global meme pack folders are created once as free drafts', async () => {
+  const first = await call(adminPacks, post({ action: 'global-pack-folders' }));
+  assert.match(msgOf(first), /5 Draft global meme pack folders created/);
+  let packs = await listPacks(db);
+  const global = packs.filter((p) => ['universal-reactions-sfx', 'global-internet-classics', 'global-gaming-memes', 'global-trending', 'global-after-dark'].includes(p.id));
+  assert.equal(global.length, 5);
+  assert.ok(global.every((p) => p.kind === 'memes' && p.tier === 'free' && p.status === 'draft'));
+  assert.equal(global.find((p) => p.id === 'universal-reactions-sfx').region, 'common');
+  assert.ok(global.filter((p) => p.id !== 'universal-reactions-sfx').every((p) => p.region === 'global'));
+  const second = await call(adminPacks, post({ action: 'global-pack-folders' }));
+  assert.match(msgOf(second), /already exist/);
+  packs = await listPacks(db);
+  assert.equal(packs.filter((p) => p.id.startsWith('global-') || p.id === 'universal-reactions-sfx').length, 5);
+});
+
 test('uploaded audio: stored in the bucket, a draft unless cleared with a licence, bad files skipped', async () => {
   const id = await makePack();
   const bad = new File(['hello'], 'notes.txt', { type: 'text/plain' });

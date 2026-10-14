@@ -66,6 +66,11 @@ function memePackBlueprints() {
     <h2>Planned global meme packs</h2>
     <p class="muted">Region labels help discovery and never lock users to a country. Everyone may browse every Live pack. Audio will be attached later; these targets keep the first release useful without making the extension unnecessarily heavy.</p>
     <div class="table-wrap"><table><thead><tr><th>Pack</th><th>Shown for</th><th>Launch target</th><th>Purpose</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <form method="post" action="/admin/packs" class="inline">
+      <input type="hidden" name="action" value="global-pack-folders">
+      <button type="submit" class="primary">Create these five Draft pack folders</button>
+    </form>
+    <p class="muted">Safe to press again: existing folders are kept and duplicates are not created.</p>
   </section>`;
 }
 
