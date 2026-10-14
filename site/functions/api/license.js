@@ -5,6 +5,7 @@
 import { json, methodNotAllowed } from '../../src/http.js';
 import { rateLimit, clientIp } from '../../src/security.js';
 import { cleanKey, getLicense, licenseView, spendPassTime, LICENSE_RE } from '../../src/shop.js';
+import { signedPassesEnabled } from '../../src/pass-session.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -31,6 +32,7 @@ export async function onRequest({ request, env }) {
   await env.DB.prepare('UPDATE licenses SET last_seen = ? WHERE key = ?').bind(new Date().toISOString().slice(0, 10), key).run();
   // `spend`: seconds of time pass used since the last report (the extension counts them while in a call).
   const used = body && Number.isFinite(Number(body.spend)) ? Number(body.spend) : 0;
+  if (used > 0 && signedPassesEnabled(env) && env.PASS_LEGACY_REPORTS === 'off') return json({ ok: false, error: 'Use a signed pass session.' }, 409, CORS);
   const fresh = used > 0 && row.status === 'active' ? await spendPassTime(env.DB, row, used) : row;
-  return json({ ok: true, license: licenseView(fresh) }, 200, CORS);
+  return json({ ok: true, license: { ...licenseView(fresh), ...(signedPassesEnabled(env) ? { usageProtocol: 'signed-v1' } : {}) } }, 200, CORS);
 }

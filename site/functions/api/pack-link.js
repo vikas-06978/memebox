@@ -2,7 +2,7 @@
 // the right plan (X-MemeBox-Key). Nothing is hosted: the app plays the official YouTube embed. PHONK_MODE=off in Cloudflare switches it all off.
 import { json, methodNotAllowed } from '../../src/http.js';
 import { rateLimit, clientIp } from '../../src/security.js';
-import { getItem, getPack, tierAllows, cleanKey, getLicense, LICENSE_RE, itemTier, VIDEO_ID_RE } from '../../src/packs.js';
+import { getItem, getPack, VIDEO_ID_RE, canPublish } from '../../src/packs.js';
 
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Allow-Headers': 'X-MemeBox-Key', 'Access-Control-Max-Age': '86400' };
 const DAILY_LINKS = 300;
@@ -16,14 +16,10 @@ export async function onRequest({ request, env }) {
   const url = new URL(request.url);
   const item = await getItem(env.DB, url.searchParams.get('item') || '');
   const pack = item && await getPack(env.DB, item.pack_id);
-  if (!item || !pack || item.kind !== 'link' || item.status !== 'live' || pack.status !== 'live' || !VIDEO_ID_RE.test(item.text)) return json({ ok: false, error: 'Not found.' }, 404, CORS);
+  if (!item || !pack || item.kind !== 'link' || item.status !== 'live' || pack.status !== 'live' || !canPublish(item) || !VIDEO_ID_RE.test(item.text)) return json({ ok: false, error: 'Not found.' }, 404, CORS);
 
-  const key = cleanKey(request.headers.get('X-MemeBox-Key') || url.searchParams.get('key') || '');
-  const license = LICENSE_RE.test(key) ? await getLicense(env.DB, key) : null;
-  const tier = itemTier(item, pack);
-  if (tier !== 'free' && !tierAllows(tier, license)) return json({ ok: false, error: tier === 'max' ? 'This track needs Pro Max.' : 'This track needs Pro.' }, 403, CORS);
-
-  const who = license ? 'key:' + key : 'ip:' + clientIp(request);
+  // Third-party YouTube embeds are always free. Paid tiers apply to MemeBox originals.
+  const who = 'ip:' + clientIp(request);
   const day = await rateLimit(env.DB, { salt: env.RATE_SALT || env.ADMIN_KEY || '', ip: who, bucket: 'pack-link-day', max: DAILY_LINKS, windowHours: 24 });
   if (!day.allowed) return json({ ok: false, error: 'Daily limit reached. Try again tomorrow.' }, 429, CORS);
   await env.DB.prepare('UPDATE pack_items SET downloads = downloads + 1 WHERE id = ?').bind(item.id).run();

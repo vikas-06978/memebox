@@ -1,0 +1,71 @@
+{
+  "seconds": 51.2,
+  "bpm": 150,
+  "bars": 32,
+  "peak": 0.45850661396980286,
+  "rms": 0.05503268653064253,
+  "sectionRms": [
+    0.02593797368912191,
+    0.07396184298191227,
+    0.018883050668764643,
+    0.07493119542741834
+  ],
+  "arrangement": [
+    {
+      "name": "intro",
+      "startBar": 0,
+      "bars": 4,
+      "startSeconds": 0,
+      "rms": 0.025134907698542677
+    },
+    {
+      "name": "build",
+      "startBar": 4,
+      "bars": 4,
+      "startSeconds": 6.4,
+      "rms": 0.02546950851723409
+    },
+    {
+      "name": "drop",
+      "startBar": 8,
+      "bars": 8,
+      "startSeconds": 12.8,
+      "rms": 0.07352121394366885
+    },
+    {
+      "name": "breakdown",
+      "startBar": 16,
+      "bars": 4,
+      "startSeconds": 25.6,
+      "rms": 0.003577795886288764
+    },
+    {
+      "name": "build",
+      "startBar": 20,
+      "bars": 4,
+      "startSeconds": 32,
+      "rms": 0.02546821743861993
+    },
+    {
+      "name": "second-drop",
+      "startBar": 24,
+      "bars": 8,
+      "startSeconds": 38.400000000000006,
+      "rms": 0.07449944140607563
+    }
+  ],
+  "dropChecks": [
+    {
+      "name": "drop",
+      "seconds": 12.8,
+      "beforeRms": 0,
+      "afterRms": 0.07648191166691151
+    },
+    {
+      "name": "second-drop",
+      "seconds": 38.400000000000006,
+      "beforeRms": 0,
+      "afterRms": 0.07649830163926132
+    }
+  ]
+}

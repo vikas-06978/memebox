@@ -7,10 +7,22 @@ test('Options → Send feedback opens the feedback page with only the version', 
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/options.html`);
   const version = await page.evaluate(() => chrome.runtime.getManifest().version);
-  // Tabs opened by chrome.tabs.create aren't routed by Playwright (and the page's own request
-  // isn't reported), so check the address the new tab goes to.
-  const [tab] = await Promise.all([context.waitForEvent('page'), page.locator('#feedback').click()]);
-  await expect.poll(() => tab.url()).toBe(`https://memebox.pages.dev/feedback?v=${version}`);
+  // Observe the real tabs.create request. The extension intentionally lacks the
+  // broad tabs permission, and a restricted network can turn the opened page
+  // into chrome-error://chromewebdata before Playwright observes its URL.
+  const [worker] = context.serviceWorkers();
+  await worker.evaluate(() => {
+    const original = chrome.tabs.create;
+    globalThis.feedbackTabRequest = null;
+    globalThis.restoreTabsCreate = () => { chrome.tabs.create = original; };
+    chrome.tabs.create = function (...args) { globalThis.feedbackTabRequest = args[0]; return original.apply(chrome.tabs, args); };
+  });
+  try {
+    await page.locator('#feedback').click();
+    await expect.poll(() => worker.evaluate(() => globalThis.feedbackTabRequest)).toEqual({ url: `https://memebox.pages.dev/feedback?v=${version}` });
+  } finally {
+    await worker.evaluate(() => { globalThis.restoreTabsCreate(); delete globalThis.restoreTabsCreate; delete globalThis.feedbackTabRequest; });
+  }
 });
 
 test('after the 10th meme it asks once, and never again', async ({ context, callPage }) => {

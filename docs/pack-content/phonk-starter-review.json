@@ -1,0 +1,359 @@
+{
+  "status": "local-review-shortlist",
+  "snapshotDate": "2026-10-14",
+  "trackCount": 30,
+  "tier": "free",
+  "selectionBasis": "User-reported views plus artist and supplied genre variety. Collections are organized by music styles, not user nationality. No nationality-based ranking or exclusivity.",
+  "verifiedForPlayback": false,
+  "ownerControls": "Existing authenticated /admin/packs supports adding/removing songs, editing titles and credits, ordering, and draft/live visibility. No extension release is needed for future catalog changes once site changes are deployed.",
+  "playlists": [
+    {
+      "id": "phonk-essentials",
+      "title": "Phonk Essentials",
+      "tracks": [
+        {
+          "title": "Mortals Funk Remix",
+          "artistsLabel": "LXNGVX, Warriyo",
+          "sourceGenre": null,
+          "reportedViews": "11M",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Faster",
+          "artistsLabel": "RAIZHELL",
+          "sourceGenre": "Phonk",
+          "reportedViews": "2.4M",
+          "reportedAge": "4y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "LET THEM HAVE IT",
+          "artistsLabel": "ANGELPLAYA",
+          "sourceGenre": "Phonk",
+          "reportedViews": "1.5M",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Blade Fury",
+          "artistsLabel": "VØJ & ATSMXN",
+          "sourceGenre": "Phonk",
+          "reportedViews": "1.4M",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "PULL UP",
+          "artistsLabel": "ANGELPLAYA",
+          "sourceGenre": "Phonk",
+          "reportedViews": "1.3M",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "PSYCHOPATHIC",
+          "artistsLabel": "ANGELPLAYA",
+          "sourceGenre": "Phonk",
+          "reportedViews": "1.1M",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "DANGEROUS",
+          "artistsLabel": "ANGELPLAYA",
+          "sourceGenre": "Phonk",
+          "reportedViews": "1M",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "The Raven",
+          "artistsLabel": "ATSMXN, XTOM",
+          "sourceGenre": "Phonk",
+          "reportedViews": "1M",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Enemies",
+          "artistsLabel": "ATSMXN, XTOM",
+          "sourceGenre": "Phonk",
+          "reportedViews": "953K",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Keep You",
+          "artistsLabel": "Rameses B",
+          "sourceGenre": "Phonk",
+          "reportedViews": "854K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        }
+      ]
+    },
+    {
+      "id": "funk-selection",
+      "title": "Funk Selection",
+      "tracks": [
+        {
+          "title": "Montagem Toma",
+          "artistsLabel": "MXZI, sk3tch01, X972",
+          "sourceGenre": "Funk",
+          "reportedViews": "5.1M",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Fearless Funk",
+          "artistsLabel": "DR MØB, Chris Linton",
+          "sourceGenre": "Funk",
+          "reportedViews": "1.9M",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Royalty Funk",
+          "artistsLabel": "LXNGVX, Maestro Chives",
+          "sourceGenre": null,
+          "reportedViews": "1.5M",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "FAVHELLA (feat. Mc Guidanny)",
+          "artistsLabel": "ANGELPLAYA & T-Mass",
+          "sourceGenre": "Brazilian Phonk",
+          "reportedViews": "1.2M",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "BUSSIN'",
+          "artistsLabel": "TWISTED",
+          "sourceGenre": "Brazilian Phonk",
+          "reportedViews": "1.2M",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Kapoeira Phonk",
+          "artistsLabel": "HXDES, DYNAMIS",
+          "sourceGenre": "Brazilian Phonk",
+          "reportedViews": "518K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "BANE",
+          "artistsLabel": "Emin Nilsen",
+          "sourceGenre": "Brazilian Phonk",
+          "reportedViews": "565K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "BANDIDO FUNK",
+          "artistsLabel": "Emin Nilsen & Kamran747",
+          "sourceGenre": "Brazilian Phonk",
+          "reportedViews": "529K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "VIDA NOVA",
+          "artistsLabel": "Emin Nilsen",
+          "sourceGenre": "Brazilian Phonk",
+          "reportedViews": "511K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Rally Up!",
+          "artistsLabel": "Grioten x XI$OW",
+          "sourceGenre": "Brazilian Phonk",
+          "reportedViews": "243K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        }
+      ]
+    },
+    {
+      "id": "discovery",
+      "title": "Discovery",
+      "tracks": [
+        {
+          "title": "Feel Good Funk",
+          "artistsLabel": "Syn Cole, Nakama",
+          "sourceGenre": "Funk",
+          "reportedViews": "430K",
+          "reportedAge": "7mo ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "MONTAGEM INDIA",
+          "artistsLabel": "GxL",
+          "sourceGenre": "Funk",
+          "reportedViews": "412K",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Round Around",
+          "artistsLabel": "HXI, Nateki",
+          "sourceGenre": "Phouse",
+          "reportedViews": "546K",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "COM BOTA",
+          "artistsLabel": "cape, crysstales",
+          "sourceGenre": "Funk",
+          "reportedViews": "312K",
+          "reportedAge": "7mo ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "AYUDA",
+          "artistsLabel": "MXRCVRY",
+          "sourceGenre": "Funk",
+          "reportedViews": "464K",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Intranet Crush",
+          "artistsLabel": "Willix, Hiraeth",
+          "sourceGenre": "Phonk",
+          "reportedViews": "382K",
+          "reportedAge": "1y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "OFFLINE",
+          "artistsLabel": "Rameses B & eerie",
+          "sourceGenre": "Phonk",
+          "reportedViews": "543K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Never Knew Me",
+          "artistsLabel": "Rameses B & Veela",
+          "sourceGenre": "Phonk",
+          "reportedViews": "897K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "Sold Dreams",
+          "artistsLabel": "Slowboy, Rizó & NØCTRIS",
+          "sourceGenre": "Phonk",
+          "reportedViews": "553K",
+          "reportedAge": "2y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        },
+        {
+          "title": "LOOK AT ME!",
+          "artistsLabel": "Rxm リム",
+          "sourceGenre": "Phonk",
+          "reportedViews": "882K",
+          "reportedAge": "3y ago",
+          "youtubeVideoId": null,
+          "officialVideoUrl": null,
+          "embeddingVerified": false,
+          "creditVerified": false
+        }
+      ]
+    }
+  ]
+}

@@ -43,6 +43,7 @@
   const sessions = new Set();
   const mixedTracks = new WeakSet(); // tracks we produced (and their clones)
   const playing = new Set();
+  let playGeneration = 0;
 
   // ---------- messaging ----------
 
@@ -80,7 +81,7 @@
       case 'query-status': announce(); break;
       case 'beep': play(d.reqId, beep, '(test beep)'); break;
       case 'play-audio': playAudio(d); break;
-      case 'stop': stopAll(); stopMusic(); break;
+      case 'stop': stopAll(); stopMusic(); clearCamCaption(); break;
       case 'music-play': startMusic(String(d.value), d.volume); break;
       case 'music-bytes': startMine(d); break;
       case 'music-stop': stopMusic(); break;
@@ -93,7 +94,8 @@
       case 'tab-audio-stop': stopTabAudio(); break;
       case 'tab-audio-volume': setTabVolume(d.value); break;
       case 'voice': setVoice(String(d.value), d.url); break;
-      case 'cam-captions': camCaptions = d.value === true; camUnmirror = d.unmirror !== false; break;
+      case 'cam-captions': camCaptions = d.value === true; camUnmirror = d.unmirror !== false; if (!camCaptions) clearCamCaption(); break;
+      case 'caption-clear': clearCamCaption(); break;
       case 'face-result': { // where the face is, how it looks (blendshapes 0..1), and raised hands (every other result)
         const n = performance.now(), prev = faceMl;
         if (faceBusy) { const rt = n - faceBusy; faceMs = faceMs ? faceMs * 0.7 + rt * 0.3 : rt; }
@@ -308,6 +310,7 @@
   // ---------- playback into the soundboard ----------
 
   async function play(reqId, starter, label, caption, picture) {
+    const generation = ++playGeneration;
     if (!isActive() || !ctx) {
       post({ type: 'played', reqId, ok: false, reason: 'no-call' });
       return;
@@ -315,7 +318,13 @@
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
     try {
       const node = await starter();
-      stopAll(); // one meme at a time
+      if (generation !== playGeneration) {
+        try { node.stop(); } catch {}
+        node.disconnect();
+        post({ type: 'played', reqId, ok: false, reason: 'cancelled' });
+        return;
+      }
+      stopAll(false); // one meme at a time; keep this request valid
       playing.add(node);
       duckTick(true); // if you're already talking, start the meme ducked (no loud first moment)
       startDuckWatch();
@@ -393,7 +402,8 @@
     return o;
   }
 
-  function stopAll() {
+  function stopAll(invalidate = true) {
+    if (invalidate) playGeneration++;
     for (const n of playing) { try { n.stop(); } catch {} }
     playing.clear();
   }
@@ -409,9 +419,11 @@
   let musicPlayer = null;
   let musicVolume = 0.5;
   let musicMoodTimer = 0;
-  const MUSIC_MOOD = { funky: 'fun', party: 'excited', suspense: 'suspense', retro: 'fun', jazz: 'fun', epic: 'suspense', tropical: 'excited', disco: 'fun', club: 'excited', bass: 'excited', desi: 'excited', house: 'fun' };
+  let musicGeneration = 0;
+  const MUSIC_MOOD = { funky: 'fun', party: 'excited', suspense: 'suspense', retro: 'fun', jazz: 'fun', epic: 'suspense', tropical: 'excited', disco: 'fun', club: 'excited', bass: 'excited', desi: 'excited', house: 'fun', phonk_desi: 'fun', phonk_drift: 'excited', phonk_midnight: 'suspense' };
 
   function startMusic(id, vol) {
+    musicGeneration++;
     if (!globalThis.MemeMusic || !MemeMusic.TUNES[id] || !isActive() || !ctx) { post({ type: 'music-state', id: '' }); return; }
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
     if (!musicPlayer) musicPlayer = MemeMusic.createPlayer(ctx, board);
@@ -427,7 +439,8 @@
     post({ type: 'music-state', id });
   }
 
-  function stopMusic() {
+  function stopMusic(invalidate = true) {
+    if (invalidate) musicGeneration++;
     clearInterval(musicMoodTimer);
     let was = false;
     if (musicPlayer && musicPlayer.playing) { musicPlayer.stop(); was = true; }
@@ -444,11 +457,13 @@
   let mineSrc = null;
   let mineGain = null;
   async function startMine(d) {
+    const generation = ++musicGeneration;
     if (!isActive() || !ctx || !(d.bytes instanceof ArrayBuffer)) { post({ type: 'music-state', id: '' }); return; }
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
     try {
       const buffer = await ctx.decodeAudioData(d.bytes);
-      stopMusic();
+      if (generation !== musicGeneration) return;
+      stopMusic(false);
       const src = ctx.createBufferSource();
       src.buffer = buffer;
       src.loop = true;
@@ -775,14 +790,30 @@
   let camText = '';
   let camTextUntil = 0;
   let camPicture = null; // ImageBitmap of the playing line's meme picture
+  let camCaptionSeq = 0;
+
+  function clearCamCaption() {
+    camCaptionSeq++;
+    camText = '';
+    camTextUntil = 0;
+    if (camPicture) { camPicture.close(); camPicture = null; }
+    restoreMirror();
+  }
 
   function showCamCaption(text, picture) {
+    // A new sound without a picture should not dismiss the photo someone pinned.
+    if (!picture && (camPicture || camTextUntil === Infinity)) return;
+    const seq = ++camCaptionSeq;
     camText = String(text).slice(0, 120);
-    camTextUntil = performance.now() + 3000;
+    // A picture stays on the outgoing camera until the person closes it, presses Stop all,
+    // plays another picture, or switches camera captions off. Text-only captions still flash.
+    camTextUntil = picture ? Infinity : performance.now() + 3000;
     if (camText) post({ type: 'cam-caption', fixed: unmirrorSelf() > 0 }); // the panel shows its own copy of the caption only when your tile could not be flipped
+    if (picture) clearTimeout(unmirrorTimer);
     if (camPicture) { camPicture.close(); camPicture = null; }
     if (picture) {
       createImageBitmap(new Blob([picture.bytes], { type: picture.type })).then((bmp) => {
+        if (seq !== camCaptionSeq) { bmp.close(); return; }
         camPicture = bmp;
         console.log(LOG, 'meme picture ready', bmp.width + 'x' + bmp.height);
       }, () => {});
@@ -791,8 +822,8 @@
 
   // The meme picture in the upper part of the frame, above the caption.
   function drawCamPicture(g, w, h) {
-    const maxW = w * 0.6;
-    const maxH = h * 0.55;
+    const maxW = w * 0.78;
+    const maxH = h * 0.72;
     const s = Math.min(maxW / camPicture.width, maxH / camPicture.height);
     const pw = camPicture.width * s;
     const ph = camPicture.height * s;
@@ -979,6 +1010,7 @@
     }
 
     function finish() {
+      clearCamCaption();
       stopPipeline();
       if (real.readyState === 'live') origStop.call(real);
       for (const t of s.tracks) {

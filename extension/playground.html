@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemeBox Playground</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="playground.css">
+  <script src="lib/theme.js"></script>
+</head>
+<body>
+  <header class="top">
+    <img src="icons/icon48.png" alt="" width="48" height="48">
+    <div><h1>MemeBox <span data-i18n="fx_watermark">PREVIEW</span></h1><p class="sub" data-i18n="fx_locked">🔒 Preview only: not sent to your call.</p></div>
+    <nav class="preview-nav"><a class="button" href="music-room.html" data-i18n="mu_title">Music</a><a class="button" href="#picture-library" data-i18n="pg_pictures">Pictures</a><a class="button" href="plans.html" data-i18n="plans_link">Plans, prices and how to buy</a><a class="button" href="options.html" data-i18n="options">Options</a></nav>
+  </header>
+  <main class="playground-layout">
+    <section class="preview-stage card">
+      <canvas id="preview" width="960" height="540" data-i18n-aria-label="fx_title" aria-label="Lights and looks"></canvas>
+      <div class="preview-controls">
+        <strong id="selected-character" aria-live="polite"></strong>
+        <label class="switch"><input id="animate" type="checkbox" checked><span data-i18n="pg_animate">Animate preview</span></label>
+      </div>
+      <p id="personality" class="hint"></p>
+      <p class="hint" data-i18n="pg_personality_help"></p>
+      <div class="presence-controls"><button id="presence" type="button" data-i18n="pg_leave">I leave the frame</button><label><span data-i18n="pg_move">Move the person</span><input id="person-x" type="range" min="20" max="80" value="50"></label><p id="presence-status" role="status"></p></div>
+      <div class="reaction-controls" role="group" aria-label="Reactions">
+        <button type="button" data-action="signature" data-i18n="pg_personality">Signature action</button>
+        <button type="button" data-action="jump" data-i18n="pg_jump">Jump</button>
+        <button type="button" data-action="roll" data-i18n="pg_roll">Roll</button>
+        <button type="button" data-action="sit" data-i18n="pg_sit">Sit / rest</button>
+        <button type="button" data-action="head" data-i18n="pg_head">On my head</button>
+        <button type="button" data-action="shoulder" data-i18n="pg_shoulder">On my shoulder</button>
+        <button type="button" data-action="corner" data-i18n="pg_corner">On screen</button>
+        <button type="button" data-action="wave" aria-label="Wave">👋</button>
+        <button type="button" data-action="cheer" aria-label="Cheer">🎉</button>
+        <button type="button" data-action="heartbeat" aria-label="Love">💗</button>
+        <button type="button" data-action="cry" aria-label="Cry">😭</button>
+        <button type="button" data-action="raspberry" aria-label="Tongue">😛</button>
+        <button type="button" data-action="dance" aria-label="Dance">🪩</button>
+      </div>
+      <p class="hint" data-i18n="mu_locked">🔒 Preview only (on your speakers, not in the call).</p>
+      <p id="music-status" class="hint" role="status" aria-live="polite"></p>
+    </section>
+    <div class="preview-library">
+      <section class="card"><h2 data-i18n="fx_character">Character</h2><div id="characters" class="character-grid"></div><label><span data-i18n="fx_outfit">Outfit</span><select id="outfit"></select></label><div class="ownership-links"><a href="plans.html#characters" data-i18n="plans_characters">Character ownership</a><a href="plans.html#outfits" data-i18n="plans_link">Plans and how to buy</a></div></section>
+      <section class="card"><h2 data-i18n="fx_title">💡 Lights &amp; looks</h2>
+        <label><span data-i18n="fx_lamp">Hanging lamp</span><select id="fixture"></select></label>
+        <label><span data-i18n="fx_looks">Looks (filters)</span><select id="filter"></select></label><a href="plans.html#filters" data-i18n="plans_link">Plans and how to buy</a>
+        <label><span data-i18n="fx_colors">Light colour</span><select id="colour"></select></label>
+      </section>
+      <section class="card" id="music-library"><h2 data-i18n="pg_music_title">Music listening room</h2><p data-i18n="pg_music_help"></p><a class="button" href="music-room.html" data-i18n="room_playlists">Free YouTube playlists</a><label><span data-i18n="pg_preview_seconds">Preview length</span><select id="music-length"><option value="20">20 seconds</option><option value="60">60 seconds</option></select></label><label><span data-i18n="pg_volume">Listening volume</span><input id="music-volume" type="range" min="0" max="100" value="35"></label><div id="tunes" class="tune-grid"></div><button id="stop-music" type="button" data-i18n="mu_stop">Stop</button></section>
+    <section class="card" id="picture-library"><h2 data-i18n="pg_pictures">Picture mode</h2><p data-i18n="pg_pictures_help"></p><label class="button"><span data-i18n="pg_picture_choose">Try a local picture</span><input id="picture-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label><div id="picture-preview" hidden><button id="picture-close" type="button" data-i18n="pg_picture_close">Close picture</button><img id="picture-image" alt="Local picture preview"></div><p id="picture-status" role="status"></p><p data-i18n="pg_picture_privacy"></p><a class="button" href="options.html#lines-card" data-i18n="pg_add_memes">Add my memes and pictures</a></section>
+      <section class="card"><h2 data-i18n="pg_add_music">How to add my music</h2><p data-i18n="pg_music_add_help"></p><p data-i18n="pg_collection_help"></p></section>
+    </div>
+  </main>
+  <script src="lib/i18n-page.js"></script>
+  <script src="lib/fx.js"></script>
+  <script src="lib/music.js"></script>
+  <script src="playground.js"></script>
+</body>
+</html>

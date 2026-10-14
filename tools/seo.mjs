@@ -68,7 +68,7 @@ function head({ title, desc, url, lang, alternates, image, ld, type = 'website' 
 
 // The paid passes, in rupees and dollars: the same numbers as site/src/shop.js (a test compares them).
 export const PASS_OFFERS = [
-  ['Pro pass, 30 minutes', 9, 1.49], ['Pro pass, 1 hour', 15, 2.49], ['Pro pass, 2 hours', 25, 3.99], ['Pro Max pass, 1 hour', 25, 3.49], ['Pro Max pass, 3 hours', 49, 6.49],
+  ['Pro pass, 30 minutes', 9, 1.49], ['Pro pass, 1 hour', 15, 2.49], ['Pro pass, 2 hours', 25, 3.99], ['Pro Max pass, 1 hour', 25, 3.49], ['Pro Max pass, 3 hours', 49, 6.49], ['Pro pass, 5 hours', 49, 7.99], ['Pro Max pass, 8 hours', 99, 14.99],
 ];
 function passOffers(base) {
   return PASS_OFFERS.flatMap(([name, inr, usd]) => [

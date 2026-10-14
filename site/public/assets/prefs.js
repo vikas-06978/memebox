@@ -12,6 +12,7 @@
   const LANGS = {
     en: 'English', hi: 'हिन्दी', bn: 'বাংলা', mr: 'मराठी', ta: 'தமிழ்', te: 'తెలుగు', gu: 'ગુજરાતી',
     es: 'Español', ar: 'العربية', pt: 'Português', fr: 'Français', id: 'Bahasa Indonesia',
+    pa: 'ਪੰਜਾਬੀ (Beta)', de: 'Deutsch (Beta)', it: 'Italiano (Beta)', ja: '日本語 (Beta)',
   };
   const RTL = new Set(['ar']);
   const root = document.documentElement;

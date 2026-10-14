@@ -262,6 +262,7 @@ export function dashboardPage(s, shopHtml = '', waiting = 0) {
   <button type="button" id="refresh">Refresh</button>
   <label class="check"><input type="checkbox" id="auto-refresh"> every minute</label>
   <a class="button" href="/admin/packs">Music &amp; meme packs</a>
+  <a class="button" href="/admin/payments">Test gateway payments</a>
   <a class="button" href="/admin/csv">Download CSV</a>
   <form method="post" action="/admin/logout"><button type="submit">Sign out</button></form>
 </header>

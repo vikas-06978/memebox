@@ -1,0 +1,262 @@
+{
+  "source": "User-pasted playlist text",
+  "snapshotReceivedDate": "2026-10-14",
+  "playlistId": null,
+  "claimedUploaderLabel": "NoCopyrightSounds",
+  "verification": {
+    "liveViewsChecked": false,
+    "channelIdentityChecked": false,
+    "embeddingChecked": false,
+    "approvedForPublication": false
+  },
+  "notes": [
+    "View counts, ages, names and genre labels are from user-provided text.",
+    "Two separate tracks are named Dangerous; preserve artists when deduplicating.",
+    "The NCS/ Copyright Free label does not by itself establish permission for every application use.",
+    "Playlist membership/overlap cannot be inferred without confirming the corresponding source playlist."
+  ],
+  "tracks": [
+    {
+      "title": "Mortals Funk Remix",
+      "artistsLabel": "LXNGVX, Warriyo",
+      "duration": "2:27",
+      "displayedViews": "11M",
+      "approximateViews": 11000000,
+      "displayedAge": "1y ago",
+      "genreLabel": "Funk Remix",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Faster",
+      "artistsLabel": "RAIZHELL",
+      "duration": "2:07",
+      "displayedViews": "2.4M",
+      "approximateViews": 2400000,
+      "displayedAge": "4y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "LET THEM HAVE IT",
+      "artistsLabel": "ANGELPLAYA",
+      "duration": "2:20",
+      "displayedViews": "1.5M",
+      "approximateViews": 1500000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Blade Fury",
+      "artistsLabel": "VØJ & ATSMXN",
+      "duration": "2:00",
+      "displayedViews": "1.4M",
+      "approximateViews": 1400000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "PULL UP",
+      "artistsLabel": "ANGELPLAYA",
+      "duration": "2:03",
+      "displayedViews": "1.3M",
+      "approximateViews": 1300000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "FAVHELLA (feat. Mc Guidanny)",
+      "artistsLabel": "ANGELPLAYA & T-Mass",
+      "duration": "1:57",
+      "displayedViews": "1.2M",
+      "approximateViews": 1200000,
+      "displayedAge": "2y ago",
+      "genreLabel": "Brazilian Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "BUSSIN'",
+      "artistsLabel": "TWISTED",
+      "duration": "1:28",
+      "displayedViews": "1.2M",
+      "approximateViews": 1200000,
+      "displayedAge": "2y ago",
+      "genreLabel": "Brazilian Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "PSYCHOPATHIC",
+      "artistsLabel": "ANGELPLAYA",
+      "duration": "2:29",
+      "displayedViews": "1.1M",
+      "approximateViews": 1100000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "DANGEROUS",
+      "artistsLabel": "ANGELPLAYA",
+      "duration": "2:46",
+      "displayedViews": "1M",
+      "approximateViews": 1000000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "The Raven",
+      "artistsLabel": "ATSMXN, XTOM",
+      "duration": "1:56",
+      "displayedViews": "1M",
+      "approximateViews": 1000000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Dangerous",
+      "artistsLabel": "VOLT VISION & Beneath My Shade",
+      "duration": "2:02",
+      "displayedViews": "960K",
+      "approximateViews": 960000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Enemies",
+      "artistsLabel": "ATSMXN, XTOM",
+      "duration": "1:54",
+      "displayedViews": "953K",
+      "approximateViews": 953000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "LOOK AT ME!",
+      "artistsLabel": "Rxm リム",
+      "duration": "3:02",
+      "displayedViews": "882K",
+      "approximateViews": 882000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Keep You",
+      "artistsLabel": "Rameses B",
+      "duration": "2:43",
+      "displayedViews": "854K",
+      "approximateViews": 854000,
+      "displayedAge": "2y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Hide Your Heart",
+      "artistsLabel": "VOLT VISION, BRIGHTDVWN",
+      "duration": "2:44",
+      "displayedViews": "604K",
+      "approximateViews": 604000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "uWu BURST",
+      "artistsLabel": "FLAYA PLAYA, Maikubi, Nomeli",
+      "duration": "1:53",
+      "displayedViews": "573K",
+      "approximateViews": 573000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "BANE",
+      "artistsLabel": "Emin Nilsen",
+      "duration": "2:02",
+      "displayedViews": "565K",
+      "approximateViews": 565000,
+      "displayedAge": "2y ago",
+      "genreLabel": "Brazilian Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Sold Dreams",
+      "artistsLabel": "Slowboy, Rizó & NØCTRIS",
+      "duration": "1:32",
+      "displayedViews": "553K",
+      "approximateViews": 553000,
+      "displayedAge": "2y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "CONNECTION",
+      "artistsLabel": "Rxm リム",
+      "duration": "1:49",
+      "displayedViews": "529K",
+      "approximateViews": 529000,
+      "displayedAge": "3y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "GODSLAYER",
+      "artistsLabel": "1$K1",
+      "duration": "1:33",
+      "displayedViews": "522K",
+      "approximateViews": 522000,
+      "displayedAge": "2y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Kapoeira Phonk",
+      "artistsLabel": "HXDES, DYNAMIS",
+      "duration": "1:34",
+      "displayedViews": "518K",
+      "approximateViews": 518000,
+      "displayedAge": "2y ago",
+      "genreLabel": "Brazilian Phonk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "Sky Verse",
+      "artistsLabel": "Lieless, Luuna, Yarimov",
+      "duration": "1:42",
+      "displayedViews": "498K",
+      "approximateViews": 498000,
+      "displayedAge": "1y ago",
+      "genreLabel": "Funk",
+      "youtubeVideoId": null
+    },
+    {
+      "title": "DANÇA DO VERÃO",
+      "artistsLabel": "NXGHT!, SH3RWIN, Scythermane",
+      "duration": "1:14",
+      "displayedViews": "324K",
+      "approximateViews": 324000,
+      "displayedAge": "1y ago",
+      "genreLabel": "Phonk",
+      "youtubeVideoId": null
+    }
+  ],
+  "starterReviewShortlist": [
+    "Mortals Funk Remix",
+    "Faster",
+    "LET THEM HAVE IT",
+    "Blade Fury",
+    "PULL UP",
+    "FAVHELLA (feat. Mc Guidanny)",
+    "BUSSIN'",
+    "The Raven",
+    "Kapoeira Phonk",
+    "DANÇA DO VERÃO"
+  ]
+}

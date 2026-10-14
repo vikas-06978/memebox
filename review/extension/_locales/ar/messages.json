@@ -1,0 +1,2152 @@
+{
+  "fx_outfit": {
+    "message": "الزي"
+  },
+  "fx_outfit_none": {
+    "message": "بدون"
+  },
+  "fx_outfit_party": {
+    "message": "🎉 قبعة حفلة"
+  },
+  "fx_outfit_crown": {
+    "message": "👑 تاج"
+  },
+  "fx_outfit_scarf": {
+    "message": "🧣 وشاح"
+  },
+  "extName": {
+    "message": "MemeBox: لوحة أصوات الميمز ومغيّر الصوت للمكالمات"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "لوحة أصوات ميمز ومغيّر صوت: شغّل الميمز والمؤثرات الصوتية في الميكروفون على Google Meet وZoom وTeams وDiscord."
+  },
+  "actionTitle": {
+    "message": "MemeBox: أرسل صوت هذا التبويب إلى مكالمتك"
+  },
+  "cmdFav1": {
+    "message": "تشغيل المفضل 1"
+  },
+  "cmdFav2": {
+    "message": "تشغيل المفضل 2"
+  },
+  "cmdFav3": {
+    "message": "تشغيل المفضل 3"
+  },
+  "cmdFav4": {
+    "message": "تشغيل المفضل 4"
+  },
+  "cmdFav5": {
+    "message": "تشغيل المفضل 5"
+  },
+  "cmdFav6": {
+    "message": "تشغيل المفضل 6"
+  },
+  "cmdFav7": {
+    "message": "تشغيل المفضل 7"
+  },
+  "cmdFav8": {
+    "message": "تشغيل المفضل 8"
+  },
+  "cmdFav9": {
+    "message": "تشغيل المفضل 9"
+  },
+  "cmdStopAll": {
+    "message": "إيقاف كل الميمز"
+  },
+  "cmdToggleUi": {
+    "message": "إظهار / إخفاء زر 😂"
+  },
+  "join_first": {
+    "message": "انضم إلى المكالمة أولاً، ثم اضغط 😂"
+  },
+  "err_reload": {
+    "message": "تم تحديث MemeBox. أعد تحميل تبويب المكالمة."
+  },
+  "err_play": {
+    "message": "تعذّر التشغيل: $1"
+  },
+  "muted_nobody": {
+    "message": "الميكروفون مكتوم، لذا الميمز صامتة أيضاً. ألغِ الكتم وحاول مرة أخرى."
+  },
+  "mic_test_caption": {
+    "message": "🔔 اختبار الميكروفون"
+  },
+  "no_lines": {
+    "message": "لا توجد عبارات بعد. أضف بعضها من الخيارات."
+  },
+  "slot_empty": {
+    "message": "لا شيء على Alt+$1 بعد. اختر مكاناً للمفضلة من الخيارات."
+  },
+  "stopped": {
+    "message": "⏹ تم الإيقاف"
+  },
+  "ui_hidden": {
+    "message": "MemeBox مخفي. اضغط Alt+M لإظهاره مرة أخرى."
+  },
+  "ui_shown": {
+    "message": "عاد MemeBox 😂"
+  },
+  "tab_on": {
+    "message": "📺 صوت تبويبك الآخر يدخل إلى المكالمة"
+  },
+  "tab_off": {
+    "message": "📺 تم إيقاف صوت التبويب الآخر"
+  },
+  "tab_err": {
+    "message": "تعذّر استخدام صوت ذلك التبويب: $1"
+  },
+  "tab_bar": {
+    "message": "📺 صوت تبويب آخر يعمل في الميكروفون"
+  },
+  "tab_stop": {
+    "message": "⏹ إيقاف التبويب"
+  },
+  "st_none": {
+    "message": "لم تنضم إلى مكالمة بعد. انضم إليها، ثم اضغط 😂"
+  },
+  "st_suspended": {
+    "message": "انقر مرة واحدة في أي مكان في الصفحة لتفعيل الميمز"
+  },
+  "st_muted": {
+    "message": "الميكروفون مكتوم، لذا تبقى الميمز صامتة حتى تلغي الكتم"
+  },
+  "st_live": {
+    "message": "الميمز تدخل إلى الميكروفون"
+  },
+  "fab_label": {
+    "message": "MemeBox: تشغيل ميم عشوائي"
+  },
+  "fab_tip": {
+    "message": "نقرة: ميم عشوائي · ضغط مطوّل أو نقر يمين: اللوحة · اسحب للتحريك"
+  },
+  "list_btn": {
+    "message": "اختر ميماً لتشغيله"
+  },
+  "search_ph": {
+    "message": "ابحث في العبارات…"
+  },
+  "btn_random": {
+    "message": "🎲 عشوائي"
+  },
+  "btn_mic_test": {
+    "message": "🔔 اختبار المايك"
+  },
+  "btn_mic_test_tip": {
+    "message": "يشغّل رنة قصيرة في الميكروفون. اسأل أحداً في المكالمة إن سمعها."
+  },
+  "btn_stop_all": {
+    "message": "⏹ إيقاف الكل"
+  },
+  "volume": {
+    "message": "صوت الميمز"
+  },
+  "monitor_label": {
+    "message": "🎧 أسمع الميمز أنا أيضاً"
+  },
+  "monitor_tip": {
+    "message": "المكالمة تتلقى الميم دائماً عبر الميكروفون. هذا يضيف فقط نسخة هادئة في سماعاتك."
+  },
+  "monitor_on": {
+    "message": "🎧 أنت والمكالمة تسمعون الميمز"
+  },
+  "monitor_off": {
+    "message": "🔇 المكالمة وحدها تسمع الميمز الآن"
+  },
+  "monitor_on_tip": {
+    "message": "أنت تسمع الميمز أيضاً (انقر لإيقاف سماعها، والمكالمة تظل تسمعها)"
+  },
+  "monitor_off_tip": {
+    "message": "أنت لا تسمع الميمز (انقر لتسمعها أيضاً، والمكالمة تسمعها في كل الأحوال)"
+  },
+  "duck_label": {
+    "message": "🦆 خفض تلقائي"
+  },
+  "duck_tip": {
+    "message": "ينخفض صوت الميمز أثناء كلامك"
+  },
+  "options": {
+    "message": "الخيارات"
+  },
+  "close": {
+    "message": "إغلاق (Esc)"
+  },
+  "panel_foot": {
+    "message": "انقر عبارة لتشغيلها · 😂 عشوائي · Alt+1…9 المفضلة · Alt+0 إيقاف · Alt+M إخفاء"
+  },
+  "timers_on": {
+    "message": "⏰ العبارات المجدولة مفعّلة (أثناء المكالمة): $1"
+  },
+  "chip_all": {
+    "message": "الكل"
+  },
+  "chip_star": {
+    "message": "المفضلة"
+  },
+  "chip_recent": {
+    "message": "الأخيرة"
+  },
+  "cat_general": {
+    "message": "عام"
+  },
+  "cat_college": {
+    "message": "الجامعة"
+  },
+  "cat_cricket": {
+    "message": "كريكيت"
+  },
+  "cat_effects": {
+    "message": "مؤثرات صوتية"
+  },
+  "cat_office": {
+    "message": "المكتب"
+  },
+  "cat_party": {
+    "message": "حفلة"
+  },
+  "cat_clips": {
+    "message": "مقاطع"
+  },
+  "cat_mine": {
+    "message": "عباراتي"
+  },
+  "empty_star": {
+    "message": "لا مفضلة بعد. اضغط ☆ على عبارة."
+  },
+  "empty_recent": {
+    "message": "لم يُشغَّل شيء بعد"
+  },
+  "empty_search": {
+    "message": "لا توجد عبارة مطابقة."
+  },
+  "tag_clip": {
+    "message": "مقطع مرفوع"
+  },
+  "tag_sfx": {
+    "message": "مؤثر"
+  },
+  "tag_lang": {
+    "message": "اللغة"
+  },
+  "tag_shortcut": {
+    "message": "اختصار"
+  },
+  "play": {
+    "message": "تشغيل"
+  },
+  "star": {
+    "message": "أضف إلى المفضلة"
+  },
+  "unstar": {
+    "message": "أزل من المفضلة"
+  },
+  "pp_checking": {
+    "message": "جارٍ التحقق…"
+  },
+  "pp_send": {
+    "message": "🎙 أرسل صوت هذا التبويب إلى مكالمتي"
+  },
+  "pp_stop": {
+    "message": "⏹ أوقف إرسال هذا التبويب"
+  },
+  "pp_how": {
+    "message": "كيف يعمل؟"
+  },
+  "pp_how1": {
+    "message": "انضم إلى مكالمتك في تبويب آخر (Meet أو Zoom على الويب أو Teams على الويب أو Discord على الويب)."
+  },
+  "pp_how2": {
+    "message": "في هذا التبويب، شغّل فيديو YouTube أو ريل Instagram عند اللحظة المضحكة."
+  },
+  "pp_how3": {
+    "message": "انقر “أرسل صوت هذا التبويب” وسيسمعه الجميع في المكالمة عبر الميكروفون."
+  },
+  "pp_how4": {
+    "message": "انقر ⏹ عند الانتهاء، أو استخدم ⏹ في لوحة 😂."
+  },
+  "pp_how_note": {
+    "message": "لا يتم تنزيل أو تسجيل أي شيء. الصوت يُمزج مباشرة في الميكروفون فقط."
+  },
+  "pp_settings": {
+    "message": "⚙️ العبارات والمقاطع والإعدادات"
+  },
+  "pp_no_call": {
+    "message": "انضم إلى مكالمة أولاً (في تبويب آخر)، ثم عد إلى تبويب الفيديو وانقر هنا."
+  },
+  "pp_this_is_call": {
+    "message": "هذا تبويب مكالمتك. افتح تبويب YouTube / Instagram وانقر MemeBox هناك لإرسال صوته. استخدم 😂 في هذه الصفحة للميمز."
+  },
+  "pp_sending": {
+    "message": "✅ صوت هذا التبويب يدخل إلى مكالمتك."
+  },
+  "pp_replace": {
+    "message": "يتم إرسال تبويب آخر الآن. إرسال هذا التبويب سيحلّ محله."
+  },
+  "pp_start_video": {
+    "message": "شغّل الفيديو عند الجزء المضحك، ثم:"
+  },
+  "pp_connecting": {
+    "message": "جارٍ الاتصال…"
+  },
+  "pp_join_unmute": {
+    "message": "انضم إلى المكالمة وألغِ كتم الميكروفون أولاً."
+  },
+  "pp_send_failed": {
+    "message": "تعذّر إرسال هذا التبويب: $1"
+  },
+  "pp_cant_capture": {
+    "message": "لا يسمح Chrome بالتقاط هذا التبويب: $1"
+  },
+  "pp_error": {
+    "message": "خطأ: $1"
+  },
+  "op_sub": {
+    "message": "عباراتك ومقاطعك وحزمك ووضع الحفلة. كل شيء يبقى في هذا المتصفح."
+  },
+  "op_nav_lines": {
+    "message": "العبارات"
+  },
+  "op_nav_clips": {
+    "message": "المقاطع"
+  },
+  "op_nav_packs": {
+    "message": "الحزم"
+  },
+  "op_nav_party": {
+    "message": "وضع الحفلة"
+  },
+  "op_lines": {
+    "message": "العبارات"
+  },
+  "op_text": {
+    "message": "النص الظاهر في التعليق"
+  },
+  "op_text_ph": {
+    "message": "مثلاً Bhai tu rehne de"
+  },
+  "op_say": {
+    "message": "انطقها هكذا (اختياري، مثلاً بالديفاناغاري لعبارات الهنغليزية)"
+  },
+  "op_lang": {
+    "message": "اللغة"
+  },
+  "op_tone": {
+    "message": "النبرة"
+  },
+  "op_category": {
+    "message": "الفئة"
+  },
+  "op_shortcut": {
+    "message": "اختصار"
+  },
+  "op_line_volume": {
+    "message": "صوت هذه العبارة"
+  },
+  "op_add_line": {
+    "message": "أضف العبارة"
+  },
+  "op_save_changes": {
+    "message": "احفظ التغييرات"
+  },
+  "op_preview": {
+    "message": "▶ استماع"
+  },
+  "op_cancel": {
+    "message": "إلغاء"
+  },
+  "op_search": {
+    "message": "بحث…"
+  },
+  "op_all_categories": {
+    "message": "كل الفئات"
+  },
+  "op_count": {
+    "message": "$1 من $2 عبارة"
+  },
+  "op_col_line": {
+    "message": "العبارة"
+  },
+  "op_col_about": {
+    "message": "التفاصيل"
+  },
+  "op_col_actions": {
+    "message": "الإجراءات"
+  },
+  "op_shortcut_hint": {
+    "message": "يعمل Alt+1…3 وAlt+0 في كل مكان. غيّر المفاتيح أو أضف Alt+4…9 من"
+  },
+  "op_none": {
+    "message": "لا شيء"
+  },
+  "op_no_lines": {
+    "message": "لا توجد عبارات بعد. أضف واحدة في الأعلى، أو أضف حزمة في الأسفل."
+  },
+  "op_preview_tip": {
+    "message": "استمع هنا (أنت فقط تسمع)"
+  },
+  "op_edit": {
+    "message": "تعديل"
+  },
+  "op_delete": {
+    "message": "حذف"
+  },
+  "op_err_text": {
+    "message": "اكتب نص العبارة"
+  },
+  "op_saved": {
+    "message": "تم حفظ العبارة"
+  },
+  "op_added": {
+    "message": "تمت إضافة العبارة"
+  },
+  "op_confirm_delete": {
+    "message": "حذف “$1”؟"
+  },
+  "op_deleted": {
+    "message": "تم الحذف"
+  },
+  "op_err_preview": {
+    "message": "تعذّر الاستماع: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "لم يُعثر على المقطع. أضفه مرة أخرى."
+  },
+  "op_clips": {
+    "message": "أضف مقطعاً"
+  },
+  "op_clips_hint": {
+    "message": "استخدم ملفاً صوتياً أو فيديو (يُحفظ الصوت فقط)، أو رابط ملف مباشر، أو سجّل صوتك. ثم قصّه. حجم المقطع المحفوظ 1 ميغابايت كحد أقصى."
+  },
+  "op_choose_file": {
+    "message": "📁 اختر ملفاً"
+  },
+  "op_link_ph": {
+    "message": "https://…/sound.mp3  (رابط مباشر ‎.mp3 ‎.mp4 ‎.wav ‎.ogg ‎.webm)"
+  },
+  "op_fetch": {
+    "message": "🔗 جلب"
+  },
+  "op_record": {
+    "message": "🎙 تسجيل (10 ث)"
+  },
+  "op_recording": {
+    "message": "⏹ أوقف التسجيل (متبقٍ $1 ث)"
+  },
+  "op_my_recording": {
+    "message": "تسجيلي"
+  },
+  "op_video_sites": {
+    "message": "صفحات YouTube وInstagram ومواقع الفيديو الأخرى لا تُنزَّل أبداً. شغّلها مباشرة بزر شريط الأدوات ← “أرسل صوت هذا التبويب”."
+  },
+  "op_start": {
+    "message": "البداية"
+  },
+  "op_end": {
+    "message": "النهاية"
+  },
+  "op_preview_sel": {
+    "message": "▶ استمع إلى التحديد"
+  },
+  "op_stop": {
+    "message": "⏹ إيقاف"
+  },
+  "op_caption": {
+    "message": "نص التعليق"
+  },
+  "op_tone_speed": {
+    "message": "النبرة (السرعة فقط)"
+  },
+  "op_save_clip": {
+    "message": "💾 احفظ المقطع"
+  },
+  "op_selection": {
+    "message": "$1 ← $2 ($3 ث)"
+  },
+  "op_fit": {
+    "message": "يُحفظ بتردد $1 كيلوهرتز، أقل من 1 ميغابايت"
+  },
+  "op_too_long": {
+    "message": "طويل جداً على 1 ميغابايت. اجعله أقل من نحو $1 ث."
+  },
+  "op_clip_saved": {
+    "message": "تم حفظ المقطع ($1 كيلوبايت)"
+  },
+  "op_err_type": {
+    "message": "استخدم ملفاً صوتياً أو فيديو (MP3 أو WAV أو OGG أو M4A أو MP4 أو WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "لم يُعثر على أي صوت في ذلك الملف"
+  },
+  "op_err_too_big_source": {
+    "message": "الملف كبير جداً (50 ميغابايت كحد أقصى قبل القص)"
+  },
+  "op_err_url": {
+    "message": "الصق رابطاً كاملاً يبدأ بـ https://"
+  },
+  "op_err_video_page": {
+    "message": "هذه صفحة فيديو وليست ملفاً. لا ينزّل MemeBox أبداً من YouTube أو Instagram أو مواقع الفيديو الأخرى. افتحها في تبويب واستخدم زر شريط الأدوات ← “أرسل صوت هذا التبويب”."
+  },
+  "op_err_not_file": {
+    "message": "يجب أن ينتهي الرابط بـ ‎.mp3 أو ‎.mp4 أو ‎.wav أو ‎.ogg أو ‎.webm"
+  },
+  "op_err_blocked": {
+    "message": "$1 لا يسمح للمواقع الأخرى باستخدام ملفاته (يحظر CORS). نزّل الملف واستخدم “اختر ملفاً”."
+  },
+  "op_err_http": {
+    "message": "ردّ الموقع بالخطأ $1"
+  },
+  "op_err_mic": {
+    "message": "يحتاج MemeBox إلى إذنك لاستخدام الميكروفون للتسجيل"
+  },
+  "op_packs": {
+    "message": "الحزم"
+  },
+  "op_pack_add": {
+    "message": "إضافة"
+  },
+  "op_pack_reset": {
+    "message": "إعادة ضبط"
+  },
+  "op_pack_remove": {
+    "message": "إزالة"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 عبارة"
+  },
+  "op_pack_added": {
+    "message": "تمت إضافة حزمة “$1”"
+  },
+  "op_pack_removed": {
+    "message": "تمت إزالة حزمة “$1”"
+  },
+  "op_share_packs": {
+    "message": "مشاركة الحزم"
+  },
+  "op_export_all": {
+    "message": "كل عباراتي"
+  },
+  "op_export": {
+    "message": "⬇ تصدير ‎.memepack.json"
+  },
+  "op_import": {
+    "message": "⬆ استيراد ‎.memepack.json"
+  },
+  "op_packs_hint": {
+    "message": "تحتوي الحزمة على عبارات ومقاطعها. الاستيراد يضيف إلى عباراتك، والعبارات ذات المعرّف نفسه تُستبدل. تُفحص الملفات بدقة."
+  },
+  "op_my_library": {
+    "message": "عباراتي في MemeBox"
+  },
+  "op_exported": {
+    "message": "تم تصدير $1 عبارة"
+  },
+  "op_export_partial": {
+    "message": "تم تصدير $1 عبارة (تم تخطي مقاطع من إصدارات قديمة)"
+  },
+  "op_import_failed": {
+    "message": "فشل الاستيراد: $1"
+  },
+  "op_import_invalid": {
+    "message": "ملف الحزمة هذا غير صالح. راجع القائمة أدناه."
+  },
+  "op_imported": {
+    "message": "تم استيراد $1 عبارة و$2 مقطع من “$3”"
+  },
+  "op_party": {
+    "message": "العبارات المجدولة / وضع الحفلة"
+  },
+  "op_party_switch": {
+    "message": "شغّل العبارات المجدولة تلقائياً"
+  },
+  "op_party_hint": {
+    "message": "متوقف افتراضياً. لا يعمل إلا مع تبويب مكالمة مفتوح وميكروفون متصل."
+  },
+  "op_line": {
+    "message": "العبارة"
+  },
+  "op_when": {
+    "message": "متى"
+  },
+  "op_at_clock": {
+    "message": "في ساعة محددة"
+  },
+  "op_every_n": {
+    "message": "كل N دقيقة"
+  },
+  "op_time": {
+    "message": "الوقت"
+  },
+  "op_minutes": {
+    "message": "الدقائق"
+  },
+  "op_add_timer": {
+    "message": "أضف مؤقتاً"
+  },
+  "op_no_timers": {
+    "message": "لا توجد مؤقتات بعد."
+  },
+  "op_daily_at": {
+    "message": "كل يوم الساعة $1"
+  },
+  "op_every": {
+    "message": "كل $1 دقيقة"
+  },
+  "op_enabled": {
+    "message": "مفعّل"
+  },
+  "op_deleted_line": {
+    "message": "(عبارة محذوفة)"
+  },
+  "op_party_on": {
+    "message": "وضع الحفلة مفعّل 🎉"
+  },
+  "op_party_off": {
+    "message": "وضع الحفلة متوقف"
+  },
+  "op_timer_added": {
+    "message": "تمت إضافة المؤقت"
+  },
+  "op_timer_added_off": {
+    "message": "تمت إضافة المؤقت. فعّل “شغّل العبارات المجدولة تلقائياً” لاستخدامه."
+  },
+  "op_privacy": {
+    "message": "الخصوصية"
+  },
+  "op_privacy_text": {
+    "message": "يُمزج الميكروفون وصوت التبويبات داخل هذا المتصفح فقط. لا يُسجَّل أو يُحفظ أو يُرسَل أي شيء. لا حسابات ولا خوادم ولا تحليلات."
+  },
+  "cmdToggleVoice": {
+    "message": "تشغيل/إيقاف مغيّر الصوت"
+  },
+  "tab_volume": {
+    "message": "صوت التبويب في المكالمة"
+  },
+  "voice_label": {
+    "message": "🎤 صوتي"
+  },
+  "voice_tip": {
+    "message": "يغيّر صوتك أنت مباشرة في المكالمة. Alt+V يشغّله ويوقفه. \"عادي\" يعيد صوتك الطبيعي فوراً."
+  },
+  "voice_off": {
+    "message": "عادي (متوقف)"
+  },
+  "voice_chipmunk": {
+    "message": "سنجاب"
+  },
+  "voice_deep": {
+    "message": "عميق"
+  },
+  "voice_robot": {
+    "message": "روبوت"
+  },
+  "voice_echo": {
+    "message": "صدى"
+  },
+  "voice_radio": {
+    "message": "راديو"
+  },
+  "voice_now_on": {
+    "message": "صوتك: $1"
+  },
+  "voice_now_off": {
+    "message": "مغيّر الصوت متوقف، عاد صوتك الطبيعي"
+  },
+  "voice_after_join": {
+    "message": "تم الحفظ. يبدأ عند انضمامك إلى المكالمة."
+  },
+  "cam_label": {
+    "message": "📷 تعليق على كاميرتي"
+  },
+  "cam_tip": {
+    "message": "يكتب نص الميم على الفيديو الذي يراه الآخرون منك. أطفئ الكاميرا وشغّلها لتطبيقه. قد تظهر معاينتك معكوسة، لكن الآخرين يرونه بشكل صحيح."
+  },
+  "cam_on": {
+    "message": "التعليقات على الكاميرا مفعّلة. أطفئ الكاميرا وشغّلها لتطبيقها."
+  },
+  "cam_off": {
+    "message": "التعليقات على الكاميرا متوقفة. أطفئ الكاميرا وشغّلها لتطبيق ذلك."
+  },
+  "pp_volume": {
+    "message": "الصوت في المكالمة"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "احفظ كملف صوتي (WAV) لمشاركته في أي مكان"
+  },
+  "op_wav_saved": {
+    "message": "تم حفظ $1"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "يفتح WhatsApp مع النص جاهزاً. أنت تختار المحادثة وتضغط إرسال."
+  },
+  "op_share_text": {
+    "message": "$1 😂 صُنع باستخدام MemeBox: $2"
+  },
+  "feedback": {
+    "message": "أرسل رأيك"
+  },
+  "ask_title": {
+    "message": "هل يعجبك MemeBox؟"
+  },
+  "ask_rate": {
+    "message": "⭐ قيّمنا"
+  },
+  "ask_feedback": {
+    "message": "أرسل رأيك"
+  },
+  "op_feedback": {
+    "message": "💬 أرسل رأيك"
+  },
+  "pro_only": {
+    "message": "هذه ميزة في MemeBox Pro."
+  },
+  "ob_title": {
+    "message": "مرحباً بك في MemeBox 😂"
+  },
+  "ob_sub": {
+    "message": "ثلاث خطوات وتصبح أظرف شخص في المكالمة."
+  },
+  "ob_s1": {
+    "message": "انضم إلى مكالمتك في المتصفح"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet أو Zoom (ويب) أو Microsoft Teams (ويب) أو Discord (ويب). يظهر زر 😂 في الزاوية. إذا كانت المكالمة مفتوحة مسبقاً، أعد تحميلها مرة واحدة."
+  },
+  "ob_s2": {
+    "message": "انقر 😂 لتشغيل ميم"
+  },
+  "ob_s2_text": {
+    "message": "يدخل إلى الميكروفون، فيسمعه الجميع في المكالمة. لا يحتاجون إلى MemeBox. عندما تكون مكتوماً، تكون الميمز صامتة أيضاً."
+  },
+  "ob_s3": {
+    "message": "انقر يميناً على 😂 لكل شيء آخر"
+  },
+  "ob_s3_text": {
+    "message": "اختر أي عبارة، أو ابحث، أو غيّر صوتك (Alt+V)، أو شغّل المفضلة بـ Alt+1 إلى Alt+9. لتشغيل فيديو YouTube في المكالمة، انقر أيقونة MemeBox في شريط الأدوات على ذلك التبويب."
+  },
+  "ob_mic": {
+    "message": "اختبار الميكروفون"
+  },
+  "ob_mic_hint": {
+    "message": "تأكد من أن الميكروفون يعمل. يبقى الصوت في هذه الصفحة. لا يُسجَّل شيء."
+  },
+  "ob_mic_start": {
+    "message": "🎙 ابدأ اختبار الميكروفون"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ إيقاف"
+  },
+  "ob_hear": {
+    "message": "🔊 استمع إلى ميم"
+  },
+  "ob_mic_talk": {
+    "message": "قل شيئاً…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ نسمعك. الميكروفون يعمل."
+  },
+  "ob_mic_blocked": {
+    "message": "الميكروفون محظور. انقر أيقونة الكاميرا/الميكروفون في شريط العنوان واسمح به."
+  },
+  "ob_mic_none": {
+    "message": "لم يُعثر على ميكروفون. وصّل واحداً وحاول مرة أخرى."
+  },
+  "ob_done": {
+    "message": "كل شيء جاهز. عباراتك ومقاطعك وحزمك في الإعدادات."
+  },
+  "ob_reload_title": {
+    "message": "علامة تبويب المكالمة مفتوحة بالفعل"
+  },
+  "ob_reload_text": {
+    "message": "فُتحت قبل MemeBox، لذا لا يمكنها تشغيل الميمات بعد. أعد تحميلها ثم انضم إلى المكالمة مرة أخرى. إعادة التحميل تُخرجك من المكالمة، فافعل ذلك عندما تكون جاهزاً."
+  },
+  "ob_reload_btn": {
+    "message": "إعادة تحميل علامة التبويب هذه"
+  },
+  "ob_sound": {
+    "message": "🔊 تشغيل الصوت"
+  },
+  "ob_settings": {
+    "message": "⚙️ افتح الإعدادات"
+  },
+  "ob_close": {
+    "message": "هيا بنا!"
+  },
+  "pp_reload_tab": {
+    "message": "كان تبويب المكالمة هذا مفتوحاً قبل تثبيت MemeBox أو تحديثه. أعد تحميله (F5)، ثم انضم إلى المكالمة مرة أخرى."
+  },
+  "tag_picture": {
+    "message": "فيه صورة"
+  },
+  "op_picture": {
+    "message": "صورة (اختياري)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 اختر صورة"
+  },
+  "op_picture_remove": {
+    "message": "أزل الصورة"
+  },
+  "op_picture_hint": {
+    "message": "تبقى الصورة حتى إغلاقها بـ × أو Escape أو Stop all. يراها الآخرون عند تفعيل Caption on my camera. استخدم صورك أو صورًا لديك إذن بمشاركتها."
+  },
+  "op_err_picture": {
+    "message": "هذا الملف ليس صورة يستطيع MemeBox استخدامها. جرّب PNG أو JPG أو WEBP أو GIF."
+  },
+  "op_err_picture_big": {
+    "message": "الصورة كبيرة جداً. جرّب صورة أصغر (حتى 20 ميغابايت)."
+  },
+  "pro_pictures": {
+    "message": "استخدمت ميمز الصور المتاحة لك ($1). احصل على المزيد مع MemeBox Pro أو حزمة صور (الخيارات ← MemeBox Pro)."
+  },
+  "op_bulk": {
+    "message": "📂 استيراد ملفات كثيرة"
+  },
+  "op_bulk_hint": {
+    "message": "استيراد ملفات كثيرة: كل ملف يصبح مقطعاً (مقصوصاً ليناسب 1 ميغابايت) باسم ملفه، في فئة \"clips\"."
+  },
+  "op_bulk_working": {
+    "message": "جارٍ استيراد $1 من $2…"
+  },
+  "op_bulk_done": {
+    "message": "تمت إضافة $1 مقطع. تم تخطي $2."
+  },
+  "op_bulk_skipped": {
+    "message": "تم التخطي: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "Pro متوقف في هذه النسخة، لذلك كل شيء مفتوح للجميع ولا حاجة إلى مفتاح."
+  },
+  "op_pro_active": {
+    "message": "✅ MemeBox Pro مفعّل في هذا المتصفح."
+  },
+  "op_pro_free": {
+    "message": "الخطة المجانية: حتى $1 ميم بصورة، و10 مقاطع، وحزمتا عام والجامعة."
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "تفعيل"
+  },
+  "op_buy": {
+    "message": "⭐ اشترِ Pro أو صوراً أكثر"
+  },
+  "op_license_remove": {
+    "message": "أزل المفتاح"
+  },
+  "op_license_ok": {
+    "message": "تم تفعيل المفتاح. استمتع!"
+  },
+  "op_license_offline": {
+    "message": "تعذّر الوصول إلى موقع MemeBox. تحقق من الإنترنت وحاول مرة أخرى."
+  },
+  "op_license_revoked": {
+    "message": "تم إيقاف المفتاح $1."
+  },
+  "op_license_stale": {
+    "message": "تعذّر التحقق من المفتاح $1 منذ وقت طويل. اتصل بالإنترنت ليتحقق منه MemeBox مرة أخرى."
+  },
+  "op_license_pro": {
+    "message": "المفتاح $1: برو ماكس غير محدود. كل الأضواء والشخصيات والفلاتر والألحان مفتوحة."
+  },
+  "op_license_slots": {
+    "message": "المفتاح $1: $2 ميم إضافي بصورة."
+  },
+  "settings_label": {
+    "message": "🎛 الصوت والنبرة"
+  },
+  "op_theme": {
+    "message": "🎨 الألوان"
+  },
+  "theme_auto": {
+    "message": "تلقائي"
+  },
+  "theme_light": {
+    "message": "فاتح"
+  },
+  "theme_dark": {
+    "message": "داكن"
+  },
+  "theme_sunny": {
+    "message": "مشمس"
+  },
+  "theme_neon": {
+    "message": "نيون"
+  },
+  "theme_candy": {
+    "message": "حلوى"
+  },
+  "ob_theme_hint": {
+    "message": "اختر مظهراً لـ MemeBox. يمكنك تغييره في أي وقت من الإعدادات."
+  },
+  "text_dir": {
+    "message": "rtl",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "ar",
+    "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 اللغة"
+  },
+  "lang_auto": {
+    "message": "تلقائي (مثل Chrome)"
+  },
+  "lang_reload": {
+    "message": "تم تغيير اللغة. أعد تحميل تبويب المكالمة لترى MemeBox بها."
+  },
+  "fx_title": {
+    "message": "💡 الإضاءة والمظهر"
+  },
+  "fx_state_on": {
+    "message": "تشغيل"
+  },
+  "fx_state_off": {
+    "message": "إيقاف"
+  },
+  "fx_how": {
+    "message": "مصباح وأضواء ملوّنة على كاميراك. يراها الجميع في المكالمة. جرّب كل شيء في المعاينة بالأسفل."
+  },
+  "fx_on": {
+    "message": "أضئ كاميراي"
+  },
+  "fx_hint_off": {
+    "message": "شغّله للتجربة. انضم إلى المكالمة أو أعد الانضمام لاستخدامه."
+  },
+  "fx_restart": {
+    "message": "أوقف الكاميرا ثم شغّلها مرة واحدة في المكالمة لتبدأ الأضواء."
+  },
+  "fx_active": {
+    "message": "✓ الأضواء على كاميراك"
+  },
+  "fx_locked": {
+    "message": "🔒 معاينة فقط: لا تُرسل إلى مكالمتك."
+  },
+  "fx_plans": {
+    "message": "عرض الخطط"
+  },
+  "fx_watermark": {
+    "message": "معاينة"
+  },
+  "fx_lamp": {
+    "message": "مصباح معلّق"
+  },
+  "fx_lamp_show": {
+    "message": "إظهار المصباح"
+  },
+  "fx_pos_center": {
+    "message": "وسط"
+  },
+  "fx_pos_left": {
+    "message": "يسار"
+  },
+  "fx_pos_right": {
+    "message": "يمين"
+  },
+  "fx_anim_still": {
+    "message": "ثابت"
+  },
+  "fx_anim_swing": {
+    "message": "يتأرجح"
+  },
+  "fx_anim_drop": {
+    "message": "يسقط"
+  },
+  "fx_anim_flicker": {
+    "message": "يومض"
+  },
+  "fx_colors": {
+    "message": "لون الضوء"
+  },
+  "fx_corners": {
+    "message": "أضواء الزوايا"
+  },
+  "fx_corners_show": {
+    "message": "إظهار أضواء الزوايا"
+  },
+  "fx_looks": {
+    "message": "المظهر (الفلاتر)"
+  },
+  "fx_pat_steady": {
+    "message": "ثابت"
+  },
+  "fx_pat_pulse": {
+    "message": "نبض"
+  },
+  "fx_pat_candle": {
+    "message": "شمعة"
+  },
+  "fx_pat_rainbow": {
+    "message": "قوس قزح"
+  },
+  "fx_pat_disco": {
+    "message": "ديسكو"
+  },
+  "fx_pat_sweep": {
+    "message": "مسح"
+  },
+  "fx_pat_sparkle": {
+    "message": "لمعان"
+  },
+  "fx_filter_none": {
+    "message": "بدون"
+  },
+  "fx_filter_warm": {
+    "message": "دافئ"
+  },
+  "fx_filter_bw": {
+    "message": "أبيض وأسود"
+  },
+  "fx_filter_glow": {
+    "message": "توهج"
+  },
+  "fx_filter_vintage": {
+    "message": "عتيق"
+  },
+  "fx_filter_cool": {
+    "message": "بارد"
+  },
+  "fx_filter_neon": {
+    "message": "نيون"
+  },
+  "fx_filter_noir": {
+    "message": "نوار"
+  },
+  "fx_filter_dream": {
+    "message": "حلم"
+  },
+  "fx_filter_sunset": {
+    "message": "غروب"
+  },
+  "fx_filter_pixel": {
+    "message": "بكسل"
+  },
+  "fx_focus": {
+    "message": "تسليط الضوء عليّ (حواف أغمق)"
+  },
+  "fx_focus_tip": {
+    "message": "حواف أغمق ليبقى الضوء على وجهك"
+  },
+  "fx_sync": {
+    "message": "الأضواء تتبع الأصوات"
+  },
+  "fx_sync_tip": {
+    "message": "تتغير الألوان مع الميم الذي تشغّله"
+  },
+  "fx_safe": {
+    "message": "بدون وميض (تغييرات هادئة فقط)"
+  },
+  "fx_safe_tip": {
+    "message": "أكثر أمانًا لمن يتأثرون بالوميض"
+  },
+  "fx_bright": {
+    "message": "السطوع"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: غير محدود ✓"
+  },
+  "fx_pass_left": {
+    "message": "المتبقي $1"
+  },
+  "fx_pass_running": {
+    "message": "قيد التشغيل"
+  },
+  "fx_pass_pause": {
+    "message": "إيقاف مؤقت"
+  },
+  "fx_pass_start": {
+    "message": "ابدأ تصريحي"
+  },
+  "fx_pass_none": {
+    "message": "لا يوجد تصريح بعد. المعاينة مجانية؛ بالتصريح يراها الآخرون في مكالمتك."
+  },
+  "fx_character": {
+    "message": "شخصية (تتفاعل مع الأصوات)"
+  },
+  "fx_char_none": {
+    "message": "بدون"
+  },
+  "fx_char_cat": {
+    "message": "قطة"
+  },
+  "fx_char_dog": {
+    "message": "كلب"
+  },
+  "fx_char_bunny": {
+    "message": "أرنب"
+  },
+  "fx_char_panda": {
+    "message": "باندا"
+  },
+  "fx_char_owl": {
+    "message": "بومة"
+  },
+  "fx_char_fox": {
+    "message": "ثعلب"
+  },
+  "mu_title": {
+    "message": "🎵 الموسيقى"
+  },
+  "mu_how": {
+    "message": "تُشغّل ألحاننا الأصلية في المكالمة وينخفض صوتها أثناء حديثك."
+  },
+  "mu_stop": {
+    "message": "إيقاف"
+  },
+  "mu_vol": {
+    "message": "مستوى الموسيقى"
+  },
+  "mu_locked": {
+    "message": "🔒 معاينة فقط (على سماعاتك، وليس في المكالمة)."
+  },
+  "mu_in_call": {
+    "message": "قيد التشغيل في مكالمتك: $1"
+  },
+  "mu_preview": {
+    "message": "معاينة: $1، $2 ثانية، أنت فقط تسمعها"
+  },
+  "mu_idle": {
+    "message": "اضغط على لحن لتسمعه. مجاني: هادئ وفانكي."
+  },
+  "mu_idle_call": {
+    "message": "اضغط على لحن لتشغيله في مكالمتك."
+  },
+  "mu_t_chill": {
+    "message": "هادئ"
+  },
+  "mu_t_funky": {
+    "message": "فانكي"
+  },
+  "mu_t_party": {
+    "message": "حفلة"
+  },
+  "mu_t_suspense": {
+    "message": "تشويق"
+  },
+  "mu_t_retro": {
+    "message": "ريترو"
+  },
+  "mu_t_jazz": {
+    "message": "جاز"
+  },
+  "mu_t_epic": {
+    "message": "ملحمي"
+  },
+  "mu_t_tropical": {
+    "message": "استوائي"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "سايبر"
+  },
+  "fx_filter_comic": {
+    "message": "كوميك"
+  },
+  "fx_filter_matrix": {
+    "message": "ماتريكس"
+  },
+  "fx_filter_glam": {
+    "message": "ساحر"
+  },
+  "mu_t_disco": {
+    "message": "ديسكو"
+  },
+  "mu_t_club": {
+    "message": "نادي"
+  },
+  "mu_t_bass": {
+    "message": "باس"
+  },
+  "mu_t_desi": {
+    "message": "ديزي"
+  },
+  "mu_t_house": {
+    "message": "هاوس"
+  },
+  "fx_char_penguin": {
+    "message": "بطريق"
+  },
+  "fx_char_lion": {
+    "message": "أسد"
+  },
+  "fx_char_monkey": {
+    "message": "قرد"
+  },
+  "fx_char_frog": {
+    "message": "ضفدع"
+  },
+  "fx_char_unicorn": {
+    "message": "يونيكورن"
+  },
+  "pg_wave": {
+    "message": "تلويح"
+  },
+  "pg_cheer": {
+    "message": "احتفال"
+  },
+  "pg_heartbeat": {
+    "message": "حب"
+  },
+  "pg_cry": {
+    "message": "بكاء"
+  },
+  "pg_raspberry": {
+    "message": "لسان"
+  },
+  "pg_dance": {
+    "message": "رقص"
+  },
+  "fx_char_snake": {
+    "message": "ثعبان"
+  },
+  "fx_char_bird": {
+    "message": "طائر"
+  },
+  "fx_char_robot": {
+    "message": "روبوت"
+  },
+  "fx_filter_night": {
+    "message": "رؤية ليلية"
+  },
+  "fx_filter_film": {
+    "message": "فيلم قديم"
+  },
+  "fx_filter_wave": {
+    "message": "سينثويف"
+  },
+  "fx_filter_heat": {
+    "message": "حراري"
+  },
+  "fx_filter_snow": {
+    "message": "ثلج"
+  },
+  "fx_pat_aurora": {
+    "message": "شفق"
+  },
+  "fx_pat_fire": {
+    "message": "نار"
+  },
+  "fx_pat_laser": {
+    "message": "ليزر"
+  },
+  "fx_pat_neonframe": {
+    "message": "إطار نيون"
+  },
+  "fx_pat_police": {
+    "message": "شرطة"
+  },
+  "fx_pat_heart": {
+    "message": "قلوب"
+  },
+  "fx_fix_lamp": {
+    "message": "مصباح"
+  },
+  "fx_fix_discoball": {
+    "message": "كرة ديسكو"
+  },
+  "fx_fix_lantern": {
+    "message": "فانوس"
+  },
+  "fx_fix_fairy": {
+    "message": "أضواء الجنيات"
+  },
+  "fx_fix_chandelier": {
+    "message": "ثريا"
+  },
+  "fx_fix_moon": {
+    "message": "قمر"
+  },
+  "fx_fix_star": {
+    "message": "نجمة"
+  },
+  "fx_fix_spotlight": {
+    "message": "كشاف"
+  },
+  "fx_anim_sway": {
+    "message": "يتمايل"
+  },
+  "fx_anim_bounce": {
+    "message": "يرتد"
+  },
+  "fx_anim_pendulum": {
+    "message": "بندول"
+  },
+  "fx_anim_beat": {
+    "message": "مع الإيقاع"
+  },
+  "op_license_pass": {
+    "message": "المفتاح $1: تبقى $2 من وقت التصريح."
+  },
+  "fx_follow": {
+    "message": "Stay with me"
+  },
+  "fx_follow_tip": {
+    "message": "Tracks your face locally so the companion follows you and notices when you leave or return."
+  },
+  "fx_away": {
+    "message": "حفلة عندما أخرج من الصورة"
+  },
+  "fx_away_tip": {
+    "message": "يبحث الحيوان عنك ثم يرقص وتحتفل الأضواء. ويرحّبان بك عند عودتك."
+  },
+  "fx_presets": {
+    "message": "إطلالات سريعة"
+  },
+  "fx_pre_party": {
+    "message": "🎉 حفلة"
+  },
+  "fx_pre_studio": {
+    "message": "😎 استوديو"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 ديسكو"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 دافئ"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 سينما"
+  },
+  "fx_pre_live": {
+    "message": "🎤 مباشر"
+  },
+  "fx_studio": {
+    "message": "أضئ غرفتي المظلمة تلقائيًا"
+  },
+  "fx_studio_tip": {
+    "message": "إذا كانت غرفتك مظلمة، يرفع MemeBox سطوع صورتك لتظهر بوضوح حتى بدون مصباح."
+  },
+  "fx_darkprev": {
+    "message": "🌙 معاينة في غرفة مظلمة"
+  },
+  "fx_pat_auto": {
+    "message": "تتبّع الموسيقى"
+  },
+  "fx_pat_party": {
+    "message": "رؤوس متحركة"
+  },
+  "fx_pat_equalizer": {
+    "message": "معادل صوت"
+  },
+  "fx_pat_club": {
+    "message": "نادي"
+  },
+  "as_btn": {
+    "message": "أضف صوتًا من ملف (صوت أو فيديو)"
+  },
+  "as_working": {
+    "message": "جارٍ إضافة $1…"
+  },
+  "as_added": {
+    "message": "أُضيف: $1"
+  },
+  "as_added_cut": {
+    "message": "أُضيف: $1 (تناسب أول $2 ثانية)"
+  },
+  "as_fail": {
+    "message": "تعذّرت إضافة $1"
+  },
+  "as_bad": {
+    "message": "$1 ليس ملف صوت أو فيديو، أو أنه كبير جدًا"
+  },
+  "mu_add": {
+    "message": "＋ أضف موسيقاي"
+  },
+  "mu_mine": {
+    "message": "موسيقاي"
+  },
+  "mu_join": {
+    "message": "انضم إلى مكالمة أولًا ثم شغّل موسيقاك"
+  },
+  "mu_big": {
+    "message": "الملف أكبر من 8 ميغابايت"
+  },
+  "mu_many": {
+    "message": "الحد الأقصى 12 مسارًا. احذف واحدًا أولًا."
+  },
+  "mu_del": {
+    "message": "حذف"
+  },
+  "fx_drag": {
+    "message": "اسحب في المعاينة لتعليق المصباح بالضبط حيث تريد."
+  },
+  "fx_lampsize": {
+    "message": "حجم المصباح"
+  },
+  "fx_lampreset": {
+    "message": "إعادة ضبط"
+  },
+  "fx_hd": {
+    "message": "✨ تحسين HD (أوضح وأنقى وبشرة أنعم)"
+  },
+  "fx_hd_tip": {
+    "message": "ينظّف التشويش ويُنعّم البشرة مع إبقاء العينين والشعر حادّين، ويزيد الوضوح والألوان الطبيعية ويضيء الغرفة المظلمة. يعمل على بطاقة الرسوميات لديك."
+  },
+  "fx_hd_amt": {
+    "message": "قوة تحسين HD"
+  },
+  "st_title": {
+    "message": "ابدأ من هنا"
+  },
+  "st_1": {
+    "message": "1. انضم إلى مكالمتك في المتصفح وأعد تشغيل الميكروفون."
+  },
+  "st_2": {
+    "message": "2. اضغط على أي ميم: يسمعه الجميع في المكالمة."
+  },
+  "st_3": {
+    "message": "3. تريد إضاءة أو مصباحًا أو حيوانًا على الكاميرا؟ افتح الإضاءة بالأسفل."
+  },
+  "st_ok": {
+    "message": "فهمت"
+  },
+  "fx_angle": {
+    "message": "زاوية الضوء (من المصباح إليك)"
+  },
+  "fx_angle_auto": {
+    "message": "تلقائي"
+  },
+  "fx_mirror": {
+    "message": "اليسار / اليمين كما أرى نفسي"
+  },
+  "fx_mirror_tip": {
+    "message": "مثل المرآة: يسارك هو يسار الفيديو الخاص بك. ألغِ التحديد إذا بدا معكوسًا."
+  },
+  "fx_gest": {
+    "message": "React to my face and hands"
+  },
+  "fx_gest_tip": {
+    "message": "Copies supported waves, smiles and gestures. Keep your face and hands in view; adjust sensitivity if reactions are missed."
+  },
+  "fx_sens": {
+    "message": "مدى سهولة التقاطها"
+  },
+  "fx_sens_low": {
+    "message": "منخفضة"
+  },
+  "fx_sens_normal": {
+    "message": "عادية"
+  },
+  "fx_sens_high": {
+    "message": "عالية"
+  },
+  "fx_try": {
+    "message": "جرّب: 👍 ✌️ 👌 🤘 🤙 ✋ 👏 ❤️ (يدان أو أصابع)، أومئ برأسك، هز رأسك، 😛، قبلة."
+  },
+  "fx_seen": {
+    "message": "الكاميرا ترى:"
+  },
+  "fx_seen_face": {
+    "message": "وجه"
+  },
+  "fx_seen_none": {
+    "message": "الكاميرا لا ترى أحدًا بعد (الكاميرا تعمل؟ Follow me محدد؟)"
+  },
+  "cam_unmirror": {
+    "message": "اعكس معاينتي أثناء ظهور التعليق"
+  },
+  "cam_unmirror_tip": {
+    "message": "أثناء ظهور تعليق على كاميرتك، يُعاد قلب مربعك الخاص (الذي يعكسه الموقع) لمدة 3 ثوانٍ لتتمكن من قراءته. الآخرون يرونه دائمًا بالشكل الصحيح."
+  },
+  "fx_masti": {
+    "message": "Explore my head and shoulders"
+  },
+  "fx_masti_tip": {
+    "message": "On: climbs, flies or hops between resting places. Off: returns to your selected resting place, with gentle idle movements."
+  },
+  "fx_sounds": {
+    "message": "Companion sounds in the call"
+  },
+  "fx_sounds_tip": {
+    "message": "Plays short synthesized reactions, including cheers and sobs, into your microphone. Turn off for silent reactions."
+  },
+  "fx_seen_off": {
+    "message": "نموذج الوجه لا يستجيب بعد. انتظر بضع ثوانٍ، وإن استمر ذلك فأعد تحميل تبويب المكالمة."
+  },
+  "tab_memes": {
+    "message": "ميمز"
+  },
+  "tab_music": {
+    "message": "موسيقى"
+  },
+  "tab_lights": {
+    "message": "إضاءة"
+  },
+  "tab_sound": {
+    "message": "صوت"
+  },
+  "chip_lang_all": {
+    "message": "كل اللغات"
+  },
+  "fx_more": {
+    "message": "خيارات أكثر"
+  },
+  "cat_world": {
+    "message": "العالم"
+  },
+  "chip_lang_more": {
+    "message": "لغات أخرى…"
+  },
+  "op_lang_mine": {
+    "message": "لغاتي"
+  },
+  "op_online": {
+    "message": "حزم عبر الإنترنت"
+  },
+  "op_online_hint": {
+    "message": "موسيقى وميمز مجانية للجميع. لا يتم الاتصال بأي شيء حتى تضغط «تصفّح الحزم»؛ التنزيلات تأتي من موقع MemeBox."
+  },
+  "op_online_browse": {
+    "message": "تصفّح الحزم"
+  },
+  "op_online_refresh": {
+    "message": "تحديث القائمة"
+  },
+  "op_online_loading": {
+    "message": "جارٍ التحميل…"
+  },
+  "op_online_fail": {
+    "message": "تعذّر جلب الحزم. تحقق من الإنترنت وحاول مجدداً."
+  },
+  "op_online_none": {
+    "message": "لا توجد حزم هنا بعد. تُضاف حزم جديدة بانتظام."
+  },
+  "op_online_add": {
+    "message": "إضافة ($1)"
+  },
+  "op_online_added": {
+    "message": "تمت الإضافة ✓"
+  },
+  "op_online_remove": {
+    "message": "إزالة"
+  },
+  "op_online_soon": {
+    "message": "قريباً"
+  },
+  "op_online_needs": {
+    "message": "يتطلب Pro"
+  },
+  "op_online_strong": {
+    "message": "عمري 18 عامًا أو أكثر؛ اعرض الميمات ذات الألفاظ القوية"
+  },
+  "op_online_strong_tag": {
+    "message": "+18"
+  },
+  "op_online_music": {
+    "message": "موسيقى"
+  },
+  "op_online_memes": {
+    "message": "ميمز"
+  },
+  "op_online_items": {
+    "message": "$1 عناصر"
+  },
+  "op_online_busy": {
+    "message": "تنزيل $1 من $2…"
+  },
+  "op_online_done": {
+    "message": "تمت إضافة «$1»: $2 عناصر"
+  },
+  "pk_region_all": {
+    "message": "كل المناطق"
+  },
+  "pk_region_common": {
+    "message": "للجميع"
+  },
+  "pk_region_in": {
+    "message": "الهند"
+  },
+  "pk_region_global": {
+    "message": "عالمي"
+  },
+  "pk_get": {
+    "message": "＋ حزم مجانية"
+  },
+  "op_online_pictures": {
+    "message": "صور"
+  },
+  "op_online_free_n": {
+    "message": "$1 مجاني"
+  },
+  "op_online_paid_n": {
+    "message": "$1 تتطلب Pro"
+  },
+  "op_online_soon_n": {
+    "message": "$1 قريباً"
+  },
+  "op_online_more": {
+    "message": "إضافة $1 أخرى ($2)"
+  },
+  "op_online_limit": {
+    "message": "تم الوصول إلى حد التنزيل اليومي (تمت إضافة $1). يمكن إضافة الباقي غداً."
+  },
+  "tone_normal": {
+    "message": "عادي"
+  },
+  "tone_chipmunk": {
+    "message": "سنجاب"
+  },
+  "tone_villain": {
+    "message": "شرير"
+  },
+  "tone_robot": {
+    "message": "روبوت"
+  },
+  "tone_slowmo": {
+    "message": "حركة بطيئة"
+  },
+  "tone_excited": {
+    "message": "متحمس"
+  },
+  "op_online_space": {
+    "message": "الحزم على هذا الجهاز: $1 من $2 ميغابايت"
+  },
+  "op_online_full": {
+    "message": "امتلأت مساحة الحزم على هذا الجهاز (تمت إضافة $1، المجموع $2 ميغابايت). أزل حزمة لإضافة المزيد."
+  },
+  "mu_phonk": {
+    "message": "🔥 وضع الفونك"
+  },
+  "mu_phonk_tip": {
+    "message": "مقاطع فونك رسمية عبر YouTube ثم تُرسل إلى مكالمتك"
+  },
+  "mu_t_phonk_desi": {
+    "message": "🔥 MemeBox Desi Phonk"
+  },
+  "mu_t_phonk_drift": {
+    "message": "🏎️ MemeBox Drift Phonk"
+  },
+  "mu_t_phonk_midnight": {
+    "message": "🌙 MemeBox Midnight Phonk"
+  },
+  "pg_natural": {
+    "message": "Natural behavior"
+  },
+  "pg_leave": {
+    "message": "أغادر الصورة"
+  },
+  "pg_return": {
+    "message": "لقد عدت"
+  },
+  "pg_move": {
+    "message": "تحريك الشخص"
+  },
+  "pg_personality": {
+    "message": "حركة مميزة"
+  },
+  "pg_jump": {
+    "message": "اقفز"
+  },
+  "pg_roll": {
+    "message": "تدحرج"
+  },
+  "pg_sit": {
+    "message": "اجلس / استرح"
+  },
+  "pg_head": {
+    "message": "على رأسي"
+  },
+  "pg_shoulder": {
+    "message": "على كتفي"
+  },
+  "pg_corner": {
+    "message": "على الشاشة"
+  },
+  "pg_personality_help": {
+    "message": "Try the signature action, then leave and return. This uses the same companion engine as your camera."
+  },
+  "pg_away_status": {
+    "message": "Waiting for you. Music will not turn the companion happy while you are away."
+  },
+  "pg_home_status": {
+    "message": "You are here. Your companion can explore, listen and react."
+  },
+  "fx_home": {
+    "message": "مكان الراحة"
+  },
+  "fx_home_tip": {
+    "message": "When exploring is off, the companion stays here. A face must be detected for head and shoulder positions."
+  },
+  "fx_commands": {
+    "message": "أخبر رفيقك بما يفعل"
+  },
+  "fx_commands_tip": {
+    "message": "These controls affect the character in your outgoing camera. Waiting and crying still take priority when you leave."
+  },
+  "fx_away_explain": {
+    "message": "When you leave, your companion looks for you, waits and cries. It stays sad or floats in its tears until you return."
+  },
+  "fx_outfit_hoodie": {
+    "message": "Cozy hoodie"
+  },
+  "fx_outfit_bow": {
+    "message": "Bow tie"
+  },
+  "fx_outfit_glasses": {
+    "message": "Round glasses"
+  },
+  "fx_outfit_astronaut": {
+    "message": "Space explorer"
+  },
+  "fx_outfit_wizard": {
+    "message": "Magic stars"
+  },
+  "fx_outfit_superhero": {
+    "message": "Hero cape"
+  },
+  "fx_tier_free": {
+    "message": "مجاني"
+  },
+  "fx_tier_pro": {
+    "message": "Pro أو شراء دائم"
+  },
+  "fx_tier_max": {
+    "message": "Pro Max فقط"
+  },
+  "fx_outfit_help": {
+    "message": "Basic accessories are free. Pro designs can be owned forever when their shop opens. Interactive Pro Max designs are exclusive to the pass."
+  },
+  "fx_filter_sepia": {
+    "message": "Sepia"
+  },
+  "fx_filter_peach": {
+    "message": "Peach"
+  },
+  "fx_filter_teal": {
+    "message": "Teal"
+  },
+  "fx_filter_soft": {
+    "message": "Soft focus"
+  },
+  "fx_filter_dusk": {
+    "message": "Dusk"
+  },
+  "fx_filter_contrast": {
+    "message": "High contrast"
+  },
+  "fx_filter_prism": {
+    "message": "Prism light"
+  },
+  "fx_filter_startrail": {
+    "message": "Star trails"
+  },
+  "pg_music_title": {
+    "message": "استمع إلى الموسيقى"
+  },
+  "pg_music_help": {
+    "message": "All 16 bundled tunes are here, including 3 original Phonk tracks. Preview on your speakers; music in the call is under the Music tab."
+  },
+  "pg_add_memes": {
+    "message": "Add my memes and pictures"
+  },
+  "pg_add_music": {
+    "message": "How to add my music"
+  },
+  "pg_music_add_help": {
+    "message": "In a browser call: open the MemeBox panel, select Music, then Add my music. Select an audio file you own or may share. Original Phonk is already bundled; YouTube playlists need the site and verified links."
+  },
+  "pg_preview_seconds": {
+    "message": "Preview length"
+  },
+  "pg_volume": {
+    "message": "Listening volume"
+  },
+  "pg_free_music": {
+    "message": "Free tunes"
+  },
+  "pg_pro_music": {
+    "message": "Pro tunes"
+  },
+  "pg_max_music": {
+    "message": "Pro Max originals and tunes"
+  },
+  "pg_pictures": {
+    "message": "وضع الصور"
+  },
+  "pg_pictures_help": {
+    "message": "Add a picture to a meme in Options. Play it from the Pictures tab during a call. It stays until you close it with ×, Escape or Stop all. Enable camera captions to send it to other callers."
+  },
+  "pg_picture_choose": {
+    "message": "جرّب صورة محلية"
+  },
+  "pg_picture_close": {
+    "message": "أغلق الصورة"
+  },
+  "pg_picture_privacy": {
+    "message": "This preview stays on this device. No upload or storage service is used."
+  },
+  "pg_collection_help": {
+    "message": "For everyone is the default. India and other regions are optional collections, available to everyone; your interface language stays your choice."
+  },
+  "ob_try_characters": {
+    "message": "Try characters and reactions"
+  },
+  "ob_listen_music": {
+    "message": "Listen to original music"
+  },
+  "ob_add_content": {
+    "message": "Add memes and pictures"
+  },
+  "tab_pictures": {
+    "message": "الصور"
+  },
+  "pictures_help": {
+    "message": "Your picture memes, in one place. Pictures stay until ×, Escape or Stop all. Camera captions must be on for other callers to see them."
+  },
+  "pictures_add": {
+    "message": "Add a picture meme"
+  },
+  "pictures_empty": {
+    "message": "No picture memes yet. Add a picture to a meme in Options, then come back here."
+  },
+  "mu_phonk_local_tip": {
+    "message": "Listen to our three original Phonk tracks in the Playground. Free YouTube playlists require the site and verified official links."
+  },
+  "mu_collection_help": {
+    "message": "Original tunes run on your device. Add your own audio below; no hosted music subscription is required."
+  },
+  "pg_persona_cat": {
+    "message": "Quiet paws, grooming and stretching. Climbs to your shoulder."
+  },
+  "pg_persona_dog": {
+    "message": "A playful trot, panting and wagging. Waits for you to return."
+  },
+  "pg_persona_bunny": {
+    "message": "Springy hops, ear wiggles and nibbling."
+  },
+  "pg_persona_panda": {
+    "message": "Slow steps, bamboo munching and relaxed rolls."
+  },
+  "pg_persona_owl": {
+    "message": "Flies between perches, turns its head and hoots."
+  },
+  "pg_persona_fox": {
+    "message": "Soft prowling, a swishing tail and pouncing."
+  },
+  "pg_persona_penguin": {
+    "message": "Side-to-side waddling and flipper movements."
+  },
+  "pg_persona_lion": {
+    "message": "A measured prowl, mane shakes and yawns."
+  },
+  "pg_persona_monkey": {
+    "message": "Climbs with alternating hands, scratches and swings."
+  },
+  "pg_persona_frog": {
+    "message": "Hops, croaks and catches a little fly."
+  },
+  "pg_persona_unicorn": {
+    "message": "Prances with a rainbow tail and sparkles."
+  },
+  "pg_persona_robot": {
+    "message": "Marches in measured steps, scans and beeps."
+  },
+  "pg_persona_snake": {
+    "message": "Slithers, coils and flicks its forked tongue."
+  },
+  "pg_persona_bird": {
+    "message": "Flies with flapping wings, preens and pecks."
+  },
+  "pg_animate": {
+    "message": "تحريك المعاينة"
+  },
+  "pg_picture_too_big": {
+    "message": "Choose an image smaller than 8 MB."
+  },
+  "pg_picture_invalid": {
+    "message": "Choose a valid PNG, JPEG, WebP or GIF image."
+  },
+  "adult_optin": {
+    "message": "عمري 18 عامًا أو أكثر؛ اعرض الميمات ذات الألفاظ القوية"
+  },
+  "adult_mark": {
+    "message": "Contains strong language (18+)"
+  },
+  "adult_help": {
+    "message": "Off by default. This is a self-declared preference, not verified age. Turning it off hides marked content and stops current MemeBox playback. Unmarked content cannot be classified automatically."
+  },
+  "adult_blocked": {
+    "message": "Adult memes are hidden. Enable the 18+ preference first."
+  },
+  "content_title": {
+    "message": "Your meme library"
+  },
+  "content_help": {
+    "message": "Recommended uses your chosen meme language. Explore all opens every language and region. Regions are collections, not restrictions."
+  },
+  "content_language": {
+    "message": "اللغة"
+  },
+  "content_recommended": {
+    "message": "Recommended language"
+  },
+  "content_all": {
+    "message": "كل اللغات"
+  },
+  "content_private": {
+    "message": "Your personal additions stay private on this device and appear with your memes across language views. Categories keep related memes together. Only admin-published packs become available to other users."
+  },
+  "plans_title": {
+    "message": "Plans and ownership"
+  },
+  "plans_link": {
+    "message": "Plans, prices and how to buy"
+  },
+  "plans_closed": {
+    "message": "Payments are not open in this local review. You can preview all features here. No purchase will be made."
+  },
+  "plans_forever": {
+    "message": "Owned forever"
+  },
+  "plans_draft": {
+    "message": "Draft price, not on sale yet"
+  },
+  "plans_max_only": {
+    "message": "Included only with Pro Max; never individually sold"
+  },
+  "plans_passes": {
+    "message": "Time passes"
+  },
+  "plans_filters": {
+    "message": "Filters: Free, Pro and Pro Max"
+  },
+  "plans_outfits": {
+    "message": "Costumes and accessories"
+  },
+  "plans_characters": {
+    "message": "Character ownership"
+  },
+  "plans_music": {
+    "message": "Bundled music"
+  },
+  "plans_open_checkout": {
+    "message": "Open checkout"
+  },
+  "plans_checkout_help": {
+    "message": "Checkout opens on the MemeBox site when the shop is enabled. International payment methods depend on provider approval."
+  },
+  "plans_ownership_help": {
+    "message": "A costume does not unlock its animal. Owned Pro filters and costumes work without a pass; automatic tracking and gestures need a running pass."
+  },
+  "plans_free_count": {
+    "message": "3 free filters and 3 basic accessories"
+  },
+  "plans_pro_count": {
+    "message": "18 filters and 10 standard characters; 7 regular tunes plus Desi Phonk"
+  },
+  "plans_max_count": {
+    "message": "28 filters, all 14 characters and all 16 bundled tunes; exclusive reactive costumes"
+  },
+  "pk_manage_help": {
+    "message": "Published packs are added by the owner in the admin console. You choose which packs to keep locally; your own imports never publish automatically."
+  },
+  "plans_view_max": {
+    "message": "View Pro Max passes"
+  },
+  "plans_availability": {
+    "message": "Checkout availability"
+  },
+  "room_title": {
+    "message": "غرفة الموسيقى"
+  },
+  "room_characters": {
+    "message": "الشخصيات"
+  },
+  "room_language": {
+    "message": "اللغة"
+  },
+  "room_everyone": {
+    "message": "Your music. Every mood."
+  },
+  "room_heading": {
+    "message": "Pick a playlist. Feel the drop."
+  },
+  "room_intro": {
+    "message": "Free YouTube collections and original MemeBox music in one place. Browse every collection, wherever you are; YouTube availability may vary."
+  },
+  "room_pick": {
+    "message": "Choose music to start"
+  },
+  "room_previous": {
+    "message": "السابق"
+  },
+  "room_pause": {
+    "message": "Pause / resume"
+  },
+  "room_next": {
+    "message": "التالي"
+  },
+  "room_shuffle": {
+    "message": "تشغيل عشوائي"
+  },
+  "room_youtube_help": {
+    "message": "YouTube uses its visible player and may show ads or restrict a video. Original music runs on your device."
+  },
+  "room_web_player": {
+    "message": "Open website player"
+  },
+  "room_provider": {
+    "message": "View source playlist"
+  },
+  "room_local_help": {
+    "message": "For the local YouTube player, run Start-MemeBox-Music.cmd from the extracted review folder once. No Node installation is needed. It opens a localhost page with a valid website referrer."
+  },
+  "room_playlists": {
+    "message": "قوائم YouTube المجانية"
+  },
+  "room_supplied": {
+    "message": "Starter collections for every listener. Rename or replace them whenever you want; YouTube controls the songs and availability."
+  },
+  "room_search": {
+    "message": "Search your playlists"
+  },
+  "room_empty": {
+    "message": "No matching playlists. Change the search or add a collection."
+  },
+  "room_manage": {
+    "message": "إدارة قوائمي"
+  },
+  "room_private": {
+    "message": "Changes are saved only on this browser. They do not publish for other users."
+  },
+  "room_name": {
+    "message": "Collection name"
+  },
+  "room_url": {
+    "message": "YouTube playlist link"
+  },
+  "room_save": {
+    "message": "حفظ القائمة"
+  },
+  "room_cancel": {
+    "message": "إلغاء التعديل"
+  },
+  "room_restore": {
+    "message": "Restore supplied playlists"
+  },
+  "room_originals": {
+    "message": "موسيقى MemeBox الأصلية"
+  },
+  "room_original_help": {
+    "message": "Phonk builds into a pause and beat drop, then returns with a layered second drop. Other tunes cover chill, funk, party and more."
+  },
+  "room_all": {
+    "message": "كل المقطوعات"
+  },
+  "room_call": {
+    "message": "Music in your call"
+  },
+  "room_call_help": {
+    "message": "Original tunes play into your mic from the call panel’s Music tab. For YouTube, keep the website player open, click the MemeBox toolbar icon and choose Send this tab’s sound. Ads are included in captured tab audio."
+  },
+  "room_review": {
+    "message": "Local review: paid music is unlocked, checkout is closed, and nothing is deployed."
+  },
+  "room_storage_error": {
+    "message": "Could not save in this browser. Your changes remain available until the page closes."
+  },
+  "room_web_required": {
+    "message": "YouTube playback opens in the website player so it receives a valid web referrer."
+  },
+  "room_youtube_loading": {
+    "message": "YouTube player opened. Press Play in the visible player if autoplay is blocked."
+  },
+  "room_original_playing": {
+    "message": "Playing on your speakers. To send originals into a call, use the call panel’s Music tab."
+  },
+  "room_preview": {
+    "message": "20-second preview on your speakers. This tune requires its applicable pass in a call."
+  },
+  "room_preview_finished": {
+    "message": "Preview finished. View Plans for this tune’s tier."
+  },
+  "room_collection_meta": {
+    "message": "Free · YouTube controls the song list"
+  },
+  "room_play": {
+    "message": "تشغيل"
+  },
+  "room_edit": {
+    "message": "تعديل"
+  },
+  "room_remove": {
+    "message": "حذف"
+  },
+  "room_drop_at": {
+    "message": "Drop at $1s"
+  },
+  "room_preview_badge": {
+    "message": "20s preview"
+  },
+  "room_invalid": {
+    "message": "Enter a name and a valid HTTPS YouTube playlist link or playlist ID."
+  },
+  "room_duplicate": {
+    "message": "This playlist is already saved. Edit its existing card instead."
+  },
+  "room_limit": {
+    "message": "Keep up to $1 playlists. Remove one before adding another."
+  },
+  "room_saved": {
+    "message": "Playlist changes saved"
+  },
+  "room_embed_error": {
+    "message": "YouTube could not play this selection (error $1). Its availability, age or embedding restrictions may prevent playback."
+  },
+  "room_youtube_playing": {
+    "message": "Playing through YouTube’s visible player"
+  },
+  "room_external": {
+    "message": "Selected playlist"
+  },
+  "room_adult": {
+    "message": "عمري 18 عامًا أو أكثر؛ أظهر المجموعات المصنفة بلغة نابية"
+  },
+  "room_published": {
+    "message": "Published MemeBox collections"
+  },
+  "room_published_help": {
+    "message": "The owner can update these collections without an extension release. Browse to load the current catalog."
+  },
+  "room_browse": {
+    "message": "Browse published collections"
+  },
+  "room_published_count": {
+    "message": "Free · $1 songs"
+  },
+  "room_catalog_loading": {
+    "message": "Loading published collections…"
+  },
+  "room_catalog_paused": {
+    "message": "Published Phonk collections are paused by the owner."
+  },
+  "room_catalog_empty": {
+    "message": "No published collections yet. Your own playlists above remain available."
+  },
+  "room_catalog_unavailable": {
+    "message": "The published catalog is unavailable here. Your own playlists above remain available."
+  },
+  "plans_choose_tier": {
+    "message": "Show passes"
+  },
+  "plans_all_passes": {
+    "message": "All passes"
+  }
+}

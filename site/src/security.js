@@ -14,7 +14,7 @@ async function hmacKey(secret) {
 }
 
 export async function hmacHex(secret, s) {
-  return hex(await crypto.subtle.sign('HMAC', await hmacKey(secret), enc.encode(s)));
+  return hex(await crypto.subtle.sign('HMAC', await hmacKey(secret), typeof s === 'string' ? enc.encode(s) : s));
 }
 
 // Compares two strings in time that doesn't depend on where they differ.

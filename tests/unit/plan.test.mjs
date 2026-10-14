@@ -104,7 +104,7 @@ test('time pass: works only while it is switched on and has seconds; Pro Max als
   assert.equal(plan.passTier(now), 'pro');
   assert.equal(plan.canFx('lampAnim', now), true);
   assert.equal(plan.can('voiceChanger', now), true);
-  assert.equal(plan.canFx('filter:neon', now), false, 'Pro does not have the extra filters');
+  assert.equal(plan.canFx('filter:cyber', now), false, 'Pro does not have Max-exclusive filters');
   assert.equal(plan.canFx('characters', now), false);
   assert.equal(plan.can('unlimitedClips', now), false, 'a pass does not lift the saved-items limits');
   assert.equal(plan.pictureLimit(now), 1);
@@ -134,16 +134,16 @@ test('time pass: a permanent key still has everything, and a giant balance is ca
   assert.equal(plan.license.proSeconds, plan.PASS_MAX_SECONDS);
 });
 
-test('characters: Cat and Dog are free, Pro has six, Pro Max and a permanent key have all twelve, and any can be bought for ever; the lists match the engine', () => {
+test('characters: Free has two, Pro ten, Max fourteen; new exclusives require Max and old purchases remain valid', () => {
   const now = Date.UTC(2026, 9, 1);
   const plan = withConfig({ PRO_ENABLED: true });
   const fx = loadScript('lib/fx.js').MemeFx;
   assert.deepEqual([...plan.STANDARD_CHARACTERS], [...fx.STANDARD_CHARACTERS]);
   assert.deepEqual([...plan.FREE_CHARACTERS], [...fx.FREE_CHARACTERS]);
-  assert.equal(fx.CHARACTERS.length, 12);
+  assert.equal(fx.CHARACTERS.length, 14);
   assert.deepEqual([...fx.FREE_CHARACTERS], ['cat', 'dog']);
-  assert.equal(fx.STANDARD_CHARACTERS.length, 6);
-  assert.deepEqual(fx.PREMIUM_CHARACTERS.length, 6);
+  assert.equal(fx.STANDARD_CHARACTERS.length, 10);
+  assert.deepEqual(fx.PREMIUM_CHARACTERS.length, 4);
   const lic = (o) => plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', unlimited: false, checkedAt: now - 1000, ...o });
   // nobody, no key at all: the two free ones only
   assert.equal(plan.canFx('character:cat', now), true);
@@ -151,8 +151,8 @@ test('characters: Cat and Dog are free, Pro has six, Pro Max and a permanent key
   assert.equal(plan.canFx('character:bunny', now), false);
   plan.setPass({ on: true });
   lic({ proSeconds: 600 });
-  for (const id of ['cat', 'dog', 'bunny', 'panda', 'owl', 'fox']) assert.equal(plan.canFx('character:' + id, now), true, id + ' with Pro');
-  for (const id of ['penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot']) assert.equal(plan.canFx('character:' + id, now), false, id + ' needs Pro Max');
+  for (const id of fx.STANDARD_CHARACTERS) assert.equal(plan.canFx('character:' + id, now), true, id + ' with Pro');
+  for (const id of ['unicorn', 'robot', 'snake', 'bird']) assert.equal(plan.canFx('character:' + id, now), false, id + ' needs Pro Max');
   lic({ maxSeconds: 600 });
   for (const id of fx.CHARACTERS) assert.equal(plan.canFx('character:' + id, now), true, id + ' with Pro Max');
   // bought for ever: works without any pass
@@ -167,9 +167,14 @@ test('characters: Cat and Dog are free, Pro has six, Pro Max and a permanent key
   assert.equal(fx.sanitize({ character: 'robot' }, (f) => plan.canFx(f, now)).character, 'none');
   assert.equal(fx.sanitize({ character: 'cat', charPos: 'left' }, (f) => plan.canFx(f, now)).charPos, 'left');
   assert.equal(fx.sanitize({ character: 'dragon' }).character, 'none');
+  lic({ addons: [{ id: 'character:snake', until: 0 }, { id: 'character:bird', until: 0 }] });
+  assert.equal(plan.canFx('character:snake', now), false);
+  assert.equal(plan.canFx('character:bird', now), false);
+  lic({ addons: [{ id: 'character:unicorn', until: 0 }] });
+  assert.equal(plan.canFx('character:unicorn', now), true, 'preserve an existing purchase');
 });
 
-test('music: Chill and Funky are free, the other tunes need Pro (a pass or a key); the lists match the engine', () => {
+test('music: Free has two tunes, Pro seven, Max thirteen; the lists match the engine', () => {
   const now = Date.UTC(2026, 9, 1);
   const plan = withConfig({ PRO_ENABLED: true });
   const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
@@ -180,4 +185,40 @@ test('music: Chill and Funky are free, the other tunes need Pro (a pass or a key
   plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now - 1000 });
   plan.setPass({ on: true });
   assert.equal(plan.canFx('music:party', now), true);
+  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 7);
+  assert.equal(plan.canFx('music:bass', now), false);
+  assert.equal(plan.canFx('music:phonk_desi', now), true);
+  assert.equal(plan.canFx('music:phonk_drift', now), false);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', maxSeconds: 60, checkedAt: now });
+  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 13);
+  for (const id of music.PHONK_IDS) assert.equal(plan.canFx('music:' + id, now), true);
+});
+
+test('filters: Free has three, Pro eighteen, Max twenty-eight, excluding the no-filter choice', () => {
+  const now = Date.now(), plan = withConfig({ PRO_ENABLED: true }), fx = loadScript('lib/fx.js').MemeFx;
+  assert.equal(fx.FREE_FILTERS.length - 1, 3);
+  assert.equal(fx.FREE_FILTERS.length - 1 + fx.PRO_FILTERS.length, 18);
+  assert.equal(fx.FILTERS.length - 1, 28);
+  plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now });
+  plan.setPass({ on: true });
+  for (const id of fx.PRO_FILTERS) assert.equal(fx.sanitize({ filter: id }, f => plan.canFx(f, now)).filter, id);
+  assert.equal(fx.sanitize({ filter: 'cyber' }, f => plan.canFx(f, now)).filter, 'none');
+});
+
+test('owned Pro filters and costumes work without a running pass, Max exclusives stay pass-only', () => {
+  const now=Date.now(), plan=withConfig({PRO_ENABLED:true}), fx=loadScript('lib/fx.js').MemeFx;
+  plan.setLicense({key:'MBX-AAAA-BBBB-CCCC',status:'active',checkedAt:now,addons:[{id:'filter:teal',until:0},{id:'outfit:hoodie',until:0},{id:'filter:prism',until:0},{id:'outfit:wizard',until:0}]});
+  plan.setPass({on:false});
+  assert.equal(fx.sanitize({filter:'teal',character:'cat',outfit:'hoodie'},f=>plan.canFx(f,now)).filter,'teal');
+  assert.equal(plan.canFx('outfit:hoodie',now),true);
+  assert.equal(plan.canFx('filter:prism',now),false);
+  assert.equal(plan.canFx('outfit:wizard',now),false);
+  assert.equal(plan.canFx('filter:dusk',now),false);
+  plan.setLicense({key:'MBX-AAAA-BBBB-CCCC',status:'active',checkedAt:now,maxSeconds:60});plan.setPass({on:true});
+  assert.equal(plan.canFx('filter:prism',now),true);assert.equal(plan.canFx('outfit:wizard',now),true);
+});
+
+test('personal uploads are available without a pass while premium bundled tunes retain their tiers',()=>{
+ const plan=withConfig({PRO_ENABLED:true});assert.equal(plan.canFx('music:own'),true);assert.equal(plan.canFx('music:phonk_desi'),false);assert.equal(plan.canFx('music:phonk_drift'),false);
+ plan.setLicense({key:'MBX-AAAA-BBBB-CCCC',status:'active',proSeconds:3600,checkedAt:Date.now()});plan.setPass({on:true});assert.equal(plan.canFx('music:own'),true);assert.equal(plan.canFx('music:phonk_desi'),true);assert.equal(plan.canFx('music:phonk_drift'),false);
 });

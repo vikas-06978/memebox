@@ -7,6 +7,15 @@ const fx = loadScript('lib/fx.js').MemeFx;
 const free = (f) => false;
 const all = () => true;
 
+test('outfits are free cosmetics and cannot unlock a character', () => {
+  for (const outfit of fx.FREE_OUTFITS) {
+    const cfg = fx.sanitize({ character: 'cat', outfit }, feature => feature === 'character:cat');
+    assert.equal(cfg.outfit, outfit); assert.equal(cfg.character, 'cat');
+  }
+  assert.equal(fx.sanitize({ outfit: 'unknown' }).outfit, 'none');
+  assert.equal(fx.sanitize({ character: 'bird', outfit: 'crown' }, free).character, 'none');
+});
+
 test('free people keep the still lamp: other fixtures and animations fall back, the lamp itself is free', () => {
   const c = fx.sanitize({ fixture: 'discoball', lampAnim: 'bounce' }, free);
   assert.equal(c.fixture, 'lamp');
@@ -27,11 +36,11 @@ test('lockedParts names what a free person is only previewing', () => {
   assert.deepEqual([...fx.lockedParts({ fixture: 'lamp' }, free)], []);
 });
 
-test('there are 8 things that hang, 8 animations, 17 corner shows (13 + auto, party, equalizer, club), 20 filters (the ones in the price list)', () => {
+test('there are 8 things that hang, 8 animations, 17 corner shows (13 + auto, party, equalizer, club), 28 filters (3 free, 15 Pro and 10 Max exclusive)', () => {
   assert.equal(fx.FIXTURES.length, 8);
   assert.equal(fx.LAMP_ANIMS.length, 8);
   assert.equal(fx.PATTERNS.length, 17);
-  assert.equal(fx.FILTERS.length, 21); // 20 + "none"
+  assert.equal(fx.FILTERS.length, 29); // 20 + "none"
   assert.equal(fx.FREE_FILTERS.length, 4); // 3 + "none"
 });
 

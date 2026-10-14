@@ -89,7 +89,8 @@
     voiceLast: 'chipmunk', // the voice Alt+V switches on (the voice itself always starts Off)
     camCaptions: false,   // draw meme text on your own camera (applies when the camera starts)
     panelTab: 'memes',    // the page of the panel you left open: memes | music | lights | sound
-    showStrong: false,    // Options → Online packs: also offer the lines with strong language (18+)
+    showStrong: false,    // adult/strong-language memes stay hidden until explicit opt-in
+    adultConfirmed: false,
     lineLang: 'auto',     // which meme lines to show: auto (from the browser language and time zone) | all | en | hi
     camUnmirror: true,    // while a camera caption shows, flip your own (mirrored) preview back so you can read it too
     theme: 'auto',        // colors: one of THEMES (auto follows the computer's light/dark setting)
@@ -163,6 +164,10 @@
       volume: Number.isFinite(Number(l.volume)) && l.volume !== null && l.volume !== '' ? Math.min(2, Math.max(0, Number(l.volume))) : 1,
     };
     if (l.star === true) out.star = true;
+    if (l.explicit === true || l.explicit === 1) out.explicit = true;
+    if (typeof l.packId === 'string' && /^[a-z0-9-]{1,64}$/.test(l.packId)) out.packId = l.packId;
+    if (typeof l.region === 'string' && /^[a-z0-9-]{1,24}$/.test(l.region)) out.region = l.region;
+    if (l.universal === true) out.universal = true;
     const say = String(l.say || '').trim().slice(0, LIMITS.textChars);
     if (say) out.say = say;
     if (kind === 'clip') out.clipId = String(l.clipId || '').slice(0, 64);
@@ -172,8 +177,12 @@
     return out;
   }
 
+  const contentAllowed = (item, settings) => !item?.explicit || (settings?.showStrong === true && settings?.adultConfirmed === true);
+  function libraryLines(items, settings, languages = null) {
+    return items.filter(item => contentAllowed(item, settings) && (!languages || item.universal || item.pictureId || item.kind === 'sfx' || (!isBuiltinLine(item) && !item.packId) || languages.has(item.lang)));
+  }
   globalThis.MEME = Object.freeze({
-    TONES, VOICES, THEMES, LANGS, isLang, langOf, isBuiltinLine, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, THEMES, LANGS, isLang, langOf, isBuiltinLine, contentAllowed, libraryLines, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

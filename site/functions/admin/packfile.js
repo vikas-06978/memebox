@@ -6,6 +6,7 @@ import { getItem } from '../../src/packs.js';
 export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return adminResponse('Method not allowed', { status: 405, type: 'text/plain; charset=utf-8', headers: { Allow: 'GET' } });
   if (!env.ADMIN_KEY || !env.DB || !(await isAdmin(request, env))) return adminRedirect('/admin');
+  if (env.HOSTED_FILES_ENABLED !== 'on') return adminResponse('Hosted files are paused.', { status: 503, type: 'text/plain; charset=utf-8' });
   const item = await getItem(env.DB, new URL(request.url).searchParams.get('id') || '');
   if (!item || !item.file_key || !env.PACKS) return adminResponse('Not found', { status: 404, type: 'text/plain; charset=utf-8' });
   const obj = await env.PACKS.get(item.file_key);

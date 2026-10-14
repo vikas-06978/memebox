@@ -1,5 +1,22 @@
 # Pending (for Wednesday)
 
+## Current local review, 2026-10-14
+
+**Deployment is paused until the owner explicitly requests it.** The historical notes below contain old versions, prices and release commands; use `docs/upgrade-progress.md` for current implementation status and `site/src/shop.js` for prices.
+
+- Latest consolidated review: the unified music room shows the five supplied playlist references and sixteen tunes, with a localhost launcher, private manager, published-catalog refresh, correct Max pass links and Free personal audio uploads. Source UI/logic is tested; live gateway/content/real-call release prerequisites remain. See START-HERE.md and docs/local-review.md.
+- Testing branch: `review/memebox-local-2026-10-14` (local review only, do not deploy). Start with `START-HERE.md`.
+- Implemented locally: shared Playground/call companion movement, species signatures, manual controls, shoulder/head resting, waiting/crying/floating and stable welcome; 28 filters (3 Free + 15 Pro + 10 Max), nine costumes, a separate Pictures tab, stronger original synthesized Phonk, offline music listening, local Plans/prices links, preferred-language discovery, optional regional collections and default-off strong-language content with playback cancellation. Test-only Razorpay, signed captured/refund webhooks, atomic fulfillment/recovery, admin test ledger, signed usage receipts and default-off hosted files remain in place.
+- Interface choices: 16 bundles, including four Beta choices. Core new movement/music/picture/adult controls have native strings; longer new helper, personality and pricing text still uses English fallbacks in several languages. Full native review remains.
+- Before payment testing with the provider: configure test secrets securely in an isolated preview/local environment with a separate test D1 database. See `docs/payment-testing.md`. No live keys are accepted by the new gateway integration.
+- Owner tasks remain: Razorpay approval and international-payment eligibility, bank/account verification, native-speaker content review, original regional recordings, verified official playlist links, real Meet/weak-laptop checks, final version and store assets.
+- Repository history previously contained an owner key. Remove plaintext from working files and rotate the old key in the live admin before release; deleting text does not remove it from Git history.
+
+
+## Historical handover below: not the current checklist
+
+These entries describe previous plans, including superseded counts/prices and old deploy commands. Do not execute the commands as part of this local review. Use `docs/local-review-checklist.md`, `docs/companion-model.md` and the server catalog for the current state.
+
 ## You (owner)
 - Run the D1 migration once, then deploy the site:
   `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-time-pass.sql`, then `npx wrangler pages deploy --branch=main` from `site/`.
@@ -31,7 +48,7 @@
 - Server-signed pass sessions, rate limits and abuse checks on /api/license and /api/order; secrets only through wrangler, never in the repo.
 - GitHub repo private, no repo link on the site or store; the source stays out of the public store listing.
 - Copyright notice and terms ("all rights reserved"), our own music, voices, characters and artwork are ours; check the licences of the third-party parts (THIRD_PARTY_NOTICES).
-- Owner key (MBX-294K-D9VF-9BF6): keep it private; it is unlimited, so rotate it if it ever leaks. Our own account is the main (owner) user of the system.
+- Owner key: keep it only in private storage. Rotate the previously documented key in the live admin before release.
 
 ## Packs (music and memes)
 - Once: `npx wrangler r2 bucket create memebox-packs`, then `npx wrangler d1 execute memebox-feedback --remote --file=db/migrations/2026-10-packs.sql` and then `--file=db/migrations/2026-10-packs-v2.sql` (per-item plans and picture packs), then deploy the site. Open `/admin/packs`.

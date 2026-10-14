@@ -3,6 +3,7 @@ import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   PRODUCTS, forSale, newLicenseKey, newOrderId, LICENSE_RE, ORDER_RE, upiLink, cleanKey, createLicense, getLicense,
+  createOrder, claimOrder, approveOrder,
 } from '../../site/src/shop.js';
 import { makeSession } from '../../site/src/security.js';
 import { onRequest as licenseApi } from '../../site/functions/api/license.js';
@@ -15,6 +16,19 @@ import { D1 } from '../../tools/d1-sqlite.mjs';
 import { readTomlVars } from '../../tools/site-dev.mjs';
 
 const ADMIN_KEY = 'admin-key-for-tests';
+
+test('concurrent manual approval creates one license and applies one top-up', async () => {
+  const local = new D1(), order = await createOrder(local, { product: 'pass_pro_60' });
+  await claimOrder(local, order.id, '123456789012');
+  const keys = await Promise.all(Array.from({ length: 8 }, () => approveOrder(local, order.id)));
+  assert.equal(new Set(keys).size, 1);
+  assert.equal((await getLicense(local, keys[0])).pro_seconds, 3600);
+  const topup = await createOrder(local, { product: 'pass_pro_60', forKey: keys[0] });
+  await claimOrder(local, topup.id, '123456789013');
+  await Promise.all(Array.from({ length: 8 }, () => approveOrder(local, topup.id)));
+  assert.equal((await getLicense(local, keys[0])).pro_seconds, 7200);
+  assert.equal((await local.prepare('SELECT COUNT(*) AS n FROM licenses').first()).n, 1);
+});
 let db;
 const env = (extra = {}) => ({ DB: db, ADMIN_KEY, RATE_SALT: 'salt', UPI_ID: 'memebox@upi', UPI_NAME: 'MemeBox', ...extra });
 const call = (h, request, e = env()) => h({ request, env: e, params: {}, waitUntil() {} });
@@ -43,26 +57,48 @@ test('UPI link has the payee, amount in rupees, INR and the order code as the no
   assert.throws(() => upiLink({ upiId: 'not a vpa', amount: 1, orderId: 'x' }));
 });
 
-test('prices: Pro ₹9 / 15 / 25 and Pro Max ₹25 / 49 (dollars 1.49 / 2.49 / 3.99 and 3.49 / 6.49); characters ₹29 / 39 / 49 and all ten for ₹249; Pro Max costs more per hour than any Pro pass', () => {
+test('prices match the current passes and eight-character bundle; exclusive characters are not for sale', () => {
   const p = PRODUCTS;
   assert.deepEqual([p.pass_pro_30.inr, p.pass_pro_60.inr, p.pass_pro_120.inr, p.pass_max_60.inr, p.pass_max_180.inr], [9, 15, 25, 25, 49]);
   assert.deepEqual([p.pass_pro_30.usd, p.pass_pro_60.usd, p.pass_pro_120.usd, p.pass_max_60.usd, p.pass_max_180.usd], [1.49, 2.49, 3.99, 3.49, 6.49]);
   assert.deepEqual([p.pass_pro_30.proSeconds, p.pass_pro_60.proSeconds, p.pass_pro_120.proSeconds, p.pass_max_60.maxSeconds, p.pass_max_180.maxSeconds], [1800, 3600, 7200, 3600, 10800]);
   const perHour = (x) => x.inr / ((x.proSeconds + x.maxSeconds) / 3600), perHourUsd = (x) => x.usd / ((x.proSeconds + x.maxSeconds) / 3600);
-  const cheapestPro = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120'].map((id) => perHour(p[id])));
-  const cheapestProUsd = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120'].map((id) => perHourUsd(p[id])));
+  const cheapestPro = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_pro_300'].map((id) => perHour(p[id])));
+  const cheapestProUsd = Math.min(...['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_pro_300'].map((id) => perHourUsd(p[id])));
   for (const id of ['pass_max_60', 'pass_max_180']) { assert.ok(perHour(p[id]) > cheapestPro, id + ' costs more per hour than Pro (rupees)'); assert.ok(perHourUsd(p[id]) > cheapestProUsd, id + ' costs more per hour than Pro (dollars)'); }
   assert.equal(p.pro.closed, true);
   assert.equal(p.pictures5.closed, true);
   assert.deepEqual(['bunny', 'panda', 'owl', 'fox'].map((c) => p['char_' + c].inr), [29, 29, 29, 29]);
   assert.deepEqual(['penguin', 'lion', 'monkey', 'frog'].map((c) => p['char_' + c].inr), [39, 39, 39, 39]);
   assert.deepEqual(['unicorn', 'robot'].map((c) => p['char_' + c].inr), [49, 49]);
-  assert.equal(p.chars_all.inr, 249);
-  assert.equal(p.chars_all.addons.length, 10);
+  assert.equal(p.chars_all.closed, true);
+  assert.equal(p.char_unicorn.closed, true);
+  assert.equal(p.char_robot.closed, true);
+  assert.equal(p.chars_eight.inr, 199);
+  assert.equal(p.chars_eight.usd, 4.99);
+  assert.equal(p.chars_eight.addons.length, 8);
   const separately = Object.entries(p).filter(([id]) => id.startsWith('char_')).reduce((a, [, x]) => a + x.inr, 0);
-  assert.ok(p.chars_all.inr < separately, 'the bundle is cheaper than buying one by one');
+  assert.ok(p.chars_eight.inr < separately, 'the bundle is cheaper than buying one by one');
   assert.deepEqual(forSale().map(([id]) => id).slice(0, 5), ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_60', 'pass_max_180']);
-  assert.equal(forSale().length, 5 + 10 + 1);
+  assert.equal(forSale().length, 7 + 8 + 1);
+  assert.ok(forSale().every(([id]) => !['char_unicorn', 'char_robot', 'char_snake', 'char_bird', 'chars_all'].includes(id)));
+});
+
+test('closed exclusive products reject new orders while legacy pending orders retain their purchased entitlement', async () => {
+  for (const product of ['char_unicorn', 'char_robot', 'char_snake', 'char_bird', 'chars_all']) {
+    assert.equal((await call(orderApi, postJson('/api/order', { action: 'create', product }))).status, 400);
+  }
+  const id = newOrderId();
+  await db.prepare("INSERT INTO orders (id, created_at, product, amount_inr, status, for_key, utr) VALUES (?, ?, 'chars_all', 249, 'waiting', '', '412345678909')").bind(id, new Date().toISOString()).run();
+  await call(adminOrder, adminForm('/admin/order', { id, action: 'approve' }));
+  const order = await db.prepare('SELECT * FROM orders WHERE id = ?').bind(id).first();
+  assert.equal(order.status, 'approved');
+  const license = await getLicense(db, order.license_key);
+  const addons = JSON.parse(license.addons);
+  assert.equal(addons.length, 10);
+  assert.ok(addons.includes('character:unicorn'));
+  assert.ok(addons.includes('character:robot'));
+  assert.ok(!addons.includes('character:snake'));
 });
 
 test('wrangler.toml has no UPI ID or other settings, so the dashboard values are never overwritten', () => {
@@ -253,7 +289,7 @@ test('admin shows an activity section: earned, funnel, charts and pass time from
   assert.doesNotMatch(html, /style="/, 'the admin page CSP blocks inline styles');
 });
 
-test('buying a character: a new key owns it; buying on an existing key adds it (and the bundle adds all ten); the key tells the extension', async () => {
+test('buying a character: new purchases and the eight-character bundle add permanent ownership', async () => {
   const buy = async (product, forKey = '') => {
     const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product, forKey }))).json();
     assert.ok(created.ok, JSON.stringify(created));
@@ -270,11 +306,29 @@ test('buying a character: a new key owns it; buying on an existing key adds it (
   await buy('char_panda', key); // the same one twice is kept once
   view = (await (await call(licenseApi, postJson('/api/license', { key }))).json()).license;
   assert.deepEqual(view.addons.map((a) => a.id).sort(), ['character:lion', 'character:panda']);
-  await buy('chars_all', key);
+  await buy('chars_eight', key);
   view = (await (await call(licenseApi, postJson('/api/license', { key }))).json()).license;
-  assert.equal(view.addons.length, 10);
+  assert.equal(view.addons.length, 8);
   assert.ok(view.addons.every((a) => /^character:[a-z]+$/.test(a.id)));
   const dash = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
   assert.match(dash, /characters: /);
   assert.match(dash, /Character: Panda/);
+});
+
+test('cosmetic draft purchases stay closed and Max-only cosmetics have no individual product', async () => {
+  const {PRODUCTS, COSMETIC_DRAFTS, forSale}=await import('../../site/src/shop.js');
+  for(const id of COSMETIC_DRAFTS.filters) assert.equal(PRODUCTS['filter_'+id].closed,true);
+  for(const id of COSMETIC_DRAFTS.outfits) assert.equal(PRODUCTS['outfit_'+id].closed,true);
+  for(const id of COSMETIC_DRAFTS.maxFilters) assert.equal(PRODUCTS['filter_'+id],undefined);
+  for(const id of COSMETIC_DRAFTS.maxOutfits) assert.equal(PRODUCTS['outfit_'+id],undefined);
+  assert.ok(forSale().every(([id])=>!id.startsWith('filter_')&&!id.startsWith('outfit_')));
+});
+
+test('the local public catalog uses authoritative server prices and keeps draft cosmetics closed', async()=>{
+  const {loadScript}=await import('./helpers.mjs');const {PRODUCTS}=await import('../../site/src/shop.js');
+  const {MemeShop}=loadScript('lib/shop-catalog.js');
+  for(const [id,product] of Object.entries(MemeShop.products)){
+    assert.equal(product.inr,PRODUCTS[id].inr,id+' INR');assert.equal(product.usd,PRODUCTS[id].usd,id+' USD');assert.equal(product.closed,!!PRODUCTS[id].closed,id+' availability');
+  }
+  assert.equal(MemeShop.products.filter_prism,undefined);
 });

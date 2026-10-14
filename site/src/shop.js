@@ -9,12 +9,20 @@
 export const CHARACTER_PRICES = Object.freeze({
   bunny: { inr: 29, usd: 0.99 }, panda: { inr: 29, usd: 0.99 }, owl: { inr: 29, usd: 0.99 }, fox: { inr: 29, usd: 0.99 },
   penguin: { inr: 39, usd: 1.49 }, lion: { inr: 39, usd: 1.49 }, monkey: { inr: 39, usd: 1.49 }, frog: { inr: 39, usd: 1.49 },
-  unicorn: { inr: 49, usd: 1.99 }, robot: { inr: 49, usd: 1.99 },
 });
 const pass = (name, inr, usd, proSeconds, maxSeconds) => Object.freeze({ name, inr, usd, pictureSlots: 0, unlimited: false, proSeconds, maxSeconds, addons: Object.freeze([]) });
 const cap = (id) => id[0].toUpperCase() + id.slice(1);
 const characterProducts = Object.fromEntries(Object.entries(CHARACTER_PRICES).map(([id, pr]) => [`char_${id}`,
   Object.freeze({ name: `Character: ${cap(id)} (yours for ever)`, inr: pr.inr, usd: pr.usd, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([`character:${id}`]) })]));
+
+// Draft cosmetic catalog; closed until the owner selects prices and approves sales.
+export const COSMETIC_DRAFTS = Object.freeze({
+  filters: Object.freeze(['vintage','cool','noir','dream','sunset','neon','pixel','vhs','glam','sepia','peach','teal','soft','dusk','contrast']),
+  outfits: Object.freeze(['hoodie','bow','glasses']),
+  maxFilters: Object.freeze(['cyber','comic','matrix','night','film','wave','heat','snow','prism','startrail']),
+  maxOutfits: Object.freeze(['astronaut','wizard','superhero']),
+});
+const cosmeticDrafts = Object.fromEntries(['filter','outfit'].flatMap(type => COSMETIC_DRAFTS[type + 's'].map(id => [type+'_'+id, Object.freeze({ name: `${cap(type)}: ${cap(id)} (yours for ever)`, inr: type === 'filter' ? 19 : 29, usd: .99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([type+':'+id]), closed: true })])));
 
 export const PRODUCTS = Object.freeze({
   pass_pro_30: pass('Pro pass: 30 minutes', 9, 1.49, 1800, 0),
@@ -22,8 +30,15 @@ export const PRODUCTS = Object.freeze({
   pass_pro_120: pass('Pro pass: 2 hours', 25, 3.99, 7200, 0),
   pass_max_60: pass('Pro Max pass: 1 hour', 25, 3.49, 0, 3600),
   pass_max_180: pass('Pro Max pass: 3 hours', 49, 6.49, 0, 10800),
+  pass_pro_300: pass('Pro pass: 5 hours', 49, 7.99, 18000, 0),
+  pass_max_480: pass('Pro Max pass: 8 hours', 99, 14.99, 0, 28800),
   ...characterProducts,
-  chars_all: Object.freeze({ name: 'All 10 extra characters (yours for ever)', inr: 249, usd: 5.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(Object.keys(CHARACTER_PRICES).map((id) => `character:${id}`)) }),
+  ...cosmeticDrafts,
+  chars_eight: Object.freeze({ name: 'All 8 purchasable characters (yours for ever)', inr: 199, usd: 4.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(Object.keys(CHARACTER_PRICES).map((id) => `character:${id}`)) }),
+  // Retain closed products so previously created orders can be fulfilled correctly.
+  char_unicorn: Object.freeze({ name: 'Character: Unicorn (legacy purchase)', inr: 49, usd: 1.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(['character:unicorn']), closed: true }),
+  char_robot: Object.freeze({ name: 'Character: Robot (legacy purchase)', inr: 49, usd: 1.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze(['character:robot']), closed: true }),
+  chars_all: Object.freeze({ name: 'All 10 extra characters (legacy purchase)', inr: 249, usd: 5.99, pictureSlots: 0, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([...Object.keys(CHARACTER_PRICES), 'unicorn', 'robot'].map((id) => `character:${id}`)), closed: true }),
   pictures5: Object.freeze({ name: '5 more picture memes', inr: 29, pictureSlots: 5, unlimited: false, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([]), closed: true }),
   pro: Object.freeze({ name: 'MemeBox Pro (lifetime): everything unlimited', inr: 99, pictureSlots: 0, unlimited: true, proSeconds: 0, maxSeconds: 0, addons: Object.freeze([]), closed: true }),
 });
@@ -109,13 +124,9 @@ export const MAX_SPEND_PER_CALL = 600;
 export async function spendPassTime(db, row, seconds) {
   let s = Math.max(0, Math.min(MAX_SPEND_PER_CALL, Math.floor(Number(seconds)) || 0));
   if (!s) return row;
-  const fromMax = Math.min(Number(row.max_seconds) || 0, s);
-  s -= fromMax;
-  const fromPro = Math.min(Number(row.pro_seconds) || 0, s);
-  if (fromMax || fromPro) {
-    await db.prepare('UPDATE licenses SET max_seconds = MAX(0, max_seconds - ?), pro_seconds = MAX(0, pro_seconds - ?) WHERE key = ?')
-      .bind(fromMax, fromPro, row.key).run();
-  }
+  // SQL reads the current balance, even if another device spent time after the caller's read.
+  await db.prepare("UPDATE licenses SET pro_seconds = MAX(0, pro_seconds - MAX(0, ? - max_seconds)), max_seconds = MAX(0, max_seconds - ?) WHERE key = ? AND status = 'active'")
+    .bind(s, s, row.key).run();
   return getLicense(db, row.key);
 }
 
@@ -157,19 +168,28 @@ export async function approveOrder(db, id) {
   const order = await getOrder(db, id);
   if (!order || order.status !== 'waiting') return null;
   const p = PRODUCTS[order.product];
-  let key = '';
+  if (!p) return null;
   const existing = order.for_key ? await getLicense(db, order.for_key) : null;
+  const key = existing?.status === 'active' ? existing.key : newLicenseKey();
+  const marker = crypto.randomUUID(), at = now();
+  const guard = "EXISTS (SELECT 1 FROM orders WHERE id = ? AND decided_at = ? AND status = 'approved')";
+  const steps = [db.prepare("UPDATE orders SET status = 'approved', license_key = ?, decided_at = ? WHERE id = ? AND status = 'waiting'").bind(key, marker, id)];
   if (existing && existing.status === 'active') {
-    await db.prepare('UPDATE licenses SET picture_slots = picture_slots + ?, unlimited = MAX(unlimited, ?) WHERE key = ?')
-      .bind(p.pictureSlots, p.unlimited ? 1 : 0, existing.key).run();
-    if (p.proSeconds || p.maxSeconds) await addPassTime(db, existing.key, { proSeconds: p.proSeconds, maxSeconds: p.maxSeconds });
-    if (p.addons && p.addons.length) await db.prepare('UPDATE licenses SET addons = ? WHERE key = ?').bind(addonText([...parseAddons(existing.addons).map((a) => a.id), ...p.addons]), existing.key).run();
-    key = existing.key;
+    steps.push(db.prepare(`UPDATE licenses SET picture_slots = MIN(10000, picture_slots + ?), unlimited = MAX(unlimited, ?),
+      pro_seconds = MIN(864000, pro_seconds + ?), max_seconds = MIN(864000, max_seconds + ?),
+      addons = (SELECT json_group_array(value) FROM (SELECT value FROM json_each(licenses.addons) UNION SELECT value FROM json_each(?)))
+      WHERE key = ? AND status = 'active' AND ${guard}`)
+      .bind(p.pictureSlots, p.unlimited ? 1 : 0, p.proSeconds, p.maxSeconds, JSON.stringify(p.addons), key, id, marker));
   } else {
-    key = await createLicense(db, { kind: 'paid', unlimited: p.unlimited, pictureSlots: p.pictureSlots, proSeconds: p.proSeconds, maxSeconds: p.maxSeconds, note: `order ${order.id}`, addons: p.addons });
+    steps.push(db.prepare(`INSERT INTO licenses (key, created_at, kind, unlimited, picture_slots, pro_seconds, max_seconds, status, note, addons)
+      SELECT ?, ?, 'paid', ?, ?, ?, ?, 'active', ?, ? WHERE ${guard}`)
+      .bind(key, at, p.unlimited ? 1 : 0, p.pictureSlots, p.proSeconds, p.maxSeconds, `order ${id}`, JSON.stringify(p.addons), id, marker));
   }
-  await db.prepare("UPDATE orders SET status = 'approved', license_key = ?, decided_at = ? WHERE id = ?").bind(key, now(), id).run();
-  return key;
+  steps.push(db.prepare("UPDATE orders SET status = 'waiting', license_key = '', decided_at = NULL WHERE id = ? AND decided_at = ? AND NOT EXISTS (SELECT 1 FROM licenses WHERE key = ? AND status = 'active')").bind(id, marker, key));
+  steps.push(db.prepare('UPDATE orders SET decided_at = ? WHERE id = ? AND decided_at = ?').bind(at, id, marker));
+  await db.batch(steps);
+  const fresh = await getOrder(db, id);
+  return fresh.status === 'approved' ? fresh.license_key : null;
 }
 
 export async function rejectOrder(db, id) {

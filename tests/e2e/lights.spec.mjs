@@ -171,6 +171,16 @@ test('Lights can be switched on AFTER the camera is already running: no camera r
 test('with "Lights follow the sounds" the corner show moves with the music (and is steady without it)', async ({ context, callPage }) => {
   await callPage.evaluate(helpers);
   await callPage.evaluate(async () => { await window.joinCall(); await window.noDuck(); });
+  // The stock fake webcam changes its own colors, which can outweigh the light show.
+  // Keep the source steady so the outgoing-picture measurement isolates our lasers.
+  await callPage.evaluate(() => {
+    const camera=document.createElement('canvas');camera.width=640;camera.height=360;
+    const g=camera.getContext('2d');const paint=()=>{g.fillStyle='#303030';g.fillRect(0,0,640,360)};paint();
+    const source=camera.captureStream(30);setInterval(paint,33);
+    const original=MediaDevices.prototype.getUserMedia;
+    MediaDevices.prototype.getUserMedia=function(constraints){return constraints.video&&!constraints.audio?Promise.resolve(source.clone()):original.call(this,constraints)};
+    navigator.mediaDevices.dispatchEvent(new Event('devicechange'));
+  });
   await setFx(context, { armed: true, on: true, lamp: false, focus: false, corners: true, pattern: 'laser', sync: true });
   await callPage.evaluate(() => window.openCam());
   const motion = async () => { // how much the picture changes over 8 looks, 150 ms apart

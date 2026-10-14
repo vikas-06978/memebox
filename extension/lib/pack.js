@@ -16,7 +16,7 @@
   const LIMITS = { name: 60, description: 200, lines: 500, clips: 50, text: 300, category: 30, clipName: 120, clipBytes: 1024 * 1024 };
   const ID = /^[A-Za-z0-9_-]{1,64}$/;
   const TOP_KEYS = new Set(['format', 'version', 'name', 'description', 'lines', 'clips']);
-  const LINE_KEYS = new Set(['id', 'kind', 'text', 'say', 'lang', 'tone', 'category', 'fav', 'volume', 'star', 'clipId', 'sfx']);
+  const LINE_KEYS = new Set(['id', 'kind', 'text', 'say', 'lang', 'tone', 'category', 'fav', 'volume', 'star', 'clipId', 'sfx', 'explicit', 'packId', 'region', 'universal']);
   const CLIP_KEYS = new Set(['id', 'name', 'type', 'data']);
   const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 
@@ -94,6 +94,10 @@
         if (!isStr(l.category, LIMITS.category, 1) || !noControl(l.category)) err(`${p}.category`, `1-${LIMITS.category} characters`);
         if (l.fav !== undefined && !(Number.isInteger(l.fav) && l.fav >= 0 && l.fav <= 9)) err(`${p}.fav`, 'whole number 0-9');
         if (l.volume !== undefined && !(typeof l.volume === 'number' && l.volume >= 0 && l.volume <= 2)) err(`${p}.volume`, 'number 0-2');
+        if (l.explicit !== undefined && typeof l.explicit !== 'boolean') err(`${p}.explicit`, 'true or false');
+        if (l.universal !== undefined && typeof l.universal !== 'boolean') err(`${p}.universal`, 'true or false');
+        if (l.packId !== undefined && !/^[a-z0-9-]{1,64}$/.test(l.packId)) err(`${p}.packId`, 'a valid source pack id');
+        if (l.region !== undefined && !/^[a-z0-9-]{1,24}$/.test(l.region)) err(`${p}.region`, 'a valid region id');
         if (l.star !== undefined && typeof l.star !== 'boolean') err(`${p}.star`, 'true or false');
         if (l.kind === 'clip') {
           if (!isStr(l.clipId, 64) || !clips.has(l.clipId)) err(`${p}.clipId`, 'must match a clip in "clips"');
@@ -122,6 +126,10 @@
         if (l.fav) o.fav = l.fav;
         if (l.volume !== undefined && l.volume !== 1) o.volume = l.volume;
         if (l.star) o.star = true;
+        if (l.explicit) o.explicit = true;
+        if (l.universal) o.universal = true;
+        if (l.packId) o.packId = l.packId;
+        if (l.region) o.region = l.region;
         if (o.kind === 'clip') o.clipId = l.clipId;
         if (o.kind === 'sfx') o.sfx = l.sfx;
         return o;

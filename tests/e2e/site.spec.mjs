@@ -13,7 +13,7 @@ const test = base.extend({
       if (String(url) === TURNSTILE_VERIFY) return Response.json({ success: JSON.parse(init.body).response === 'fake-ok' });
       return realFetch(url, init);
     };
-    const site = await startSite({ env: { TURNSTILE_SITE_KEY: 'fake-site-key', TURNSTILE_SECRET_KEY: 'fake-secret', ADMIN_KEY } });
+    const site = await startSite({ env: { TURNSTILE_SITE_KEY: 'fake-site-key', TURNSTILE_SECRET_KEY: 'fake-secret', ADMIN_KEY, HOSTED_AUDIO_ENABLED: 'on', HOSTED_FILES_ENABLED: 'on' } });
     site.rows = async () => (await site.db.prepare('SELECT * FROM feedback ORDER BY created_at').all()).results;
     await use(site);
     await site.close();
@@ -253,4 +253,13 @@ test('admin packs: make a pack, upload music with a licence, add India memes wit
   expect(file.status).toBe(200);
   expect(file.headers.get('content-type')).toBe('audio/wav');
   expect(page.cspErrors).toEqual([]);
+});
+
+test('music room serves under real site CSP, embeds a playlist and reads the owner catalog from its own origin',async({page,site})=>{
+ await page.route('https://www.youtube-nocookie.com/**',route=>route.fulfill({contentType:'text/html',body:'<p>Visible player fixture</p>'}));
+ const ts=new Date().toISOString();await site.db.prepare("INSERT INTO packs (id,title,kind,region,tier,status,created_at,updated_at) VALUES ('room-published','Worldwide collection','links','global','free','live',?,?)").bind(ts,ts).run();
+ await site.db.prepare("INSERT INTO pack_items (id,pack_id,title,kind,text,credit,licence,cleared,status,created_at,tier) VALUES ('i-room000001','room-published','Published song','link','abcdefghijk','Test artist','Test fixture',1,'live',?,'free')").bind(ts).run();
+ await page.goto(site.url+'/music-room');await expect(page.locator('[data-playlist]')).toHaveCount(5);await expect(page.locator('[data-original]')).toHaveCount(16);
+ await page.locator('[data-playlist-play]').first().click();await expect(page.locator('#youtube-player')).toBeVisible();await expect(page.locator('#youtube-player')).toHaveAttribute('src',new RegExp('origin='+encodeURIComponent(site.url)));
+ await page.locator('#published-browse').click();await expect(page.locator('[data-published]')).toHaveCount(1);await expect(page.locator('#published-list')).toContainText('Published song');expect(page.cspErrors).toEqual([]);
 });

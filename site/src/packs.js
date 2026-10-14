@@ -3,8 +3,9 @@
 import { cleanKey, getLicense, LICENSE_RE } from './shop.js';
 
 export const KINDS = ['music', 'memes', 'pictures', 'links'];
+export const LINK_LIMITS = Object.freeze({ playlists: 10, perPlaylist: 50, total: 500 });
 export const TIERS = ['free', 'pro', 'max'];
-export const REGIONS = { common: 'Common (everyone)', in: 'India', global: 'Global / English' };
+export const REGIONS = { common: 'For everyone', in: 'India (regional)', global: 'Worldwide' };
 export const LICENCES = {
   own: 'Own work',
   cc0: 'CC0 / public domain',
@@ -13,12 +14,27 @@ export const LICENCES = {
   free: 'Copyright-free / royalty-free (paste the link that says so in Source)',
   other: 'Other (explain)',
 };
-export const LANGS = { '': 'Any language', en: 'English', hi: 'Hindi', hinglish: 'Hinglish' };
+// These labels describe pack content, including recorded regional dialogue. A label
+// does not imply that the bundled speech engine has an authentic voice for it.
+export const LANGS = {
+  '': 'Any language', en: 'English', hi: 'हिन्दी', hinglish: 'Hinglish',
+  es: 'Español', fr: 'Français', de: 'Deutsch', pt: 'Português', it: 'Italiano', id: 'Bahasa Indonesia',
+  tr: 'Türkçe', ar: 'العربية', bn: 'বাংলা', ta: 'தமிழ்', te: 'తెలుగు', mr: 'मराठी', gu: 'ગુજરાતી',
+  pa: 'ਪੰਜਾਬੀ', ur: 'اردو', vi: 'Tiếng Việt', ja: '日本語', ko: '한국어', nl: 'Nederlands',
+  pl: 'Polski', sw: 'Kiswahili', ro: 'Română', sv: 'Svenska', fa: 'فارسی',
+  bho: 'भोजपुरी', haryanvi: 'हरियाणवी', raj: 'राजस्थानी', awa: 'अवधी', mai: 'मैथिली',
+  chhattisgarhi: 'छत्तीसगढ़ी', kok: 'कोंकणी', hyderabadi: 'Hyderabadi',
+  kn: 'ಕನ್ನಡ', ml: 'മലയാളം', or: 'ଓଡ଼ିଆ', as: 'অসমীয়া', ne: 'नेपाली',
+};
 export const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 // How much the packs may hold in total (MB). Cloudflare's free R2 storage is 10 GB: stay well under it. PACKS_MAX_MB in Cloudflare changes it.
-export const DEFAULT_STORAGE_MB = 5000;
-export const storageLimitBytes = (env) => (Number(env && env.PACKS_MAX_MB) > 0 ? Number(env.PACKS_MAX_MB) : DEFAULT_STORAGE_MB) * 1048576;
+export const DEFAULT_STORAGE_MB = 500;
+export const storageLimitBytes = (env) => {
+  const setting = env && env.PACKS_MAX_MB;
+  const n = setting === undefined || setting === '' ? DEFAULT_STORAGE_MB : Number(setting);
+  return (Number.isFinite(n) && n >= 0 ? Math.min(n, DEFAULT_STORAGE_MB) : 0) * 1048576;
+};
 export async function storageUsed(db) {
   const row = await db.prepare('SELECT COALESCE(SUM(bytes), 0) AS n FROM pack_items').first();
   return Number(row && row.n) || 0;
@@ -26,7 +42,7 @@ export async function storageUsed(db) {
 const IMAGE_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/webp': 'webp' };
 const IMAGE_EXT = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
 // The plan of one item: its own (free / pro / max) if you set one, else the pack's.
-export const itemTier = (item, pack) => (TIERS.includes(item.tier) ? item.tier : pack.tier);
+export const itemTier = (item, pack) => item.kind === 'link' ? 'free' : (TIERS.includes(item.tier) ? item.tier : pack.tier);
 export const cleanItemTier = (t) => (TIERS.includes(t) ? t : '');
 const AUDIO_TYPES = {
   'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/opus': 'opus',
@@ -50,6 +66,7 @@ export function newItemId() {
 
 export const cleanRegion = (r) => (Object.hasOwn(REGIONS, r) ? r : /^[a-z]{2,10}$/.test(String(r)) ? String(r) : 'common');
 const cleanLang = (l) => (Object.hasOwn(LANGS, l) ? l : '');
+const SPEECH_LANGS = new Set(['', 'hinglish', 'en', 'hi', 'es', 'fr', 'de', 'pt', 'it', 'id', 'tr', 'ar', 'bn', 'ta', 'te', 'mr', 'gu', 'pa', 'ur', 'vi', 'ja', 'ko', 'nl', 'pl', 'sw', 'ro', 'sv', 'fa']);
 
 // An item may go live only when it is cleared (you may share it) and says under which licence.
 export const canPublish = (item) => Number(item.cleared) === 1 && clip(item.licence, 300).length > 0 && !/not cleared/i.test(item.licence);
@@ -80,8 +97,10 @@ export async function createPack(db, { title, kind, region, tier, description })
   if (!PACK_ID_RE.test(id)) throw new Error('The name needs a few letters or digits.');
   if (await getPack(db, id)) id = `${id}-${Math.random().toString(36).slice(2, 5)}`.slice(0, 41);
   const ts = now();
-  await db.prepare('INSERT INTO packs (id, title, kind, region, tier, description, status, sort, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, \'draft\', 100, ?, ?)')
-    .bind(id, t, KINDS.includes(kind) ? kind : 'music', cleanRegion(region), TIERS.includes(tier) ? tier : 'free', clip(description, 400), ts, ts).run();
+  const actualKind = KINDS.includes(kind) ? kind : 'music';
+  const created = await db.prepare('INSERT INTO packs (id, title, kind, region, tier, description, status, sort, created_at, updated_at) SELECT ?, ?, ?, ?, ?, ?, \'draft\', 100, ?, ? WHERE ? != \'links\' OR (SELECT COUNT(*) FROM packs WHERE kind = \'links\') < ?')
+    .bind(id, t, actualKind, cleanRegion(region), TIERS.includes(tier) ? tier : 'free', clip(description, 400), ts, ts, actualKind, LINK_LIMITS.playlists).run();
+  if (!created.meta.changes) throw new Error('The Phonk playlist limit is reached (10 playlists). Remove one before adding another.');
   return id;
 }
 
@@ -190,9 +209,11 @@ export async function addLinks(db, packId, text, meta = {}) {
     if (seen.has(id)) { out.skipped.push(`${id}: already in this pack`); continue; }
     seen.add(id);
     const item = { cleared, licence };
-    await db.prepare(
-      'INSERT INTO pack_items (id, pack_id, title, kind, text, source, credit, licence, cleared, status, sort, created_at, tier) VALUES (?, ?, ?, \'link\', ?, ?, ?, ?, ?, ?, 100, ?, ?)',
-    ).bind(newItemId(), packId, clip(title, 80) || 'YouTube track', id, `https://www.youtube.com/watch?v=${id}`, clip(artist, 120), licence, cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier)).run();
+    const added = await db.prepare(
+      'INSERT INTO pack_items (id, pack_id, title, kind, text, source, credit, licence, cleared, status, sort, created_at, tier) SELECT ?, ?, ?, \'link\', ?, ?, ?, ?, ?, ?, 100, ?, ? ' +
+      'WHERE (SELECT COUNT(*) FROM pack_items WHERE pack_id = ? AND kind = \'link\') < ? AND (SELECT COUNT(*) FROM pack_items WHERE kind = \'link\') < ?',
+    ).bind(newItemId(), packId, clip(title, 80) || 'YouTube track', id, `https://www.youtube.com/watch?v=${id}`, clip(artist, 120), licence, cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier), packId, LINK_LIMITS.perPlaylist, LINK_LIMITS.total).run();
+    if (!added.meta.changes) { out.skipped.push('Playlist capacity reached (50 tracks per playlist, 500 total).'); break; }
     out.added++;
   }
   return out;
@@ -200,9 +221,17 @@ export async function addLinks(db, packId, text, meta = {}) {
 
 // Text memes, one per line:  text | lang | strong   (lang and "strong" are optional; "strong" marks strong language)
 export async function addLines(db, packId, text, meta = {}) {
+  const inputLines = String(text || '').split(/\r?\n/).slice(0, 300);
+  // Recorded audio supports every content label. Text-only dialogue must have a
+  // bundled speech voice; never silently relabel regional dialogue as English.
+  for (const raw of inputLines) {
+    const [line, lang] = raw.split('|').map((x) => x.trim());
+    const selected = lang || meta.lang || '';
+    if (line && !SPEECH_LANGS.has(selected)) throw new Error('Use a recorded audio file for this regional language; a bundled speech voice is not available.');
+  }
   const licence = licenceText(meta.licenceKind, meta.licenceNote), cleared = meta.cleared ? 1 : 0;
   let added = 0;
-  for (const raw of String(text || '').split(/\r?\n/).slice(0, 300)) {
+  for (const raw of inputLines) {
     const [line, lang, flag] = raw.split('|').map((x) => x.trim());
     if (!line) continue;
     const explicit = /^(strong|explicit|18|y|yes|1)$/i.test(flag || '') ? 1 : meta.explicit ? 1 : 0;
@@ -248,16 +277,18 @@ export async function deleteItem(db, bucket, id) {
 // ---------- what users get ----------
 
 // Live packs with their live items (no file addresses: the extension asks /api/pack-file for each file).
-export async function publicCatalog(db, { links = true } = {}) {
+export async function publicCatalog(db, { links = true, audio = true, files = true } = {}) {
   const packs = (await db.prepare("SELECT * FROM packs WHERE status = 'live' ORDER BY sort, title").all()).results.filter((p) => links || p.kind !== 'links'); // links = false is the kill switch of Phonk Mode
   const items = (await db.prepare("SELECT i.* FROM pack_items i JOIN packs p ON p.id = i.pack_id WHERE p.status = 'live' AND i.status = 'live' ORDER BY i.sort, i.created_at, i.title").all()).results;
   return packs.map((p) => {
-    const mine = items.filter((i) => i.pack_id === p.id);
+    const mine = items.filter((i) => i.pack_id === p.id && (files || !i.file_key) && (audio || i.kind !== 'audio') && (i.kind !== 'link' || (canPublish(i) && VIDEO_ID_RE.test(i.text))));
     return {
-      id: p.id, title: p.title, kind: p.kind, region: p.region, tier: p.tier, description: p.description,
+      id: p.id, title: p.title, kind: p.kind, region: p.region, tier: p.kind === 'links' ? 'free' : p.tier, description: p.description,
       bytes: mine.reduce((a, i) => a + Number(i.bytes || 0), 0),
       items: mine.map((i) => ({
-        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.kind === 'link' ? '' : i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p), // a video id is only given by /api/pack-link, to people whose plan allows it
+        id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.kind === 'link' ? '' : i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p),
+        ...(i.kind === 'link' ? { videoId: i.text } : {}),
+        languageName: LANGS[i.lang] || i.lang || '',
         explicit: Number(i.explicit) === 1, credit: i.credit, licence: i.licence,
       })),
     };

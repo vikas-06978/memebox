@@ -1,4 +1,19 @@
 {
+  "fx_outfit": {
+    "message": "वेशभूषा"
+  },
+  "fx_outfit_none": {
+    "message": "काही नाही"
+  },
+  "fx_outfit_party": {
+    "message": "🎉 पार्टी टोपी"
+  },
+  "fx_outfit_crown": {
+    "message": "👑 मुकुट"
+  },
+  "fx_outfit_scarf": {
+    "message": "🧣 मफलर"
+  },
   "extName": {
     "message": "MemeBox: कॉलसाठी मीम साउंडबोर्ड आणि व्हॉइस चेंजर"
   },
@@ -780,7 +795,7 @@
     "message": "चित्र काढा"
   },
   "op_picture_hint": {
-    "message": "ओळ वाजत असताना तुमच्या स्क्रीनवर दिसते, आणि \"माझ्या कॅमेऱ्यावर कॅप्शन\" सुरू असल्यास कॅमेऱ्यावरही. तुमची स्वतःची चित्रे वापरा, इतरांची फक्त त्यांच्या परवानगीने."
+    "message": "×, Escape किंवा Stop all ने बंद करेपर्यंत चित्र दिसेल. Caption on my camera चालू असेल तर इतरांनाही दिसेल. स्वतःची किंवा परवानगी असलेली चित्रे वापरा."
   },
   "op_err_picture": {
     "message": "ही फाइल MemeBox वापरू शकेल असे चित्र नाही. PNG, JPG, WEBP किंवा GIF वापरून पाहा."
@@ -1088,7 +1103,7 @@
     "message": "🎵 संगीत"
   },
   "mu_how": {
-    "message": "कॉपीराइटशिवाय स्वतःच्या धून. मीमसारख्या कॉलमध्ये वाजतात आणि तुम्ही बोलता तेव्हा हळू होतात."
+    "message": "आमच्या स्वतः तयार केलेल्या धुना कॉलमध्ये वाजतात आणि तुम्ही बोलताना त्यांचा आवाज कमी होतो."
   },
   "mu_stop": {
     "message": "थांबवा"
@@ -1180,6 +1195,30 @@
   "fx_char_unicorn": {
     "message": "युनिकॉर्न"
   },
+  "pg_wave": {
+    "message": "हात हलवा"
+  },
+  "pg_cheer": {
+    "message": "आनंद"
+  },
+  "pg_heartbeat": {
+    "message": "प्रेम"
+  },
+  "pg_cry": {
+    "message": "रडणे"
+  },
+  "pg_raspberry": {
+    "message": "जीभ बाहेर"
+  },
+  "pg_dance": {
+    "message": "नृत्य"
+  },
+  "fx_char_snake": {
+    "message": "साप"
+  },
+  "fx_char_bird": {
+    "message": "पक्षी"
+  },
   "fx_char_robot": {
     "message": "रोबोट"
   },
@@ -1256,10 +1295,10 @@
     "message": "की $1: पासचा $2 वेळ शिल्लक आहे."
   },
   "fx_follow": {
-    "message": "माझ्या मागे या (दिवे आणि प्राणी माझ्यासोबत चालतात)"
+    "message": "Stay with me"
   },
   "fx_follow_tip": {
-    "message": "फक्त तुमच्या स्वतःच्या कॉम्प्युटरवर कॅमेऱ्याची प्रतिमा वापरली जाते. काही सेव्ह किंवा पाठवले जात नाही. चांगल्या प्रकाशात उत्तम चालते."
+    "message": "Tracks your face locally so the companion follows you and notices when you leave or return."
   },
   "fx_away": {
     "message": "चित्राबाहेर गेलो तर पार्टी"
@@ -1391,10 +1430,10 @@
     "message": "आरशासारखे: तुमचे डावे म्हणजे तुमच्या स्वतःच्या व्हिडिओचे डावे. उलट वाटल्यास टिक काढा."
   },
   "fx_gest": {
-    "message": "माझे हात, डोके आणि जीभ समजतो"
+    "message": "React to my face and hands"
   },
   "fx_gest_tip": {
-    "message": "थम्ब्स अप, हार्ट, OK, रॉक, कॉल-मी, स्टॉप, टाळी, मान हलवणे, जीभ काढणे, किस. Follow me हवे."
+    "message": "Copies supported waves, smiles and gestures. Keep your face and hands in view; adjust sensitivity if reactions are missed."
   },
   "fx_sens": {
     "message": "किती सहज ओळखेल"
@@ -1427,16 +1466,16 @@
     "message": "कॅप्शन दिसताना ३ सेकंद तुमचा स्वतःचा टाइल (जो साइट उलटा दाखवते) सरळ केला जातो म्हणजे तुम्ही वाचू शकता. इतरांना नेहमी सरळ दिसते."
   },
   "fx_masti": {
-    "message": "तो माझ्याशी खेळतो (डोके, खांदा, चष्मा, लोळणे)"
+    "message": "Explore my head and shoulders"
   },
   "fx_masti_tip": {
-    "message": "कधी कधी प्राणी तुमच्या डोक्यावर किंवा खांद्यावर बसतो, चष्म्यावर लटकतो किंवा डोक्याभोवती लोळतो. Follow me हवे."
+    "message": "On: climbs, flies or hops between resting places. Off: returns to your selected resting place, with gentle idle movements."
   },
   "fx_sounds": {
-    "message": "तो आवाज करतो (रडणे, जल्लोष, हृदयाचे ठोके)"
+    "message": "Companion sounds in the call"
   },
   "fx_sounds_tip": {
-    "message": "हुंदके, हुंगणे, जल्लोष किंवा हृदयाच्या ठोक्यांसारखे छोटे आवाज. कॉलमधील इतरांनाही ऐकू येतात."
+    "message": "Plays short synthesized reactions, including cheers and sobs, into your microphone. Turn off for silent reactions."
   },
   "fx_seen_off": {
     "message": "फेस मॉडेल अजून उत्तर देत नाही. काही सेकंद थांबा; असेच राहिले तर कॉल टॅब रीलोड करा."
@@ -1505,7 +1544,7 @@
     "message": "Pro आवश्यक"
   },
   "op_online_strong": {
-    "message": "कडक भाषेचे पॅक दाखवा (18+)"
+    "message": "मी १८ वर्षांचा किंवा मोठा आहे; अपशब्द असलेले मीम दाखवा"
   },
   "op_online_strong_tag": {
     "message": "18+"
@@ -1587,5 +1626,527 @@
   },
   "mu_phonk_tip": {
     "message": "अधिकृत फंक ट्रॅक YouTube वरून चालतात, मग तुमच्या कॉलमध्ये जातात"
+  },
+  "mu_t_phonk_desi": {
+    "message": "🔥 MemeBox Desi Phonk"
+  },
+  "mu_t_phonk_drift": {
+    "message": "🏎️ MemeBox Drift Phonk"
+  },
+  "mu_t_phonk_midnight": {
+    "message": "🌙 MemeBox Midnight Phonk"
+  },
+  "pg_natural": {
+    "message": "Natural behavior"
+  },
+  "pg_leave": {
+    "message": "मी फ्रेमच्या बाहेर जातो"
+  },
+  "pg_return": {
+    "message": "मी परत आलो"
+  },
+  "pg_move": {
+    "message": "व्यक्तीला हलवा"
+  },
+  "pg_personality": {
+    "message": "खास हालचाल"
+  },
+  "pg_jump": {
+    "message": "उडी मार"
+  },
+  "pg_roll": {
+    "message": "लोळ"
+  },
+  "pg_sit": {
+    "message": "बस / आराम कर"
+  },
+  "pg_head": {
+    "message": "माझ्या डोक्यावर"
+  },
+  "pg_shoulder": {
+    "message": "माझ्या खांद्यावर"
+  },
+  "pg_corner": {
+    "message": "स्क्रीनवर"
+  },
+  "pg_personality_help": {
+    "message": "Try the signature action, then leave and return. This uses the same companion engine as your camera."
+  },
+  "pg_away_status": {
+    "message": "Waiting for you. Music will not turn the companion happy while you are away."
+  },
+  "pg_home_status": {
+    "message": "You are here. Your companion can explore, listen and react."
+  },
+  "fx_home": {
+    "message": "आरामाची जागा"
+  },
+  "fx_home_tip": {
+    "message": "When exploring is off, the companion stays here. A face must be detected for head and shoulder positions."
+  },
+  "fx_commands": {
+    "message": "तुमच्या सोबत्याला सूचना द्या"
+  },
+  "fx_commands_tip": {
+    "message": "These controls affect the character in your outgoing camera. Waiting and crying still take priority when you leave."
+  },
+  "fx_away_explain": {
+    "message": "When you leave, your companion looks for you, waits and cries. It stays sad or floats in its tears until you return."
+  },
+  "fx_outfit_hoodie": {
+    "message": "Cozy hoodie"
+  },
+  "fx_outfit_bow": {
+    "message": "Bow tie"
+  },
+  "fx_outfit_glasses": {
+    "message": "Round glasses"
+  },
+  "fx_outfit_astronaut": {
+    "message": "Space explorer"
+  },
+  "fx_outfit_wizard": {
+    "message": "Magic stars"
+  },
+  "fx_outfit_superhero": {
+    "message": "Hero cape"
+  },
+  "fx_tier_free": {
+    "message": "मोफत"
+  },
+  "fx_tier_pro": {
+    "message": "Pro किंवा कायमची खरेदी"
+  },
+  "fx_tier_max": {
+    "message": "फक्त Pro Max"
+  },
+  "fx_outfit_help": {
+    "message": "Basic accessories are free. Pro designs can be owned forever when their shop opens. Interactive Pro Max designs are exclusive to the pass."
+  },
+  "fx_filter_sepia": {
+    "message": "Sepia"
+  },
+  "fx_filter_peach": {
+    "message": "Peach"
+  },
+  "fx_filter_teal": {
+    "message": "Teal"
+  },
+  "fx_filter_soft": {
+    "message": "Soft focus"
+  },
+  "fx_filter_dusk": {
+    "message": "Dusk"
+  },
+  "fx_filter_contrast": {
+    "message": "High contrast"
+  },
+  "fx_filter_prism": {
+    "message": "Prism light"
+  },
+  "fx_filter_startrail": {
+    "message": "Star trails"
+  },
+  "pg_music_title": {
+    "message": "संगीत ऐका"
+  },
+  "pg_music_help": {
+    "message": "All 16 bundled tunes are here, including 3 original Phonk tracks. Preview on your speakers; music in the call is under the Music tab."
+  },
+  "pg_add_memes": {
+    "message": "Add my memes and pictures"
+  },
+  "pg_add_music": {
+    "message": "How to add my music"
+  },
+  "pg_music_add_help": {
+    "message": "In a browser call: open the MemeBox panel, select Music, then Add my music. Select an audio file you own or may share. Original Phonk is already bundled; YouTube playlists need the site and verified links."
+  },
+  "pg_preview_seconds": {
+    "message": "Preview length"
+  },
+  "pg_volume": {
+    "message": "Listening volume"
+  },
+  "pg_free_music": {
+    "message": "Free tunes"
+  },
+  "pg_pro_music": {
+    "message": "Pro tunes"
+  },
+  "pg_max_music": {
+    "message": "Pro Max originals and tunes"
+  },
+  "pg_pictures": {
+    "message": "फोटो मोड"
+  },
+  "pg_pictures_help": {
+    "message": "Add a picture to a meme in Options. Play it from the Pictures tab during a call. It stays until you close it with ×, Escape or Stop all. Enable camera captions to send it to other callers."
+  },
+  "pg_picture_choose": {
+    "message": "स्वतःचा फोटो पाहा"
+  },
+  "pg_picture_close": {
+    "message": "फोटो बंद करा"
+  },
+  "pg_picture_privacy": {
+    "message": "This preview stays on this device. No upload or storage service is used."
+  },
+  "pg_collection_help": {
+    "message": "For everyone is the default. India and other regions are optional collections, available to everyone; your interface language stays your choice."
+  },
+  "ob_try_characters": {
+    "message": "Try characters and reactions"
+  },
+  "ob_listen_music": {
+    "message": "Listen to original music"
+  },
+  "ob_add_content": {
+    "message": "Add memes and pictures"
+  },
+  "tab_pictures": {
+    "message": "फोटो"
+  },
+  "pictures_help": {
+    "message": "Your picture memes, in one place. Pictures stay until ×, Escape or Stop all. Camera captions must be on for other callers to see them."
+  },
+  "pictures_add": {
+    "message": "Add a picture meme"
+  },
+  "pictures_empty": {
+    "message": "No picture memes yet. Add a picture to a meme in Options, then come back here."
+  },
+  "mu_phonk_local_tip": {
+    "message": "Listen to our three original Phonk tracks in the Playground. Free YouTube playlists require the site and verified official links."
+  },
+  "mu_collection_help": {
+    "message": "Original tunes run on your device. Add your own audio below; no hosted music subscription is required."
+  },
+  "pg_persona_cat": {
+    "message": "Quiet paws, grooming and stretching. Climbs to your shoulder."
+  },
+  "pg_persona_dog": {
+    "message": "A playful trot, panting and wagging. Waits for you to return."
+  },
+  "pg_persona_bunny": {
+    "message": "Springy hops, ear wiggles and nibbling."
+  },
+  "pg_persona_panda": {
+    "message": "Slow steps, bamboo munching and relaxed rolls."
+  },
+  "pg_persona_owl": {
+    "message": "Flies between perches, turns its head and hoots."
+  },
+  "pg_persona_fox": {
+    "message": "Soft prowling, a swishing tail and pouncing."
+  },
+  "pg_persona_penguin": {
+    "message": "Side-to-side waddling and flipper movements."
+  },
+  "pg_persona_lion": {
+    "message": "A measured prowl, mane shakes and yawns."
+  },
+  "pg_persona_monkey": {
+    "message": "Climbs with alternating hands, scratches and swings."
+  },
+  "pg_persona_frog": {
+    "message": "Hops, croaks and catches a little fly."
+  },
+  "pg_persona_unicorn": {
+    "message": "Prances with a rainbow tail and sparkles."
+  },
+  "pg_persona_robot": {
+    "message": "Marches in measured steps, scans and beeps."
+  },
+  "pg_persona_snake": {
+    "message": "Slithers, coils and flicks its forked tongue."
+  },
+  "pg_persona_bird": {
+    "message": "Flies with flapping wings, preens and pecks."
+  },
+  "pg_animate": {
+    "message": "प्रिव्ह्यू चालवा"
+  },
+  "pg_picture_too_big": {
+    "message": "Choose an image smaller than 8 MB."
+  },
+  "pg_picture_invalid": {
+    "message": "Choose a valid PNG, JPEG, WebP or GIF image."
+  },
+  "adult_optin": {
+    "message": "मी १८ वर्षांचा किंवा मोठा आहे; अपशब्द असलेले मीम दाखवा"
+  },
+  "adult_mark": {
+    "message": "Contains strong language (18+)"
+  },
+  "adult_help": {
+    "message": "Off by default. This is a self-declared preference, not verified age. Turning it off hides marked content and stops current MemeBox playback. Unmarked content cannot be classified automatically."
+  },
+  "adult_blocked": {
+    "message": "Adult memes are hidden. Enable the 18+ preference first."
+  },
+  "content_title": {
+    "message": "Your meme library"
+  },
+  "content_help": {
+    "message": "Recommended uses your chosen meme language. Explore all opens every language and region. Regions are collections, not restrictions."
+  },
+  "content_language": {
+    "message": "भाषा"
+  },
+  "content_recommended": {
+    "message": "Recommended language"
+  },
+  "content_all": {
+    "message": "सर्व भाषा"
+  },
+  "content_private": {
+    "message": "Your personal additions stay private on this device and appear with your memes across language views. Categories keep related memes together. Only admin-published packs become available to other users."
+  },
+  "plans_title": {
+    "message": "Plans and ownership"
+  },
+  "plans_link": {
+    "message": "Plans, prices and how to buy"
+  },
+  "plans_closed": {
+    "message": "Payments are not open in this local review. You can preview all features here. No purchase will be made."
+  },
+  "plans_forever": {
+    "message": "Owned forever"
+  },
+  "plans_draft": {
+    "message": "Draft price, not on sale yet"
+  },
+  "plans_max_only": {
+    "message": "Included only with Pro Max; never individually sold"
+  },
+  "plans_passes": {
+    "message": "Time passes"
+  },
+  "plans_filters": {
+    "message": "Filters: Free, Pro and Pro Max"
+  },
+  "plans_outfits": {
+    "message": "Costumes and accessories"
+  },
+  "plans_characters": {
+    "message": "Character ownership"
+  },
+  "plans_music": {
+    "message": "Bundled music"
+  },
+  "plans_open_checkout": {
+    "message": "Open checkout"
+  },
+  "plans_checkout_help": {
+    "message": "Checkout opens on the MemeBox site when the shop is enabled. International payment methods depend on provider approval."
+  },
+  "plans_ownership_help": {
+    "message": "A costume does not unlock its animal. Owned Pro filters and costumes work without a pass; automatic tracking and gestures need a running pass."
+  },
+  "plans_free_count": {
+    "message": "3 free filters and 3 basic accessories"
+  },
+  "plans_pro_count": {
+    "message": "18 filters and 10 standard characters; 7 regular tunes plus Desi Phonk"
+  },
+  "plans_max_count": {
+    "message": "28 filters, all 14 characters and all 16 bundled tunes; exclusive reactive costumes"
+  },
+  "pk_manage_help": {
+    "message": "Published packs are added by the owner in the admin console. You choose which packs to keep locally; your own imports never publish automatically."
+  },
+  "plans_view_max": {
+    "message": "View Pro Max passes"
+  },
+  "plans_availability": {
+    "message": "Checkout availability"
+  },
+  "room_title": {
+    "message": "संगीत कक्ष"
+  },
+  "room_characters": {
+    "message": "पात्रे"
+  },
+  "room_language": {
+    "message": "भाषा"
+  },
+  "room_everyone": {
+    "message": "Your music. Every mood."
+  },
+  "room_heading": {
+    "message": "Pick a playlist. Feel the drop."
+  },
+  "room_intro": {
+    "message": "Free YouTube collections and original MemeBox music in one place. Browse every collection, wherever you are; YouTube availability may vary."
+  },
+  "room_pick": {
+    "message": "Choose music to start"
+  },
+  "room_previous": {
+    "message": "मागील"
+  },
+  "room_pause": {
+    "message": "Pause / resume"
+  },
+  "room_next": {
+    "message": "पुढील"
+  },
+  "room_shuffle": {
+    "message": "शफल"
+  },
+  "room_youtube_help": {
+    "message": "YouTube uses its visible player and may show ads or restrict a video. Original music runs on your device."
+  },
+  "room_web_player": {
+    "message": "Open website player"
+  },
+  "room_provider": {
+    "message": "View source playlist"
+  },
+  "room_local_help": {
+    "message": "For the local YouTube player, run Start-MemeBox-Music.cmd from the extracted review folder once. No Node installation is needed. It opens a localhost page with a valid website referrer."
+  },
+  "room_playlists": {
+    "message": "मोफत YouTube प्लेलिस्ट"
+  },
+  "room_supplied": {
+    "message": "Starter collections for every listener. Rename or replace them whenever you want; YouTube controls the songs and availability."
+  },
+  "room_search": {
+    "message": "Search your playlists"
+  },
+  "room_empty": {
+    "message": "No matching playlists. Change the search or add a collection."
+  },
+  "room_manage": {
+    "message": "माझ्या प्लेलिस्ट सांभाळा"
+  },
+  "room_private": {
+    "message": "Changes are saved only on this browser. They do not publish for other users."
+  },
+  "room_name": {
+    "message": "Collection name"
+  },
+  "room_url": {
+    "message": "YouTube playlist link"
+  },
+  "room_save": {
+    "message": "प्लेलिस्ट जतन करा"
+  },
+  "room_cancel": {
+    "message": "बदल रद्द करा"
+  },
+  "room_restore": {
+    "message": "Restore supplied playlists"
+  },
+  "room_originals": {
+    "message": "MemeBox चे स्वतःचे संगीत"
+  },
+  "room_original_help": {
+    "message": "Phonk builds into a pause and beat drop, then returns with a layered second drop. Other tunes cover chill, funk, party and more."
+  },
+  "room_all": {
+    "message": "सर्व धून"
+  },
+  "room_call": {
+    "message": "Music in your call"
+  },
+  "room_call_help": {
+    "message": "Original tunes play into your mic from the call panel’s Music tab. For YouTube, keep the website player open, click the MemeBox toolbar icon and choose Send this tab’s sound. Ads are included in captured tab audio."
+  },
+  "room_review": {
+    "message": "Local review: paid music is unlocked, checkout is closed, and nothing is deployed."
+  },
+  "room_storage_error": {
+    "message": "Could not save in this browser. Your changes remain available until the page closes."
+  },
+  "room_web_required": {
+    "message": "YouTube playback opens in the website player so it receives a valid web referrer."
+  },
+  "room_youtube_loading": {
+    "message": "YouTube player opened. Press Play in the visible player if autoplay is blocked."
+  },
+  "room_original_playing": {
+    "message": "Playing on your speakers. To send originals into a call, use the call panel’s Music tab."
+  },
+  "room_preview": {
+    "message": "20-second preview on your speakers. This tune requires its applicable pass in a call."
+  },
+  "room_preview_finished": {
+    "message": "Preview finished. View Plans for this tune’s tier."
+  },
+  "room_collection_meta": {
+    "message": "Free · YouTube controls the song list"
+  },
+  "room_play": {
+    "message": "वाजवा"
+  },
+  "room_edit": {
+    "message": "बदला"
+  },
+  "room_remove": {
+    "message": "काढा"
+  },
+  "room_drop_at": {
+    "message": "Drop at $1s"
+  },
+  "room_preview_badge": {
+    "message": "20s preview"
+  },
+  "room_invalid": {
+    "message": "Enter a name and a valid HTTPS YouTube playlist link or playlist ID."
+  },
+  "room_duplicate": {
+    "message": "This playlist is already saved. Edit its existing card instead."
+  },
+  "room_limit": {
+    "message": "Keep up to $1 playlists. Remove one before adding another."
+  },
+  "room_saved": {
+    "message": "Playlist changes saved"
+  },
+  "room_embed_error": {
+    "message": "YouTube could not play this selection (error $1). Its availability, age or embedding restrictions may prevent playback."
+  },
+  "room_youtube_playing": {
+    "message": "Playing through YouTube’s visible player"
+  },
+  "room_external": {
+    "message": "Selected playlist"
+  },
+  "room_adult": {
+    "message": "मी 18+ आहे; तीव्र भाषा म्हणून चिन्हांकित संग्रह दाखवा"
+  },
+  "room_published": {
+    "message": "Published MemeBox collections"
+  },
+  "room_published_help": {
+    "message": "The owner can update these collections without an extension release. Browse to load the current catalog."
+  },
+  "room_browse": {
+    "message": "Browse published collections"
+  },
+  "room_published_count": {
+    "message": "Free · $1 songs"
+  },
+  "room_catalog_loading": {
+    "message": "Loading published collections…"
+  },
+  "room_catalog_paused": {
+    "message": "Published Phonk collections are paused by the owner."
+  },
+  "room_catalog_empty": {
+    "message": "No published collections yet. Your own playlists above remain available."
+  },
+  "room_catalog_unavailable": {
+    "message": "The published catalog is unavailable here. Your own playlists above remain available."
+  },
+  "plans_choose_tier": {
+    "message": "Show passes"
+  },
+  "plans_all_passes": {
+    "message": "All passes"
   }
 }

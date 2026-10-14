@@ -20,7 +20,7 @@
       return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0.5;
     };
 
-    const how = el('div', { className: 'fx-how' }, t('mu_how'));
+    const how = el('div', { className: 'fx-how' }, t('mu_how'), el('p', {}, t('mu_collection_help')));
     // ---- my own music: added right here, played into the call on repeat ----
     let mine = [];
     const mineBox = el('div', { className: 'fx-group' });
@@ -31,7 +31,9 @@
     const packsBtn = el('button', { className: 'chip add-music', type: 'button' }, t('pk_get')); // free music packs from the site (Options → Online packs)
     packsBtn.addEventListener('click', () => api.openPacks());
     const phonkBtn = el('button', { className: 'chip add-music', type: 'button', title: t('mu_phonk_tip') }, t('mu_phonk')); // Phonk Mode: a page on our site with YouTube's own player
-    phonkBtn.addEventListener('click', () => api.openSite('/phonk'));
+    phonkBtn.dataset.musicRoom='true';
+    phonkBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'music-room' }));
+    phonkBtn.title = t('mu_phonk_local_tip');
     mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });
     const status = el('div', { className: 'fx-status' });
@@ -87,7 +89,7 @@
       else api.toast(res && res.error === 'too-many' ? t('mu_many') : res && res.error === 'too-big' ? t('mu_big') : t('as_fail', file.name), 4200);
     });
     function renderMine() {
-      mineChips.replaceChildren(...mine.map((m) => {
+      mineChips.replaceChildren(...mine.filter(track => MEME.contentAllowed(track,api.getSettings())).map((m) => {
         const on = callId === 'mine:' + m.id;
         const b = el('button', { className: 'chip' + (on ? ' on' : ''), type: 'button', title: m.name }, (on ? '▶ ' : '🎵 ') + (m.name.length > 16 ? m.name.slice(0, 15) + '…' : m.name));
         b.addEventListener('click', () => playMine(m.id));
@@ -112,7 +114,7 @@
     function render() {
       renderMine();
       addBtn.hidden = closed() && !can('own');
-      chips.replaceChildren(...Music.IDS.filter((id) => !(closed() && !can(id))).map((id) => {
+      chips.replaceChildren(...[...Music.IDS, ...Music.PHONK_IDS].filter((id) => !(closed() && !can(id))).map((id) => {
         const locked = !can(id);
         const on = id === callId || id === localId;
         const b = el('button', { className: 'chip' + (on ? ' on' : '') + (locked ? ' locked' : ''), type: 'button' },

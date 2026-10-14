@@ -23,7 +23,7 @@ test('Options: picking a color theme applies it to Options and to the on-call pa
 test('Options: the language menu switches MemeBox to Hindi, then Arabic (right to left), then back to Auto', async ({ context, extensionId }) => {
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/options.html`);
-  await expect(page.locator('#ui-lang option')).toHaveCount(13);
+  await expect(page.locator('#ui-lang option')).toHaveCount(17);
   await expect(page.locator('#ui-lang')).toHaveValue('auto');
 
   await Promise.all([page.waitForEvent('load'), page.locator('#ui-lang').selectOption('hi')]);

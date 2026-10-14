@@ -11,32 +11,46 @@
 </head>
 <body class="page-bg">
   <main class="wrap phonk">
-    <header class="page-head">
+    <header class="page-head phonk-hero">
       <a href="/" class="brand"><img src="/assets/icon.png" alt="" width="36" height="36"> MemeBox</a>
-      <h1 data-t="ph_title">Phonk Mode</h1>
-      <p class="muted" data-t="ph_intro">Official phonk tracks, played through YouTube. MemeBox does not host or copy any music.</p>
+      <h1><span aria-hidden="true">🎧</span> <span data-t="ph_title">Phonk Mode</span></h1>
+      <p class="muted" data-t="ph_intro">Original MemeBox Phonk loops, plus free official YouTube playlists. Original loops play locally without ads or downloads.</p>
+      <div class="phonk-hero-art" aria-hidden="true"><div class="vinyl"><span>😂</span></div><span class="music-spark spark-one">✦</span><span class="music-spark spark-two">♫</span></div>
     </header>
 
-    <section class="card player-card">
+    <div class="phonk-layout">
+    <section class="card player-card" aria-label="Player">
+      <div class="player-idle" id="player-idle" aria-hidden="true">🎶</div>
       <div class="player-box" id="player-box" hidden>
         <iframe id="player" title="YouTube player" width="560" height="315" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
       </div>
       <p id="now" class="now"><span data-t="ph_pick">Pick a track to start</span></p>
-      <div class="controls">
+      <div class="controls" role="group" data-t-aria="ph_play" aria-label="Play / pause">
         <button type="button" id="prev" data-t-aria="ph_prev" aria-label="Previous">⏮</button>
-        <button type="button" id="toggle" class="primary" data-t-aria="ph_play" aria-label="Play / pause">⏯</button>
+        <button type="button" id="toggle" class="primary" data-t-aria="ph_play" aria-label="Play / pause" aria-pressed="false">▶</button>
         <button type="button" id="next" data-t-aria="ph_next" aria-label="Next">⏭</button>
+        <button type="button" id="shuffle" data-t-aria="ph_shuffle" aria-label="Shuffle" aria-pressed="false">🔀</button>
         <input type="range" id="volume" min="0" max="100" value="100" aria-label="Volume">
         <a id="open-yt" class="button" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" hidden data-t="ph_open">Open on YouTube</a>
       </div>
       <p id="msg" class="hint" role="status" aria-live="polite"></p>
     </section>
 
-    <section class="card">
-      <h2 id="list-title" data-t="ph_title">Phonk Mode</h2>
-      <p id="status" class="muted" role="status"><span data-t="ph_loading">Loading tracks…</span></p>
+    <section class="card phonk-library">
+      <div class="library-head">
+        <div>
+          <h2 data-t="ph_playlists">Choose a playlist</h2>
+          <p class="muted" data-t="ph_playlist_help">Pick a mood, then press a track. MemeBox keeps the music going.</p>
+        </div>
+        <label class="track-search"><span class="sr-only" data-t="ph_search">Search tracks</span><input id="search" type="search" data-t-ph="ph_search" placeholder="Search tracks" autocomplete="off"></label>
+      </div>
+      <label class="check"><input id="adult-content" type="checkbox"><span data-t="ph_adult_optin">I’m 18+; show tracks marked with strong language</span></label>
+      <nav id="playlists" class="playlists" data-t-aria="ph_playlists" aria-label="Choose a playlist"></nav>
+      <h2 id="list-title" data-t="ph_all">All tracks</h2>
+      <p id="status" class="muted" role="status" aria-live="polite"><span data-t="ph_loading">Loading tracks…</span></p>
       <ol id="tracks" class="tracks"></ol>
     </section>
+    </div>
 
     <section class="card steps">
       <h2 data-t="ph_steps">Play it into your call</h2>
@@ -50,6 +64,7 @@
 
     <footer class="foot"><a href="/privacy" data-t="privacy">Privacy</a> <div class="prefs" data-prefs></div></footer>
   </main>
+  <script src="/assets/music.js"></script>
   <script src="/assets/phonk.js"></script>
 </body>
 </html>

@@ -71,3 +71,16 @@ test('lines keep category, star and a clamped per-line volume', () => {
   assert.equal(MEME.sanitizeLine({ text: 'x' }).category, 'general');
   assert.equal(MEME.sanitizeLine({ text: 'x', star: 'yes' }).star, undefined);
 });
+
+test('adult consent defaults off and applies before language, category or private-content exceptions', () => {
+  const settings=MEME.defaultSettings();assert.equal(settings.showStrong,false);assert.equal(settings.adultConfirmed,false);
+  const items=[{id:'l-private',lang:'hi',kind:'tts',text:'Personal'}, {id:'pk-adult',packId:'world',lang:'en',explicit:true,universal:true}, {id:'p-en',lang:'en',kind:'tts'}, {id:'p-hi',lang:'hi',kind:'tts'}];
+  assert.deepEqual(MEME.libraryLines(items,settings,new Set(['en'])).map(x=>x.id),['l-private','p-en']);
+  assert.equal(MEME.contentAllowed(items[1],{showStrong:true}),false,'a previous visibility flag alone is not adult confirmation');
+  assert.equal(MEME.contentAllowed(items[1],{showStrong:true,adultConfirmed:true}),true);
+});
+test('regional labels never restrict access and private additions stay available across meme languages', () => {
+  const items=[{id:'pk-hi-india',packId:'india',kind:'tts',lang:'hi',region:'in'}, {id:'pk-hi-world',packId:'world',kind:'tts',lang:'hi',region:'global'}, {id:'l-own-en',kind:'tts',lang:'en'}, {id:'pk-universal',packId:'world',kind:'clip',lang:'en',universal:true}];
+  assert.deepEqual(MEME.libraryLines(items,{},new Set(['hi'])).map(x=>x.id),items.map(x=>x.id));
+  assert.deepEqual(MEME.libraryLines(items,{},new Set(['ja'])).map(x=>x.id),['l-own-en','pk-universal']);
+});

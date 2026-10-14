@@ -30,8 +30,14 @@
   // pass is switched on AND you are in a call (the service worker spends the seconds), so nothing is wasted.
   // `proSeconds` / `maxSeconds` are the seconds left. Pro Max is spent first when someone has both.
   const FREE_CHARACTERS = Object.freeze(['cat', 'dog']); // free for everybody; same list as MemeFx.FREE_CHARACTERS (a test checks)
-  const STANDARD_CHARACTERS = Object.freeze(['cat', 'dog', 'bunny', 'panda', 'owl', 'fox']); // with a Pro pass; same list as MemeFx.STANDARD_CHARACTERS (a test checks)
+  const STANDARD_CHARACTERS = Object.freeze(['cat', 'dog', 'bunny', 'panda', 'owl', 'fox', 'penguin', 'lion', 'monkey', 'frog']); // with a Pro pass; same list as MemeFx.STANDARD_CHARACTERS (a test checks)
+  const MAX_EXCLUSIVE_CHARACTERS = Object.freeze(['unicorn', 'robot', 'snake', 'bird']);
   const FREE_TUNES = Object.freeze(['chill', 'funky']); // same list as MemeMusic.FREE_TUNES (a test checks)
+  const PRO_TUNES = Object.freeze(['chill', 'funky', 'party', 'suspense', 'retro', 'jazz', 'tropical']);
+  const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];
+  const PRO_FILTERS = ['vintage', 'cool', 'noir', 'dream', 'sunset', 'neon', 'pixel', 'vhs', 'glam', 'sepia', 'peach', 'teal', 'soft', 'dusk', 'contrast'];
+  const PRO_OUTFITS = ['hoodie', 'bow', 'glasses'];
+  const MAX_OUTFITS = ['astronaut', 'wizard', 'superhero'];
   const PASS_MAX_SECONDS = 10 * 24 * 3600;
   const LICENSE_MAX_AGE_MS = 30 * 24 * 3600 * 1000;
 
@@ -106,12 +112,22 @@
   // Pro Max (or a permanent key) also has the extra filters and every character.
   function canFx(feature, now) {
     const max = config().PRO_ENABLED !== true || hasLicense(now) || passTier(now) === 'max';
-    if (feature.startsWith('filter:')) return max || hasAddon(feature, now);
+    if (feature.startsWith('filter:')) { const id = feature.slice(7); return FREE_FILTERS.includes(id) || max || (PRO_FILTERS.includes(id) && (isPro(now) || hasAddon(feature, now))); }
+    if (feature.startsWith('outfit:')) { const id = feature.slice(7); return ['none','party','crown','scarf'].includes(id) || max || (PRO_OUTFITS.includes(id) && (isPro(now) || hasAddon(feature, now))); }
     if (feature === 'characters') return max;
-    if (feature.startsWith('music:')) return FREE_TUNES.includes(feature.slice(6)) || isPro(now);
-    // One character at a time: the free two for everybody, Pro has six, Pro Max (or a permanent key) has all twelve,
-    // and any character can be bought for ever (an add-on on the key).
-    if (feature.startsWith('character:')) { const id = feature.slice(10); return FREE_CHARACTERS.includes(id) || max || (isPro(now) && STANDARD_CHARACTERS.includes(id)) || hasAddon(feature, now); }
+    if (feature.startsWith('music:')) {
+      const id = feature.slice(6);
+      return id === 'own' || FREE_TUNES.includes(id) || max || (isPro(now) && (PRO_TUNES.includes(id) || id === 'phonk_desi'));
+    }
+    // Free has two, Pro has ten, Pro Max (or an unlimited key) has all fourteen.
+    // Only the eight purchasable characters get new permanent add-ons.
+    if (feature.startsWith('character:')) {
+      const id = feature.slice(10);
+      // New exclusive characters cannot be unlocked with individual add-ons.
+      // Keep previously purchased Unicorn/Robot entitlements working.
+      if (MAX_EXCLUSIVE_CHARACTERS.includes(id)) return max || (['unicorn', 'robot'].includes(id) && hasAddon(feature, now));
+      return FREE_CHARACTERS.includes(id) || max || (isPro(now) && STANDARD_CHARACTERS.includes(id)) || hasAddon(feature, now);
+    }
     return isPro(now);
   }
 
@@ -142,7 +158,7 @@
   globalThis.MemePlan = Object.freeze({
     shopOpen,
     PRO_FEATURES, FREE_LIMITS, LICENSE_MAX_AGE_MS,
-    PASS_MAX_SECONDS, FREE_CHARACTERS, STANDARD_CHARACTERS, FREE_TUNES, isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, setPass, validLicense, passTier, passLeft,
+    FREE_FILTERS, PRO_FILTERS, PRO_OUTFITS, MAX_OUTFITS, PASS_MAX_SECONDS, FREE_CHARACTERS, STANDARD_CHARACTERS, FREE_TUNES, PRO_TUNES, isPro, can, canFx, hasAddon, pictureLimit, hasLicense, setLicense, setPass, validLicense, passTier, passLeft,
     get ready() { return ready; },
     get license() { return license; },
   });

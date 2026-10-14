@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MemeBox</title>
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="popup.css">
+  <script src="lib/theme.js"></script>
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" alt="" width="24" height="24">
+    <h1>MemeBox</h1>
+  </header>
+
+  <p id="msg" class="msg" data-i18n="pp_checking">Checking…</p>
+
+  <button type="button" id="send" class="primary" hidden data-i18n="pp_send">🎙 Send this tab's sound to my call</button>
+  <button type="button" id="stop" class="danger" hidden data-i18n="pp_stop">⏹ Stop sending this tab</button>
+  <label id="vol-row" class="vol-row" hidden><span data-i18n="pp_volume">Volume in the call</span>
+    <input type="range" id="vol" min="0" max="200" step="5" value="100"><output id="vol-out">100%</output></label>
+
+  <details id="how">
+    <summary data-i18n="pp_how">How does this work?</summary>
+    <ol>
+      <li data-i18n="pp_how1">Join your call in another tab (Meet, Zoom web, Teams web or Discord web).</li>
+      <li data-i18n="pp_how2">In this tab, start the YouTube video or Instagram reel at the funny moment.</li>
+      <li data-i18n="pp_how3">Click “Send this tab's sound” and everyone in the call hears it through your mic.</li>
+      <li data-i18n="pp_how4">Click ⏹ when you're done, or use ⏹ in the 😂 panel.</li>
+    </ol>
+    <p data-i18n="pp_how_note">Nothing is downloaded or recorded. The sound is only mixed live into your mic.</p>
+  </details>
+
+  <footer><button type="button" id="options" class="link" data-i18n="pp_settings">⚙️ Lines, clips &amp; settings</button></footer>
+  <script src="lib/i18n-page.js"></script>
+  <script src="defaults.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -26,16 +26,30 @@
   const LAMP_ANIMS = ['still', 'swing', 'drop', 'flicker', 'sway', 'bounce', 'pendulum', 'beat'];
   const FIXTURES = ['lamp', 'discoball', 'lantern', 'fairy', 'chandelier', 'moon', 'star', 'spotlight']; // what hangs (only the lamp is free)        // "still" is free, the rest are Pro
   const PATTERNS = ['auto', 'steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle', 'aurora', 'fire', 'laser', 'neonframe', 'police', 'heart', 'party', 'equalizer', 'club']; // corner light shows (Pro)
-  const FILTERS = ['none', 'warm', 'bw', 'glow', 'vintage', 'cool', 'neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow'];
-  const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];             // 3 free
-  const PRO_FILTERS = ['vintage', 'cool'];                         // + 2 in Pro = 5
-  const ADDON_FILTERS = ['neon', 'noir', 'dream', 'sunset', 'pixel', 'vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'heat', 'snow']; // Pro Max (or one by one)
+  const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];
+  const PRO_FILTERS = ['vintage', 'cool', 'noir', 'dream', 'sunset', 'neon', 'pixel', 'vhs', 'glam', 'sepia', 'peach', 'teal', 'soft', 'dusk', 'contrast'];
+  const ADDON_FILTERS = ['cyber', 'comic', 'matrix', 'night', 'film', 'wave', 'heat', 'snow', 'prism', 'startrail']; // Pro Max exclusive, never individually sold
+  const FILTERS = [...FREE_FILTERS, ...PRO_FILTERS, ...ADDON_FILTERS];
   // Characters that sit in a bottom corner and react to the sounds. Pro: one of the standard three at a time.
-  // Pro Max: all six. Every one is drawn with code (no pictures), so they are small and original.
+  // Pro Max: four additional exclusive companions. Every one is drawn with code (no pictures), so they are small and original.
   const FREE_CHARACTERS = ['cat', 'dog'];                                              // free for everybody
-  const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny', 'panda', 'owl', 'fox'];          // with a Pro pass (the free two included)
-  const PREMIUM_CHARACTERS = ['penguin', 'lion', 'monkey', 'frog', 'unicorn', 'robot']; // Pro Max only (or bought one by one)
+  const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny', 'panda', 'owl', 'fox', 'penguin', 'lion', 'monkey', 'frog'];          // with a Pro pass (the free two included)
+  const PREMIUM_CHARACTERS = ['unicorn', 'robot', 'snake', 'bird'];
   const CHARACTERS = [...STANDARD_CHARACTERS, ...PREMIUM_CHARACTERS];
+  const FREE_OUTFITS = ['none', 'party', 'crown', 'scarf'];
+  const PRO_OUTFITS = ['hoodie', 'bow', 'glasses'];
+  const MAX_OUTFITS = ['astronaut', 'wizard', 'superhero'];
+  const OUTFITS = [...FREE_OUTFITS, ...PRO_OUTFITS, ...MAX_OUTFITS];
+  const PERSONAS = Object.freeze({
+    cat: { gait: 'pad', pace: .24, action: 'lick' }, dog: { gait: 'trot', pace: .34, action: 'pant' },
+    bunny: { gait: 'hop', pace: .32, action: 'wiggle' }, panda: { gait: 'amble', pace: .16, action: 'munch' },
+    owl: { gait: 'fly', pace: .28, action: 'turn' }, fox: { gait: 'prowl', pace: .3, action: 'swish' },
+    penguin: { gait: 'waddle', pace: .18, action: 'waddle' }, lion: { gait: 'prowl', pace: .2, action: 'mane' },
+    monkey: { gait: 'swing', pace: .34, action: 'scratch' }, frog: { gait: 'hop', pace: .28, action: 'croak' },
+    unicorn: { gait: 'prance', pace: .3, action: 'sparkle' }, robot: { gait: 'march', pace: .2, action: 'scan' },
+    snake: { gait: 'slither', pace: .18, action: 'coil' }, bird: { gait: 'fly', pace: .38, action: 'preen' },
+  });
+  const COMMANDS = ['wave', 'jump', 'roll', 'sit', 'cry', 'heartbeat', 'dance', 'raspberry', 'cheer', 'signature', 'head', 'shoulder', 'corner'];
   const MOODS = ['suspense', 'excited', 'surprise', 'sad', 'fun', 'awkward'];
 
   const DEFAULTS = Object.freeze({
@@ -59,13 +73,16 @@
     safe: true,         // no flashing: slow, gentle changes only
     filter: 'none',
     character: 'none',  // none | cat | dog | bunny | panda | owl | fox | penguin | lion | monkey | frog | unicorn | robot
+    outfit: 'none',     // a cosmetic never unlocks its underlying character
+    charHome: 'shoulder', // resting place when a tracked face is present
+    command: '', commandSeq: 0, // a single explicit emote, shared by panel and camera
     follow: true,       // lights and the character follow where YOU are (left, right, standing up, out of the picture)
     masti: true,        // the animal plays on you now and then: sits on your head or shoulder, hangs on your glasses, rolls around your head (needs Follow me)
     sounds: true,       // the animal makes little sounds (sobbing, sniffing, a cheer, a heartbeat); others in the call hear them
     gestures: true,     // the character understands your hands and head (thumbs up, heart, OK, rock, stop, clap, nod, shake) and your tongue
     sens: 'normal',     // how easily those are noticed: low | normal | high
     studio: true,       // brighten a dark room automatically (only while Lights is on)
-    awayDance: true,    // when you leave the picture the character dances and the lights party
+    awayDance: false,   // retained preference; companions never celebrate while you are absent
     charPos: 'right',   // left | right (bottom corner)
     intensity: 0.8,
   });
@@ -97,13 +114,17 @@
       safe: c.safe !== false,
       filter: FILTERS.includes(c.filter) ? c.filter : 'none',
       character: CHARACTERS.includes(c.character) ? c.character : 'none',
+      outfit: OUTFITS.includes(c.outfit) ? c.outfit : 'none',
+      charHome: ['corner', 'head', 'shoulder'].includes(c.charHome) ? c.charHome : 'shoulder',
+      command: COMMANDS.includes(c.command) ? c.command : '',
+      commandSeq: Number.isSafeInteger(c.commandSeq) && c.commandSeq > 0 ? c.commandSeq : 0,
       charPos: c.charPos === 'left' ? 'left' : 'right',
       follow: c.follow !== false,
       masti: c.masti !== false,
       sounds: c.sounds !== false,
       gestures: c.gestures !== false,
       sens: ['low', 'high'].includes(c.sens) ? c.sens : 'normal',
-      awayDance: c.awayDance !== false,
+      awayDance: c.awayDance === true,
       studio: c.studio !== false,
       intensity: Number.isFinite(Number(c.intensity)) ? clamp(Number(c.intensity), 0.2, 1) : 0.8,
     };
@@ -113,9 +134,10 @@
     if (out.corners && !can('corners')) out.corners = false;
     if (out.pattern !== 'steady' && !can('corners')) out.pattern = 'steady';
     if (out.sync && !can('sync')) out.sync = false;
-    if (PRO_FILTERS.includes(out.filter) && !can('filtersPro')) out.filter = 'none';
+    if (PRO_FILTERS.includes(out.filter) && !can('filtersPro') && !can('filter:' + out.filter)) out.filter = 'none';
     if (ADDON_FILTERS.includes(out.filter) && !can('filter:' + out.filter)) out.filter = 'none';
     if (out.character !== 'none' && !can('character:' + out.character)) out.character = 'none';
+    if (!FREE_OUTFITS.includes(out.outfit) && !can('outfit:' + out.outfit)) out.outfit = 'none';
     if (out.follow && !can('follow')) out.follow = false;
     if (out.enhance > 0 && !can('enhance')) out.enhance = 0;
     return out;
@@ -126,7 +148,7 @@
     const want = sanitize(cfg, () => true);
     const have = sanitize(cfg, can);
     const locked = [];
-    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character', 'follow', 'enhance']) {
+    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character', 'outfit', 'follow', 'enhance']) {
       if (k === 'follow' && !(cfg && cfg.follow === true)) continue; // Follow me is on by default: it is only "previewed" when someone chose it
       if (want[k] !== have[k]) locked.push(k);
     }
@@ -226,6 +248,14 @@
   // ---------- filters ----------
 
   const FILTER_CSS = {
+    sepia: 'sepia(.9) contrast(1.05)',
+    peach: 'sepia(.25) saturate(1.2) hue-rotate(-22deg) brightness(1.08)',
+    teal: 'hue-rotate(22deg) saturate(1.35) contrast(1.12)',
+    soft: 'blur(.65px) brightness(1.08) contrast(.92)',
+    dusk: 'sepia(.25) hue-rotate(290deg) contrast(1.15) brightness(.88)',
+    contrast: 'contrast(1.5) saturate(.92)',
+    prism: 'saturate(1.35) contrast(1.1)',
+    startrail: 'brightness(.92) contrast(1.12)',
     warm: 'sepia(0.22) saturate(1.2) hue-rotate(-8deg) brightness(1.05)',
     bw: 'grayscale(1) contrast(1.12)',
     vintage: 'sepia(0.55) contrast(1.1) saturate(0.95) brightness(0.97)',
@@ -391,6 +421,13 @@
       const vg = g.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, Math.hypot(w, h) * 0.55); // a frosty edge
       vg.addColorStop(0, 'rgba(220,240,255,0)'); vg.addColorStop(1, 'rgba(220,240,255,0.4)');
       g.fillStyle = vg; g.fillRect(0, 0, w, h);
+    } else if (filter === 'prism') {
+      const grad = g.createLinearGradient(0, 0, w, h); ['#fe749a', '#8c81ef', '#5cddd4'].forEach((c,i)=>grad.addColorStop(i/2,c));
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .35; g.fillStyle = grad; g.fillRect(0,0,w,h);
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = .2; g.strokeStyle = '#e6e3ff'; g.lineWidth = Math.max(2,w/180);
+      for(let i=0;i<4;i++) { const x=(i/4+(t*.025)%1)*w; g.beginPath(); g.moveTo(x,0); g.lineTo(x-w*.22,h); g.stroke(); }
+    } else if (filter === 'startrail') {
+      g.fillStyle = '#d4e6ff'; for(let i=0;i<24;i++) { const x=((i*.618+t*.012)%1)*w, y=((i*.381+t*.018)%1)*h; const r=1.2+(i%3); g.globalAlpha=.3+.25*Math.sin(t+i); g.beginPath(); g.arc(x,y,r,0,TAU); g.fill(); }
     } else if (filter === 'glam') {
       g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.42;
       if ('filter' in g) g.filter = `blur(${Math.max(4, Math.round(h / 60))}px) brightness(1.25)`;
@@ -434,7 +471,7 @@
       g.restore();
     } else if (filter === 'heat') {
       drawHeat(R, g, src, w, h);
-    } else if (['vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'snow'].includes(filter)) {
+    } else if (['vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'snow', 'prism', 'startrail'].includes(filter)) {
       drawStyled(R, g, src, w, h, filter, now);
     } else if (filter === 'cool' || filter === 'sunset' || filter === 'vintage') {
       g.save();
@@ -473,6 +510,8 @@
     lion:    ['roar', 'yawn', 'mane', 'heartbeat'],
     unicorn: ['prance', 'sparkle', 'heartbeat'],
     robot:   ['scan', 'beep', 'popping', 'heartbeat'],
+    snake:   ['coil', 'raspberry', 'dance', 'heartbeat'],
+    bird:    ['preen', 'peck', 'flap', 'heartbeat'],
   };
 
   // ---------- HD enhance: a small GPU shader that makes the camera picture look better ----------
@@ -1321,6 +1360,8 @@ void main(){
       frog:    { fur: '#6cc24a', light: '#d9f5b8', dark: '#3b8a2c', ear: '#6cc24a' },
       unicorn: { fur: '#fbeaff', light: '#ffffff', dark: '#c9a6e0', ear: '#ffc2e0' },
       robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
+      snake:   { fur: '#6dcc91', light: '#e5ffd0', dark: '#25875f', ear: '#ffd56b' },
+      bird:    { fur: '#58c7eb', light: '#d7f6ff', dark: '#278cb9', ear: '#ffb853' },
     };
 
     const ACT_LEN = { nod: 1.8, headshake: 1.8, clap: 2.6, freeze: 3, raspberry: 30, cry: 30, wipe: 2, heartbreak: 3.2, heartbeat: 3.5, miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
@@ -1334,7 +1375,7 @@ void main(){
       const once = (k) => { if (R.sfxKey !== key) q.push({ k, a: kind }); };
       const every = (k, ms) => { if (now - (at[k] || -1e9) > ms) { at[k] = now; q.push({ k, a: kind }); } };
       switch (act) {
-        case 'cry': every('sob', 2700); break;
+        case 'float': case 'cry': every('sob', 2700); break;
         case 'miss': every('whimper', 3300); break;
         case 'wipe': once('sniff'); break;
         case 'greet': case 'cheer': once('cheer'); break;
@@ -1358,9 +1399,15 @@ void main(){
       const p = { hop: 0, sy: 1, sx: 1, tilt: 0, head: 0, armL: 0, armR: 0, mouth: 0, tongue: 0, ear: 0, tail: 1, puff: 0, lookX: null, ex: '', prop: '', pulse: 0, fly: 0, sparkle: 0, stepped: false };
       const bounce = (f, h) => { const k = Math.abs(Math.sin(t * f)); p.hop = k * h; p.sy = 1 - 0.12 * (1 - k) ** 3; p.sx = 1 + 0.08 * (1 - k) ** 3; };
       switch (act) {
+        case 'fly': p.armL = p.armR = 1.7 + Math.sin(t * 17) * 1.3; p.hop = 4 * Math.sin(t * 6); p.tilt = Math.sin(t * 4) * .08; p.lookX = .6; break;
+        case 'climb': p.armL = 1.7 + .7 * Math.sin(t * 9); p.armR = 1.7 - .7 * Math.sin(t * 9); p.sy = .95; p.tilt = .07 * Math.sin(t * 9); break;
+        case 'float': p.ex = 'cry'; p.armL = p.armR = 1.9 + .4 * Math.sin(t * 4); p.mouth = .45; p.tilt = .08 * Math.sin(t * 2); break;
+        case 'coil': p.tail = .4; p.sy = .85 + .06 * Math.sin(t * 2); p.tongue = Math.max(0, Math.sin(t * 5)) * .7; p.head = .15 * Math.sin(t * 1.5); break;
+        case 'preen': p.armR = .8; p.head = .35 * Math.sin(t * 4); p.lookX = .6; p.mouth = .2; break;
+        case 'peck': p.head = .22 * Math.sin(t * 8); p.hop = -4 * Math.max(0, Math.sin(t * 8)); p.armL = p.armR = .4; break;
         // ---------- shared ----------
         case 'wave': p.armR = 2.2 + 0.5 * Math.sin(t * 9); p.ex = 'happy'; p.mouth = 0.5; p.lookX = 0; break;
-        case 'sit': p.ex = 'happy'; p.armL = p.armR = 0.35; p.tail = 2.6; p.head = 0.07 * Math.sin(t * 1.8); p.sy = 1 + 0.012 * Math.sin(t * 3); break;      // sitting on you
+        case 'sit': p.ex = 'idle'; p.sx = 1.08; p.hop = -3; p.armL = p.armR = 0.35; p.tail = 2.6; p.head = 0.07 * Math.sin(t * 1.8); p.sy = 1 + 0.012 * Math.sin(t * 3); break;      // sitting on you
         case 'hang': p.armL = p.armR = 2.75; p.tilt = 0.14 * Math.sin(t * 2.1); p.ex = 'happy'; p.mouth = 0.25; break;                                           // hanging on your glasses
         case 'roll': p.tilt = t * 6.5; p.armL = p.armR = 1.1; p.ex = 'happy'; p.mouth = 0.5; break;                                                                // rolling around your head
         case 'nod': p.sy = 1 - 0.05 * Math.abs(Math.sin(t * 6.5)); p.hop = -2 * Math.abs(Math.sin(t * 6.5)); p.ex = 'happy'; p.lookX = 0; break;           // yes
@@ -1383,7 +1430,17 @@ void main(){
           p.ex = 'miss'; p.armL = 1.9 + 0.7 * Math.sin(t * 5); p.armR = 1.9 - 0.7 * Math.sin(t * 5); p.hop = Math.abs(Math.sin(t * 3.1)) * 11; p.head = 0.1 * Math.sin(t * 2.2); p.lookX = Math.sin(t * 1.6); p.mouth = 0; break;
         case 'greet': // you are back: wide eyes, a jump, then a happy bounce
           p.ex = u < 0.3 ? 'wow' : 'happy'; p.armL = p.armR = 2.7 + 0.25 * Math.sin(t * 10); bounce(7.5, 18); p.mouth = u < 0.3 ? 0.5 : 0.8; break;
-        case 'walk': p.armL = 0.45 + 0.5 * Math.sin(tt * 13); p.armR = 0.45 - 0.5 * Math.sin(tt * 13); p.hop = 1.5 * Math.abs(Math.sin(tt * 13)); break;
+        case 'walk': {
+          const gait = PERSONAS[kind].gait, phase = t * (gait === 'amble' ? 4 : gait === 'march' ? 7 : 10);
+          p.armL = .45 + .5 * Math.sin(phase); p.armR = .45 - .5 * Math.sin(phase);
+          if (gait === 'hop') { p.hop = 16 * Math.abs(Math.sin(phase * .55)); p.sy = 1 - .13 * (1 - p.hop / 16); p.armL = p.armR = .65; }
+          else if (gait === 'waddle') { p.tilt = .17 * Math.sin(phase); p.hop = 2; p.armL = p.armR = .7; }
+          else if (gait === 'slither') { p.tilt = .13 * Math.sin(phase * .6); p.head = -p.tilt; p.tail = 2.5; }
+          else if (gait === 'march') { p.hop = Math.abs(Math.sin(phase)) * 3; p.stepped = true; p.head = Math.round(Math.sin(phase) * 2) * .04; }
+          else if (gait === 'prance') { p.hop = Math.abs(Math.sin(phase * .65)) * 9; p.tail = 2; }
+          else { p.hop = Math.abs(Math.sin(phase)) * (gait === 'trot' ? 4 : 1.5); p.head = Math.sin(phase * .5) * .04; }
+          break;
+        }
         case 'listen': p.head = 0.09 * Math.sin(t * 3.4); p.ear = 0.7; p.armL = p.armR = 0.3; p.lookX = 0; p.sy = 1.015; break;   // all ears, nodding
         case 'reply': p.mouth = 0.55 * Math.abs(Math.sin(t * 9)); p.head = 0.08 * Math.sin(t * 4.5); p.armR = 0.9 + 0.5 * Math.sin(t * 6); p.ex = 'happy'; p.lookX = 0; break;
         case 'cheer': p.armL = p.armR = 2.7 + 0.25 * Math.sin(t * 10); bounce(7, 14); p.ex = 'happy'; p.mouth = 0.8; break;
@@ -1392,6 +1449,8 @@ void main(){
           p.armR = 2.3; p.head = 0.12 * Math.sin(t * 2.6); p.lookX = Math.sin(t * 2.6); p.ex = 'wary'; break;
         // ---------- dances: each animal dances the way it moves ----------
         case 'dance':
+          if (kind === 'snake') { p.tilt = Math.sin(t * 4.5) * 0.22; p.head = -p.tilt * 0.7; p.tail = 3; p.tongue = Math.max(0, Math.sin(t * 6)) * 0.7; p.ex = 'happy'; break; }
+          if (kind === 'bird') { p.armL = p.armR = 1.3 + Math.sin(t * 10); p.head = Math.sin(t * 4) * 0.12; bounce(5, 12); p.ex = 'happy'; break; }
           if (kind === 'frog') { bounce(5, 15); p.tongue = pulse((t * 2.5) % 1, 0.1, 0.5) * 0.9; p.fly = 1; p.puff = 0.5 + 0.5 * Math.sin(t * 10); p.armL = 0.6 + Math.sin(t * 5); p.armR = 0.6 - Math.sin(t * 5); }
           else if (kind === 'monkey') { p.armL = 2.0 + 0.8 * Math.sin(t * 6); p.armR = 2.0 - 0.8 * Math.sin(t * 6); p.tilt = Math.sin(t * 3) * 0.1; p.mouth = 0.55 + 0.4 * Math.abs(Math.sin(t * 6)); p.tongue = 0.35; bounce(3, 6); p.tail = 2; }
           else if (kind === 'cat') { p.tilt = Math.sin(t * 3.2) * 0.1; p.armL = 2.2 * Math.max(0, Math.sin(t * 6)); p.armR = 2.2 * Math.max(0, -Math.sin(t * 6)); p.tail = 2.2; p.tongue = pulse((t * 1.5) % 1, 0.4, 0.7) * 0.5; bounce(3.2, 5); }
@@ -1489,87 +1548,78 @@ void main(){
     // ---- the stage: where the animal is, and whether it stands (with legs) or only peeks in from the bottom ----
     // Normally it peeks from a bottom corner. With "Follow me" it comes out, walks, searches and welcomes you.
     function stageUpdate(cfg, tr, audio, now, pos, S, w) {
-      const T = R.stg || (R.stg = { x: null, s: 0, dir: 1, ph: 0, mode: 'peek', tx: 0, until: 0, moving: false, bubble: '', bubbleUntil: 0, last: now,
-        crossAt: now + 18000, patrol: 0, patrolAt: 0, sawExit: -1e9, sawEnter: -1e9, sawRise: -1e9, sawWave: -1e9, sawThumb: -1e9, sawPeace: -1e9, sawKiss: -1e9, sawTongue: -1e9, home: null, homePos: null, tear: 0, welcomeAt: -1e9, wipeUntil: 0, cryAt: 0, perchAt: now + 14000 + Math.random() * 8000, perch: '', perchUntil: 0, side: 1, pf: 0, fy: 0.988, sc: 1, ftx: 0.988, fsc: 1 });
-      const dt = clamp((now - T.last) / 1000, 0, 0.1); T.last = now;
-      const corner = pos === 'left' ? (S * 0.6) / w : 1 - (S * 0.6) / w;
-      if (T.homePos !== pos) { T.homePos = pos; T.home = corner; if (T.x == null) T.x = corner; }
-      const follow = cfg.follow === true && tr && tr.live;
-      if (follow && R.forcePerch) { T.mode = 'perch'; T.perch = R.forcePerch; T.perchUntil = now + 1e9; T.side = R.forceSide || 1; } // (for tests and the preview sheet)
-      const say = (glyph, ms) => { T.bubble = glyph; T.bubbleUntil = now + ms; };
-      const backAgain = () => { if (tr.present) { T.backT = (T.backT || 0) + dt; return T.backT > 0.9; } T.backT = 0; return false; }; // back for a moment is not enough (the face may just be found again)
-      const welcome = () => { T.mode = 'welcome'; T.welcomeAt = now; T.until = now + 5400; T.wipeUntil = now + (T.tear > 0.08 ? 2200 : 0); }; // you are back: wipe the tears (if any), cheer, then the heart beats
-      if (!follow) { T.mode = 'peek'; T.tx = T.home = corner; }
-      else {
-        if (tr.exitAt > T.sawExit) { T.sawExit = tr.exitAt; T.mode = 'search'; T.patrol = -1; T.patrolAt = 0; say('?', 2400); }
-        if (tr.enterAt > T.sawEnter) { T.sawEnter = tr.enterAt; if (!AWAY_MODES.includes(T.mode)) { welcome(); say('❤', 3000); } }
-        if (tr.riseAt > T.sawRise) { T.sawRise = tr.riseAt; if (T.mode !== 'search' && T.mode !== 'party') { T.mode = 'out'; T.until = now + 5200; say('!', 1800); } }
-        if (tr.waveAt > T.sawWave) { T.sawWave = tr.waveAt; say('👋', 2400); } // it only waves when YOU wave
-        T.saw = T.saw || {};
-        for (const [k, glyph, ms] of GESTURE_BUBBLES) if (tr[k] > (T.saw[k] || -1e9)) { T.saw[k] = tr[k]; say(glyph, ms); } // what it saw you do
-        const beside = clamp(tr.x < 0.5 ? tr.x + 0.3 : tr.x - 0.3, 0.12, 0.88);
-        if (T.mode === 'search') {
-          const P = [0.5, 0.17, 0.83, 0.5, 0.3, 0.7];
-          if (now >= T.patrolAt) { T.patrol = (T.patrol + 1) % P.length; T.patrolAt = now + 1800 + Math.random() * 900; say(['?', '🥺', '?', '💔'][Math.floor(Math.random() * 4)], 1700); }
-          T.tx = P[Math.max(0, T.patrol)];
-          if (tr.away > 3.2) { T.mode = 'miss'; say('🥺', 2200); }
-          if (backAgain()) { welcome(); say('❤', 3000); }
-        } else if (T.mode === 'miss') { // it wants you back: it waits in the middle, reaches out, looks around
-          T.tx = 0.5;
-          if (now > T.bubbleUntil - 150) say(['🥺', '💔', '?', '🥺'][Math.floor(Math.random() * 4)], 2200);
-          if (tr.away > 7) { T.mode = 'cry'; T.cryAt = now; say('😭', 2400); }
-          if (backAgain()) { welcome(); say('❤', 3000); }
-        } else if (T.mode === 'cry') { // it cries, and the screen slowly fills with its tears
-          T.tx = 0.5;
-          if (now > T.bubbleUntil - 150) say(['😭', '💔', '😭', '🥺'][Math.floor(Math.random() * 4)], 2400);
-          if (cfg.awayDance && tr.away > 24) { T.mode = 'party'; say('♪', 4200); }
-          if (backAgain()) { welcome(); say('❤', 3000); }
-        } else if (T.mode === 'party') {
-          T.tx = 0.5; if (now > (T.bubbleUntil - 200)) say('♪', 4200);
-          if (backAgain()) { welcome(); say('❤', 3000); }
-        } else if (T.mode === 'welcome') {
-          T.tx = now < T.wipeUntil ? T.x : beside; // first it wipes its tears, standing still
-          if (now > T.until) { T.mode = tr.rise > 0.3 ? 'out' : 'return'; T.until = now + 3000; }
-        } else if (T.mode === 'out') {
-          T.tx = beside; if (now > T.until && tr.rise < 0.25) T.mode = 'return';
-        } else if (T.mode === 'return') {
-          T.tx = T.home; if (Math.abs(T.x - T.home) < 0.025) T.mode = 'peek';
-        } else if (T.mode === 'perch') { // on your head, your shoulder or your glasses, or rolling around your head
-          const pt = perchTarget(T.perch, T.side, tr, now / 1000);
-          T.tx = pt.x; T.ftx = pt.fy; T.fsc = pt.sc;
-          if (!tr.present || !tr.ml || now > T.perchUntil || tr.riseAt > T.sawRise) { T.mode = 'return'; T.perchAt = now + 25000 + Math.random() * 20000; }
-        } else if (T.mode === 'cross') {
-          if (Math.abs(T.x - T.tx) < 0.02) { T.mode = 'peek'; T.home = T.tx; T.crossAt = now + 20000 + Math.random() * 15000; }
-        } else { // peek: now and then it sneaks along the bottom to the other corner
-          T.tx = T.home;
-          // it does not stand in front of your face: if you are near its corner for a moment, it walks to the other one
-          if (tr.present && Math.abs(T.home - tr.x) < 0.24) {
-            T.overlap = (T.overlap || 0) + dt;
-            if (T.overlap > 0.8) { const cL0 = (S * 0.6) / w; T.overlap = 0; T.mode = 'cross'; T.tx = tr.x < 0.5 ? 1 - cL0 : cL0; T.crossAt = now + 12000; }
-          } else T.overlap = 0;
-          if (cfg.masti !== false && tr.ml && tr.present && tr.fw > 0.05 && now >= T.perchAt && T.tear < 0.02) { // now and then it plays on you
-            const kinds = ['head', 'shoulder', 'glasses', 'orbit'].filter((k) => k !== T.lastPerch);
-            T.perch = T.lastPerch = kinds[Math.floor(Math.random() * kinds.length)]; T.side = Math.random() < 0.5 ? -1 : 1;
-            T.perchUntil = now + (T.perch === 'orbit' ? 6500 : 9000 + Math.random() * 5000); T.mode = 'perch';
-          } else if (now >= T.crossAt && tr.present) { const cL = (S * 0.6) / w; T.mode = 'cross'; T.tx = T.home < 0.5 ? 1 - cL : cL; }
+      const T = R.stg || (R.stg = { x: null, fy: .988, sc: 1, s: 1, pf: 1, dir: 1, ph: 0, mode: 'rest', moving: false, bubble: '', bubbleUntil: 0, last: now, tear: 0, backT: 0, nextTrip: now + 7000, side: pos === 'left' ? -1 : 1, perch: 'corner', commandSeq: cfg.commandSeq, homePos: pos });
+      const dt = clamp((now - T.last) / 1000, 0, .1); T.last = now;
+      const corner = pos === 'left' ? S * .6 / w : 1 - S * .6 / w;
+      if (T.x == null) T.x = corner;
+      const follow = cfg.follow && tr?.live;
+      const bodyReady = follow && tr.present && tr.ml && tr.fw > .05;
+      const kind = cfg.character, persona = PERSONAS[kind];
+      const say = (text, ms = 2200) => { T.bubble = text; T.bubbleUntil = now + ms; };
+      const target = where => where === 'corner' ? { x: corner, fy: .988, sc: 1 } : perchTarget(where, T.side, tr, now / 1000);
+      const trip = where => {
+        const to = target(where), from = { x: T.x, fy: T.fy, sc: T.sc };
+        const shoulder = bodyReady ? target('shoulder') : to;
+        const points = [from];
+        // Ground animals use the shoulder as a foothold instead of gliding through the face.
+        if (persona.gait !== 'fly' && where !== 'corner' && T.perch === 'corner') points.push(shoulder);
+        else if (persona.gait !== 'fly' && where === 'corner' && T.perch !== 'corner' && bodyReady) points.push(shoulder);
+        points.push(to);
+        T.travel = { points, start: now, duration: persona.gait === 'fly' ? 1800 : persona.gait === 'slither' ? 3300 : 2700, to: where };
+        T.mode = 'travel'; T.perch = where; T.nextTrip = now + 12000 + Math.random() * 6000;
+      };
+      // Absence always wins over music, idle actions and manual happy emotes.
+      if (follow && !tr.present) {
+        T.backT = 0; T.travel = null; T.emoteReturnAt = 0; T.command = ''; T.commandSeq = cfg.commandSeq;
+        if (!['search', 'miss', 'cry'].includes(T.mode)) { T.absentAt = now; T.mode = 'search'; say('?'); }
+        const absent = Math.max(tr.away || 0, (now - T.absentAt) / 1000);
+        T.mode = absent > 7 ? 'cry' : absent > 3.2 ? 'miss' : 'search';
+        if (T.mode === 'cry') { T.cryAt ||= now; T.tear = Math.min(.92, T.tear + dt / 25); }
+        T.x = lerp(T.x, .5, Math.min(1, dt * 2)); T.fy = lerp(T.fy, .988, dt * 3); T.sc = lerp(T.sc, .8, dt * 3);
+        T.moving = false; if (now > T.bubbleUntil) say(T.mode === 'cry' ? '😭' : T.mode === 'miss' ? '🥺' : '?');
+        return T;
+      }
+      if (['search', 'miss', 'cry'].includes(T.mode)) {
+        T.backT += dt;
+        if (T.backT < .9) return T; // a briefly reacquired face must not trigger happiness
+        T.mode = 'welcome'; T.welcomeAt = now; T.wipeUntil = now + (T.tear > .02 ? 1800 : 0); T.until = T.wipeUntil + 2800; T.cryAt = 0; say('❤', 3500);
+      }
+      T.tear = Math.max(0, T.tear - dt / 2.6);
+      if (T.mode === 'welcome') { if (now > T.until) { T.mode = 'rest'; if (bodyReady) trip(cfg.charHome); } return T; }
+      if (cfg.commandSeq && cfg.commandSeq !== T.commandSeq) {
+        T.commandSeq = cfg.commandSeq;
+        if (['head', 'shoulder', 'corner'].includes(cfg.command)) { if (bodyReady || cfg.command === 'corner') trip(cfg.command); }
+        else {
+          if (cfg.command === 'roll' && bodyReady) { trip('orbit'); T.emoteReturnAt = now + 7500; }
+          T.command = cfg.command === 'signature' ? persona.action : cfg.command; T.commandAt = now; T.commandUntil = now + (cfg.command === 'sit' ? 7000 : 4000);
         }
       }
-      const standing = T.mode === 'perch' || T.mode === 'search' || T.mode === 'miss' || T.mode === 'cry' || T.mode === 'party' || T.mode === 'welcome' || T.mode === 'out' || (T.mode === 'return' && Math.abs(T.x - T.home) > 0.03);
-      T.s += ((standing ? 1 : 0) - T.s) * Math.min(1, dt * 4.5);
-      const wantMove = T.mode !== 'perch' && Math.abs(T.tx - T.x) > 0.012 && (T.s > 0.7 || T.mode === 'cross' || (T.s < 0.05 && T.mode === 'peek'));
-      const speed = T.mode === 'cross' ? 0.1 : T.mode === 'party' ? 0.5 : T.mode === 'welcome' ? 0.7 : 0.42;
-      T.moving = wantMove;
-      if (wantMove) { const d = T.tx - T.x; T.dir = Math.sign(d) || 1; T.x += Math.sign(d) * Math.min(Math.abs(d), speed * dt); T.ph += dt * (T.mode === 'cross' ? 6 : 13); }
-      else if (!follow) T.x += (corner - T.x) * Math.min(1, dt * 6);
-      // up on you: it glides to its perch (smaller, on your head / shoulder / glasses), and back down to the floor afterwards
-      const perching = T.mode === 'perch';
-      T.pf += ((perching ? 1 : 0) - T.pf) * Math.min(1, dt * (perching ? 5 : 3.5));
-      if (perching) { const k = Math.min(1, dt * 7); T.x += (T.tx - T.x) * k; T.fy += (T.ftx - T.fy) * k; T.sc += (T.fsc - T.sc) * k; T.moving = false; }
-      else { T.fy = lerp(T.fy, 0.988, 0.2); T.sc = lerp(T.sc, 1, 0.2); }
-      // the tears on the screen: they rise while it cries, and drain quickly once you are back
-      if (T.mode === 'cry') T.tear = Math.min(0.92, T.tear + dt / 25); // it fills to nearly the top (92%) and stays there until you are back
-      else if (T.mode === 'search' || T.mode === 'miss' || T.mode === 'party') { /* the water stays */ }
-      else T.tear = Math.max(0, T.tear - dt / 2.6);                    // it drains only when you are back
+      if (T.command && now >= T.commandUntil) T.command = '';
+      if (T.emoteReturnAt && now >= T.emoteReturnAt && bodyReady) { T.emoteReturnAt = 0; trip(cfg.charHome); }
+      if (!follow) { T.travel = null; T.mode = 'rest'; T.perch = 'corner'; T.x = lerp(T.x, corner, dt * 4); T.fy = lerp(T.fy, .988, dt * 4); T.sc = lerp(T.sc, 1, dt * 4); T.moving = false; }
+      else if (R.forcePerch && bodyReady) { T.travel = null; T.mode = 'perch'; T.perch = R.forcePerch; Object.assign(T, perchTarget(T.perch, R.forceSide, tr, now / 1000)); }
+      else if (T.travel) {
+        const route = T.travel, u0 = clamp((now - route.start) / route.duration), steps = route.points.length - 1;
+        const i = Math.min(steps - 1, Math.floor(u0 * steps)), u = smooth(u0 * steps - i);
+        const a = route.points[i], b = i === steps - 1 ? target(route.to) : route.points[i + 1];
+        T.x = lerp(a.x, b.x, u); T.fy = lerp(a.fy, b.fy, u); T.sc = lerp(a.sc, b.sc, u);
+        if (persona.gait === 'fly') T.fy -= Math.sin(u0 * Math.PI) * .12;
+        T.moving = true; T.dir = Math.sign(b.x - a.x) || T.dir; T.ph += dt * 10;
+        if (u0 >= 1) { T.travel = null; T.mode = route.to === 'corner' ? 'rest' : 'perch'; T.moving = false; }
+      } else if (bodyReady && T.perch !== 'corner') {
+        if (cfg.masti === false && !T.emoteReturnAt && T.perch !== cfg.charHome) trip(cfg.charHome);
+        else { const p = target(T.perch); T.x = lerp(T.x, p.x, Math.min(1, dt * 7)); T.fy = lerp(T.fy, p.fy, dt * 7); T.sc = lerp(T.sc, p.sc, dt * 7); T.moving = false; }
+        if (cfg.masti !== false && !T.command && now > T.nextTrip) { const places = ['head', 'shoulder', 'orbit'].filter(p => p !== T.perch); trip(places[Math.floor(Math.random() * places.length)]); }
+      } else if (bodyReady && cfg.charHome !== 'corner') trip(cfg.charHome);
+      else if (cfg.masti !== false && follow && tr.present && now > T.nextTrip) {
+        T.floorTarget = T.x < .5 ? 1 - S * .6 / w : S * .6 / w; T.nextTrip = now + 13000; T.mode = 'walk';
+      }
+      if (T.mode === 'walk') {
+        const d = T.floorTarget - T.x; T.moving = Math.abs(d) > .01; T.dir = Math.sign(d) || T.dir;
+        T.x += Math.sign(d) * Math.min(Math.abs(d), dt * persona.pace); T.ph += dt * 10;
+        if (!T.moving) T.mode = 'rest';
+      }
+      T.x = clamp(T.x, .06, .94); T.fy = clamp(T.fy, .16, .988); T.sc = clamp(T.sc, .26, 1);
       if (now > T.bubbleUntil) T.bubble = '';
       return T;
     }
@@ -1581,12 +1631,14 @@ void main(){
       const follow = cfg.follow && tr && tr.live;
       const begin = (name, dur) => { if (A.name !== name) { A.name = name; A.start = now; } A.dur = dur || ACT_LEN[name] || 2.4; };
       const done = A.name && now - A.start > A.dur * 1000;
+      if (st?.command && !['search','miss','cry','welcome','travel'].includes(st.mode)) { if(A.commandSeq!==st.commandSeq) { A.commandSeq=st.commandSeq; A.name=''; } begin(st.command,4); A.start=st.commandAt; return A; }
       if (follow && st) {
         // where it is decides first: searching, partying, welcoming you back, coming out when you stand up
         if (st.mode === 'search') { begin(st.moving ? 'walk' : 'search', 30); return A; }
         if (st.mode === 'miss') { begin(st.moving ? 'walk' : 'miss', 30); return A; }
-        if (st.mode === 'cry') { const cyc = ((now - st.cryAt) / 1000) % 13; begin(st.moving ? 'walk' : cyc > 10 ? 'heartbreak' : 'cry', 30); return A; }
-        if (st.mode === 'party') { begin('dance', 30); return A; }
+        if (st.mode === 'cry') { begin(st.tear > .78 ? 'float' : 'cry', 30); return A; }
+        if (st.mode === 'travel') { begin(PERSONAS[kind].gait === 'fly' ? 'fly' : PERSONAS[kind].gait === 'slither' ? 'walk' : 'climb', 30); return A; }
+        if (st.command) { begin(st.command, 5); return A; }
         if (st.mode === 'welcome') {
           const cheerEnd = st.wipeUntil + 2600;
           if (now < st.wipeUntil) begin('wipe', 30);
@@ -1604,7 +1656,8 @@ void main(){
         if (tr.tongue) { begin('raspberry', 30); return A; }
         if (A.name === 'raspberry') { A.name = ''; A.next = now + 1200; }
         if (A.name && !done && A.dur < 30 && GESTURE_SET.has(A.name)) return A; // finish what it is doing in answer to you
-        if (st.mode === 'perch') { begin(PERCH_ACT[st.perch] || 'sit', 30); return A; }
+        if (A.dur >= 30 && ['greet','heartbeat'].includes(A.name)) { A.name = ''; A.next = now + 1200; }
+        if (st.mode === 'perch' && st.perch === 'orbit') { begin(kind === 'bird' || kind === 'owl' ? 'fly' : 'roll', 30); return A; }
         // you talk, it listens (ears up, nodding); when you stop, it answers
         const v = audio ? clamp(audio.voice || 0) : 0;
         const T = R.talk || (R.talk = { on: false, since: 0, last: 0, sawReply: -1e9, replyAt: -1e9 });
@@ -1612,8 +1665,8 @@ void main(){
         else if (T.on && now - T.last > 800) { T.on = false; if (T.last - T.since > 1600) T.replyAt = now; }
         if (T.on && now - T.since > 450) { begin('listen', 30); return A; }
         if (T.replyAt > T.sawReply) { T.sawReply = T.replyAt; begin('reply', 2.2); return A; }
-        if (A.name === 'listen' || A.name === 'walk' || A.name === 'search') { A.name = ''; A.next = now + 1500; }
-        if (tr.energy > 0.5 && (A.name !== 'dance' || done)) { begin('dance', 3.5); return A; }
+        if (A.name === 'listen' || A.name === 'walk' || A.name === 'climb' || A.name === 'fly' || A.name === 'search' || A.name === 'cry' || A.name === 'float' || A.name === 'miss' || A.name === 'wipe') { A.name = ''; A.next = now + 1500; }
+        if (tr.energy > 0.5 && (A.name !== 'dance' || done)) { begin(PERSONAS[kind].action, 3.5); return A; }
       }
       if ((mood === 'excited' || mood === 'fun') && (A.name !== 'dance' || done)) { begin('dance', 4); return A; }
       if (A.name && done) { A.name = ''; A.next = now + 2500 + Math.random() * 4500; }
@@ -1650,6 +1703,10 @@ void main(){
         g.strokeStyle = '#ff6f8a'; g.lineWidth = 5.5; g.lineCap = 'round';
         g.beginPath(); g.moveTo(mx, my); g.quadraticCurveTo((mx + ex) / 2 + 3, (my + ey) / 2 + 6, ex, ey); g.stroke();
         ell(g, ex, ey, 5.5, 5, '#ff4f72');
+      } else if (kind === 'snake') {
+        const tip = my + 8 + len * 18;
+        g.strokeStyle = '#ff6284'; g.lineWidth = 2.8; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(mx, my); g.lineTo(mx, tip); g.lineTo(mx - 4, tip + 4); g.moveTo(mx, tip); g.lineTo(mx + 4, tip + 4); g.stroke();
       } else {
         const L = 5 + 17 * len, W = kind === 'dog' ? 7.5 : 6;
         rrect(g, mx - W / 2, my - 2, W, L, W / 2, '#ff6f8a');
@@ -1687,7 +1744,7 @@ void main(){
       let ex = mood === 'excited' || mood === 'fun' ? 'happy' : mood === 'surprise' ? 'wow' : mood === 'sad' ? 'sad'
         : mood === 'suspense' ? 'wary' : mood === 'awkward' ? 'awk' : 'idle';
       if (pz.ex) ex = pz.ex;
-      const rise = (1 - easeOutBack((now - R.charStart) / 900)) * 125; // pops up from the bottom with a little bounce
+      const rise = stage.pf > .2 ? 0 : (1 - easeOutBack((now - R.charStart) / 900)) * 125; // pops up from the bottom with a little bounce
       let bob = Math.sin(t * 1.7) * 1.2 + lvl * 2.5;                  // breathing
       let tilt = pz.tilt, lift = pz.hop;
       if (!act) {
@@ -1724,10 +1781,10 @@ void main(){
       const blink = (now % 3600) < 130 && ex !== 'happy' && !(cfg.follow && tr && tr.live && tr.bs); // it blinks by itself, unless it is copying your blinks
       const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2) * pz.tail);
       const dark = '#23222b';
-      const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin';
+      const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin', isBird = kind === 'bird', isSnake = kind === 'snake';
 
       // The animal is drawn on its own small canvas so it can be lit by your light and get a soft shadow.
-      const cw = Math.ceil(Sfull * 1.7), ch = Math.ceil(Sfull * 1.95);
+      const cw = Math.ceil(Sfull * (act === 'roll' ? 2.4 : 1.7)), ch = Math.ceil(Sfull * (act === 'roll' ? 2.4 : 1.95));
       const groundIn = ch + 2 * u - 8 * u * sS; // where the feet are inside the little canvas
       if (!R.cv || R.cv.width !== cw || R.cv.height !== ch) { R.cv = makeScratch(cw, ch); R.cvg = R.cv.getContext('2d'); }
       const cg0 = g;
@@ -1738,17 +1795,18 @@ void main(){
       g.save();
       g.translate(cw / 2, groundIn + rise * u * (1 - sS));
       g.scale(u * (1 - 0.2 * sS), u * (1 - 0.2 * sS));
-      const legL = 44 * sS;
+      const legL = (act === 'sit' ? 25 : 44) * sS;
       g.translate(0, -legL + bob - lift);
-      g.rotate(tilt);
+      if (act === 'roll') { g.translate(0,-55); g.rotate(tilt); g.translate(0,55); }
+      else g.rotate(tilt);
       g.scale(pz.sx, pz.sy);
       g.lineCap = 'round'; g.lineJoin = 'round';
 
       // legs: when it stands, you see them (and they walk)
-      if (sS > 0.03) {
-        const swing = stage.moving ? Math.sin(stage.ph) * 0.55 : act === 'hang' ? 0.4 * Math.sin(t * 3.2) : act === 'roll' ? 0.9 * Math.sin(t * 9) : 0;
+      if (sS > 0.03 && !isSnake) {
+        const swing = stage.moving ? Math.sin(stage.ph) * (PERSONAS[kind].gait === 'hop' ? .2 : .55) : act === 'hang' ? 0.4 * Math.sin(t * 3.2) : act === 'roll' ? 0.9 * Math.sin(t * 9) : 0;
         const LEG = { cat: ['#f4a259', '#fff0dc', 11, 6], dog: ['#c98d5c', '#f5dfc3', 11, 6], bunny: ['#f6f1ee', '#ffffff', 15, 6], panda: ['#26262b', '#26262b', 12, 6.5], owl: ['#f2a33a', '#f2a33a', 11, 3.5],
-          fox: ['#ee7b30', '#3a2418', 11, 6], penguin: ['#f2a33a', '#f2a33a', 14, 4], lion: ['#f2b96b', '#ffe9c6', 12, 6], monkey: ['#8d5b3d', '#f1cfa6', 12, 6], frog: ['#6cc24a', '#d9f5b8', 16, 5], unicorn: ['#fbeaff', '#ffd54a', 10, 5.5], robot: ['#5d6b7c', '#b4bfcc', 14, 5] }[kind];
+          fox: ['#ee7b30', '#3a2418', 11, 6], penguin: ['#f2a33a', '#f2a33a', 14, 4], lion: ['#f2b96b', '#ffe9c6', 12, 6], monkey: ['#8d5b3d', '#f1cfa6', 12, 6], frog: ['#6cc24a', '#d9f5b8', 16, 5], unicorn: ['#fbeaff', '#ffd54a', 10, 5.5], robot: ['#5d6b7c', '#b4bfcc', 14, 5], bird: ['#ffb853', '#ffb853', 11, 3.5] }[kind];
         for (const sg of [-1, 1]) {
           g.save();
           g.translate(sg * 14, 4); g.rotate(sg * swing);
@@ -1779,7 +1837,15 @@ void main(){
         g.restore();
       }
       // body
-      if (isRobot) {
+      if (isSnake) {
+        ell(g, 0, 4 + legL, 44, 16, P.dark);
+        ell(g, 0, -1 + legL, 38, 13, P.fur);
+        ell(g, -4, -5 + legL, 24, 7, P.light);
+        g.strokeStyle = P.fur; g.lineWidth = 23; g.beginPath(); g.moveTo(8, -1 + legL); g.bezierCurveTo(28, -23, -22, -26, -2, -46); g.stroke();
+        g.strokeStyle = P.light; g.lineWidth = 10; g.beginPath(); g.moveTo(7, -2 + legL); g.bezierCurveTo(18, -22, -12, -27, -2, -44); g.stroke();
+        const tailRaise = pz.armR + (ex === 'happy' ? 0.6 : 0);
+        g.strokeStyle = P.dark; g.lineWidth = 10; g.beginPath(); g.moveTo(27, 3 + legL); g.quadraticCurveTo(47, -2 + legL, 46 + Math.sin(t * 5) * 4, -8 + legL - tailRaise * 15); g.stroke();
+      } else if (isRobot) {
         rrect(g, -34, -50, 68, 56, 12, P.fur);
         rrect(g, -22, -38, 44, 30, 8, P.dark);
         for (let k = 0; k < 3; k++) ell(g, -12 + k * 12, -23, 3.4, 3.4, ['#5de1ff', '#ffd54a', '#ff7eb6'][k] + (Math.sin(t * 3 + k * 2) > 0 ? '' : '88'));
@@ -1801,10 +1867,11 @@ void main(){
       }
       // arms (flippers, wings, paws): raised by the action; a prop in the right hand
       const waveD = !act && ex === 'happy' ? Math.sin(t * 9) * 0.5 : 0;
-      for (const s of [-1, 1]) {
+      for (const s of isSnake ? [] : [-1, 1]) {
         const raise = (s < 0 ? pz.armL : pz.armR) + (!act && ex === 'happy' ? 0.9 + waveD * s : 0);
         g.save(); g.translate(s * (isRobot ? 38 : 30), -20); g.rotate(-s * (0.25 + raise));
         if (isRobot) rrect(g, -6, -2, 12, 28, 6, P.dark);
+        else if (isBird) { ell(g, 0, 9, 11, 22, P.dark); for (let k = 0; k < 3; k++) ell(g, -5 + k * 5, 18, 3.5, 12, P.fur); }
         else ell(g, 0, 8, isPeng ? 7 : 9, 17, kind === 'panda' || isPeng ? P.dark : P.fur);
         if (s > 0 && pz.prop === 'bamboo') { g.fillStyle = '#7fc96a'; g.fillRect(-3, 8, 6, 30); g.fillStyle = '#4e9a43'; for (const yy of [14, 26]) g.fillRect(-3.6, yy, 7.2, 2); g.fillStyle = '#9ad982'; g.beginPath(); g.ellipse(6, 10, 7, 3, -0.6, 0, TAU); g.fill(); }
         if (s > 0 && pz.prop === 'carrot') { tri(g, [-5, 8], [5, 8], [0, 34], '#ff8a3d'); g.fillStyle = '#58b947'; g.fillRect(-3, 3, 2, 6); g.fillRect(1, 2, 2, 7); }
@@ -1867,12 +1934,18 @@ void main(){
         g.strokeStyle = P.dark; g.lineWidth = 3; g.beginPath(); g.moveTo(0, -92); g.lineTo(0, -108); g.stroke();
         ell(g, 0, -111, 5.5, 5.5, Math.sin(t * 4) > 0 ? '#ff5a5a' : '#8a2a2a');
         for (const s of [-1, 1]) rrect(g, s * 40 - 4, -72, 8, 20, 4, P.dark);
+      } else if (isBird) {
+        for (let k = 0; k < 3; k++) { g.save(); g.translate(-9 + k * 8, -87); g.rotate(-0.35 + k * 0.2 + pz.ear * 0.2); ell(g, 0, -9, 5, 15, k % 2 ? P.light : P.fur); g.restore(); }
       }
 
       // head shape
       if (isRobot) {
         rrect(g, -36, -92, 72, 60, 16, P.fur);
         rrect(g, -30, -86, 60, 34, 10, '#2a3340');
+      } else if (isSnake) {
+        ell(g, 0, -62, 37, 25, P.fur); ell(g, 0, -49, 27, 9, P.light);
+      } else if (isBird) {
+        ell(g, 0, -62, 34, 32, P.fur); ell(g, 0, -55, 28, 20, P.light);
       } else if (isFrog) {
         ell(g, 0, -58, 40, 29, P.fur);
         for (const s of [-1, 1]) ell(g, s * 21, -84, 15, 15, P.fur); // eyes bulge on top of the head
@@ -1961,7 +2034,7 @@ void main(){
       } else if (kind === 'owl') {
         tri(g, [-5, -52], [5, -52], [0, -42 + 3 * open], '#f2a33a');
         if (open > 0.1) tri(g, [-4, -45], [4, -45], [0, -38 - 4 * open], '#e0832a');
-      } else if (isPeng) {
+      } else if (isPeng || isBird) {
         tri(g, [-9, -54], [9, -54], [0, -42], '#f2a33a');
         if (ex === 'happy' || open > 0.2) tri(g, [-6, -46], [6, -46], [0, -38 - 3 * open], '#e0832a');
       } else if (isFrog) {
@@ -2007,12 +2080,37 @@ void main(){
         }
       }
       // the tongue (frogs shoot theirs at the fly)
-      if (!isRobot && (!(kind === 'owl' || isPeng) || pz.tongue > 0.5)) { // (a bird shows it only when copying yours)
+      if (!isRobot && (!(kind === 'owl' || isPeng || isBird) || pz.tongue > 0.5)) { // (a bird shows it only when copying yours)
         const tx = (kind === 'cat' && act === 'lick') ? 5 : 0;
-        drawTongue(g, kind, pz.tongue, tx, isFrog ? -46 : (kind === 'owl' || isPeng) ? -41 : my + 4 + (open > 0.15 ? 4 : 0), pz.flyAt || null);
+        drawTongue(g, kind, pz.tongue, tx, isFrog ? -46 : (kind === 'owl' || isPeng || isBird) ? -41 : my + 4 + (open > 0.15 ? 4 : 0), pz.flyAt || null);
       }
       // cheeks
       if (!isRobot && (ex === 'happy' || ex === 'love' || ex === 'awk' || kind === 'bunny' || isPeng || kind === 'unicorn')) for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');
+      if (cfg.outfit === 'hoodie') { rrect(g, -28, -38, 56, 30, 12, '#8878d5'); g.strokeStyle = '#e9dcff'; g.lineWidth = 2; g.beginPath(); g.moveTo(-7, -34); g.lineTo(-7, -15); g.moveTo(7, -34); g.lineTo(7, -15); g.stroke(); }
+      if (cfg.outfit === 'bow') { tri(g, [-2,-35],[-20,-45],[-20,-25], '#fa718d'); tri(g,[2,-35],[20,-45],[20,-25],'#fa718d'); ell(g,0,-35,5,5,'#ffe18a'); }
+      if (cfg.outfit === 'glasses') { g.strokeStyle = '#544277'; g.lineWidth = 3; for(const x of [-14,14]) { g.beginPath(); g.arc(x,ey,11,0,TAU); g.stroke(); } g.beginPath(); g.moveTo(-3,ey); g.lineTo(3,ey); g.stroke(); }
+      if (cfg.outfit === 'astronaut') { g.strokeStyle = 'rgba(185,227,255,.8)'; g.lineWidth = 4; g.beginPath(); g.ellipse(0,-66,43,48,0,0,TAU); g.stroke(); rrect(g,-28,-34,56,11,5,'#dbe9ff'); ell(g,23,-29,3,3,ex==='cry'?'#68a8ff':'#85efa1'); }
+      if (cfg.outfit === 'wizard') { tri(g,[-35,-92],[33,-92],[3,-148],'#7161bc'); rrect(g,-35,-95,70,7,3,'#a69ade'); for(let k=0;k<5;k++) { const a=t*1.5+k*TAU/5; ell(g,Math.cos(a)*48,-75+Math.sin(a)*35,2+(ex==='happy'?1:0),2,'#ffe18a'); } }
+      if (cfg.outfit === 'superhero') { g.save(); g.globalAlpha=.85; g.fillStyle='#ee547c'; g.beginPath(); g.moveTo(-25,-31); g.quadraticCurveTo(-43-Math.sin(t*4)*8,5,-34,18); g.lineTo(30,18); g.quadraticCurveTo(43+Math.sin(t*4)*8,5,25,-31); g.closePath(); g.fill(); g.restore(); heart(g,0,-21,8,ex==='cry'?'#84adff':'#ffe18a'); }
+      // Accessories move with the head and leave the eyes/mouth clear for reactions.
+      if (cfg.outfit === 'party') {
+        tri(g, [-18, -91], [18, -91], [2, -130], '#a78bfa');
+        g.strokeStyle = '#fde68a'; g.lineWidth = 3;
+        for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-13 + k * 4, -97 - k * 8); g.lineTo(13 - k * 3, -97 - k * 8); g.stroke(); }
+        ell(g, 2, -130, 4, 4, '#fb7185');
+      } else if (cfg.outfit === 'crown') {
+        g.beginPath(); g.moveTo(-22, -94); g.lineTo(-25, -114); g.lineTo(-11, -104);
+        g.lineTo(0, -120); g.lineTo(11, -104); g.lineTo(25, -114); g.lineTo(22, -94); g.closePath();
+        g.fillStyle = '#fbbf24'; g.fill(); g.strokeStyle = '#b45309'; g.lineWidth = 1.5; g.stroke();
+        for (const x of [-13, 0, 13]) ell(g, x, -99, 2.5, 2.5, x ? '#a78bfa' : '#fb7185');
+      } else if (cfg.outfit === 'scarf') {
+        rrect(g, -23, -35, 46, 10, 5, '#fb7185');
+        g.save(); g.translate(12, -27); g.rotate(0.12 + Math.sin(t * 2) * 0.07);
+        rrect(g, -5, 0, 10, 24, 3, '#f43f5e');
+        g.strokeStyle = '#fda4af'; g.lineWidth = 2;
+        for (const y of [7, 14, 21]) { g.beginPath(); g.moveTo(-4, y); g.lineTo(4, y); g.stroke(); }
+        g.restore();
+      }
       g.restore(); // the head
       g.restore(); // the whole animal
 
@@ -2128,7 +2226,7 @@ void main(){
         if (follow) R.followOn = now; // the camera hook asks for face results only while this is fresh
         R.gestOn = cfg.gestures !== false; R.sensK = { low: 1.25, normal: 1, high: 0.8 }[cfg.sens] || 1;
         const tr = follow ? (opts.track || trackFrame(src, now)) : IDLE_TRACK;
-        const party = follow && !tr.present && cfg.awayDance;
+        const party = false; // no celebration while the person is absent
         if (follow) {
           const tx = tr.present ? tr.x : 0.5, ty = tr.present ? clamp(tr.y, 0.28, 0.62) : 0.46;
           R.followX = lerp(R.followX, tx, 0.3); R.followY = lerp(R.followY, ty, 0.22);
@@ -2221,12 +2319,12 @@ void main(){
         if (cfg.character !== 'none') {
           const cpos = flip ? (cfg.charPos === 'left' ? 'right' : 'left') : cfg.charPos;
           const ck = cfg.character + '|' + cpos;
-          if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; R.cAct = null; }
+          if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; R.cAct = null; R.stg = null; }
           R.forcePerch = opts.perch || ''; R.forceSide = opts.perchSide || 1;
           const stg = stageUpdate(cfg, tr, audio, now, cpos, h * 0.4, w);
           const tearLv = opts.charAct === 'cry' ? (opts.tear == null ? 0.7 : opts.tear) : opts.charAct ? 0 : stg.tear;
           if (tearLv > 0.01) drawTears(g, w, h, tearLv, now); // the water is behind the animal, which floats up in it
-          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: opts.charAct ? null : stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic, tear: tearLv });
+          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, charStand: opts.charStand, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic, tear: tearLv });
         } else R.charKey = '';
       }
       if (opts.preview) {
@@ -2322,7 +2420,7 @@ void main(){
   }
 
   globalThis.MemeFx = Object.freeze({
-    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, FREE_CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
+    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, OUTFITS, FREE_OUTFITS, PRO_OUTFITS, MAX_OUTFITS, PERSONAS, COMMANDS, FREE_CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
     sanitize, lockedParts, createRenderer, drawSample, simulate, ACTIONS, FIX_OFF: { lamp: 0.175, discoball: 0.14, lantern: 0.13, chandelier: 0.13, moon: 0.12, star: 0.11, fairy: 0.06, spotlight: 0.07 },
   });
 })();

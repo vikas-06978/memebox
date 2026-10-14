@@ -1,0 +1,2152 @@
+{
+  "fx_outfit": {
+    "message": "पहनावा"
+  },
+  "fx_outfit_none": {
+    "message": "कोई नहीं"
+  },
+  "fx_outfit_party": {
+    "message": "🎉 पार्टी टोपी"
+  },
+  "fx_outfit_crown": {
+    "message": "👑 मुकुट"
+  },
+  "fx_outfit_scarf": {
+    "message": "🧣 मफलर"
+  },
+  "extName": {
+    "message": "MemeBox: कॉल के लिए मीम साउंडबोर्ड और वॉइस चेंजर"
+  },
+  "extShortName": {
+    "message": "MemeBox"
+  },
+  "extDesc": {
+    "message": "कॉल के लिए मीम साउंडबोर्ड और वॉइस चेंजर: Google Meet, Zoom, Teams, Discord पर अपने माइक में मीम साउंड और साउंड इफ़ेक्ट चलाएँ।"
+  },
+  "actionTitle": {
+    "message": "MemeBox: इस टैब की आवाज़ अपनी कॉल में भेजें"
+  },
+  "cmdFav1": {
+    "message": "पसंदीदा 1 चलाएँ"
+  },
+  "cmdFav2": {
+    "message": "पसंदीदा 2 चलाएँ"
+  },
+  "cmdFav3": {
+    "message": "पसंदीदा 3 चलाएँ"
+  },
+  "cmdFav4": {
+    "message": "पसंदीदा 4 चलाएँ"
+  },
+  "cmdFav5": {
+    "message": "पसंदीदा 5 चलाएँ"
+  },
+  "cmdFav6": {
+    "message": "पसंदीदा 6 चलाएँ"
+  },
+  "cmdFav7": {
+    "message": "पसंदीदा 7 चलाएँ"
+  },
+  "cmdFav8": {
+    "message": "पसंदीदा 8 चलाएँ"
+  },
+  "cmdFav9": {
+    "message": "पसंदीदा 9 चलाएँ"
+  },
+  "cmdStopAll": {
+    "message": "सारे मीम रोकें"
+  },
+  "cmdToggleUi": {
+    "message": "😂 बटन दिखाएँ / छिपाएँ"
+  },
+  "join_first": {
+    "message": "पहले कॉल जॉइन करें, फिर 😂 दबाएँ"
+  },
+  "err_reload": {
+    "message": "MemeBox अपडेट हुआ है, कॉल वाला टैब रीलोड करें"
+  },
+  "err_play": {
+    "message": "नहीं चल पाया: $1"
+  },
+  "muted_nobody": {
+    "message": "आप म्यूट हैं, मीम भी नहीं सुनाई देंगे। अनम्यूट करके फिर से चलाएँ।"
+  },
+  "mic_test_caption": {
+    "message": "🔔 माइक टेस्ट"
+  },
+  "no_lines": {
+    "message": "अभी कोई लाइन नहीं है, Options में जोड़ें"
+  },
+  "slot_empty": {
+    "message": "Alt+$1 पर अभी कुछ नहीं, Options में पसंदीदा स्लॉट चुनें"
+  },
+  "stopped": {
+    "message": "⏹ रोक दिया"
+  },
+  "ui_hidden": {
+    "message": "MemeBox छिप गया, वापस दिखाने के लिए Alt+M दबाएँ"
+  },
+  "ui_shown": {
+    "message": "MemeBox वापस आ गया 😂"
+  },
+  "tab_on": {
+    "message": "📺 आपके दूसरे टैब की आवाज़ कॉल में जा रही है"
+  },
+  "tab_off": {
+    "message": "📺 दूसरे टैब की आवाज़ रोक दी"
+  },
+  "tab_err": {
+    "message": "उस टैब की आवाज़ इस्तेमाल नहीं हो पाई: $1"
+  },
+  "tab_bar": {
+    "message": "📺 दूसरे टैब की आवाज़ आपके माइक में चल रही है"
+  },
+  "tab_stop": {
+    "message": "⏹ टैब रोकें"
+  },
+  "st_none": {
+    "message": "अभी कोई कॉल नहीं, कॉल जॉइन करें, फिर 😂 दबाएँ"
+  },
+  "st_suspended": {
+    "message": "मीम चालू करने के लिए पेज पर कहीं भी एक बार क्लिक करें"
+  },
+  "st_muted": {
+    "message": "आप म्यूट हैं, अनम्यूट करने तक मीम नहीं सुनाई देंगे"
+  },
+  "st_live": {
+    "message": "मीम आपके माइक में जा रहे हैं"
+  },
+  "fab_label": {
+    "message": "MemeBox: कोई भी मीम चलाएँ"
+  },
+  "fab_tip": {
+    "message": "क्लिक: कोई भी मीम · दबाए रखें या राइट-क्लिक: पैनल · खींचकर हिलाएँ"
+  },
+  "list_btn": {
+    "message": "चलाने के लिए मीम चुनें"
+  },
+  "search_ph": {
+    "message": "लाइनें खोजें…"
+  },
+  "btn_random": {
+    "message": "🎲 कोई भी"
+  },
+  "btn_mic_test": {
+    "message": "🔔 माइक टेस्ट"
+  },
+  "btn_mic_test_tip": {
+    "message": "आपके माइक में छोटी सी डिंग-डॉन्ग बजती है, कॉल में किसी से पूछें कि सुनाई दी या नहीं"
+  },
+  "btn_stop_all": {
+    "message": "⏹ सब रोकें"
+  },
+  "volume": {
+    "message": "मीम की आवाज़"
+  },
+  "monitor_label": {
+    "message": "🎧 मीम खुद भी सुनें"
+  },
+  "monitor_tip": {
+    "message": "कॉल को मीम हमेशा आपके माइक से मिलता है। यह सिर्फ़ आपके स्पीकर पर धीमी कॉपी जोड़ता है।"
+  },
+  "monitor_on": {
+    "message": "🎧 आप और कॉल दोनों मीम सुनेंगे"
+  },
+  "monitor_off": {
+    "message": "🔇 अब सिर्फ़ कॉल मीम सुनेगी"
+  },
+  "monitor_on_tip": {
+    "message": "आप भी मीम सुन रहे हैं (बंद करने के लिए क्लिक करें, कॉल फिर भी सुनेगी)"
+  },
+  "monitor_off_tip": {
+    "message": "आप मीम नहीं सुन रहे (सुनने के लिए क्लिक करें, कॉल तो सुनेगी ही)"
+  },
+  "duck_label": {
+    "message": "🦆 ऑटो-डक"
+  },
+  "duck_tip": {
+    "message": "जब आप बोलते हैं तो मीम धीमे हो जाते हैं"
+  },
+  "options": {
+    "message": "सेटिंग्स"
+  },
+  "close": {
+    "message": "बंद करें (Esc)"
+  },
+  "panel_foot": {
+    "message": "लाइन पर क्लिक = चलाएँ · 😂 कोई भी · Alt+1…9 पसंदीदा · Alt+0 रोकें · Alt+M छिपाएँ"
+  },
+  "timers_on": {
+    "message": "⏰ टाइम वाली लाइनें चालू हैं (कॉल खुली रहने तक): $1"
+  },
+  "chip_all": {
+    "message": "सभी"
+  },
+  "chip_star": {
+    "message": "पसंदीदा"
+  },
+  "chip_recent": {
+    "message": "हाल के"
+  },
+  "cat_general": {
+    "message": "आम"
+  },
+  "cat_college": {
+    "message": "कॉलेज"
+  },
+  "cat_cricket": {
+    "message": "क्रिकेट"
+  },
+  "cat_effects": {
+    "message": "साउंड इफ़ेक्ट"
+  },
+  "cat_office": {
+    "message": "ऑफ़िस"
+  },
+  "cat_party": {
+    "message": "पार्टी"
+  },
+  "cat_clips": {
+    "message": "क्लिप्स"
+  },
+  "cat_mine": {
+    "message": "मेरी लाइनें"
+  },
+  "empty_star": {
+    "message": "अभी कोई पसंदीदा नहीं, किसी लाइन पर ☆ दबाएँ"
+  },
+  "empty_recent": {
+    "message": "अभी तक कुछ नहीं चलाया"
+  },
+  "empty_search": {
+    "message": "कोई लाइन नहीं मिली।"
+  },
+  "tag_clip": {
+    "message": "अपलोड की गई क्लिप"
+  },
+  "tag_sfx": {
+    "message": "इफ़ेक्ट"
+  },
+  "tag_lang": {
+    "message": "भाषा"
+  },
+  "tag_shortcut": {
+    "message": "शॉर्टकट"
+  },
+  "play": {
+    "message": "चलाएँ"
+  },
+  "star": {
+    "message": "पसंदीदा में जोड़ें"
+  },
+  "unstar": {
+    "message": "पसंदीदा से हटाएँ"
+  },
+  "pp_checking": {
+    "message": "जाँच हो रही है…"
+  },
+  "pp_send": {
+    "message": "🎙 इस टैब की आवाज़ मेरी कॉल में भेजें"
+  },
+  "pp_stop": {
+    "message": "⏹ इस टैब को भेजना बंद करें"
+  },
+  "pp_how": {
+    "message": "यह कैसे काम करता है?"
+  },
+  "pp_how1": {
+    "message": "दूसरे टैब में अपनी कॉल जॉइन करें (Meet, Zoom वेब, Teams वेब या Discord वेब)।"
+  },
+  "pp_how2": {
+    "message": "इस टैब में YouTube वीडियो या Instagram रील मज़ेदार हिस्से से चलाएँ।"
+  },
+  "pp_how3": {
+    "message": "“इस टैब की आवाज़ भेजें” दबाएँ, कॉल में सब इसे आपके माइक से सुनेंगे।"
+  },
+  "pp_how4": {
+    "message": "हो जाने पर ⏹ दबाएँ, या 😂 पैनल में ⏹ इस्तेमाल करें।"
+  },
+  "pp_how_note": {
+    "message": "कुछ भी डाउनलोड या रिकॉर्ड नहीं होता, आवाज़ सिर्फ़ लाइव आपके माइक में मिलाई जाती है।"
+  },
+  "pp_settings": {
+    "message": "⚙️ लाइनें, क्लिप्स और सेटिंग्स"
+  },
+  "pp_no_call": {
+    "message": "पहले (दूसरे टैब में) कॉल जॉइन करें, फिर वीडियो वाले टैब पर आकर यहाँ क्लिक करें।"
+  },
+  "pp_this_is_call": {
+    "message": "यह आपका कॉल टैब है। उसकी आवाज़ भेजने के लिए YouTube / Instagram वाला टैब खोलें और वहाँ MemeBox पर क्लिक करें। मीम के लिए इस पेज पर 😂 इस्तेमाल करें।"
+  },
+  "pp_sending": {
+    "message": "✅ इस टैब की आवाज़ आपकी कॉल में जा रही है।"
+  },
+  "pp_replace": {
+    "message": "अभी दूसरा टैब भेजा जा रहा है। इसे भेजने पर वह बदल जाएगा।"
+  },
+  "pp_start_video": {
+    "message": "वीडियो को मज़ेदार हिस्से से चलाएँ, फिर:"
+  },
+  "pp_connecting": {
+    "message": "जोड़ रहे हैं…"
+  },
+  "pp_join_unmute": {
+    "message": "पहले कॉल जॉइन करें और अनम्यूट करें।"
+  },
+  "pp_send_failed": {
+    "message": "यह टैब नहीं भेजा जा सका: $1"
+  },
+  "pp_cant_capture": {
+    "message": "Chrome इस टैब की आवाज़ लेने नहीं दे रहा: $1"
+  },
+  "pp_error": {
+    "message": "गड़बड़ी: $1"
+  },
+  "op_sub": {
+    "message": "आपकी लाइनें, क्लिप्स, पैक और पार्टी मोड। सब कुछ इसी ब्राउज़र में रहता है।"
+  },
+  "op_nav_lines": {
+    "message": "लाइनें"
+  },
+  "op_nav_clips": {
+    "message": "क्लिप्स"
+  },
+  "op_nav_packs": {
+    "message": "पैक"
+  },
+  "op_nav_party": {
+    "message": "पार्टी मोड"
+  },
+  "op_lines": {
+    "message": "लाइनें"
+  },
+  "op_text": {
+    "message": "कैप्शन में दिखने वाला टेक्स्ट"
+  },
+  "op_text_ph": {
+    "message": "जैसे: भाई तू रहने दे"
+  },
+  "op_say": {
+    "message": "ऐसे बोलें (वैकल्पिक, जैसे Hinglish लाइनों के लिए देवनागरी)"
+  },
+  "op_lang": {
+    "message": "भाषा"
+  },
+  "op_tone": {
+    "message": "टोन"
+  },
+  "op_category": {
+    "message": "कैटेगरी"
+  },
+  "op_shortcut": {
+    "message": "शॉर्टकट"
+  },
+  "op_line_volume": {
+    "message": "इस लाइन की आवाज़"
+  },
+  "op_add_line": {
+    "message": "लाइन जोड़ें"
+  },
+  "op_save_changes": {
+    "message": "बदलाव सेव करें"
+  },
+  "op_preview": {
+    "message": "▶ सुनें"
+  },
+  "op_cancel": {
+    "message": "रद्द करें"
+  },
+  "op_search": {
+    "message": "खोजें…"
+  },
+  "op_all_categories": {
+    "message": "सभी कैटेगरी"
+  },
+  "op_count": {
+    "message": "$2 में से $1 लाइनें"
+  },
+  "op_col_line": {
+    "message": "लाइन"
+  },
+  "op_col_about": {
+    "message": "जानकारी"
+  },
+  "op_col_actions": {
+    "message": "विकल्प"
+  },
+  "op_shortcut_hint": {
+    "message": "Alt+1…3 और Alt+0 हर जगह चलते हैं। की बदलने या Alt+4…9 जोड़ने के लिए यहाँ जाएँ:"
+  },
+  "op_none": {
+    "message": "कोई नहीं"
+  },
+  "op_no_lines": {
+    "message": "अभी कोई लाइन नहीं। ऊपर जोड़ें, या नीचे से कोई पैक जोड़ें।"
+  },
+  "op_preview_tip": {
+    "message": "यहीं सुनें (सिर्फ़ आपको सुनाई देगा)"
+  },
+  "op_edit": {
+    "message": "बदलें"
+  },
+  "op_delete": {
+    "message": "हटाएँ"
+  },
+  "op_err_text": {
+    "message": "कृपया लाइन का टेक्स्ट लिखें"
+  },
+  "op_saved": {
+    "message": "लाइन सेव हो गई"
+  },
+  "op_added": {
+    "message": "लाइन जुड़ गई"
+  },
+  "op_confirm_delete": {
+    "message": "“$1” हटाएँ?"
+  },
+  "op_deleted": {
+    "message": "हटा दिया"
+  },
+  "op_err_preview": {
+    "message": "सुनाई नहीं दिया: $1"
+  },
+  "op_err_clip_missing": {
+    "message": "क्लिप नहीं मिली, दोबारा जोड़ें"
+  },
+  "op_clips": {
+    "message": "क्लिप जोड़ें"
+  },
+  "op_clips_hint": {
+    "message": "ऑडियो फ़ाइल या वीडियो (सिर्फ़ उसकी आवाज़ रखी जाती है), सीधा फ़ाइल लिंक, या अपनी रिकॉर्डिंग इस्तेमाल करें। फिर काटें, सेव की गई क्लिप ज़्यादा से ज़्यादा 1 MB की होती है।"
+  },
+  "op_choose_file": {
+    "message": "📁 फ़ाइल चुनें"
+  },
+  "op_link_ph": {
+    "message": "https://…/sound.mp3  (सीधा .mp3 .mp4 .wav .ogg .webm लिंक)"
+  },
+  "op_fetch": {
+    "message": "🔗 लाएँ"
+  },
+  "op_record": {
+    "message": "🎙 रिकॉर्ड करें (10 सेकंड)"
+  },
+  "op_recording": {
+    "message": "⏹ रिकॉर्डिंग रोकें ($1 सेकंड बाकी)"
+  },
+  "op_my_recording": {
+    "message": "मेरी रिकॉर्डिंग"
+  },
+  "op_video_sites": {
+    "message": "YouTube, Instagram और दूसरी वीडियो साइटें कभी डाउनलोड नहीं होतीं, उन्हें टूलबार बटन → “इस टैब की आवाज़ भेजें” से लाइव चलाएँ।"
+  },
+  "op_start": {
+    "message": "शुरू"
+  },
+  "op_end": {
+    "message": "अंत"
+  },
+  "op_preview_sel": {
+    "message": "▶ चुना हुआ हिस्सा सुनें"
+  },
+  "op_stop": {
+    "message": "⏹ रोकें"
+  },
+  "op_caption": {
+    "message": "कैप्शन टेक्स्ट"
+  },
+  "op_tone_speed": {
+    "message": "टोन (सिर्फ़ स्पीड)"
+  },
+  "op_save_clip": {
+    "message": "💾 क्लिप सेव करें"
+  },
+  "op_selection": {
+    "message": "$1 → $2 ($3 सेकंड)"
+  },
+  "op_fit": {
+    "message": "$1 kHz पर, 1 MB से कम में सेव होगी"
+  },
+  "op_too_long": {
+    "message": "1 MB के लिए बहुत लंबी, लगभग $1 सेकंड से कम रखें"
+  },
+  "op_clip_saved": {
+    "message": "क्लिप सेव हो गई ($1 KB)"
+  },
+  "op_err_type": {
+    "message": "ऑडियो या वीडियो फ़ाइल चुनें (MP3, WAV, OGG, M4A, MP4, WEBM)"
+  },
+  "op_err_no_audio": {
+    "message": "उस फ़ाइल में कोई आवाज़ नहीं मिली"
+  },
+  "op_err_too_big_source": {
+    "message": "फ़ाइल बहुत बड़ी है (काटने से पहले ज़्यादा से ज़्यादा 50 MB)"
+  },
+  "op_err_url": {
+    "message": "https:// से शुरू होने वाला पूरा लिंक डालें"
+  },
+  "op_err_video_page": {
+    "message": "यह वीडियो पेज है, फ़ाइल नहीं, MemeBox कभी YouTube, Instagram या दूसरी वीडियो साइट से डाउनलोड नहीं करता। इसे टैब में खोलें और टूलबार बटन → “इस टैब की आवाज़ भेजें” इस्तेमाल करें।"
+  },
+  "op_err_not_file": {
+    "message": "लिंक .mp3, .mp4, .wav, .ogg या .webm पर खत्म होना चाहिए"
+  },
+  "op_err_blocked": {
+    "message": "$1 दूसरी साइटों को अपनी फ़ाइलें इस्तेमाल नहीं करने देता (CORS ब्लॉक)। फ़ाइल डाउनलोड करें और “फ़ाइल चुनें” इस्तेमाल करें।"
+  },
+  "op_err_http": {
+    "message": "वेबसाइट ने गड़बड़ी $1 बताई"
+  },
+  "op_err_mic": {
+    "message": "रिकॉर्डिंग के लिए MemeBox को माइक की अनुमति चाहिए"
+  },
+  "op_packs": {
+    "message": "पैक"
+  },
+  "op_pack_add": {
+    "message": "जोड़ें"
+  },
+  "op_pack_reset": {
+    "message": "रीसेट"
+  },
+  "op_pack_remove": {
+    "message": "हटाएँ"
+  },
+  "op_pack_count": {
+    "message": "$1 / $2 लाइनें"
+  },
+  "op_pack_added": {
+    "message": "“$1” पैक जुड़ गया"
+  },
+  "op_pack_removed": {
+    "message": "“$1” पैक हट गया"
+  },
+  "op_share_packs": {
+    "message": "पैक शेयर करें"
+  },
+  "op_export_all": {
+    "message": "मेरी सभी लाइनें"
+  },
+  "op_export": {
+    "message": "⬇ .memepack.json एक्सपोर्ट करें"
+  },
+  "op_import": {
+    "message": "⬆ .memepack.json इंपोर्ट करें"
+  },
+  "op_packs_hint": {
+    "message": "पैक में लाइनें और उनकी क्लिप्स होती हैं। इंपोर्ट करने पर आपकी लाइनों में जुड़ती हैं, और एक ही id वाली लाइनें बदल जाती हैं। फ़ाइलें सख़्ती से जाँची जाती हैं।"
+  },
+  "op_my_library": {
+    "message": "मेरी MemeBox लाइनें"
+  },
+  "op_exported": {
+    "message": "$1 लाइनें एक्सपोर्ट हुईं"
+  },
+  "op_export_partial": {
+    "message": "$1 लाइनें एक्सपोर्ट हुईं (पुराने वर्ज़न की क्लिप्स छोड़ दी गईं)"
+  },
+  "op_import_failed": {
+    "message": "इंपोर्ट नहीं हुआ: $1"
+  },
+  "op_import_invalid": {
+    "message": "यह पैक फ़ाइल सही नहीं है, नीचे दी गई सूची देखें"
+  },
+  "op_imported": {
+    "message": "“$3” से $1 लाइनें और $2 क्लिप्स इंपोर्ट हुईं"
+  },
+  "op_party": {
+    "message": "टाइम वाली लाइनें / पार्टी मोड"
+  },
+  "op_party_switch": {
+    "message": "टाइम वाली लाइनें अपने आप चलाएँ"
+  },
+  "op_party_hint": {
+    "message": "शुरू में बंद। टाइमर तभी चलते हैं जब कॉल वाला टैब खुला हो और माइक जुड़ा हो।"
+  },
+  "op_line": {
+    "message": "लाइन"
+  },
+  "op_when": {
+    "message": "कब"
+  },
+  "op_at_clock": {
+    "message": "घड़ी के समय पर"
+  },
+  "op_every_n": {
+    "message": "हर N मिनट में"
+  },
+  "op_time": {
+    "message": "समय"
+  },
+  "op_minutes": {
+    "message": "मिनट"
+  },
+  "op_add_timer": {
+    "message": "टाइमर जोड़ें"
+  },
+  "op_no_timers": {
+    "message": "अभी कोई टाइमर नहीं।"
+  },
+  "op_daily_at": {
+    "message": "रोज़ $1 बजे"
+  },
+  "op_every": {
+    "message": "हर $1 मिनट"
+  },
+  "op_enabled": {
+    "message": "चालू"
+  },
+  "op_deleted_line": {
+    "message": "(हटाई गई लाइन)"
+  },
+  "op_party_on": {
+    "message": "पार्टी मोड चालू 🎉"
+  },
+  "op_party_off": {
+    "message": "पार्टी मोड बंद"
+  },
+  "op_timer_added": {
+    "message": "टाइमर जुड़ गया"
+  },
+  "op_timer_added_off": {
+    "message": "टाइमर जुड़ गया, इसे चलाने के लिए “टाइम वाली लाइनें अपने आप चलाएँ” चालू करें"
+  },
+  "op_privacy": {
+    "message": "प्राइवेसी"
+  },
+  "op_privacy_text": {
+    "message": "आपके माइक और टैब की आवाज़ सिर्फ़ इसी ब्राउज़र में मिलाई जाती है। कुछ भी रिकॉर्ड, सेव या कहीं भेजा नहीं जाता। कोई अकाउंट, सर्वर या एनालिटिक्स नहीं।"
+  },
+  "cmdToggleVoice": {
+    "message": "वॉइस चेंजर चालू/बंद"
+  },
+  "tab_volume": {
+    "message": "कॉल में टैब की आवाज़ का वॉल्यूम"
+  },
+  "voice_label": {
+    "message": "🎤 मेरी आवाज़"
+  },
+  "voice_tip": {
+    "message": "कॉल में आपकी अपनी लाइव आवाज़ बदलता है। Alt+V से चालू/बंद करें। \"बंद\" से आपकी असली आवाज़ तुरंत वापस आ जाती है।"
+  },
+  "voice_off": {
+    "message": "बंद (नॉर्मल)"
+  },
+  "voice_chipmunk": {
+    "message": "चिपमंक"
+  },
+  "voice_deep": {
+    "message": "भारी"
+  },
+  "voice_robot": {
+    "message": "रोबोट"
+  },
+  "voice_echo": {
+    "message": "गूँज"
+  },
+  "voice_radio": {
+    "message": "रेडियो"
+  },
+  "voice_now_on": {
+    "message": "आपकी आवाज़: $1"
+  },
+  "voice_now_off": {
+    "message": "वॉइस चेंजर बंद, आपकी असली आवाज़"
+  },
+  "voice_after_join": {
+    "message": "सेव हो गया, कॉल जॉइन करते ही शुरू होगा"
+  },
+  "cam_label": {
+    "message": "📷 मेरे कैमरे पर कैप्शन"
+  },
+  "cam_tip": {
+    "message": "दूसरों को दिखने वाले आपके वीडियो पर मीम का टेक्स्ट लिखता है। लागू करने के लिए कैमरा बंद करके फिर चालू करें। आपके अपने प्रीव्यू में यह उल्टा दिख सकता है, दूसरों को सीधा दिखेगा।"
+  },
+  "cam_on": {
+    "message": "कैमरा कैप्शन चालू, कैमरा बंद करके फिर चालू करें"
+  },
+  "cam_off": {
+    "message": "कैमरा कैप्शन बंद, कैमरा बंद करके फिर चालू करें"
+  },
+  "pp_volume": {
+    "message": "कॉल में वॉल्यूम"
+  },
+  "op_save_wav": {
+    "message": "💾 WAV"
+  },
+  "op_save_wav_tip": {
+    "message": "ऑडियो फ़ाइल (WAV) के रूप में सेव करें, कहीं भी शेयर करें"
+  },
+  "op_wav_saved": {
+    "message": "$1 सेव हो गई"
+  },
+  "op_share_wa": {
+    "message": "WhatsApp"
+  },
+  "op_share_wa_tip": {
+    "message": "टेक्स्ट भरकर WhatsApp खोलता है, चैट आप चुनें और भेजें आप दबाएँ"
+  },
+  "op_share_text": {
+    "message": "$1 😂 MemeBox से बनाया: $2"
+  },
+  "feedback": {
+    "message": "फ़ीडबैक भेजें"
+  },
+  "ask_title": {
+    "message": "MemeBox मज़ेदार लग रहा है?"
+  },
+  "ask_rate": {
+    "message": "⭐ रेटिंग दें"
+  },
+  "ask_feedback": {
+    "message": "फ़ीडबैक भेजें"
+  },
+  "op_feedback": {
+    "message": "💬 फ़ीडबैक भेजें"
+  },
+  "pro_only": {
+    "message": "यह MemeBox Pro फ़ीचर है।"
+  },
+  "ob_title": {
+    "message": "MemeBox में आपका स्वागत है 😂"
+  },
+  "ob_sub": {
+    "message": "तीन स्टेप, और कॉल में सबसे मज़ेदार आप।"
+  },
+  "ob_s1": {
+    "message": "ब्राउज़र में अपनी कॉल जॉइन करें"
+  },
+  "ob_s1_text": {
+    "message": "Google Meet, Zoom (वेब), Microsoft Teams (वेब) या Discord (वेब)। कोने में 😂 बटन दिखेगा। अगर कॉल पहले से खुली थी, तो उसे एक बार रीलोड करें।"
+  },
+  "ob_s2": {
+    "message": "मीम चलाने के लिए 😂 दबाएँ"
+  },
+  "ob_s2_text": {
+    "message": "यह आपके माइक में जाता है, इसलिए कॉल में सब सुनते हैं। उन्हें MemeBox की ज़रूरत नहीं। आप म्यूट हैं तो मीम भी चुप रहते हैं।"
+  },
+  "ob_s3": {
+    "message": "बाकी सब के लिए 😂 पर राइट-क्लिक करें"
+  },
+  "ob_s3_text": {
+    "message": "कोई भी लाइन चुनें, खोजें, अपनी आवाज़ बदलें (Alt+V), या Alt+1 से Alt+9 से पसंदीदा चलाएँ। YouTube वीडियो कॉल में चलाने के लिए उस टैब पर टूलबार में MemeBox आइकन दबाएँ।"
+  },
+  "ob_mic": {
+    "message": "माइक टेस्ट"
+  },
+  "ob_mic_hint": {
+    "message": "देखें कि आपका माइक काम कर रहा है। आवाज़ इसी पेज पर रहती है। कुछ भी रिकॉर्ड नहीं होता।"
+  },
+  "ob_mic_start": {
+    "message": "🎙 माइक टेस्ट शुरू करें"
+  },
+  "ob_mic_stop": {
+    "message": "⏹ रोकें"
+  },
+  "ob_hear": {
+    "message": "🔊 एक मीम सुनें"
+  },
+  "ob_mic_talk": {
+    "message": "कुछ बोलिए…"
+  },
+  "ob_mic_ok": {
+    "message": "✅ आपकी आवाज़ आ रही है। माइक ठीक है।"
+  },
+  "ob_mic_blocked": {
+    "message": "माइक ब्लॉक है। एड्रेस बार में कैमरा/माइक आइकन दबाकर अनुमति दें।"
+  },
+  "ob_mic_none": {
+    "message": "कोई माइक नहीं मिला। माइक लगाकर फिर कोशिश करें।"
+  },
+  "ob_done": {
+    "message": "आप तैयार हैं। आपकी लाइनें, क्लिप्स और पैक Settings में हैं।"
+  },
+  "ob_reload_title": {
+    "message": "एक कॉल टैब पहले से खुला है"
+  },
+  "ob_reload_text": {
+    "message": "यह MemeBox से पहले खुला था, इसलिए अभी मीम नहीं चला सकता। इसे रीलोड करें और कॉल में दोबारा जुड़ें। रीलोड करने पर आप कॉल से बाहर हो जाएँगे, इसलिए तैयार होने पर ही करें।"
+  },
+  "ob_reload_btn": {
+    "message": "यह टैब रीलोड करें"
+  },
+  "ob_sound": {
+    "message": "🔊 आवाज़ चालू करें"
+  },
+  "ob_settings": {
+    "message": "⚙️ Settings खोलें"
+  },
+  "ob_close": {
+    "message": "चलो शुरू करें!"
+  },
+  "pp_reload_tab": {
+    "message": "यह कॉल टैब MemeBox इंस्टॉल या अपडेट होने से पहले खुला था। इसे रीलोड (F5) करें और फिर से कॉल जॉइन करें।"
+  },
+  "tag_picture": {
+    "message": "इसमें तस्वीर है"
+  },
+  "op_picture": {
+    "message": "तस्वीर (वैकल्पिक)"
+  },
+  "op_picture_choose": {
+    "message": "🖼 तस्वीर चुनें"
+  },
+  "op_picture_remove": {
+    "message": "तस्वीर हटाएँ"
+  },
+  "op_picture_hint": {
+    "message": "तस्वीर ×, Escape या Stop all से बंद करने तक दिखती रहेगी। Caption on my camera चालू होने पर दूसरे भी देखेंगे। अपनी या अनुमति वाली तस्वीरें इस्तेमाल करें।"
+  },
+  "op_err_picture": {
+    "message": "यह फ़ाइल ऐसी तस्वीर नहीं है जिसे MemeBox इस्तेमाल कर सके। PNG, JPG, WEBP या GIF आज़माएँ।"
+  },
+  "op_err_picture_big": {
+    "message": "यह तस्वीर बहुत बड़ी है। छोटी तस्वीर आज़माएँ (20 MB तक)।"
+  },
+  "pro_pictures": {
+    "message": "आपने अपनी $1 तस्वीर वाले मीम इस्तेमाल कर लिए। MemeBox Pro या तस्वीर पैक से और पाएँ (Options → MemeBox Pro)।"
+  },
+  "op_bulk": {
+    "message": "📂 कई फ़ाइलें एक साथ"
+  },
+  "op_bulk_hint": {
+    "message": "कई फ़ाइलें एक साथ: हर फ़ाइल एक क्लिप बनती है (1 MB में फ़िट होने तक काटी जाती है), फ़ाइल के नाम से, \"clips\" कैटेगरी में।"
+  },
+  "op_bulk_working": {
+    "message": "$2 में से $1 इंपोर्ट हो रही है…"
+  },
+  "op_bulk_done": {
+    "message": "$1 क्लिप्स जुड़ीं। $2 छोड़ी गईं।"
+  },
+  "op_bulk_skipped": {
+    "message": "छोड़ी गईं: $1"
+  },
+  "op_nav_pro": {
+    "message": "Pro"
+  },
+  "op_pro": {
+    "message": "MemeBox Pro"
+  },
+  "op_pro_off": {
+    "message": "इस बिल्ड में Pro बंद है, इसलिए सब कुछ सबके लिए खुला है और की की ज़रूरत नहीं।"
+  },
+  "op_pro_active": {
+    "message": "✅ इस ब्राउज़र में MemeBox Pro चालू है।"
+  },
+  "op_pro_free": {
+    "message": "मुफ़्त प्लान: $1 तक तस्वीर वाले मीम, 10 क्लिप्स, General और College पैक।"
+  },
+  "op_license_ph": {
+    "message": "MBX-XXXX-XXXX-XXXX"
+  },
+  "op_activate": {
+    "message": "चालू करें"
+  },
+  "op_buy": {
+    "message": "⭐ Pro या और तस्वीरें खरीदें"
+  },
+  "op_license_remove": {
+    "message": "की हटाएँ"
+  },
+  "op_license_ok": {
+    "message": "की चालू हो गई। मज़े करें!"
+  },
+  "op_license_offline": {
+    "message": "MemeBox साइट से कनेक्ट नहीं हो पाया। इंटरनेट चेक करके फिर कोशिश करें।"
+  },
+  "op_license_revoked": {
+    "message": "की $1 बंद कर दी गई है।"
+  },
+  "op_license_stale": {
+    "message": "की $1 बहुत समय से चेक नहीं हो पाई। इंटरनेट से जुड़ें ताकि MemeBox इसे फिर चेक कर सके।"
+  },
+  "op_license_pro": {
+    "message": "की $1: अनलिमिटेड प्रो मैक्स। हर लाइट, किरदार, फ़िल्टर और धुन खुली है।"
+  },
+  "op_license_slots": {
+    "message": "की $1: $2 अतिरिक्त तस्वीर वाले मीम।"
+  },
+  "settings_label": {
+    "message": "🎛 आवाज़ और सेटिंग"
+  },
+  "op_theme": {
+    "message": "🎨 रंग"
+  },
+  "theme_auto": {
+    "message": "अपने आप"
+  },
+  "theme_light": {
+    "message": "लाइट"
+  },
+  "theme_dark": {
+    "message": "डार्क"
+  },
+  "theme_sunny": {
+    "message": "धूप"
+  },
+  "theme_neon": {
+    "message": "नियॉन"
+  },
+  "theme_candy": {
+    "message": "कैंडी"
+  },
+  "ob_theme_hint": {
+    "message": "MemeBox के लिए एक लुक चुनें। Settings में इसे कभी भी बदल सकते हैं।"
+  },
+  "text_dir": {
+    "message": "ltr",
+    "description": "Writing direction of this language: ltr or rtl. Not shown."
+  },
+  "lang_code": {
+    "message": "hi",
+    "description": "Language code for the HTML lang attribute. Not shown."
+  },
+  "op_language": {
+    "message": "🌐 भाषा"
+  },
+  "lang_auto": {
+    "message": "अपने आप (Chrome जैसी)"
+  },
+  "lang_reload": {
+    "message": "भाषा बदल गई। MemeBox को इसमें देखने के लिए यह कॉल टैब रीलोड करें।"
+  },
+  "fx_title": {
+    "message": "💡 लाइट्स और लुक"
+  },
+  "fx_state_on": {
+    "message": "चालू"
+  },
+  "fx_state_off": {
+    "message": "बंद"
+  },
+  "fx_how": {
+    "message": "आपके कैमरे पर लैंप और रंगीन लाइटें। कॉल में सबको दिखेंगी। नीचे प्रिव्यू में सब आज़माएँ।"
+  },
+  "fx_on": {
+    "message": "मेरा कैमरा रोशन करो"
+  },
+  "fx_hint_off": {
+    "message": "आज़माने के लिए चालू करें। इस्तेमाल के लिए कॉल में जुड़ें या दोबारा जुड़ें।"
+  },
+  "fx_restart": {
+    "message": "लाइट शुरू करने के लिए कॉल में कैमरा एक बार बंद करके फिर चालू करें।"
+  },
+  "fx_active": {
+    "message": "✓ लाइट आपके कैमरे पर हैं"
+  },
+  "fx_locked": {
+    "message": "🔒 सिर्फ़ प्रिव्यू: कॉल में नहीं जाएगा।"
+  },
+  "fx_plans": {
+    "message": "प्लान देखें"
+  },
+  "fx_watermark": {
+    "message": "प्रिव्यू"
+  },
+  "fx_lamp": {
+    "message": "लटकता लैंप"
+  },
+  "fx_lamp_show": {
+    "message": "लैंप दिखाएँ"
+  },
+  "fx_pos_center": {
+    "message": "बीच में"
+  },
+  "fx_pos_left": {
+    "message": "बाएँ"
+  },
+  "fx_pos_right": {
+    "message": "दाएँ"
+  },
+  "fx_anim_still": {
+    "message": "स्थिर"
+  },
+  "fx_anim_swing": {
+    "message": "झूलता"
+  },
+  "fx_anim_drop": {
+    "message": "गिरता हुआ"
+  },
+  "fx_anim_flicker": {
+    "message": "टिमटिमाता"
+  },
+  "fx_colors": {
+    "message": "लाइट का रंग"
+  },
+  "fx_corners": {
+    "message": "कोने की लाइटें"
+  },
+  "fx_corners_show": {
+    "message": "कोने की लाइटें दिखाएँ"
+  },
+  "fx_looks": {
+    "message": "लुक (फ़िल्टर)"
+  },
+  "fx_pat_steady": {
+    "message": "स्थिर"
+  },
+  "fx_pat_pulse": {
+    "message": "धड़कन"
+  },
+  "fx_pat_candle": {
+    "message": "मोमबत्ती"
+  },
+  "fx_pat_rainbow": {
+    "message": "इंद्रधनुष"
+  },
+  "fx_pat_disco": {
+    "message": "डिस्को"
+  },
+  "fx_pat_sweep": {
+    "message": "स्वीप"
+  },
+  "fx_pat_sparkle": {
+    "message": "चमक"
+  },
+  "fx_filter_none": {
+    "message": "कोई नहीं"
+  },
+  "fx_filter_warm": {
+    "message": "गर्म"
+  },
+  "fx_filter_bw": {
+    "message": "ब्लैक एंड व्हाइट"
+  },
+  "fx_filter_glow": {
+    "message": "ग्लो"
+  },
+  "fx_filter_vintage": {
+    "message": "विंटेज"
+  },
+  "fx_filter_cool": {
+    "message": "ठंडा"
+  },
+  "fx_filter_neon": {
+    "message": "नियॉन"
+  },
+  "fx_filter_noir": {
+    "message": "नोयर"
+  },
+  "fx_filter_dream": {
+    "message": "ड्रीम"
+  },
+  "fx_filter_sunset": {
+    "message": "सनसेट"
+  },
+  "fx_filter_pixel": {
+    "message": "पिक्सल"
+  },
+  "fx_focus": {
+    "message": "मुझ पर स्पॉटलाइट (किनारे गहरे)"
+  },
+  "fx_focus_tip": {
+    "message": "किनारे गहरे ताकि रोशनी आपके चेहरे पर रहे"
+  },
+  "fx_sync": {
+    "message": "लाइट आवाज़ों के साथ चलें"
+  },
+  "fx_sync_tip": {
+    "message": "जो मीम बजाएँ उसके हिसाब से रंग बदलें"
+  },
+  "fx_safe": {
+    "message": "फ़्लैश नहीं (सिर्फ़ हल्के बदलाव)"
+  },
+  "fx_safe_tip": {
+    "message": "फ़्लैश से परेशान होने वालों के लिए सुरक्षित"
+  },
+  "fx_bright": {
+    "message": "चमक"
+  },
+  "fx_pass_forever": {
+    "message": "Pro: अनलिमिटेड ✓"
+  },
+  "fx_pass_left": {
+    "message": "$1 बाकी"
+  },
+  "fx_pass_running": {
+    "message": "चालू"
+  },
+  "fx_pass_pause": {
+    "message": "रोकें"
+  },
+  "fx_pass_start": {
+    "message": "पास शुरू करें"
+  },
+  "fx_pass_none": {
+    "message": "अभी कोई पास नहीं। प्रिव्यू मुफ़्त है; पास से कॉल में सबको दिखेगा।"
+  },
+  "fx_character": {
+    "message": "किरदार (आवाज़ों पर रिएक्ट करता है)"
+  },
+  "fx_char_none": {
+    "message": "कोई नहीं"
+  },
+  "fx_char_cat": {
+    "message": "बिल्ली"
+  },
+  "fx_char_dog": {
+    "message": "कुत्ता"
+  },
+  "fx_char_bunny": {
+    "message": "खरगोश"
+  },
+  "fx_char_panda": {
+    "message": "पांडा"
+  },
+  "fx_char_owl": {
+    "message": "उल्लू"
+  },
+  "fx_char_fox": {
+    "message": "लोमड़ी"
+  },
+  "mu_title": {
+    "message": "🎵 म्यूज़िक"
+  },
+  "mu_how": {
+    "message": "हमारी अपनी बनाई धुनें आपकी कॉल में बजती हैं और आपके बोलते समय धीमी हो जाती हैं।"
+  },
+  "mu_stop": {
+    "message": "रोकें"
+  },
+  "mu_vol": {
+    "message": "म्यूज़िक की आवाज़"
+  },
+  "mu_locked": {
+    "message": "🔒 सिर्फ़ प्रिव्यू (आपके स्पीकर पर, कॉल में नहीं)।"
+  },
+  "mu_in_call": {
+    "message": "कॉल में चल रहा है: $1"
+  },
+  "mu_preview": {
+    "message": "प्रिव्यू: $1, $2 सेकंड, सिर्फ़ आप सुनेंगे"
+  },
+  "mu_idle": {
+    "message": "धुन दबाकर सुनें। मुफ़्त: चिल और फंकी।"
+  },
+  "mu_idle_call": {
+    "message": "धुन दबाएँ, कॉल में बजेगी।"
+  },
+  "mu_t_chill": {
+    "message": "चिल"
+  },
+  "mu_t_funky": {
+    "message": "फंकी"
+  },
+  "mu_t_party": {
+    "message": "पार्टी"
+  },
+  "mu_t_suspense": {
+    "message": "सस्पेंस"
+  },
+  "mu_t_retro": {
+    "message": "रेट्रो"
+  },
+  "mu_t_jazz": {
+    "message": "जैज़"
+  },
+  "mu_t_epic": {
+    "message": "एपिक"
+  },
+  "mu_t_tropical": {
+    "message": "ट्रॉपिकल"
+  },
+  "fx_filter_vhs": {
+    "message": "VHS"
+  },
+  "fx_filter_cyber": {
+    "message": "साइबर"
+  },
+  "fx_filter_comic": {
+    "message": "कॉमिक"
+  },
+  "fx_filter_matrix": {
+    "message": "मैट्रिक्स"
+  },
+  "fx_filter_glam": {
+    "message": "ग्लैम"
+  },
+  "mu_t_disco": {
+    "message": "डिस्को"
+  },
+  "mu_t_club": {
+    "message": "क्लब"
+  },
+  "mu_t_bass": {
+    "message": "बेस"
+  },
+  "mu_t_desi": {
+    "message": "देसी"
+  },
+  "mu_t_house": {
+    "message": "हाउस"
+  },
+  "fx_char_penguin": {
+    "message": "पेंगुइन"
+  },
+  "fx_char_lion": {
+    "message": "शेर"
+  },
+  "fx_char_monkey": {
+    "message": "बंदर"
+  },
+  "fx_char_frog": {
+    "message": "मेंढक"
+  },
+  "fx_char_unicorn": {
+    "message": "यूनिकॉर्न"
+  },
+  "pg_wave": {
+    "message": "हाथ हिलाएँ"
+  },
+  "pg_cheer": {
+    "message": "खुशी मनाएँ"
+  },
+  "pg_heartbeat": {
+    "message": "प्यार"
+  },
+  "pg_cry": {
+    "message": "रोना"
+  },
+  "pg_raspberry": {
+    "message": "जीभ निकालें"
+  },
+  "pg_dance": {
+    "message": "नाचें"
+  },
+  "fx_char_snake": {
+    "message": "साँप"
+  },
+  "fx_char_bird": {
+    "message": "पक्षी"
+  },
+  "fx_char_robot": {
+    "message": "रोबोट"
+  },
+  "fx_filter_night": {
+    "message": "नाइट विज़न"
+  },
+  "fx_filter_film": {
+    "message": "पुरानी फ़िल्म"
+  },
+  "fx_filter_wave": {
+    "message": "सिंथवेव"
+  },
+  "fx_filter_heat": {
+    "message": "थर्मल"
+  },
+  "fx_filter_snow": {
+    "message": "बर्फ़"
+  },
+  "fx_pat_aurora": {
+    "message": "ऑरोरा"
+  },
+  "fx_pat_fire": {
+    "message": "आग"
+  },
+  "fx_pat_laser": {
+    "message": "लेज़र"
+  },
+  "fx_pat_neonframe": {
+    "message": "नियॉन फ़्रेम"
+  },
+  "fx_pat_police": {
+    "message": "पुलिस"
+  },
+  "fx_pat_heart": {
+    "message": "दिल"
+  },
+  "fx_fix_lamp": {
+    "message": "लैंप"
+  },
+  "fx_fix_discoball": {
+    "message": "डिस्को बॉल"
+  },
+  "fx_fix_lantern": {
+    "message": "कंदील"
+  },
+  "fx_fix_fairy": {
+    "message": "परी लाइटें"
+  },
+  "fx_fix_chandelier": {
+    "message": "झूमर"
+  },
+  "fx_fix_moon": {
+    "message": "चाँद"
+  },
+  "fx_fix_star": {
+    "message": "सितारा"
+  },
+  "fx_fix_spotlight": {
+    "message": "स्पॉटलाइट"
+  },
+  "fx_anim_sway": {
+    "message": "लहराए"
+  },
+  "fx_anim_bounce": {
+    "message": "उछले"
+  },
+  "fx_anim_pendulum": {
+    "message": "पेंडुलम"
+  },
+  "fx_anim_beat": {
+    "message": "बीट पर"
+  },
+  "op_license_pass": {
+    "message": "की $1: पास का $2 समय बाकी है।"
+  },
+  "fx_follow": {
+    "message": "Mere saath rahe"
+  },
+  "fx_follow_tip": {
+    "message": "Tracks your face locally so the companion follows you and notices when you leave or return."
+  },
+  "fx_away": {
+    "message": "फ़्रेम से बाहर जाऊँ तो पार्टी"
+  },
+  "fx_away_tip": {
+    "message": "जानवर आपको ढूँढता है, फिर नाचता है और लाइटें पार्टी करती हैं। वापस आने पर स्वागत करते हैं।"
+  },
+  "fx_presets": {
+    "message": "क्विक लुक"
+  },
+  "fx_pre_party": {
+    "message": "🎉 पार्टी"
+  },
+  "fx_pre_studio": {
+    "message": "😎 स्टूडियो"
+  },
+  "fx_pre_disco": {
+    "message": "🕺 डिस्को"
+  },
+  "fx_pre_cozy": {
+    "message": "🌙 कोज़ी"
+  },
+  "fx_pre_cinema": {
+    "message": "🎬 सिनेमा"
+  },
+  "fx_pre_live": {
+    "message": "🎤 लाइव"
+  },
+  "fx_studio": {
+    "message": "अँधेरे कमरे को अपने आप रोशन करें"
+  },
+  "fx_studio_tip": {
+    "message": "अगर कमरा अँधेरा है, MemeBox आपकी तस्वीर को उजला कर देता है ताकि लैंप के बिना भी आप साफ़ दिखें।"
+  },
+  "fx_darkprev": {
+    "message": "🌙 अँधेरे कमरे में प्रिव्यू"
+  },
+  "fx_pat_auto": {
+    "message": "म्यूज़िक के साथ चलें"
+  },
+  "fx_pat_party": {
+    "message": "मूविंग हेड"
+  },
+  "fx_pat_equalizer": {
+    "message": "इक्वलाइज़र"
+  },
+  "fx_pat_club": {
+    "message": "क्लब"
+  },
+  "as_btn": {
+    "message": "फ़ाइल से साउंड जोड़ें (ऑडियो या वीडियो)"
+  },
+  "as_working": {
+    "message": "$1 जोड़ रहे हैं…"
+  },
+  "as_added": {
+    "message": "जुड़ गया: $1"
+  },
+  "as_added_cut": {
+    "message": "जुड़ गया: $1 (पहले $2 सेकंड आए)"
+  },
+  "as_fail": {
+    "message": "$1 नहीं जुड़ पाया"
+  },
+  "as_bad": {
+    "message": "$1 साउंड या वीडियो फ़ाइल नहीं है, या बहुत बड़ी है"
+  },
+  "mu_add": {
+    "message": "＋ मेरा म्यूज़िक जोड़ें"
+  },
+  "mu_mine": {
+    "message": "मेरा म्यूज़िक"
+  },
+  "mu_join": {
+    "message": "पहले कॉल में आएँ, फिर अपना म्यूज़िक बजाएँ"
+  },
+  "mu_big": {
+    "message": "यह फ़ाइल 8 MB से बड़ी है"
+  },
+  "mu_many": {
+    "message": "ज़्यादा से ज़्यादा 12 ट्रैक। पहले एक हटाएँ।"
+  },
+  "mu_del": {
+    "message": "हटाएँ"
+  },
+  "fx_drag": {
+    "message": "लैंप को ठीक वहीं टाँगने के लिए प्रिव्यू में खींचें।"
+  },
+  "fx_lampsize": {
+    "message": "लैंप का आकार"
+  },
+  "fx_lampreset": {
+    "message": "रीसेट"
+  },
+  "fx_hd": {
+    "message": "✨ HD एन्हांस (ज़्यादा साफ़, चमकदार, स्किन स्मूद)"
+  },
+  "fx_hd_tip": {
+    "message": "दाने साफ़ करता है, स्किन स्मूद करता है पर आँखें और बाल तीखे रखता है, साफ़ी और असली रंग बढ़ाता है, अँधेरा कमरा उजला करता है। आपके ग्राफ़िक्स कार्ड पर चलता है।"
+  },
+  "fx_hd_amt": {
+    "message": "HD एन्हांस की ताकत"
+  },
+  "st_title": {
+    "message": "यहाँ से शुरू करें"
+  },
+  "st_1": {
+    "message": "1. ब्राउज़र में अपनी कॉल जॉइन करें और माइक अनम्यूट करें।"
+  },
+  "st_2": {
+    "message": "2. कोई भी मीम दबाएँ: कॉल में सबको सुनाई देगा।"
+  },
+  "st_3": {
+    "message": "3. कैमरे पर लाइट, लैंप या जानवर चाहिए? नीचे Lights खोलें।"
+  },
+  "st_ok": {
+    "message": "समझ गया"
+  },
+  "fx_angle": {
+    "message": "रोशनी का कोण (लैंप से आप पर)"
+  },
+  "fx_angle_auto": {
+    "message": "ऑटो"
+  },
+  "fx_mirror": {
+    "message": "बायाँ/दायाँ जैसा मैं खुद को देखता हूँ"
+  },
+  "fx_mirror_tip": {
+    "message": "आईने की तरह: आपका बायाँ वही है जो आपके अपने वीडियो में बायाँ दिखता है। उलटा लगे तो टिक हटाएँ।"
+  },
+  "fx_gest": {
+    "message": "React to my face and hands"
+  },
+  "fx_gest_tip": {
+    "message": "Copies supported waves, smiles and gestures. Keep your face and hands in view; adjust sensitivity if reactions are missed."
+  },
+  "fx_sens": {
+    "message": "कितनी आसानी से पहचाने"
+  },
+  "fx_sens_low": {
+    "message": "कम"
+  },
+  "fx_sens_normal": {
+    "message": "सामान्य"
+  },
+  "fx_sens_high": {
+    "message": "ज़्यादा"
+  },
+  "fx_try": {
+    "message": "आज़माएँ: 👍 ✌️ 👌 🤘 🤙 ✋ 👏 ❤️ (दो हाथ या उँगलियाँ), सिर हिलाएँ, 😛, किस।"
+  },
+  "fx_seen": {
+    "message": "कैमरा देख रहा है:"
+  },
+  "fx_seen_face": {
+    "message": "चेहरा"
+  },
+  "fx_seen_none": {
+    "message": "कैमरे को अभी कोई नहीं दिखा (कैमरा चालू? Follow me टिक है?)"
+  },
+  "cam_unmirror": {
+    "message": "कैप्शन के समय मेरा प्रीव्यू सीधा करें"
+  },
+  "cam_unmirror_tip": {
+    "message": "कैप्शन दिखने के 3 सेकंड तक आपका अपना टाइल (जिसे कॉल साइट उलटा दिखाती है) सीधा कर दिया जाता है ताकि आप पढ़ सकें। दूसरों को हमेशा सीधा दिखता है।"
+  },
+  "fx_masti": {
+    "message": "Mere sir aur kandhe par ghume"
+  },
+  "fx_masti_tip": {
+    "message": "On: climbs, flies or hops between resting places. Off: returns to your selected resting place, with gentle idle movements."
+  },
+  "fx_sounds": {
+    "message": "Companion sounds in the call"
+  },
+  "fx_sounds_tip": {
+    "message": "Plays short synthesized reactions, including cheers and sobs, into your microphone. Turn off for silent reactions."
+  },
+  "fx_seen_off": {
+    "message": "फेस मॉडल अभी जवाब नहीं दे रहा। कुछ सेकंड रुकें; ऐसा ही रहे तो कॉल टैब रीलोड करें।"
+  },
+  "tab_memes": {
+    "message": "मीम्स"
+  },
+  "tab_music": {
+    "message": "संगीत"
+  },
+  "tab_lights": {
+    "message": "लाइट"
+  },
+  "tab_sound": {
+    "message": "आवाज़"
+  },
+  "chip_lang_all": {
+    "message": "सभी भाषाएँ"
+  },
+  "fx_more": {
+    "message": "और विकल्प"
+  },
+  "cat_world": {
+    "message": "दुनिया भर"
+  },
+  "chip_lang_more": {
+    "message": "और भाषाएँ…"
+  },
+  "op_lang_mine": {
+    "message": "मेरी भाषाएँ"
+  },
+  "op_online": {
+    "message": "ऑनलाइन पैक"
+  },
+  "op_online_hint": {
+    "message": "सबके लिए मुफ़्त संगीत और मीम। जब तक आप “पैक देखें” नहीं दबाते, कहीं कोई संपर्क नहीं होता; डाउनलोड MemeBox साइट से आते हैं।"
+  },
+  "op_online_browse": {
+    "message": "पैक देखें"
+  },
+  "op_online_refresh": {
+    "message": "सूची ताज़ा करें"
+  },
+  "op_online_loading": {
+    "message": "लोड हो रहा है…"
+  },
+  "op_online_fail": {
+    "message": "पैक नहीं मिल सके। इंटरनेट जाँचें और फिर कोशिश करें।"
+  },
+  "op_online_none": {
+    "message": "यहाँ अभी कोई पैक नहीं है। नए पैक नियमित रूप से जुड़ते हैं।"
+  },
+  "op_online_add": {
+    "message": "जोड़ें ($1)"
+  },
+  "op_online_added": {
+    "message": "जोड़ा गया ✓"
+  },
+  "op_online_remove": {
+    "message": "हटाएँ"
+  },
+  "op_online_soon": {
+    "message": "जल्द आ रहा है"
+  },
+  "op_online_needs": {
+    "message": "Pro चाहिए"
+  },
+  "op_online_strong": {
+    "message": "मैं 18+ हूँ; तेज़ या अपशब्द वाली भाषा के मीम दिखाएँ"
+  },
+  "op_online_strong_tag": {
+    "message": "18+"
+  },
+  "op_online_music": {
+    "message": "संगीत"
+  },
+  "op_online_memes": {
+    "message": "मीम"
+  },
+  "op_online_items": {
+    "message": "$1 आइटम"
+  },
+  "op_online_busy": {
+    "message": "डाउनलोड $1 / $2…"
+  },
+  "op_online_done": {
+    "message": "“$1” जोड़ा गया: $2 आइटम"
+  },
+  "pk_region_all": {
+    "message": "सभी क्षेत्र"
+  },
+  "pk_region_common": {
+    "message": "सबके लिए"
+  },
+  "pk_region_in": {
+    "message": "भारत"
+  },
+  "pk_region_global": {
+    "message": "ग्लोबल"
+  },
+  "pk_get": {
+    "message": "＋ मुफ़्त पैक"
+  },
+  "op_online_pictures": {
+    "message": "तस्वीरें"
+  },
+  "op_online_free_n": {
+    "message": "$1 मुफ़्त"
+  },
+  "op_online_paid_n": {
+    "message": "$1 के लिए Pro चाहिए"
+  },
+  "op_online_soon_n": {
+    "message": "$1 जल्द आ रहे हैं"
+  },
+  "op_online_more": {
+    "message": "$1 और जोड़ें ($2)"
+  },
+  "op_online_limit": {
+    "message": "आज की डाउनलोड सीमा पूरी हो गई ($1 जोड़े गए)। बाकी कल जोड़े जा सकते हैं।"
+  },
+  "tone_normal": {
+    "message": "सामान्य"
+  },
+  "tone_chipmunk": {
+    "message": "चिपमंक"
+  },
+  "tone_villain": {
+    "message": "खलनायक"
+  },
+  "tone_robot": {
+    "message": "रोबोट"
+  },
+  "tone_slowmo": {
+    "message": "धीमा"
+  },
+  "tone_excited": {
+    "message": "उत्साहित"
+  },
+  "op_online_space": {
+    "message": "इस कंप्यूटर पर पैक: $2 MB में से $1 MB"
+  },
+  "op_online_full": {
+    "message": "पैक के लिए इस कंप्यूटर की जगह भर गई ($1 जोड़े गए, कुल $2 MB)। और जोड़ने के लिए कोई पैक हटाएँ।"
+  },
+  "mu_phonk": {
+    "message": "🔥 फंक मोड"
+  },
+  "mu_phonk_tip": {
+    "message": "आधिकारिक फंक ट्रैक YouTube से चलते हैं, फिर आपकी कॉल में भेजे जाते हैं"
+  },
+  "mu_t_phonk_desi": {
+    "message": "🔥 MemeBox Desi Phonk"
+  },
+  "mu_t_phonk_drift": {
+    "message": "🏎️ MemeBox Drift Phonk"
+  },
+  "mu_t_phonk_midnight": {
+    "message": "🌙 MemeBox Midnight Phonk"
+  },
+  "pg_natural": {
+    "message": "Natural behavior"
+  },
+  "pg_leave": {
+    "message": "मैं फ्रेम से बाहर जाता हूँ"
+  },
+  "pg_return": {
+    "message": "मैं वापस आ गया"
+  },
+  "pg_move": {
+    "message": "व्यक्ति को हिलाएँ"
+  },
+  "pg_personality": {
+    "message": "खास अंदाज़"
+  },
+  "pg_jump": {
+    "message": "कूदो"
+  },
+  "pg_roll": {
+    "message": "लुढ़को"
+  },
+  "pg_sit": {
+    "message": "बैठो / आराम करो"
+  },
+  "pg_head": {
+    "message": "मेरे सिर पर"
+  },
+  "pg_shoulder": {
+    "message": "मेरे कंधे पर"
+  },
+  "pg_corner": {
+    "message": "स्क्रीन पर"
+  },
+  "pg_personality_help": {
+    "message": "Try the signature action, then leave and return. This uses the same companion engine as your camera."
+  },
+  "pg_away_status": {
+    "message": "Waiting for you. Music will not turn the companion happy while you are away."
+  },
+  "pg_home_status": {
+    "message": "You are here. Your companion can explore, listen and react."
+  },
+  "fx_home": {
+    "message": "आराम की जगह"
+  },
+  "fx_home_tip": {
+    "message": "When exploring is off, the companion stays here. A face must be detected for head and shoulder positions."
+  },
+  "fx_commands": {
+    "message": "अपने साथी को निर्देश दें"
+  },
+  "fx_commands_tip": {
+    "message": "These controls affect the character in your outgoing camera. Waiting and crying still take priority when you leave."
+  },
+  "fx_away_explain": {
+    "message": "When you leave, your companion looks for you, waits and cries. It stays sad or floats in its tears until you return."
+  },
+  "fx_outfit_hoodie": {
+    "message": "Cozy hoodie"
+  },
+  "fx_outfit_bow": {
+    "message": "Bow tie"
+  },
+  "fx_outfit_glasses": {
+    "message": "Round glasses"
+  },
+  "fx_outfit_astronaut": {
+    "message": "Space explorer"
+  },
+  "fx_outfit_wizard": {
+    "message": "Magic stars"
+  },
+  "fx_outfit_superhero": {
+    "message": "Hero cape"
+  },
+  "fx_tier_free": {
+    "message": "मुफ़्त"
+  },
+  "fx_tier_pro": {
+    "message": "Pro या हमेशा के लिए खरीदा हुआ"
+  },
+  "fx_tier_max": {
+    "message": "सिर्फ़ Pro Max"
+  },
+  "fx_outfit_help": {
+    "message": "Basic accessories are free. Pro designs can be owned forever when their shop opens. Interactive Pro Max designs are exclusive to the pass."
+  },
+  "fx_filter_sepia": {
+    "message": "Sepia"
+  },
+  "fx_filter_peach": {
+    "message": "Peach"
+  },
+  "fx_filter_teal": {
+    "message": "Teal"
+  },
+  "fx_filter_soft": {
+    "message": "Soft focus"
+  },
+  "fx_filter_dusk": {
+    "message": "Dusk"
+  },
+  "fx_filter_contrast": {
+    "message": "High contrast"
+  },
+  "fx_filter_prism": {
+    "message": "Prism light"
+  },
+  "fx_filter_startrail": {
+    "message": "Star trails"
+  },
+  "pg_music_title": {
+    "message": "संगीत सुनें"
+  },
+  "pg_music_help": {
+    "message": "All 16 bundled tunes are here, including 3 original Phonk tracks. Preview on your speakers; music in the call is under the Music tab."
+  },
+  "pg_add_memes": {
+    "message": "Add my memes and pictures"
+  },
+  "pg_add_music": {
+    "message": "How to add my music"
+  },
+  "pg_music_add_help": {
+    "message": "In a browser call: open the MemeBox panel, select Music, then Add my music. Select an audio file you own or may share. Original Phonk is already bundled; YouTube playlists need the site and verified links."
+  },
+  "pg_preview_seconds": {
+    "message": "Preview length"
+  },
+  "pg_volume": {
+    "message": "Listening volume"
+  },
+  "pg_free_music": {
+    "message": "Free tunes"
+  },
+  "pg_pro_music": {
+    "message": "Pro tunes"
+  },
+  "pg_max_music": {
+    "message": "Pro Max originals and tunes"
+  },
+  "pg_pictures": {
+    "message": "तस्वीर मोड"
+  },
+  "pg_pictures_help": {
+    "message": "Add a picture to a meme in Options. Play it from the Pictures tab during a call. It stays until you close it with ×, Escape or Stop all. Enable camera captions to send it to other callers."
+  },
+  "pg_picture_choose": {
+    "message": "अपनी तस्वीर आज़माएँ"
+  },
+  "pg_picture_close": {
+    "message": "तस्वीर बंद करें"
+  },
+  "pg_picture_privacy": {
+    "message": "This preview stays on this device. No upload or storage service is used."
+  },
+  "pg_collection_help": {
+    "message": "For everyone is the default. India and other regions are optional collections, available to everyone; your interface language stays your choice."
+  },
+  "ob_try_characters": {
+    "message": "Try characters and reactions"
+  },
+  "ob_listen_music": {
+    "message": "Listen to original music"
+  },
+  "ob_add_content": {
+    "message": "Add memes and pictures"
+  },
+  "tab_pictures": {
+    "message": "तस्वीरें"
+  },
+  "pictures_help": {
+    "message": "Your picture memes, in one place. Pictures stay until ×, Escape or Stop all. Camera captions must be on for other callers to see them."
+  },
+  "pictures_add": {
+    "message": "Add a picture meme"
+  },
+  "pictures_empty": {
+    "message": "No picture memes yet. Add a picture to a meme in Options, then come back here."
+  },
+  "mu_phonk_local_tip": {
+    "message": "Listen to our three original Phonk tracks in the Playground. Free YouTube playlists require the site and verified official links."
+  },
+  "mu_collection_help": {
+    "message": "Original tunes run on your device. Add your own audio below; no hosted music subscription is required."
+  },
+  "pg_persona_cat": {
+    "message": "Quiet paws, grooming and stretching. Climbs to your shoulder."
+  },
+  "pg_persona_dog": {
+    "message": "A playful trot, panting and wagging. Waits for you to return."
+  },
+  "pg_persona_bunny": {
+    "message": "Springy hops, ear wiggles and nibbling."
+  },
+  "pg_persona_panda": {
+    "message": "Slow steps, bamboo munching and relaxed rolls."
+  },
+  "pg_persona_owl": {
+    "message": "Flies between perches, turns its head and hoots."
+  },
+  "pg_persona_fox": {
+    "message": "Soft prowling, a swishing tail and pouncing."
+  },
+  "pg_persona_penguin": {
+    "message": "Side-to-side waddling and flipper movements."
+  },
+  "pg_persona_lion": {
+    "message": "A measured prowl, mane shakes and yawns."
+  },
+  "pg_persona_monkey": {
+    "message": "Climbs with alternating hands, scratches and swings."
+  },
+  "pg_persona_frog": {
+    "message": "Hops, croaks and catches a little fly."
+  },
+  "pg_persona_unicorn": {
+    "message": "Prances with a rainbow tail and sparkles."
+  },
+  "pg_persona_robot": {
+    "message": "Marches in measured steps, scans and beeps."
+  },
+  "pg_persona_snake": {
+    "message": "Slithers, coils and flicks its forked tongue."
+  },
+  "pg_persona_bird": {
+    "message": "Flies with flapping wings, preens and pecks."
+  },
+  "pg_animate": {
+    "message": "प्रिव्यू चलाएँ"
+  },
+  "pg_picture_too_big": {
+    "message": "Choose an image smaller than 8 MB."
+  },
+  "pg_picture_invalid": {
+    "message": "Choose a valid PNG, JPEG, WebP or GIF image."
+  },
+  "adult_optin": {
+    "message": "मैं 18+ हूँ; तेज़ या अपशब्द वाली भाषा के मीम दिखाएँ"
+  },
+  "adult_mark": {
+    "message": "Contains strong language (18+)"
+  },
+  "adult_help": {
+    "message": "Off by default. This is a self-declared preference, not verified age. Turning it off hides marked content and stops current MemeBox playback. Unmarked content cannot be classified automatically."
+  },
+  "adult_blocked": {
+    "message": "Adult memes are hidden. Enable the 18+ preference first."
+  },
+  "content_title": {
+    "message": "Your meme library"
+  },
+  "content_help": {
+    "message": "Recommended uses your chosen meme language. Explore all opens every language and region. Regions are collections, not restrictions."
+  },
+  "content_language": {
+    "message": "भाषा"
+  },
+  "content_recommended": {
+    "message": "Recommended language"
+  },
+  "content_all": {
+    "message": "सभी भाषाएँ"
+  },
+  "content_private": {
+    "message": "Your personal additions stay private on this device and appear with your memes across language views. Categories keep related memes together. Only admin-published packs become available to other users."
+  },
+  "plans_title": {
+    "message": "Plans and ownership"
+  },
+  "plans_link": {
+    "message": "Plans, prices and how to buy"
+  },
+  "plans_closed": {
+    "message": "Payments are not open in this local review. You can preview all features here. No purchase will be made."
+  },
+  "plans_forever": {
+    "message": "Owned forever"
+  },
+  "plans_draft": {
+    "message": "Draft price, not on sale yet"
+  },
+  "plans_max_only": {
+    "message": "Included only with Pro Max; never individually sold"
+  },
+  "plans_passes": {
+    "message": "Time passes"
+  },
+  "plans_filters": {
+    "message": "Filters: Free, Pro and Pro Max"
+  },
+  "plans_outfits": {
+    "message": "Costumes and accessories"
+  },
+  "plans_characters": {
+    "message": "Character ownership"
+  },
+  "plans_music": {
+    "message": "Bundled music"
+  },
+  "plans_open_checkout": {
+    "message": "Open checkout"
+  },
+  "plans_checkout_help": {
+    "message": "Checkout opens on the MemeBox site when the shop is enabled. International payment methods depend on provider approval."
+  },
+  "plans_ownership_help": {
+    "message": "A costume does not unlock its animal. Owned Pro filters and costumes work without a pass; automatic tracking and gestures need a running pass."
+  },
+  "plans_free_count": {
+    "message": "3 free filters and 3 basic accessories"
+  },
+  "plans_pro_count": {
+    "message": "18 filters and 10 standard characters; 7 regular tunes plus Desi Phonk"
+  },
+  "plans_max_count": {
+    "message": "28 filters, all 14 characters and all 16 bundled tunes; exclusive reactive costumes"
+  },
+  "pk_manage_help": {
+    "message": "Published packs are added by the owner in the admin console. You choose which packs to keep locally; your own imports never publish automatically."
+  },
+  "plans_view_max": {
+    "message": "View Pro Max passes"
+  },
+  "plans_availability": {
+    "message": "Checkout availability"
+  },
+  "room_title": {
+    "message": "म्यूज़िक रूम"
+  },
+  "room_characters": {
+    "message": "किरदार"
+  },
+  "room_language": {
+    "message": "भाषा"
+  },
+  "room_everyone": {
+    "message": "Your music. Every mood."
+  },
+  "room_heading": {
+    "message": "प्लेलिस्ट चुनो। बीट ड्रॉप महसूस करो।"
+  },
+  "room_intro": {
+    "message": "मुफ़्त YouTube प्लेलिस्ट और MemeBox का अपना म्यूज़िक एक जगह। कहीं से भी सभी कलेक्शन चुन सकते हो; वीडियो की उपलब्धता YouTube पर निर्भर है।"
+  },
+  "room_pick": {
+    "message": "Choose music to start"
+  },
+  "room_previous": {
+    "message": "पिछला"
+  },
+  "room_pause": {
+    "message": "Pause / resume"
+  },
+  "room_next": {
+    "message": "अगला"
+  },
+  "room_shuffle": {
+    "message": "शफ़ल"
+  },
+  "room_youtube_help": {
+    "message": "YouTube uses its visible player and may show ads or restrict a video. Original music runs on your device."
+  },
+  "room_web_player": {
+    "message": "Open website player"
+  },
+  "room_provider": {
+    "message": "View source playlist"
+  },
+  "room_local_help": {
+    "message": "For the local YouTube player, run Start-MemeBox-Music.cmd from the extracted review folder once. No Node installation is needed. It opens a localhost page with a valid website referrer."
+  },
+  "room_playlists": {
+    "message": "मुफ़्त YouTube प्लेलिस्ट"
+  },
+  "room_supplied": {
+    "message": "हर सुनने वाले के लिए शुरुआती कलेक्शन। नाम बदलो या नई प्लेलिस्ट रखो; गाने और उनकी उपलब्धता YouTube नियंत्रित करता है।"
+  },
+  "room_search": {
+    "message": "Search your playlists"
+  },
+  "room_empty": {
+    "message": "No matching playlists. Change the search or add a collection."
+  },
+  "room_manage": {
+    "message": "अपनी प्लेलिस्ट सँभालें"
+  },
+  "room_private": {
+    "message": "बदलाव सिर्फ़ इस ब्राउज़र पर सेव होंगे। दूसरे यूज़र्स के लिए अपने आप प्रकाशित नहीं होंगे।"
+  },
+  "room_name": {
+    "message": "Collection name"
+  },
+  "room_url": {
+    "message": "YouTube playlist link"
+  },
+  "room_save": {
+    "message": "प्लेलिस्ट सेव करें"
+  },
+  "room_cancel": {
+    "message": "बदलना रद्द करें"
+  },
+  "room_restore": {
+    "message": "Restore supplied playlists"
+  },
+  "room_originals": {
+    "message": "MemeBox का अपना म्यूज़िक"
+  },
+  "room_original_help": {
+    "message": "Phonk builds into a pause and beat drop, then returns with a layered second drop. Other tunes cover chill, funk, party and more."
+  },
+  "room_all": {
+    "message": "सभी धुनें"
+  },
+  "room_call": {
+    "message": "Music in your call"
+  },
+  "room_call_help": {
+    "message": "Original tunes play into your mic from the call panel’s Music tab. For YouTube, keep the website player open, click the MemeBox toolbar icon and choose Send this tab’s sound. Ads are included in captured tab audio."
+  },
+  "room_review": {
+    "message": "लोकल रिव्यू: पेड म्यूज़िक खुला है, पेमेंट बंद हैं और कुछ डिप्लॉय नहीं हुआ।"
+  },
+  "room_storage_error": {
+    "message": "Could not save in this browser. Your changes remain available until the page closes."
+  },
+  "room_web_required": {
+    "message": "YouTube playback opens in the website player so it receives a valid web referrer."
+  },
+  "room_youtube_loading": {
+    "message": "YouTube player opened. Press Play in the visible player if autoplay is blocked."
+  },
+  "room_original_playing": {
+    "message": "Playing on your speakers. To send originals into a call, use the call panel’s Music tab."
+  },
+  "room_preview": {
+    "message": "20-second preview on your speakers. This tune requires its applicable pass in a call."
+  },
+  "room_preview_finished": {
+    "message": "Preview finished. View Plans for this tune’s tier."
+  },
+  "room_collection_meta": {
+    "message": "Free · YouTube controls the song list"
+  },
+  "room_play": {
+    "message": "चलाएँ"
+  },
+  "room_edit": {
+    "message": "बदलें"
+  },
+  "room_remove": {
+    "message": "हटाएँ"
+  },
+  "room_drop_at": {
+    "message": "Drop at $1s"
+  },
+  "room_preview_badge": {
+    "message": "20s preview"
+  },
+  "room_invalid": {
+    "message": "Enter a name and a valid HTTPS YouTube playlist link or playlist ID."
+  },
+  "room_duplicate": {
+    "message": "This playlist is already saved. Edit its existing card instead."
+  },
+  "room_limit": {
+    "message": "Keep up to $1 playlists. Remove one before adding another."
+  },
+  "room_saved": {
+    "message": "Playlist changes saved"
+  },
+  "room_embed_error": {
+    "message": "YouTube could not play this selection (error $1). Its availability, age or embedding restrictions may prevent playback."
+  },
+  "room_youtube_playing": {
+    "message": "Playing through YouTube’s visible player"
+  },
+  "room_external": {
+    "message": "Selected playlist"
+  },
+  "room_adult": {
+    "message": "मैं 18+ हूँ; तेज़ भाषा वाले चिह्नित कलेक्शन दिखाएँ"
+  },
+  "room_published": {
+    "message": "Published MemeBox collections"
+  },
+  "room_published_help": {
+    "message": "The owner can update these collections without an extension release. Browse to load the current catalog."
+  },
+  "room_browse": {
+    "message": "Browse published collections"
+  },
+  "room_published_count": {
+    "message": "Free · $1 songs"
+  },
+  "room_catalog_loading": {
+    "message": "Loading published collections…"
+  },
+  "room_catalog_paused": {
+    "message": "Published Phonk collections are paused by the owner."
+  },
+  "room_catalog_empty": {
+    "message": "No published collections yet. Your own playlists above remain available."
+  },
+  "room_catalog_unavailable": {
+    "message": "The published catalog is unavailable here. Your own playlists above remain available."
+  },
+  "plans_choose_tier": {
+    "message": "Show passes"
+  },
+  "plans_all_passes": {
+    "message": "All passes"
+  }
+}

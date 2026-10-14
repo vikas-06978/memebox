@@ -1,5 +1,6 @@
 // Adding sounds and music from inside the call (no trip to Options), and lights that follow the music.
 import { test, expect } from './fixtures.mjs';
+import {clickPanel} from './closed-panel.mjs';
 
 const send = (page, msg) => page.evaluate((m) => window.postMessage({ source: 'memebox-bridge-9c1e', ...m }, '*'), msg);
 // A 1.5 s tone as a small WAV (base64), the same kind of file the panel makes.
@@ -55,4 +56,17 @@ test('my own music: added from the panel, plays in the call on repeat, stops, an
   expect((await sw.evaluate(async (id) => callPanelStore({ type: 'music-del', id }), added.id)).ok).toBe(true);
   expect(await sw.evaluate(async () => (await chrome.storage.local.get('myMusic')).myMusic)).toEqual([]);
   expect(await sw.evaluate(async (id) => !!(await MemeDB.getClip(id)), added.id)).toBe(false);
+});
+
+
+test.describe('free personal music',()=>{
+ test.use({pro:false});
+ test('a free user can upload and play their own music through the actual call panel',async({context,callPage})=>{
+  await callPage.evaluate(async()=>{await window.joinCall();await window.noDuck()});const quiet=await callPage.evaluate(()=>window.peakOver(300));
+  await callPage.mouse.click(42,574,{button:'right'});await clickPanel(callPage,'[data-tab="music"]');
+  const selected=callPage.waitForEvent('filechooser');await clickPanel(callPage,'.add-music');const chooser=await selected;await chooser.setFiles({name:'Personal beat.wav',mimeType:'audio/wav',buffer:Buffer.from(toneWavB64(330,1.5),'base64')});
+  const sw=context.serviceWorkers()[0];await expect.poll(()=>sw.evaluate(async()=>{const {myMusic}=await chrome.storage.local.get('myMusic');return myMusic?.length||0})).toBe(1);
+  await clickPanel(callPage,'.fx-chips button[title="Personal beat"]');expect(await callPage.evaluate(()=>window.peakOver(900))).toBeGreaterThan(Math.max(.1,quiet*2));
+  await callPage.keyboard.press('Alt+Digit0');await expect.poll(()=>callPage.evaluate(()=>window.peakOver(250))).toBeLessThan(.1);
+ });
 });

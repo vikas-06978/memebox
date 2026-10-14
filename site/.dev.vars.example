@@ -5,6 +5,10 @@ TURNSTILE_SITE_KEY=1x00000000000000000000AA
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 ADMIN_KEY=change-me-to-a-long-random-string
 RATE_SALT=another-long-random-string
-# A made-up UPI ID for trying /buy locally. Put your real one in Cloudflare, not here.
-UPI_ID=memebox@upi
+# Keep local payments closed. Configure real/test provider credentials separately when authorized.
+UPI_ID=
 UPI_NAME=MemeBox
+
+# Hosted files stay off unless deliberately enabled after billing review.
+HOSTED_FILES_ENABLED=off
+HOSTED_AUDIO_ENABLED=off

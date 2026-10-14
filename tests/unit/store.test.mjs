@@ -147,10 +147,14 @@ test('landing page links privacy, terms, feedback and the source code, and has a
   assert.ok(fs.existsSync(path.join(PUBLIC, 'assets', 'demo.png')));
 });
 
-test('privacy page says audio is processed only in the browser and what the form stores', () => {
+test('privacy distinguishes local processing, deliberate sharing, third-party playback and feedback storage', () => {
   const html = fs.readFileSync(path.join(PUBLIC, 'privacy.html'), 'utf8');
   assert.match(html, /inside your browser tab/);
-  assert.match(html, /does not collect, record, store or send<\/b> any of your audio or video/);
-  assert.match(html, /never saves, records, analyses or uploads/);
+  assert.match(html, /does not upload your live microphone or camera feed to MemeBox servers/);
+  assert.match(html, /processes sound levels and effects locally/);
+  assert.match(html, /recording you deliberately create/);
+  assert.match(html, /call website sends that mix/);
+  assert.match(html, /YouTube.*privacy policy/);
+  assert.match(html, /URL fragment, which is not sent to the web server/);
   assert.match(html, /We don't store your IP address/);
 });
