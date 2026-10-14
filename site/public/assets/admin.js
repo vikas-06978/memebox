@@ -113,6 +113,93 @@
   if (now) now.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   $('#refresh')?.addEventListener('click', () => location.reload());
 
+  // ---- pack audio trimmer: local-only preparation before the normal upload form ----
+  const trimSource = $('#trim-source');
+  if (trimSource) {
+    const audio = $('#trim-preview'), start = $('#trim-start'), end = $('#trim-end');
+    const play = $('#trim-play'), use = $('#trim-use'), status = $('#trim-status'), upload = $('#pack-upload-files');
+    let sourceFile = null, sourceUrl = '', previewEnd = 0;
+    const seconds = (v) => Math.max(0, Number(v) || 0);
+    const range = () => {
+      const duration = Number(audio.duration) || 0;
+      const from = Math.min(seconds(start.value), duration);
+      const to = Math.min(Math.max(seconds(end.value), from + 0.1), duration);
+      return { from, to, duration };
+    };
+    const wav = (samples, sampleRate) => {
+      const buf = new ArrayBuffer(44 + samples.length * 2), v = new DataView(buf);
+      const text = (at, s) => { for (let i = 0; i < s.length; i++) v.setUint8(at + i, s.charCodeAt(i)); };
+      text(0, 'RIFF'); v.setUint32(4, 36 + samples.length * 2, true); text(8, 'WAVE'); text(12, 'fmt ');
+      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+      text(36, 'data'); v.setUint32(40, samples.length * 2, true);
+      const fade = Math.min(Math.floor(samples.length / 2), Math.round(sampleRate * 0.005));
+      for (let i = 0; i < samples.length; i++) {
+        let n = Math.max(-1, Math.min(1, samples[i]));
+        if (fade && i < fade) n *= i / fade;
+        else if (fade && i >= samples.length - fade) n *= (samples.length - 1 - i) / fade;
+        v.setInt16(44 + i * 2, n < 0 ? Math.round(n * 32768) : Math.round(n * 32767), true);
+      }
+      return buf;
+    };
+    trimSource.addEventListener('change', () => {
+      sourceFile = trimSource.files[0] || null;
+      previewEnd = 0;
+      if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+      if (!sourceFile) { audio.removeAttribute('src'); status.textContent = 'Choose an audio file first.'; return; }
+      if (sourceFile.size > 50 * 1048576) { sourceFile = null; audio.removeAttribute('src'); status.textContent = 'That source is over 50 MB. Use a shorter audio file.'; return; }
+      sourceUrl = URL.createObjectURL(sourceFile); audio.src = sourceUrl;
+      status.textContent = 'Reading the audio…';
+    });
+    audio.addEventListener('loadedmetadata', () => {
+      if (!sourceFile) return;
+      if (!Number.isFinite(audio.duration) || audio.duration <= 0 || audio.duration > 600) {
+        status.textContent = 'Use an audio file between 0.1 seconds and 10 minutes. Movies and long recordings are rejected.';
+        return;
+      }
+      start.max = end.max = String(audio.duration);
+      start.value = '0'; end.value = String(Math.min(3, audio.duration).toFixed(1));
+      status.textContent = `Loaded ${audio.duration.toFixed(1)} seconds. Select a main part up to 10 seconds.`;
+    });
+    audio.addEventListener('timeupdate', () => {
+      if (previewEnd && audio.currentTime >= previewEnd) { audio.pause(); previewEnd = 0; }
+    });
+    play.addEventListener('click', async () => {
+      const r = range();
+      if (!sourceFile || !r.duration || r.duration > 600) { status.textContent = 'Choose a valid audio file first.'; return; }
+      if (r.to - r.from > 10) { status.textContent = 'The main meme part can be at most 10 seconds.'; return; }
+      audio.currentTime = r.from; previewEnd = r.to;
+      try { await audio.play(); } catch { status.textContent = 'Press play in the audio control, then try Preview again.'; }
+    });
+    use.addEventListener('click', async () => {
+      const r = range();
+      if (!sourceFile || !r.duration || r.duration > 600) { status.textContent = 'Choose a valid audio file first.'; return; }
+      if (r.to - r.from > 10) { status.textContent = 'Choose 10 seconds or less.'; return; }
+      use.disabled = true; status.textContent = 'Trimming locally in your browser…';
+      let context;
+      try {
+        context = new AudioContext();
+        const decoded = await context.decodeAudioData(await sourceFile.arrayBuffer());
+        const from = Math.floor(r.from * decoded.sampleRate), to = Math.min(decoded.length, Math.ceil(r.to * decoded.sampleRate));
+        const mono = new Float32Array(Math.max(1, to - from));
+        for (let channel = 0; channel < decoded.numberOfChannels; channel++) {
+          const data = decoded.getChannelData(channel);
+          for (let i = 0; i < mono.length; i++) mono[i] += data[from + i] / decoded.numberOfChannels;
+        }
+        const base = sourceFile.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9 _-]+/gi, '').trim() || 'meme';
+        const file = new File([wav(mono, decoded.sampleRate)], `${base}-clip.wav`, { type: 'audio/wav' });
+        const transfer = new DataTransfer(); transfer.items.add(file); upload.files = transfer.files;
+        upload.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        status.textContent = `${file.name} is ready in Files below (${(file.size / 1024).toFixed(0)} KB). Fill credit/source/licence, then Upload.`;
+      } catch {
+        status.textContent = 'Chrome could not decode this file. Convert it to MP3 or WAV and try again.';
+      } finally {
+        if (context) await context.close().catch(() => {});
+        use.disabled = false;
+      }
+    });
+  }
+
   // ---- section nav: highlight the section in view ----
   const links = $$('.admin-nav a[href^="#"]');
   const targets = links.map((a) => $(a.getAttribute('href'))).filter(Boolean);

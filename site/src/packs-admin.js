@@ -127,7 +127,7 @@ ${COPYRIGHT}
     <label>About it <input name="description" maxlength="400" placeholder="One line users will read"></label>
     <button type="submit" class="primary">Make the pack</button>
   </form>
-</section>`);
+</section>`, { script: true });
 }
 
 // "4 free (plan: 10) · 40 Pro Max": how many items each plan has, next to what you planned to give away free.
@@ -240,9 +240,24 @@ ${p.kind === 'links' ? `<section class="card">
   <h2>Upload audio</h2>
   ${hasBucket ? '' : '<p class="error">File storage is not set up yet (see the packs list page).</p>'}
   <p class="muted">Choose one or many files (mp3, m4a, ogg, opus, wav, webm, flac, aac; up to ${Math.round(MAX_AUDIO_BYTES / 1048576)} MB each). The file name becomes the title. Shorter, compressed files download faster for your users.</p>
+  <details class="notice" id="audio-trimmer">
+    <summary><b>Trim a full audio file to its main meme part</b></summary>
+    <p class="muted">The file stays in this browser. Choose the start and end, preview it, then press “Use this trimmed clip”. Meme clips are limited to 10 seconds.</p>
+    <div class="keyform">
+      <label>Full audio <input type="file" id="trim-source" accept="audio/*,.mp3,.m4a,.ogg,.opus,.wav,.webm,.flac,.aac"></label>
+      <audio id="trim-preview" controls preload="metadata"></audio>
+      <div class="row-wrap">
+        <label>Start (seconds) <input type="number" id="trim-start" min="0" step="0.1" value="0"></label>
+        <label>End (seconds) <input type="number" id="trim-end" min="0.1" step="0.1" value="1"></label>
+        <button type="button" id="trim-play">Preview main part</button>
+        <button type="button" id="trim-use" class="primary">Use this trimmed clip</button>
+      </div>
+      <p class="muted" id="trim-status" role="status">Choose an audio file first.</p>
+    </div>
+  </details>
   <form method="post" action="/admin/packs" enctype="multipart/form-data" class="keyform">
     <input type="hidden" name="action" value="items-upload"><input type="hidden" name="pack" value="${h(p.id)}">
-    <label>Files <input type="file" name="files" multiple accept="audio/*,.mp3,.m4a,.ogg,.opus,.wav,.webm,.flac,.aac" required></label>
+    <label>Files <input type="file" id="pack-upload-files" name="files" multiple accept="audio/*,.mp3,.m4a,.ogg,.opus,.wav,.webm,.flac,.aac" required></label>
     ${licenceFields}
     <button type="submit" class="primary">Upload</button>
   </form>
@@ -267,5 +282,5 @@ ${p.kind === 'memes' ? `<section class="card">
     <button type="submit" class="primary">Set the plan</button>
   </form>
   <div class="table-wrap"><table><tbody>${items.map((i) => itemRow(p, i)).join('')}</tbody></table></div>` : '<p class="muted">Nothing here yet.</p>'}
-</section>`);
+</section>`, { script: true });
 }

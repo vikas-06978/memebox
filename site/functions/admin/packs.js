@@ -21,6 +21,8 @@ const GLOBAL_MEME_PACKS = [
   { title: 'Global Trending', region: 'global', description: 'Current worldwide memes, reviewed and refreshed regularly.' },
   { title: 'Global After Dark', region: 'global', description: 'Strong-language global memes, hidden until adult content is enabled.' },
 ];
+const PACK_ADMIN_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self' blob:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'";
+const packResponse = (html) => adminResponse(html, { script: true, headers: { 'Content-Security-Policy': PACK_ADMIN_CSP } });
 
 const back = (id, msg, err) => {
   const q = new URLSearchParams();
@@ -42,9 +44,9 @@ export async function onRequest({ request, env }) {
     if (id) {
       const pack = await getPack(env.DB, id);
       if (!pack) return adminRedirect('/admin/packs?err=' + encodeURIComponent('That pack does not exist.'));
-      return adminResponse(packPage({ pack, packs: await listPacks(env.DB), items: await listItems(env.DB, id), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
+      return packResponse(packPage({ pack, packs: await listPacks(env.DB), items: await listItems(env.DB, id), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
     }
-    return adminResponse(packsListPage({ packs: await listPacks(env.DB), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env), delivery: await hostedUsage(env), audioEnabled: env.HOSTED_AUDIO_ENABLED === 'on' } }));
+    return packResponse(packsListPage({ packs: await listPacks(env.DB), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env), delivery: await hostedUsage(env), audioEnabled: env.HOSTED_AUDIO_ENABLED === 'on' } }));
   }
 
   if (request.method !== 'POST') return adminResponse('Method not allowed', { status: 405, type: 'text/plain; charset=utf-8', headers: { Allow: 'GET, POST' } });

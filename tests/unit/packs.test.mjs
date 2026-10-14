@@ -104,10 +104,14 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   assert.match(html, /Wait a Minute, Who Are You\?/);
   assert.match(html, /Phonk starter pack/);
   assert.match(html, /licensed to you in writing/);
-  assert.match(list.headers.get('Content-Security-Policy'), /media-src 'self'/);
-  assert.doesNotMatch(html, /<script|style="/);
+  assert.match(list.headers.get('Content-Security-Policy'), /script-src 'self'/);
+  assert.match(list.headers.get('Content-Security-Policy'), /media-src 'self' blob:/);
+  assert.match(html, /<script src="\/assets\/admin\.js" defer><\/script>/);
+  assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)|style="/);
   const one = await (await call(adminPacks, req('/admin/packs?id=' + id, { headers: { Cookie: cookie } }))).text();
   assert.match(one, /Upload audio/);
+  assert.match(one, /Trim a full audio file to its main meme part/);
+  assert.match(one, /id="pack-upload-files"/);
   assert.doesNotMatch(one, /Add text memes/, 'text memes belong to memes packs');
   assert.match(one, /You planned 10 free tracks/, 'the free plan counter');
   const row = await db.prepare('SELECT * FROM packs WHERE id = ?').bind(id).first();
