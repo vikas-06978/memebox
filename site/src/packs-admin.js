@@ -14,9 +14,9 @@ const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'p
 // Owner-supplied references for pack planning. These are deliberately not pack items:
 // a public YouTube reference is not permission to redistribute its audio.
 const MEME_CANDIDATES = [
-  { title: "Sike, That's the Wrong Number", pack: 'Global Internet Classics · Clean', url: 'https://youtu.be/GPXkjtpGCFI', evidence: '27M views in owner screenshot', status: 'Find original owner / permission' },
-  { title: '67 Kid', pack: 'Global Trending 2025–26 · Clean', url: 'https://youtu.be/L7ejl_Hj3A8', evidence: '7.4M views in owner screenshot', status: 'Verify original video, music and performer rights' },
-  { title: 'Wait a Minute, Who Are You?', pack: 'Global Internet Classics · Clean', url: 'https://youtube.com/shorts/wAMMfJcVaoI', evidence: '22K likes in owner screenshot', status: 'Find original videographer / permission' },
+  { title: "Sike, That's the Wrong Number", pack: 'Global Internet Classics · Clean', url: 'https://youtu.be/GPXkjtpGCFI', evidence: '27M views in owner screenshot', origin: 'Likely Supa Hot Fire / Deshawn Raw; verify exact original episode and owner', status: 'Find original owner / permission' },
+  { title: '67 Kid', pack: 'Global Trending 2025–26 · Clean', url: 'https://youtu.be/L7ejl_Hj3A8', evidence: '7.4M views in owner screenshot', origin: 'Unverified from supplied repost; identify original videographer and any underlying song', status: 'Verify original video, music and performer rights' },
+  { title: 'Wait a Minute, Who Are You?', pack: 'Global Internet Classics · Clean', url: 'https://youtube.com/shorts/wAMMfJcVaoI', evidence: '22K likes in owner screenshot', origin: 'Unverified from @Thatmemeguy42023 repost', status: 'Find original videographer / permission' },
 ];
 
 const COPYRIGHT = `
@@ -42,7 +42,7 @@ function packPicker(packs, selected = '') {
 function candidateQueue() {
   const rows = MEME_CANDIDATES.map((m) => `<tr>
     <td><b>${h(m.title)}</b><div class="muted">${h(m.evidence)}</div></td>
-    <td>${h(m.pack)}</td>
+    <td>${h(m.pack)}<div class="muted">${h(m.origin)}</div></td>
     <td>${h(m.status)}</td>
     <td><a class="button" href="${h(m.url)}" target="_blank" rel="noopener noreferrer">Preview on YouTube</a></td>
   </tr>`).join('');
