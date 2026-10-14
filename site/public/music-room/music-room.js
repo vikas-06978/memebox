@@ -9,6 +9,7 @@ MemeRoomI18n.ready.then(async () => {
   const originalIds = [...MemeMusic.PHONK_IDS, ...MemeMusic.IDS];
   let lists = [], showAdult = false, editId = '', selected = '', currentPlaylist = null, originalId = '', tier = 'all';
   let context = null, synth = null, timer = 0, paused = false, shuffle = false, published = [];
+  const previewCatalog = Array.isArray(globalThis.MemeBoxPreviewCatalog) ? globalThis.MemeBoxPreviewCatalog : [];
   const storageKey = 'memebox-room-playlists';
   const allowed = list => !list.explicit || showAdult;
   const make = (tag, text, className = '') => { const node=document.createElement(tag);node.textContent=text;if(className)node.className=className;return node; };
@@ -47,7 +48,7 @@ MemeRoomI18n.ready.then(async () => {
   function playPlaylist(list) {
     if(!allowed(list)){status(t('adult_blocked'));return;}
     stop();selected=list.id;currentPlaylist=list;$('now-title').textContent=list.title;
-    const source=new URL(list.videos?'https://www.youtube.com/watch':'https://www.youtube.com/playlist');source.searchParams.set(list.videos?'v':'list',list.videos?list.videos[0]:list.id);$('youtube-link').href=source.href;$('youtube-link').hidden=memeMode;
+    $('youtube-link').hidden=true;
     if(needsWeb) {
       const url=webUrl(list);$('website-player').href=url.href;$('website-player').hidden=false;
       status(t('room_web_required'));renderLists();window.open(url.href,'_blank','noopener');return;
@@ -75,9 +76,7 @@ MemeRoomI18n.ready.then(async () => {
       const details=make('div',''),heading=make('h3',item.title);details.append(heading,make('p',t('room_collection_meta')));
       const actions=make('div','','room-actions'),play=make('button',needsWeb?t('room_web_player'):t('room_play'));
       play.type='button';play.dataset.playlistPlay=item.id;play.setAttribute('aria-pressed',String(selected===item.id));play.addEventListener('click',()=>playPlaylist(item));
-      const edit=make('button',t('room_edit'));edit.type='button';edit.addEventListener('click',()=>{editId=item.id;$('playlist-name').value=item.title;$('playlist-url').value='https://www.youtube.com/playlist?list='+item.id;$('playlist-explicit').checked=item.explicit;$('playlist-manager').open=true;$('playlist-name').focus()});
-      const remove=make('button',t('room_remove'));remove.type='button';remove.addEventListener('click',async()=>{if(selected===item.id)stop();lists=lists.filter(list=>list.id!==item.id);if(editId===item.id)cancelEdit();await save();renderLists()});
-      actions.append(play,edit,remove);card.append(details,actions);$('playlist-list').append(card);
+      actions.append(play);card.append(details,actions);$('playlist-list').append(card);
     }
   }
   function renderOriginals() {
@@ -115,7 +114,12 @@ MemeRoomI18n.ready.then(async () => {
         id:'published-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).slice(0,50).filter(item=>typeof item?.videoId==='string'&&/^[A-Za-z0-9_-]{11}$/.test(item.videoId)).map(item=>({videoId:item.videoId,title:String(item.title||item.videoId).slice(0,100),credit:String(item.credit||'').slice(0,100),explicit:item.explicit===true}))
       })).filter(pack=>pack.items.length);
       renderPublished();$('published-status').textContent=published.length?'':t('room_catalog_empty');
-    }catch{$('published-status').textContent=t('room_catalog_unavailable')}
+    }catch{
+      published=previewCatalog.filter(pack=>pack?.kind===catalogKind).map((pack,index)=>({
+        id:'preview-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).filter(item=>/^[A-Za-z0-9_-]{11}$/.test(item.videoId||''))
+      }));
+      renderPublished();$('published-status').textContent=published.length?'Local review catalog · '+published.reduce((n,p)=>n+p.items.length,0)+' items':t('room_catalog_unavailable');
+    }
     finally{clearTimeout(timeout);$('published-browse').disabled=false;}
   });
   function cancelEdit(){editId='';$('playlist-form').reset();$('manager-status').textContent='';}
@@ -161,6 +165,7 @@ MemeRoomI18n.ready.then(async () => {
     let saved;try{saved=JSON.parse(localStorage.getItem(storageKey)||'null');showAdult=localStorage.getItem('memebox-room-adult')==='on'}catch{}lists=MemePlaylists.sanitize(saved);
     for(const item of document.querySelectorAll('.extension-only'))item.hidden=true;
   }
+  $('playlist-manager').hidden=true;
   $('extension-player-help').hidden=!needsWeb;
   $('room-adult').checked=showAdult;$('review-status').hidden=MEMEBOX_CONFIG.PRO_ENABLED!==false;
   $('room-language').replaceChildren(...MemeRoomI18n.choices.map(([id,name])=>new Option(name,id)));$('room-language').value=MemeRoomI18n.code;

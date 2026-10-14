@@ -357,6 +357,8 @@ $('line-pic').addEventListener('change', async () => {
     const data = await shrinkPicture(file);
     pic = { mode: 'new', data };
     setPicPreview(new Blob([data.bytes], { type: data.type }));
+    if (!$('line-text').value.trim()) $('line-text').value = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().slice(0, 300) || t('pg_pictures');
+    if (!$('line-id').value) $('line-form').requestSubmit();
   } catch (err) {
     toast(err.message, true);
   }
@@ -397,10 +399,11 @@ function startEdit(line) {
 
 function formLine() {
   const existing = lines.find((l) => l.id === $('line-id').value);
+  const text = $('line-text').value.trim() || (pic.mode === 'new' ? t('pg_pictures') : '');
   return sanitizeLine({
     ...(existing || { id: newId('l'), kind: 'tts' }),
     explicit: $('line-explicit').checked,
-    text: $('line-text').value,
+    text,
     say: $('line-say').value,
     lang: $('line-lang').value,
     tone: $('line-tone').value,

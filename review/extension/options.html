@@ -46,8 +46,18 @@
         <input type="hidden" id="line-id">
         <label class="check wide"><input id="line-explicit" type="checkbox"><span data-i18n="adult_mark">Contains strong language (18+)</span></label>
         <label class="wide"><span data-i18n="op_text">Text shown in the caption</span>
-          <input id="line-text" maxlength="300" required data-i18n-placeholder="op_text_ph" placeholder="e.g. Bhai tu rehne de">
+          <input id="line-text" maxlength="300" data-i18n-placeholder="op_text_ph" placeholder="Optional for a picture, e.g. Bhai tu rehne de">
         </label>
+        <div class="wide picture-field">
+          <span class="label" data-i18n="op_picture">Picture (optional)</span>
+          <div class="picture-row">
+            <img id="line-pic-preview" alt="" hidden>
+            <label class="button"><span data-i18n="op_picture_choose">🖼 Choose picture</span>
+              <input type="file" id="line-pic" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label>
+            <button type="button" id="line-pic-remove" class="small" hidden data-i18n="op_picture_remove">Remove picture</button>
+          </div>
+          <span class="hint" data-i18n="op_picture_hint">Choose a picture and it is ready. A caption is optional. It stays visible until ×, Escape or Stop all.</span>
+        </div>
         <label class="wide"><span data-i18n="op_say">Pronounce as (optional, e.g. Devanagari for Hinglish lines)</span>
           <input id="line-say" maxlength="300" placeholder="भाई तू रहने दे" lang="hi">
         </label>
@@ -62,16 +72,6 @@
         <label class="span2"><span data-i18n="op_line_volume">Volume of this line</span>
           <span class="range"><input id="line-vol" type="range" min="0" max="200" step="10" value="100"><output id="line-vol-out">100%</output></span>
         </label>
-        <div class="wide picture-field">
-          <span class="label" data-i18n="op_picture">Picture (optional)</span>
-          <div class="picture-row">
-            <img id="line-pic-preview" alt="" hidden>
-            <label class="button"><span data-i18n="op_picture_choose">🖼 Choose picture</span>
-              <input type="file" id="line-pic" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label>
-            <button type="button" id="line-pic-remove" class="small" hidden data-i18n="op_picture_remove">Remove picture</button>
-          </div>
-          <span class="hint" data-i18n="op_picture_hint">Your picture stays visible until you close it with ×, Escape or Stop all. Others see it when Caption on my camera is on. Use pictures you own or have permission to share.</span>
-        </div>
         <div class="actions wide">
           <button type="submit" class="primary" id="line-submit" data-i18n="op_add_line">Add line</button>
           <button type="button" id="line-preview" data-i18n="op_preview">▶ Preview</button>

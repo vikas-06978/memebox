@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { copyRoom } from './sync-music-room.mjs';
+import { CURATED_VIDEO_GROUPS } from '../site/src/curated-video-catalog.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 const input = path.join(root, 'extension/dist');
@@ -19,4 +20,13 @@ fs.appendFileSync(path.join(output, 'options.css'), '\n/* Local review: purchase
 console.log('Local review prepared: review/extension. Do not publish this unlocked build.');
 
 copyRoom(output, path.join(root, 'review/music-room'));
+const reviewRoom = path.join(root, 'review/music-room');
+const previewCatalog = CURATED_VIDEO_GROUPS.map(group => ({
+  kind: group.kind,
+  title: group.packTitle,
+  items: group.items.map(({ videoId, title, credit, explicit }) => ({ videoId, title, credit, explicit }))
+}));
+fs.writeFileSync(path.join(reviewRoom, 'preview-catalog.js'), `globalThis.MemeBoxPreviewCatalog=${JSON.stringify(previewCatalog)};\n`);
+const roomHtml = path.join(reviewRoom, 'music-room.html');
+fs.writeFileSync(roomHtml, fs.readFileSync(roomHtml, 'utf8').replace('<script src="music-room.js"></script>', '<script src="preview-catalog.js"></script><script src="music-room.js"></script>'));
 console.log('Static music room prepared for the local review launcher.');

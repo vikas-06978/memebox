@@ -19,6 +19,7 @@
       const v = Number(api.getSettings().musicVolume);
       return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0.5;
     };
+    let audience = api.getSettings().musicAudience === 'call' ? 'call' : 'me';
 
     const how = el('div', { className: 'fx-how' }, t('mu_how'), el('p', {}, t('mu_collection_help')));
     // ---- my own music: added right here, played into the call on repeat ----
@@ -46,7 +47,10 @@
     const plansBtn = el('button', { className: 'btn small', type: 'button' }, t('fx_plans'));
     plansBtn.addEventListener('click', () => api.openSite('/buy'));
     lock.append(el('span', {}, t('mu_locked')), plansBtn);
-    const body = el('div', { className: 'settings-body fx-body' }, how, chips, mineBox, status, lock,
+    const onlyMe = el('button', { className: 'chip', type: 'button' }, '🎧 Only me');
+    const everyone = el('button', { className: 'chip', type: 'button' }, '🎙 Everyone in call');
+    const audienceRow = el('div', { className: 'fx-group' }, el('div', { className: 'fx-label' }, 'Who hears the music?'), el('div', { className: 'fx-chips' }, onlyMe, everyone));
+    const body = el('div', { className: 'settings-body fx-body' }, how, audienceRow, chips, mineBox, status, lock,
       el('div', { className: 'row' }, el('span', {}, '\u{1F50A}'), vol, stopBtn));
     const sum = el('span', { className: 'sum' });
     const details = el('details', { className: 'settings fx' }, el('summary', {}, el('span', {}, t('mu_title')), sum), body);
@@ -106,7 +110,7 @@
       const f = api.frameId();
       if (f == null) { api.toast(t('mu_join'), 3500); return; }
       stopAll();
-      api.send({ type: 'play-mine', frameId: f, id, volume: volume() });
+      api.send({ type: 'play-mine', frameId: f, id, volume: volume(), audience });
     }
     try {
       chrome.storage.local.get('myMusic').then((r) => { mine = Array.isArray(r.myMusic) ? r.myMusic : []; renderMine(); }).catch(() => {});
@@ -134,19 +138,21 @@
       stopBtn.hidden = !callId && !localId;
       vol.value = Math.round(volume() * 100);
       sum.textContent = callId ? callName : localId ? t('mu_t_' + localId) : '';
+      onlyMe.classList.toggle('on', audience === 'me'); everyone.classList.toggle('on', audience === 'call');
+      onlyMe.setAttribute('aria-pressed', String(audience === 'me')); everyone.setAttribute('aria-pressed', String(audience === 'call'));
       if (api.panelIsOpen()) api.placePanel();
     }
 
     function pick(id) {
       if (id === callId || id === localId) { stopAll(); return; }
       stopAll();
-      if (can(id) && api.inCall()) {
-        api.sendToHook({ type: 'music-play', value: id, volume: volume() });
+      if (can(id) && api.inCall() && audience === 'call') {
+        api.sendToHook({ type: 'music-play', value: id, volume: volume(), audience });
       } else {
         const l = localPlayer();
         if (!l) return;
         l.player.setVolume(volume());
-        l.player.play(id, PREVIEW_SECONDS);
+        l.player.play(id, can(id) ? 0 : PREVIEW_SECONDS);
         localId = id;
         setTimeout(() => { if (localId === id && !l.player.playing) { localId = ''; render(); } }, PREVIEW_SECONDS * 1000 + 400);
       }
@@ -161,6 +167,8 @@
     }
 
     stopBtn.addEventListener('click', stopAll);
+    const setAudience = value => { audience=value;api.setLocal('musicAudience',value);api.saveSetting('musicAudience',value);stopAll();render(); };
+    onlyMe.addEventListener('click',()=>setAudience('me'));everyone.addEventListener('click',()=>setAudience('call'));
     vol.addEventListener('input', () => {
       const v = Number(vol.value) / 100;
       api.setLocal('musicVolume', v);

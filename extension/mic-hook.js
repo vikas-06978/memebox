@@ -82,7 +82,7 @@
       case 'beep': play(d.reqId, beep, '(test beep)'); break;
       case 'play-audio': playAudio(d); break;
       case 'stop': stopAll(); stopMusic(); clearCamCaption(); break;
-      case 'music-play': startMusic(String(d.value), d.volume); break;
+      case 'music-play': startMusic(String(d.value), d.volume, d.audience); break;
       case 'music-bytes': startMine(d); break;
       case 'music-stop': stopMusic(); break;
       case 'music-volume': if (musicPlayer) musicPlayer.setVolume(d.value); musicVolume = clamp(d.value, 0, 1, 0.5); if (mineGain) mineGain.gain.setTargetAtTime(musicVolume, ctx.currentTime, 0.05); break;
@@ -422,11 +422,12 @@
   let musicGeneration = 0;
   const MUSIC_MOOD = { funky: 'fun', party: 'excited', suspense: 'suspense', retro: 'fun', jazz: 'fun', epic: 'suspense', tropical: 'excited', disco: 'fun', club: 'excited', bass: 'excited', desi: 'excited', house: 'fun', phonk_desi: 'fun', phonk_drift: 'excited', phonk_midnight: 'suspense' };
 
-  function startMusic(id, vol) {
+  function startMusic(id, vol, audience = 'me') {
     musicGeneration++;
     if (!globalThis.MemeMusic || !MemeMusic.TUNES[id] || !isActive() || !ctx) { post({ type: 'music-state', id: '' }); return; }
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
-    if (!musicPlayer) musicPlayer = MemeMusic.createPlayer(ctx, board);
+    if (musicPlayer && musicPlayer.playing) musicPlayer.stop();
+    musicPlayer = MemeMusic.createPlayer(ctx, audience === 'call' ? board : ctx.destination);
     musicVolume = clamp(vol, 0, 1, musicVolume);
     musicPlayer.setVolume(musicVolume);
     musicPlayer.play(id);
@@ -470,7 +471,7 @@
       const gain = ctx.createGain();
       musicVolume = clamp(d.volume, 0, 1, musicVolume);
       gain.gain.value = musicVolume;
-      src.connect(gain).connect(board);
+      src.connect(gain).connect(d.audience === 'call' ? board : ctx.destination);
       src.start();
       mineSrc = src; mineGain = gain;
       duckTick(true);

@@ -1548,7 +1548,7 @@ void main(){
     // ---- the stage: where the animal is, and whether it stands (with legs) or only peeks in from the bottom ----
     // Normally it peeks from a bottom corner. With "Follow me" it comes out, walks, searches and welcomes you.
     function stageUpdate(cfg, tr, audio, now, pos, S, w) {
-      const T = R.stg || (R.stg = { x: null, fy: .988, sc: 1, s: 1, pf: 1, dir: 1, ph: 0, mode: 'rest', moving: false, bubble: '', bubbleUntil: 0, last: now, tear: 0, backT: 0, nextTrip: now + 7000, side: pos === 'left' ? -1 : 1, perch: 'corner', commandSeq: cfg.commandSeq, homePos: pos });
+      const T = R.stg || (R.stg = { x: null, fy: .988, sc: 1, s: 1, pf: 1, dir: 1, ph: 0, mode: 'rest', moving: false, bubble: '', bubbleUntil: 0, last: now, tear: 0, backT: 0, nextTrip: now + (cfg.character === 'snake' ? 1400 : 7000), side: pos === 'left' ? -1 : 1, perch: 'corner', commandSeq: cfg.commandSeq, homePos: pos });
       const dt = clamp((now - T.last) / 1000, 0, .1); T.last = now;
       const corner = pos === 'left' ? S * .6 / w : 1 - S * .6 / w;
       if (T.x == null) T.x = corner;
@@ -2224,7 +2224,7 @@ void main(){
         // ---- where YOU are (only when "Follow me" is on) ----
         const follow = cfg.follow === true;
         if (follow) R.followOn = now; // the camera hook asks for face results only while this is fresh
-        R.gestOn = cfg.gestures !== false; R.sensK = { low: 1.25, normal: 1, high: 0.8 }[cfg.sens] || 1;
+        R.gestOn = cfg.gestures !== false; R.sensK = { low: 1.12, normal: 0.86, high: 0.68 }[cfg.sens] || 0.86;
         const tr = follow ? (opts.track || trackFrame(src, now)) : IDLE_TRACK;
         const party = false; // no celebration while the person is absent
         if (follow) {

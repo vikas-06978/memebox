@@ -78,12 +78,12 @@
         }, picture ? [bytes, picture] : [bytes]);
       } else if (cmd.type === 'music-bytes' && typeof cmd.b64 === 'string') {
         const bytes = base64ToBuffer(cmd.b64);
-        toHook({ type: 'music-bytes', bytes, mid: String(cmd.mid || '').slice(0, 40), volume: num(cmd.volume, 0.5) }, [bytes]);
+        toHook({ type: 'music-bytes', bytes, mid: String(cmd.mid || '').slice(0, 40), volume: num(cmd.volume, 0.5), audience: cmd.audience === 'call' ? 'call' : 'me' }, [bytes]);
       } else if (cmd.type === 'voice') {
         // The hook (page world) can't look up extension URLs itself.
         toHook({ type: 'voice', value: String(cmd.value), url: chrome.runtime.getURL('voice-worklet.js') });
       } else if (HOOK_COMMANDS.has(cmd.type)) {
-        toHook({ type: cmd.type, reqId: cmd.reqId, value: cmd.value, volume: cmd.volume });
+        toHook({ type: cmd.type, reqId: cmd.reqId, value: cmd.value, volume: cmd.volume, audience: cmd.audience === 'call' ? 'call' : 'me' });
       }
     } else if (window === window.top && typeof MemeBridge.onUiMessage === 'function') {
       MemeBridge.onUiMessage(msg);

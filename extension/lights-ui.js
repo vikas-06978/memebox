@@ -268,7 +268,7 @@
       outfitRow.hidden = c.character === 'none';
       homeRow.hidden = commandRow.hidden = c.character === 'none';
       put(homeChips, ['shoulder','head','corner'].map(id => chip(t('pg_'+id), c.charHome===id, id!=='corner'&&!can('follow'), ()=>set({charHome:id,command:id,commandSeq:Date.now()},true))));
-      put(commandChips, ['signature','wave','jump','roll','sit','cry','heartbeat'].map(id => chip(t(id==='signature'?'pg_personality':'pg_'+id), false, !can('character:'+c.character), ()=>set({ command:id, commandSeq:Date.now() },true))));
+      put(commandChips, ['signature','wave','jump','roll','sit','cry','heartbeat','dance'].map(id => chip(t(id==='signature'?'pg_personality':'pg_'+id), false, !can('character:'+c.character), ()=>set({ command:id, commandSeq:Date.now() },true))));
       put(filterChips, Fx.FILTERS.map((f) => {
         const locked = f !== 'none' && !Fx.FREE_FILTERS.includes(f)
           && !(Fx.PRO_FILTERS.includes(f) ? (can('filtersPro') || can('filter:' + f)) : can('filter:' + f));

@@ -333,7 +333,7 @@ async function callPanelStore(msg) {
   return { ok: true };
 }
 
-async function playMine(tabId, { frameId, id, volume }) {
+async function playMine(tabId, { frameId, id, volume, audience }) {
   const epoch = playbackEpoch.get(tabId) || 0;
   const {settings,myMusic}=await chrome.storage.local.get(['settings','myMusic']);
   const track=Array.isArray(myMusic)?myMusic.find(track=>track.id===id):null;
@@ -343,7 +343,7 @@ async function playMine(tabId, { frameId, id, volume }) {
   const fresh = await chrome.storage.local.get('settings');
   if (!MEME.contentAllowed(track, fresh.settings)) throw new Error('Adult music is hidden. Enable the 18+ preference first.');
   if (epoch !== (playbackEpoch.get(tabId) || 0)) return;
-  sendToTab(tabId, { type: 'hook', cmd: { type: 'music-bytes', mid: String(id), b64: toBase64(clip.bytes), volume: Number.isFinite(Number(volume)) ? Number(volume) : 0.5 } }, frameId);
+  sendToTab(tabId, { type: 'hook', cmd: { type: 'music-bytes', mid: String(id), b64: toBase64(clip.bytes), volume: Number.isFinite(Number(volume)) ? Number(volume) : 0.5, audience: audience === 'call' ? 'call' : 'me' } }, frameId);
 }
 
 // ---------- which tabs are in a call (for the popup) ----------

@@ -69,13 +69,14 @@ test('meme audio never goes to speaker-only APIs in the call page scripts', () =
     const src = fs.readFileSync(path.join(EXT, f), 'utf8');
     assert.doesNotMatch(src, /speechSynthesis|new Audio\(|createElement\(['"]audio/, `${f} uses no speaker-only audio`);
   }
-  // In mic-hook, ctx.destination is only used by the optional monitor, and to keep a
-  // captured tab audible for you (capturing a tab silences it), never for meme audio.
+  // In mic-hook, speaker output is limited to the optional monitor, captured-tab playback,
+  // and the two explicit "Only me" music routes. Meme sounds still always use the call bus.
   const hook = fs.readFileSync(path.join(EXT, 'mic-hook.js'), 'utf8');
   const uses = hook.split('\n').filter((l) => /ctx\.destination/.test(l) && !l.trim().startsWith('//'));
-  assert.equal(uses.length, 2, 'exactly two ctx.destination uses');
+  assert.equal(uses.length, 4, 'exactly four reviewed ctx.destination uses');
   assert.ok(uses.some((l) => /monitor/.test(l)), 'monitor');
   assert.ok(uses.some((l) => /hear.*tabHear/.test(l)), 'captured tab kept audible');
+  assert.equal(uses.filter((l) => /audience.*call/.test(l)).length, 2, 'original and personal music have explicit audience routing');
 });
 
 test('the voice worklet is the only page-visible file, and only on the call sites', () => {
