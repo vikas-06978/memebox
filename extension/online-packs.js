@@ -55,6 +55,10 @@
       if (p.items.some((i) => i.explicit)) tags.push(t('op_online_strong_tag'));
       const languageNames = [...new Set(all.filter((i) => i.lang).map((i) => i.languageName || MEME.LANGS[i.lang] || i.lang))];
       const note = [p.description, languageNames.join(' · '), [...new Set(all.map((i) => i.licence).filter(Boolean))].join(' · ')].filter(Boolean).join(' · ');
+      const credits = el('ul', { className: 'pack-item-credits', 'aria-label': 'Pack credits' }, ...all.map((i) => {
+        const attribution = [i.credit ? `By ${i.credit}` : '', i.licence || 'Credit pending'].filter(Boolean).join(' · ');
+        return el('li', {}, el('span', { className: 'pack-item-title' }, i.title), el('span', { className: 'hint' }, attribution));
+      }));
       const act = el('div', { className: 'actions' });
       if (have) act.append(el('span', { className: 'tag' }, t('op_online_added')));
       if (fresh.length) {
@@ -70,7 +74,7 @@
         act.append(rm);
       }
       list.append(el('li', {}, el('div', { className: 'pack-name' }, el('b', {}, p.title), ' ', ...tags.map((x) => el('span', { className: 'tag' }, x))),
-        note ? el('div', { className: 'hint' }, note) : '', act));
+        note ? el('div', { className: 'hint' }, note) : '', credits, act));
     }
   }
 

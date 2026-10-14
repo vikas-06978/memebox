@@ -8,15 +8,15 @@ async function seed(site) {
   const pack = (id, title, kind, region, tier) => site.db.prepare(
     "INSERT INTO packs (id, title, kind, region, tier, description, status, sort, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'test pack', 'live', 100, ?, ?)").bind(id, title, kind, region, tier, ts, ts).run();
   const item = (id, packId, title, kind, extra = {}) => site.db.prepare(
-    "INSERT INTO pack_items (id, pack_id, title, kind, file_key, mime, bytes, text, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at, tier) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, 'Own work', '', '', 1, 'live', 100, ?, ?)")
-    .bind(id, packId, title, kind, extra.key || '', extra.mime || '', extra.bytes || 0, extra.text || '', extra.lang || '', extra.explicit ? 1 : 0, ts, extra.tier || '').run();
+    "INSERT INTO pack_items (id, pack_id, title, kind, file_key, mime, bytes, text, lang, tags, explicit, licence, source, credit, cleared, status, sort, created_at, tier) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?, '', ?, 1, 'live', 100, ?, ?)")
+    .bind(id, packId, title, kind, extra.key || '', extra.mime || '', extra.bytes || 0, extra.text || '', extra.lang || '', extra.explicit ? 1 : 0, extra.licence || 'Own work', extra.credit || '', ts, extra.tier || '').run();
   await pack('phonk-free', 'Phonk starter', 'music', 'common', 'max'); // a Pro Max pack with two free tracks: you choose which ones
   await pack('india-memes', 'India memes', 'memes', 'in', 'free');
   await pack('pro-music', 'Pro beats', 'music', 'common', 'pro');
   for (const n of [1, 2]) {
     const key = `packs/phonk-free/i-track0000${n}.mp3`;
     await site.bucket.put(key, new Uint8Array(3000).fill(n), { httpMetadata: { contentType: 'audio/mpeg' } });
-    await item(`i-track0000${n}`, 'phonk-free', `Track ${n}`, 'audio', { key, mime: 'audio/mpeg', bytes: 3000, tier: 'free' });
+    await item(`i-track0000${n}`, 'phonk-free', `Track ${n}`, 'audio', { key, mime: 'audio/mpeg', bytes: 3000, tier: 'free', credit: `Creator ${n}`, licence: 'CC BY' });
   }
   const paidKey = 'packs/phonk-free/i-track00009.mp3';
   await site.bucket.put(paidKey, new Uint8Array(900), { httpMetadata: { contentType: 'audio/mpeg' } });
@@ -45,15 +45,17 @@ test('online packs: browse, add free music and memes, paid packs are "Coming soo
     });
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/options.html`);
-    await expect(page.locator('#online-list li')).toHaveCount(0); // nothing is contacted until "Browse packs"
+    await expect(page.locator('#online-list > li')).toHaveCount(0); // nothing is contacted until "Browse packs"
     await page.locator('#online-browse').click();
-    await expect(page.locator('#online-list li')).toHaveCount(4);
-    const pro = page.locator('#online-list li', { hasText: 'Pro beats' });
+    await expect(page.locator('#online-list > li')).toHaveCount(4);
+    const pro = page.locator('#online-list > li', { hasText: 'Pro beats' });
     await expect(pro.locator('button')).toHaveText('Coming soon');
     await expect(pro.locator('button')).toBeDisabled();
 
     // free music -> "My music" in the panel
-    const phonk = page.locator('#online-list li', { hasText: 'Phonk starter' });
+    const phonk = page.locator('#online-list > li', { hasText: 'Phonk starter' });
+    await expect(phonk.getByText('Track 1')).toBeVisible();
+    await expect(phonk.getByText('By Creator 1 · CC BY')).toBeVisible();
     await phonk.getByRole('button', { name: /^Add/ }).click();
     
     await expect(phonk.getByText('Added ✓')).toBeVisible();
@@ -64,7 +66,7 @@ test('online packs: browse, add free music and memes, paid packs are "Coming soo
     expect(clip).toBe(3000);
 
     // a picture pack: the free picture becomes a line with the picture
-    const pics = page.locator('#online-list li', { hasText: 'Meme pictures' });
+    const pics = page.locator('#online-list > li', { hasText: 'Meme pictures' });
     await pics.getByRole('button', { name: /^Add/ }).click();
     await expect(pics.getByText('Added ✓')).toBeVisible();
     const withPic = (await page.evaluate(() => chrome.storage.local.get('lines'))).lines.filter((l) => l.id.startsWith('pk-') && l.pictureId);
@@ -73,7 +75,7 @@ test('online packs: browse, add free music and memes, paid packs are "Coming soo
     await pics.getByRole('button', { name: 'Remove' }).click();
 
     // memes: the strong line is left out until the switch is on
-    const india = page.locator('#online-list li', { hasText: 'India memes' });
+    const india = page.locator('#online-list > li', { hasText: 'India memes' });
     await india.getByRole('button', { name: /^Add/ }).click();
     await expect(india.getByText('Added ✓')).toBeVisible();
     let { lines } = await page.evaluate(() => chrome.storage.local.get('lines'));
