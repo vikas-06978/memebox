@@ -197,7 +197,7 @@ test('collected video and Phonk links import once as hidden drafts with language
   const adult = await listItems(db, 'india-after-dark-video-memes');
   const world = await listItems(db, 'worldwide-video-meme-classics');
   const phonk = await listItems(db, 'memebox-curated-phonk');
-  assert.deepEqual([clean.length, adult.length, world.length, phonk.length], [18, 6, 14, 2]);
+  assert.deepEqual([clean.length, adult.length, world.length, phonk.length], [18, 6, 15, 1]);
   assert.ok([...clean, ...adult, ...world, ...phonk].every((i) => i.status === 'draft' && Number(i.cleared) === 0));
   assert.ok(adult.every((i) => Number(i.explicit) === 1));
   assert.equal(adult.find((i) => i.title === 'Deepak Kalal Marathi Meme').lang, 'mr');

@@ -325,6 +325,14 @@ export const CURATED_VIDEO_GROUPS = [
         "lang": "",
         "tags": "dance, music, move your body",
         "explicit": false
+      },
+      {
+        "videoId": "j9V78UbdzWI",
+        "title": "Coffin Dance",
+        "credit": "Astronomia",
+        "lang": "",
+        "tags": "global meme, dance",
+        "explicit": false
       }
     ]
   },
@@ -334,14 +342,6 @@ export const CURATED_VIDEO_GROUPS = [
     "kind": "links",
     "region": "global",
     "items": [
-      {
-        "videoId": "j9V78UbdzWI",
-        "title": "Coffin Dance",
-        "credit": "Astronomia",
-        "lang": "",
-        "tags": "phonk, music",
-        "explicit": false
-      },
       {
         "videoId": "cNwLovx3dj0",
         "title": "Money Follows",

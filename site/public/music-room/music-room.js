@@ -94,10 +94,18 @@ MemeRoomI18n.ready.then(async () => {
       const items=pack.items.filter(item=>showAdult||!item.explicit);if(!items.length)continue;
       const card=make('article','','room-track');card.dataset.published=pack.id;
       const details=make('div','');details.append(make('h3',pack.title),make('p',t('room_published_count',items.length)));
-      const songs=make('ol','');for(const item of items)songs.append(make('li',item.title+(!memeMode&&item.credit?' · '+item.credit:'')));details.append(songs);
+      const songs=make(memeMode?'div':'ol','',memeMode?'meme-items':'');
+      for(const item of items) {
+        if(memeMode) {
+          const row=make('div','','meme-item'),name=make('span',item.title),playOne=make('button',needsWeb?t('room_web_player'):t('room_play'));
+          playOne.type='button';playOne.dataset.videoId=item.videoId;playOne.addEventListener('click',()=>playPlaylist({id:item.videoId,title:item.title,videos:[item.videoId],explicit:item.explicit}));
+          row.append(name,playOne);songs.append(row);
+        } else songs.append(make('li',item.title+(item.credit?' · '+item.credit:'')));
+      }
+      details.append(songs);
       const play=make('button',needsWeb?t('room_web_player'):t('room_play'));play.type='button';play.dataset.publishedPlay=pack.id;
       play.addEventListener('click',()=>{const playable=pack.items.filter(item=>showAdult||!item.explicit);if(playable.length)playPlaylist({id:pack.id,title:pack.title,videos:playable.map(item=>item.videoId),explicit:playable.some(item=>item.explicit)})});
-      card.append(details,play);$('published-list').append(card);
+      card.append(details);if(!memeMode)card.append(play);$('published-list').append(card);
     }
   }
   $('published-browse').addEventListener('click',async()=>{
