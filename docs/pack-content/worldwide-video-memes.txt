@@ -1,0 +1,7 @@
+# Worldwide video meme candidates
+# Admin import format: URL | title | creator
+# Additional item metadata is written after each row until the admin importer
+# supports language columns for YouTube links.
+
+https://www.youtube.com/watch?v=nUHKOgHgQc4 | Turtle Song (Persian) | Verify original artist and channel before Live
+# Category: Worldwide Video Memes; language: Persian (fa); 18+: no; tags: song, turtle, Persian
