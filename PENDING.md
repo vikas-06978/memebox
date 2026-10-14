@@ -3,7 +3,8 @@
 ## Current local review, 2026-10-14
 
 - Admin pack destination selector added to the catalog and editor: choose an existing pack before adding content. No public content or deployment changed.
-- Next implementation: enforce personal audio duration and aggregate storage limits (currently only 12 tracks / 8 MB each), show personal tracks in the full-page music room, separate owner-curated collections from private editing, remove the optional app source-playlist link while retaining provider branding, and add an explicit tab-audio sharing flow for YouTube in calls. Real Meet delivery still needs verification. Original Desi/Drift/Midnight music revisions are deferred at the owner's request.
+- Done locally: admin-controlled YouTube video meme packs are separate from Phonk and downloadable audio packs. One click creates five Draft folders: Worldwide Classics, Worldwide Trending, India & Regional, Gaming and After Dark. The visible player streams official YouTube embeds; MemeBox does not download or host the videos. Users can browse and play Live folders but cannot edit the shared catalog. Strong-language videos stay hidden until opt-in, and a separate `MEME_VIDEO_MODE=off` switch can pause this catalog.
+- Remaining before release: add authorized/official video links and credits through `/admin/packs`, verify each embed, test **Send this tab’s sound** in a real Meet call, and finish native translations for the new video-meme labels. Original Desi/Drift/Midnight music revisions are deferred at the owner's request.
 
 **Deployment is paused until the owner explicitly requests it.** The historical notes below contain old versions, prices and release commands; use `docs/upgrade-progress.md` for current implementation status and `site/src/shop.js` for prices.
 

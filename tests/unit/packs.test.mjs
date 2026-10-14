@@ -149,6 +149,43 @@ test('global meme pack folders are created once as free drafts', async () => {
   assert.equal(packs.filter((p) => p.id.startsWith('global-') || p.id === 'universal-reactions-sfx').length, 5);
 });
 
+test('admin creates five free video meme folders once, including India and worldwide discovery', async () => {
+  const first = await call(adminPacks, post({ action: 'global-video-pack-folders' }));
+  assert.match(msgOf(first), /5 Draft YouTube video meme folders created/);
+  const packs = (await listPacks(db)).filter((p) => p.kind === 'memevideos');
+  assert.equal(packs.length, 5);
+  assert.ok(packs.every((p) => p.tier === 'free' && p.status === 'draft'));
+  assert.equal(packs.find((p) => p.id === 'india-regional-video-memes').region, 'in');
+  assert.equal(packs.filter((p) => p.region === 'global').length, 4);
+  const second = await call(adminPacks, post({ action: 'global-video-pack-folders' }));
+  assert.match(msgOf(second), /already exist/);
+  assert.equal((await listPacks(db)).filter((p) => p.kind === 'memevideos').length, 5);
+});
+
+test('video meme packs publish official YouTube videos and use a separate owner switch from Phonk', async () => {
+  const memes = await makePack({ title: 'Worldwide Video Memes', kind: 'memevideos', region: 'global', tier: 'max' });
+  const phonk = await makePack({ title: 'Phonk Videos', kind: 'links', region: 'global' });
+  for (const [id, url, title] of [[memes, 'https://youtube.com/shorts/abcdefghijk', 'Global reaction'], [phonk, 'https://youtu.be/12345678901', 'Free phonk']]) {
+    const added = await call(adminPacks, post({ action: 'links-add', pack: id, links: `${url} | ${title} | Original channel`, official: 'on' }));
+    assert.match(msgOf(added), /1 link added/);
+    await call(adminPacks, post({ action: 'pack-update', pack: id, title: id === memes ? 'Worldwide Video Memes' : 'Phonk Videos', region: 'global', tier: 'max', status: 'live' }));
+  }
+  const all = (await (await call(apiPacks, req('/api/packs'))).json()).packs;
+  const videoPack = all.find((p) => p.id === memes);
+  assert.equal(videoPack.kind, 'memevideos');
+  assert.equal(videoPack.tier, 'free');
+  assert.deepEqual(videoPack.items.map((i) => [i.videoId, i.credit]), [['abcdefghijk', 'Original channel']]);
+  const noMemes = (await (await call(apiPacks, req('/api/packs'), env({ MEME_VIDEO_MODE: 'off' }))).json()).packs;
+  assert.ok(!noMemes.some((p) => p.kind === 'memevideos'));
+  assert.ok(noMemes.some((p) => p.kind === 'links'));
+  const noPhonk = (await (await call(apiPacks, req('/api/packs'), env({ PHONK_MODE: 'off' }))).json()).packs;
+  assert.ok(noPhonk.some((p) => p.kind === 'memevideos'));
+  assert.ok(!noPhonk.some((p) => p.kind === 'links'));
+  const admin = await (await call(adminPacks, req('/admin/packs?id=' + memes, { headers: { Cookie: cookie } }))).text();
+  assert.match(admin, /Add YouTube meme videos/);
+  assert.match(admin, /50 videos per folder/);
+});
+
 test('uploaded audio: stored in the bucket, a draft unless cleared with a licence, bad files skipped', async () => {
   const id = await makePack();
   const bad = new File(['hello'], 'notes.txt', { type: 'text/plain' });

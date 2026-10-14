@@ -42,7 +42,7 @@
     if (!catalog) return;
     const want = regionSel.value;
     const mine = ['common','global','in']; // preferred language, not country, controls the call library
-    const packs = catalog.filter((p) => visible(p).length && (!want || p.region === want))
+    const packs = catalog.filter((p) => p.kind !== 'memevideos' && visible(p).length && (!want || p.region === want))
       .sort((a, b) => mine.indexOf(a.region) - mine.indexOf(b.region));
     if (!packs.length) { status.textContent = t('op_online_none'); return; }
     status.textContent = t('op_online_space', (usedBytes() / 1048576).toFixed(1), String(MAX_PACK_BYTES / 1048576));

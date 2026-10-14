@@ -9,7 +9,7 @@ const tierText = { free: 'Free', pro: 'Pro', max: 'Pro Max' };
 // The plan of one item: '' follows the pack.
 const itemTierOpts = (selected, packTier) => `<option value=""${selected ? '' : ' selected'}>Same as the pack (${h(tierText[packTier] || packTier)})</option>${TIERS.map((t) => `<option value="${t}"${selected === t ? ' selected' : ''}>${tierText[t]} (this item only)</option>`).join('')}`;
 // What you plan to give away free, per type (shown as a counter next to the real number).
-const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'picture'], links: [10, 'tracks'] };
+const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'picture'], links: [10, 'tracks'], memevideos: [20, 'videos'] };
 
 // Owner-supplied references for pack planning. These are deliberately not pack items:
 // a public YouTube reference is not permission to redistribute its audio.
@@ -39,7 +39,7 @@ function packPicker(packs, selected = '') {
     <h2>Choose a pack to add content</h2>
     <p class="muted">Packs work like folders. Choose the destination first, then add memes, songs or pictures inside it. Changes stay in that pack.</p>
     ${packs.length ? `<form method="get" action="/admin/packs" class="keyform">
-      <label>Destination pack <select name="id" required><option value="">Choose a pack</option>${packs.map((p) => `<option value="${h(p.id)}"${p.id === selected ? ' selected' : ''}>${h(p.title)} (${h(({ music: 'Music', memes: 'Memes', pictures: 'Pictures', links: 'YouTube collection' })[p.kind] || p.kind)}, ${h(REGIONS[p.region] || p.region)})</option>`).join('')}</select></label>
+      <label>Destination pack <select name="id" required><option value="">Choose a pack</option>${packs.map((p) => `<option value="${h(p.id)}"${p.id === selected ? ' selected' : ''}>${h(p.title)} (${h(({ music: 'Music', memes: 'Memes', pictures: 'Pictures', links: 'YouTube music', memevideos: 'YouTube meme videos' })[p.kind] || p.kind)}, ${h(REGIONS[p.region] || p.region)})</option>`).join('')}</select></label>
       <button type="submit" class="primary">Open pack to add content</button>
     </form>` : '<p class="muted">Create your first pack below, then add content inside it.</p>'}
     <p class="muted">Only admins publish shared packs. Users add their own files privately on their device.</p>
@@ -70,6 +70,10 @@ function memePackBlueprints() {
       <input type="hidden" name="action" value="global-pack-folders">
       <button type="submit" class="primary">Create these five Draft pack folders</button>
     </form>
+    <form method="post" action="/admin/packs" class="inline">
+      <input type="hidden" name="action" value="global-video-pack-folders">
+      <button type="submit" class="primary">Create five YouTube video meme folders</button>
+    </form>
     <p class="muted">Safe to press again: existing folders are kept and duplicates are not created.</p>
   </section>`;
 }
@@ -92,7 +96,7 @@ export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = 
   const rows = packs.map((p) => `
     <tr>
       <td><a href="/admin/packs?id=${h(p.id)}"><b>${h(p.title)}</b></a><div class="muted">${h(p.id)}</div></td>
-      <td>${h(p.kind === 'music' ? 'Music' : p.kind === 'pictures' ? 'Pictures' : p.kind === 'links' ? 'Phonk Mode' : 'Memes')}</td>
+      <td>${h(p.kind === 'music' ? 'Music' : p.kind === 'pictures' ? 'Pictures' : p.kind === 'links' ? 'Phonk Mode' : p.kind === 'memevideos' ? 'Video memes' : 'Memes')}</td>
       <td>${h(REGIONS[p.region] || p.region)}</td>
       <td>${h(tierText[p.tier] || p.tier)}</td>
       <td>${p.status === 'live' ? '<b>Live</b>' : '<span class="muted">Draft</span>'}</td>
@@ -121,7 +125,7 @@ ${COPYRIGHT}
   <form method="post" action="/admin/packs" class="keyform">
     <input type="hidden" name="action" value="pack-create">
     <label>Name <input name="title" maxlength="80" required placeholder="e.g. Phonk starter pack"></label>
-    <label>Type <select name="kind"><option value="music">Music (audio tracks)</option><option value="memes">Memes (sounds and lines)</option><option value="pictures">Pictures (meme pictures)</option><option value="links">Phonk Mode (YouTube links, nothing hosted)</option></select></label>
+    <label>Type <select name="kind"><option value="music">Music (audio tracks)</option><option value="memes">Memes (sounds and lines)</option><option value="pictures">Pictures (meme pictures)</option><option value="links">Phonk Mode (YouTube links, nothing hosted)</option><option value="memevideos">Video memes (YouTube links, nothing hosted)</option></select></label>
     <label>For <select name="region">${opts(REGIONS, 'common')}</select></label>
     <label>Plan <select name="tier"><option value="free">Free</option><option value="pro">Pro</option><option value="max">Pro Max</option></select></label>
     <label>About it <input name="description" maxlength="400" placeholder="One line users will read"></label>
@@ -215,10 +219,10 @@ ${COPYRIGHT}
   </form>
   <form method="post" action="/admin/packs" class="inline"><input type="hidden" name="action" value="pack-delete"><input type="hidden" name="pack" value="${h(p.id)}"><button type="submit">Delete this pack and all its files</button></form>
 </section>
-${p.kind === 'links' ? `<section class="card">
-  <h2>Add YouTube links</h2>
-  <p class="notice" role="note"><b>Nothing is hosted.</b> MemeBox plays these through YouTube's own player, so the artists keep their views. Add only <b>official uploads</b> (the artist's or label's own channel, or a channel that owns the rights) that <b>allow embedding</b>. Never add re-uploads by other people, and remove a track if its owner asks. Phonk Mode can be switched off for everybody at any time (PHONK_MODE=off in Cloudflare).</p>
-  <p class="muted">One per line: <code>link | title | artist</code> (title and artist are optional). Normal YouTube links work (youtube.com/watch?v=..., youtu.be/...). Limits: 10 playlists, 50 tracks each, 500 tracks total, including drafts. Use Free for third-party playlists; paid originals belong in Music packs.</p>
+${['links','memevideos'].includes(p.kind) ? `<section class="card">
+  <h2>${p.kind === 'memevideos' ? 'Add YouTube meme videos' : 'Add YouTube music links'}</h2>
+  <p class="notice" role="note"><b>Nothing is hosted.</b> MemeBox plays these through YouTube's visible player, so the source keeps its views and controls availability. Add official/authorized uploads that allow embedding. Remove an item if its owner asks.</p>
+  <p class="muted">One per line: <code>link | title | creator</code> (title and creator are optional). Normal YouTube links work (youtube.com/watch?v=..., youtu.be/..., shorts/...). Up to 50 videos per folder and 500 video links total. YouTube collections stay Free.</p>
   <form method="post" action="/admin/packs" class="keyform">
     <input type="hidden" name="action" value="links-add"><input type="hidden" name="pack" value="${h(p.id)}">
     <label class="wide">Links <textarea name="links" rows="8" maxlength="30000" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX | Track name | Artist" required></textarea></label>

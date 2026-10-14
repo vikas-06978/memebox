@@ -720,6 +720,9 @@
   const list = el('ul', { className: 'list' });
   const packsLink = el('button', { className: 'chip small packs-link', type: 'button', title: t('op_online_hint') }, t('pk_get'));
   packsLink.addEventListener('click', () => api.openPacks());
+  const videoMemesLink = el('button', { className: 'chip small packs-link', type: 'button', title: 'Browse admin-curated video meme packs' }, '🎬 Video memes');
+  videoMemesLink.addEventListener('click', () => bridge.toRuntime({ type: 'open-options', hash: 'meme-room' }));
+  const packLinks = el('div', { className: 'row packs-link' }, packsLink, videoMemesLink);
   const optionsBtn = el('button', { className: 'icon', type: 'button', title: t('options') }, '⚙️');
   const feedbackBtn = el('button', { className: 'icon', type: 'button', title: t('feedback') }, '💬');
   feedbackBtn.setAttribute('aria-label', t('feedback'));
@@ -780,7 +783,7 @@
     langChips,
     el('div', { className: 'row memes-row' }, randomBtn, beepBtn, stopBtn),
     list,
-    packsLink,
+    packLinks,
     settings,
     el('div', { className: 'foot' }, t('panel_foot')),
     timerNote,

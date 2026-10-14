@@ -34,6 +34,8 @@
     phonkBtn.dataset.musicRoom='true';
     phonkBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'music-room' }));
     phonkBtn.title = t('mu_phonk_local_tip');
+    const videoMemesBtn = el('button', { className: 'chip add-music', type: 'button', title: 'Browse admin-curated video memes from every region' }, '🎬 Video memes');
+    videoMemesBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'meme-room' }));
     mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });
     const status = el('div', { className: 'fx-status' });
@@ -96,7 +98,7 @@
         const x = el('button', { className: 'chip del', type: 'button', title: t('mu_del') }, '✕');
         x.addEventListener('click', async () => { if (callId === 'mine:' + m.id) stopAll(); await api.ask({ type: 'music-del', id: m.id }).catch(() => {}); });
         return el('span', { className: 'fx-pair' }, b, x);
-      }), addBtn, packsBtn, phonkBtn);
+      }), addBtn, packsBtn, phonkBtn, videoMemesBtn);
     }
     function playMine(id) {
       if (callId === 'mine:' + id) { stopAll(); return; }

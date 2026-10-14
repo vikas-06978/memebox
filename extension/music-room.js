@@ -3,6 +3,8 @@ const ROOM_ASSET_BASE = new URL('.', document.currentScript.src);
 MemeRoomI18n.ready.then(async () => {
   await MemePlan.ready;
   const $ = id => document.getElementById(id), { t } = MemeRoomI18n;
+  const memeMode = new URLSearchParams(location.search).get('mode') === 'memes';
+  const catalogKind = memeMode ? 'memevideos' : 'links';
   const inExtension = !!globalThis.chrome?.runtime?.id, needsWeb = inExtension || location.protocol === 'file:', EMBED = 'https://www.youtube-nocookie.com';
   const originalIds = [...MemeMusic.PHONK_IDS, ...MemeMusic.IDS];
   let lists = [], showAdult = false, editId = '', selected = '', currentPlaylist = null, originalId = '', tier = 'all';
@@ -13,6 +15,17 @@ MemeRoomI18n.ready.then(async () => {
   const status = text => { $('room-status').textContent=text; };
   const tierOf = id => MemeMusic.FREE_TUNES.includes(id) ? 'free' : ['phonk_drift','phonk_midnight','epic','disco','club','bass','house','desi'].includes(id) ? 'max' : 'pro';
   const tierName = value => value === 'max' ? 'Pro Max' : value === 'pro' ? 'Pro' : t('fx_tier_free');
+  if(memeMode) {
+    document.title='MemeBox Video Memes';document.body.classList.add('meme-video-room');
+    $('playlist-section').hidden=true;$('original-section').hidden=true;
+    document.querySelector('.room-kicker').textContent='Video memes for every country';
+    document.querySelector('.room-hero h2').textContent='Pick a meme. Play the moment.';
+    document.querySelector('.room-hero p').textContent='Admin-curated Worldwide, India, Gaming, Trending and After Dark video meme packs. YouTube streams the visible source video.';
+    document.querySelector('#published-section h2').textContent='Video meme packs';
+    document.querySelector('#published-section > p').textContent='Only the MemeBox admin publishes these categories. Browse to load the current catalog.';
+    document.querySelector('#how-to-add h2').textContent='Video memes in your call';
+    document.querySelector('#how-to-add > p').textContent='Play the visible YouTube video. To let everyone hear it, click the MemeBox toolbar icon and choose “Send this tab’s sound”.';
+  }
   async function save() {
     if(inExtension)await chrome.storage.local.set({musicRoomPlaylists:lists});
     else try{localStorage.setItem(storageKey,JSON.stringify(lists))}catch{ $('manager-status').textContent=t('room_storage_error'); }
@@ -21,11 +34,12 @@ MemeRoomI18n.ready.then(async () => {
   function stop() {
     clearTimeout(timer); if(synth)synth.stop(); originalId='';selected='';currentPlaylist=null;paused=false;
     $('youtube-player').removeAttribute('src');$('youtube-box').hidden=true;$('player-empty').hidden=false;
-    $('youtube-link').hidden=true;$('now-title').textContent=t('room_pick');status('');renderOriginals();renderLists();renderPublished();
+    $('youtube-link').hidden=true;$('now-title').textContent=memeMode?'Choose a video meme to start':t('room_pick');status('');renderOriginals();renderLists();renderPublished();
   }
   function webUrl(list) {
     const config=globalThis.MEMEBOX_CONFIG||{},local=(config.SITE_URL||'').startsWith('http://127.0.0.1:');
     const url=new URL(local?'http://127.0.0.1:8790/music-room.html':new URL('/music-room',config.SITE_URL||location.origin));
+    if(memeMode)url.searchParams.set('mode','memes');
     const selection=new URLSearchParams();
     if(list.videos)selection.set('videos',list.videos.join(','));else selection.set('list',list.id);selection.set('name',list.title);
     if(list.explicit)selection.set('explicit','1');url.hash=selection.toString();return url;
@@ -33,7 +47,7 @@ MemeRoomI18n.ready.then(async () => {
   function playPlaylist(list) {
     if(!allowed(list)){status(t('adult_blocked'));return;}
     stop();selected=list.id;currentPlaylist=list;$('now-title').textContent=list.title;
-    const source=new URL(list.videos?'https://www.youtube.com/watch':'https://www.youtube.com/playlist');source.searchParams.set(list.videos?'v':'list',list.videos?list.videos[0]:list.id);$('youtube-link').href=source.href;$('youtube-link').hidden=false;
+    const source=new URL(list.videos?'https://www.youtube.com/watch':'https://www.youtube.com/playlist');source.searchParams.set(list.videos?'v':'list',list.videos?list.videos[0]:list.id);$('youtube-link').href=source.href;$('youtube-link').hidden=memeMode;
     if(needsWeb) {
       const url=webUrl(list);$('website-player').href=url.href;$('website-player').hidden=false;
       status(t('room_web_required'));renderLists();window.open(url.href,'_blank','noopener');return;
@@ -92,12 +106,12 @@ MemeRoomI18n.ready.then(async () => {
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),8000);
     try {
       const catalogBase=!inExtension && /^https?:$/.test(location.protocol) && !MEMEBOX_CONFIG.SITE_URL.startsWith('http://127.0.0.1:') ? location.origin : MEMEBOX_CONFIG.SITE_URL;
-      const api=new URL('/api/packs',catalogBase);api.searchParams.set('kind','links');
+      const api=new URL('/api/packs',catalogBase);api.searchParams.set('kind',catalogKind);
       const config=await fetch(new URL('/api/config',catalogBase),{signal:abort.signal});
       if(!config.ok)throw Error('Catalog unavailable');
-      const settings=await config.json();if(settings.phonkEnabled===false){published=[];stop();$('published-status').textContent=t('room_catalog_paused');return;}
+      const settings=await config.json();if(!memeMode&&settings.phonkEnabled===false){published=[];stop();$('published-status').textContent=t('room_catalog_paused');return;}
       const response=await fetch(api,{signal:abort.signal});if(!response.ok)throw Error('Catalog unavailable');
-      const data=await response.json();published=(Array.isArray(data.packs)?data.packs:[]).filter(pack=>pack?.kind==='links').slice(0,10).map((pack,index)=>({
+      const data=await response.json();published=(Array.isArray(data.packs)?data.packs:[]).filter(pack=>pack?.kind===catalogKind).slice(0,memeMode?30:10).map((pack,index)=>({
         id:'published-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).slice(0,50).filter(item=>typeof item?.videoId==='string'&&/^[A-Za-z0-9_-]{11}$/.test(item.videoId)).map(item=>({videoId:item.videoId,title:String(item.title||item.videoId).slice(0,100),credit:String(item.credit||'').slice(0,100),explicit:item.explicit===true}))
       })).filter(pack=>pack.items.length);
       renderPublished();$('published-status').textContent=published.length?'':t('room_catalog_empty');

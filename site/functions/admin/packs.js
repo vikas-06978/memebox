@@ -21,6 +21,13 @@ const GLOBAL_MEME_PACKS = [
   { title: 'Global Trending', region: 'global', description: 'Current worldwide memes, reviewed and refreshed regularly.' },
   { title: 'Global After Dark', region: 'global', description: 'Strong-language global memes, hidden until adult content is enabled.' },
 ];
+const GLOBAL_VIDEO_MEME_PACKS = [
+  { title: 'Worldwide Video Meme Classics', region: 'global', description: 'Evergreen video memes recognized across countries.' },
+  { title: 'Worldwide Trending Video Memes', region: 'global', description: 'Current global video memes, rotated by the owner.' },
+  { title: 'India & Regional Video Memes', region: 'in', description: 'Indian and regional-language video memes.' },
+  { title: 'Gaming Video Memes', region: 'global', description: 'International gaming video memes and reactions.' },
+  { title: 'Video Memes After Dark', region: 'global', description: 'Strong-language video memes, hidden until adult content is enabled.' },
+];
 const PACK_ADMIN_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self' blob:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'";
 const packResponse = (html) => adminResponse(html, { script: true, headers: { 'Content-Security-Policy': PACK_ADMIN_CSP } });
 
@@ -68,6 +75,16 @@ export async function onRequest({ request, env }) {
         made++;
       }
       return back('', made ? `${made} Draft global meme pack folder${made === 1 ? '' : 's'} created.` : 'The five global meme pack folders already exist.');
+    }
+    if (action === 'global-video-pack-folders') {
+      let made = 0;
+      for (const p of GLOBAL_VIDEO_MEME_PACKS) {
+        const id = p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        if (await getPack(env.DB, id)) continue;
+        await createPack(env.DB, { ...p, kind: 'memevideos', tier: 'free' });
+        made++;
+      }
+      return back('', made ? `${made} Draft YouTube video meme folder${made === 1 ? '' : 's'} created.` : 'The five YouTube video meme folders already exist.');
     }
     if (!PACK_ID_RE.test(packId) || !(await getPack(env.DB, packId))) return back('', '', 'That pack does not exist.');
     const meta = {

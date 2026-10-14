@@ -40,3 +40,15 @@ test('published collections refresh from admin metadata, exclude adult songs and
  await page.locator('#room-adult').uncheck();expect(await page.locator('#youtube-player').getAttribute('src')).toBeNull();await expect(page.locator('#published-list li')).toHaveCount(1);
  version=2;await page.locator('#published-browse').click();await expect(page.locator('#published-list')).toContainText('Updated collection');expect(reads).toBe(4);
 });
+
+test('video meme mode is an admin-only catalog with regional packs, adult gating and a visible player',async({context})=>{
+ await mockYoutube(context);let reads=0;
+ await context.route('http://127.0.0.1:8789/api/config',route=>{reads++;return route.fulfill({headers:{'Access-Control-Allow-Origin':'*'},json:{phonkEnabled:true}})});
+ await context.route('http://127.0.0.1:8789/api/packs**',route=>{reads++;return route.fulfill({headers:{'Access-Control-Allow-Origin':'*'},json:{packs:[{id:'world-video',kind:'memevideos',title:'Worldwide Video Meme Classics',items:[{videoId:'abcdefghijk',title:'Clean reaction',credit:'Original channel'},{videoId:'12345678901',title:'After dark reaction',explicit:true}]}]}})});
+ const page=await context.newPage();await page.goto(origin+'/music-room.html?mode=memes');
+ await expect(page).toHaveTitle('MemeBox Video Memes');await expect(page.locator('#playlist-section')).toBeHidden();await expect(page.locator('#original-section')).toBeHidden();
+ await expect(page.locator('#published-section h2')).toHaveText('Video meme packs');await expect(page.locator('#how-to-add')).toContainText('Send this tab’s sound');expect(reads).toBe(0);
+ await page.locator('#published-browse').click();await expect(page.locator('[data-published]')).toHaveCount(1);await expect(page.locator('#published-list li')).toHaveCount(1);expect(reads).toBe(2);
+ await page.locator('[data-published-play]').click();await expect(page.locator('#youtube-player')).toBeVisible();await expect(page.locator('#youtube-player')).toHaveAttribute('src',/\/embed\/abcdefghijk\?/);await expect(page.locator('#youtube-link')).toBeHidden();
+ await page.locator('#room-adult').check();await expect(page.locator('#published-list li')).toHaveCount(2);
+});

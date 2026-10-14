@@ -9,3 +9,5 @@ Record mono WAV masters, trim silence and normalize listening volume. Prepare sh
 For NCS playlists, choose specific official uploads, verify embedding works and follow each track's current NCS usage/credit rules. The NCS name alone does not establish unrestricted licensing. Save `URL | title | artist` and the required credit. No unverified YouTube IDs are seeded into the app.
 
 Nothing in this directory has been uploaded or published.
+
+Video meme packs use the same provider-hosted model as the Phonk catalog. The admin stores an official YouTube watch, Shorts or youtu.be link plus title and creator; the public room displays YouTube's visible embed. The five default folders are Worldwide Classics, Worldwide Trending, India & Regional, Gaming and After Dark. Users cannot modify these shared folders, and India is a discovery category rather than a country lock. This avoids R2 storage for videos, but embedding and credit do not create reuse rights: verify the upload and its permissions before marking it official.

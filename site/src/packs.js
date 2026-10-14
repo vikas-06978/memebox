@@ -2,7 +2,7 @@
 // Audio files live in an R2 bucket (binding PACKS); everything else is in D1 (tables packs and pack_items).
 import { cleanKey, getLicense, LICENSE_RE } from './shop.js';
 
-export const KINDS = ['music', 'memes', 'pictures', 'links'];
+export const KINDS = ['music', 'memes', 'pictures', 'links', 'memevideos'];
 export const LINK_LIMITS = Object.freeze({ playlists: 10, perPlaylist: 50, total: 500 });
 export const TIERS = ['free', 'pro', 'max'];
 export const REGIONS = { common: 'For everyone', in: 'India (regional)', global: 'Worldwide' };
@@ -98,6 +98,10 @@ export async function createPack(db, { title, kind, region, tier, description })
   if (await getPack(db, id)) id = `${id}-${Math.random().toString(36).slice(2, 5)}`.slice(0, 41);
   const ts = now();
   const actualKind = KINDS.includes(kind) ? kind : 'music';
+  if (actualKind === 'memevideos') {
+    const count = await db.prepare("SELECT COUNT(*) AS n FROM packs WHERE kind = 'memevideos'").first();
+    if (Number(count?.n) >= 30) throw new Error('The video meme pack limit is reached (30). Remove one before adding another.');
+  }
   const created = await db.prepare('INSERT INTO packs (id, title, kind, region, tier, description, status, sort, created_at, updated_at) SELECT ?, ?, ?, ?, ?, ?, \'draft\', 100, ?, ? WHERE ? != \'links\' OR (SELECT COUNT(*) FROM packs WHERE kind = \'links\') < ?')
     .bind(id, t, actualKind, cleanRegion(region), TIERS.includes(tier) ? tier : 'free', clip(description, 400), ts, ts, actualKind, LINK_LIMITS.playlists).run();
   if (!created.meta.changes) throw new Error('The Phonk playlist limit is reached (10 playlists). Remove one before adding another.');
@@ -213,7 +217,7 @@ export async function addLinks(db, packId, text, meta = {}) {
       'INSERT INTO pack_items (id, pack_id, title, kind, text, source, credit, licence, cleared, status, sort, created_at, tier) SELECT ?, ?, ?, \'link\', ?, ?, ?, ?, ?, ?, 100, ?, ? ' +
       'WHERE (SELECT COUNT(*) FROM pack_items WHERE pack_id = ? AND kind = \'link\') < ? AND (SELECT COUNT(*) FROM pack_items WHERE kind = \'link\') < ?',
     ).bind(newItemId(), packId, clip(title, 80) || 'YouTube track', id, `https://www.youtube.com/watch?v=${id}`, clip(artist, 120), licence, cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier), packId, LINK_LIMITS.perPlaylist, LINK_LIMITS.total).run();
-    if (!added.meta.changes) { out.skipped.push('Playlist capacity reached (50 tracks per playlist, 500 total).'); break; }
+    if (!added.meta.changes) { out.skipped.push('Video folder capacity reached (50 videos per folder, 500 total).'); break; }
     out.added++;
   }
   return out;
@@ -277,13 +281,13 @@ export async function deleteItem(db, bucket, id) {
 // ---------- what users get ----------
 
 // Live packs with their live items (no file addresses: the extension asks /api/pack-file for each file).
-export async function publicCatalog(db, { links = true, audio = true, files = true } = {}) {
-  const packs = (await db.prepare("SELECT * FROM packs WHERE status = 'live' ORDER BY sort, title").all()).results.filter((p) => links || p.kind !== 'links'); // links = false is the kill switch of Phonk Mode
+export async function publicCatalog(db, { links = true, memeVideos = true, audio = true, files = true } = {}) {
+  const packs = (await db.prepare("SELECT * FROM packs WHERE status = 'live' ORDER BY sort, title").all()).results.filter((p) => (links || p.kind !== 'links') && (memeVideos || p.kind !== 'memevideos')); // separate owner kill switches
   const items = (await db.prepare("SELECT i.* FROM pack_items i JOIN packs p ON p.id = i.pack_id WHERE p.status = 'live' AND i.status = 'live' ORDER BY i.sort, i.created_at, i.title").all()).results;
   return packs.map((p) => {
     const mine = items.filter((i) => i.pack_id === p.id && (files || !i.file_key) && (audio || i.kind !== 'audio') && (i.kind !== 'link' || (canPublish(i) && VIDEO_ID_RE.test(i.text))));
     return {
-      id: p.id, title: p.title, kind: p.kind, region: p.region, tier: p.kind === 'links' ? 'free' : p.tier, description: p.description,
+      id: p.id, title: p.title, kind: p.kind, region: p.region, tier: ['links','memevideos'].includes(p.kind) ? 'free' : p.tier, description: p.description,
       bytes: mine.reduce((a, i) => a + Number(i.bytes || 0), 0),
       items: mine.map((i) => ({
         id: i.id, title: i.title, kind: i.kind, mime: i.mime, bytes: Number(i.bytes) || 0, text: i.kind === 'link' ? '' : i.text, lang: i.lang, tags: i.tags, tier: itemTier(i, p),

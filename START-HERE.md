@@ -16,6 +16,7 @@ The music room contains:
 - **Characters** opens the shared Playground: all fourteen companions, real species actions, Head/Shoulder/Corner, Roll/Sit, Leave/Return, nine outfits and 28 filters. This previews the same engine used on the call camera.
 - **Plans, prices and how to buy** shows pass/character prices and draft individual Pro cosmetic prices. Max music links select Max passes, not Pro. Checkout remains explicitly closed.
 - **Browse published collections** can read a running local/backend catalog or, later, the deployed owner-managed catalog. A backend is not included in the read-only launcher. Without one, your five private references and local originals remain available. Owner catalog edits through /admin/packs do not require an extension release.
+- **Video memes** opens a separate admin-controlled catalog with Worldwide, India & Regional, Gaming, Trending and After Dark folders. Users cannot edit these shared folders. The video stays visible in YouTube's player; MemeBox stores only its video ID and metadata. During a call, use the toolbar action **Send this tab’s sound** so other participants hear the player tab.
 
 YouTube requires a web referrer: opening its player directly from an extension or file page can produce Error 153. The local launcher provides the HTTP website player. The extension’s Phonk button opens the music room; choosing a playlist there opens its web player. No remote-player code executes in the extension itself.
 
@@ -32,5 +33,7 @@ For a quick offline listen, double-click **review/listen.html**. Its three compl
 5. Your own uploaded music is available on Free; premium bundled tunes keep their tiers. Private files stay on the device. Marked adult memes/collections are hidden until explicit self-declared opt-in; opting out stops active marked playback/call mixing.
 
 For developer/backend tests only, use npm ci then PORT=8789 npm run site:dev (PowerShell: $env:PORT=8789; npm run site:dev). See site/.dev.vars.example and docs/payment-testing.md; no live secrets are supplied. Hosted Cloudflare files remain default-off. Application limits do not guarantee provider pricing will never change.
+
+To prepare the default video catalog locally, sign in to `/admin`, open `/admin/packs`, press **Create five YouTube video meme folders**, open a folder and paste one item per line as `YouTube link | title | creator`. Mark the official-upload checkbox only after verifying the upload may be embedded, then make the folder Live. Region controls discovery order only; every country can browse every Live folder.
 
 See [the checklist](docs/local-review-checklist.md), [the companion/tier model](docs/companion-model.md) and [meme publishing](docs/meme-publishing.md). Account approval, real provider tests, original regional recordings, native copy review, owner-key rotation and actual call/weak-laptop checks remain release prerequisites. No remote migrations, main merge, site deployment or Web Store publication was performed.
