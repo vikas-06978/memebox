@@ -96,6 +96,9 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   assert.equal(id, 'phonk-starter-pack');
   const list = await call(adminPacks, req('/admin/packs', { headers: { Cookie: cookie } }));
   const html = await list.text();
+  assert.match(html, /Meme candidates \(3\)/);
+  assert.match(html, /Sike, That&#39;s the Wrong Number/);
+  assert.match(html, /Wait a Minute, Who Are You\?/);
   assert.match(html, /Phonk starter pack/);
   assert.match(html, /licensed to you in writing/);
   assert.match(list.headers.get('Content-Security-Policy'), /media-src 'self'/);
