@@ -97,6 +97,9 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   const list = await call(adminPacks, req('/admin/packs', { headers: { Cookie: cookie } }));
   const html = await list.text();
   assert.match(html, /Meme candidates \(3\)/);
+  assert.match(html, /Planned global meme packs/);
+  assert.match(html, /Universal Reactions &amp; SFX/);
+  assert.match(html, /Global After Dark/);
   assert.match(html, /Sike, That&#39;s the Wrong Number/);
   assert.match(html, /Wait a Minute, Who Are You\?/);
   assert.match(html, /Phonk starter pack/);

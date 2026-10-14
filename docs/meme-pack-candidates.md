@@ -2,7 +2,7 @@
 
 Working catalogue for owner-supplied meme references. A YouTube upload is a reference, not proof that its audio may be redistributed. Nothing in this file is approved for release until its source and rights status are verified.
 
-The complete owner-supplied year list and timestamp compilation are tracked in [pack-content/global-meme-rights-research.md](pack-content/global-meme-rights-research.md) and [pack-content/global-meme-compilation-inventory.md](pack-content/global-meme-compilation-inventory.md).
+The complete owner-supplied year list and timestamp compilation are tracked in [pack-content/global-meme-rights-research.md](pack-content/global-meme-rights-research.md) and [pack-content/global-meme-compilation-inventory.md](pack-content/global-meme-compilation-inventory.md). Additional global candidates and the visibility model are in [pack-content/global-meme-expansion.md](pack-content/global-meme-expansion.md).
 
 ## Global Internet Classics - Clean
 

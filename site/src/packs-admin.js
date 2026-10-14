@@ -18,6 +18,13 @@ const MEME_CANDIDATES = [
   { title: '67 Kid', pack: 'Global Trending 2025–26 · Clean', url: 'https://youtu.be/L7ejl_Hj3A8', evidence: '7.4M views in owner screenshot', origin: 'Unverified from supplied repost; identify original videographer and any underlying song', status: 'Verify original video, music and performer rights' },
   { title: 'Wait a Minute, Who Are You?', pack: 'Global Internet Classics · Clean', url: 'https://youtube.com/shorts/wAMMfJcVaoI', evidence: '22K likes in owner screenshot', origin: 'Unverified from @Thatmemeguy42023 repost', status: 'Find original videographer / permission' },
 ];
+const MEME_PACK_BLUEPRINTS = [
+  ['Universal Reactions & SFX', 'For everyone', '20', 'No-language reactions and licensed sound effects'],
+  ['Global Internet Classics', 'Worldwide · English', '30', 'Recognizable evergreen internet memes'],
+  ['Global Gaming Memes', 'Worldwide', '20', 'Game sounds and dialogue, only with publisher permission'],
+  ['Global Trending', 'Worldwide', '15', 'Rotating current memes; retire weak or expired trends'],
+  ['Global After Dark', 'Worldwide · 18+', '10–15', 'Hidden by default; strong language without slurs or targeted abuse'],
+];
 
 const COPYRIGHT = `
 <p class="notice" role="note"><b>Before you publish:</b> anything in a live pack is downloaded by real people, and paid packs are sold. It must be <b>yours</b>, or <b>licensed to you in writing</b> for sharing and selling inside an app.
@@ -53,6 +60,15 @@ function candidateQueue() {
   </section>`;
 }
 
+function memePackBlueprints() {
+  const rows = MEME_PACK_BLUEPRINTS.map(([title, audience, target, purpose]) => `<tr><td><b>${h(title)}</b></td><td>${h(audience)}</td><td>${h(target)}</td><td>${h(purpose)}</td></tr>`).join('');
+  return `<section class="card">
+    <h2>Planned global meme packs</h2>
+    <p class="muted">Region labels help discovery and never lock users to a country. Everyone may browse every Live pack. Audio will be attached later; these targets keep the first release useful without making the extension unnecessarily heavy.</p>
+    <div class="table-wrap"><table><thead><tr><th>Pack</th><th>Shown for</th><th>Launch target</th><th>Purpose</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </section>`;
+}
+
 // "123 MB of 5000 MB": what the packs hold in the bucket against your budget (Cloudflare's free storage is 10 GB).
 function storageMeter(storage) {
   if (!storage) return '';
@@ -85,6 +101,7 @@ export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = 
 </header>
 ${notice(msg, err)}
 ${hasBucket ? '' : '<p class="notice" role="note">Hosted file uploads are paused or storage is unavailable. Text memes and YouTube links can still be added. Review hosting limits before enabling file uploads.</p>'}
+${memePackBlueprints()}
 ${candidateQueue()}
 ${packPicker(packs)}
 ${storageMeter(storage)}
