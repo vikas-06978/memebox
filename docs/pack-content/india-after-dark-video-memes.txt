@@ -17,5 +17,5 @@ NEED-INDIVIDUAL-URL | Koi Baat Nahi, Hum To Chutiye Hain | CarryMinati / verify 
 
 # “Hindustani Bhau wale saare” currently means the two matching entries visible
 # in the supplied inventory: Mood Kharab Kar Diya and Bohot Paisa Hai Dekh.
-# Add any further matching Share links below if YouTube reveals more items later;
-# the supplied playlist says 50 unavailable videos are hidden.
+# This catalog treats the playlist as 50 available videos only. Hidden or
+# unavailable entries are ignored and never count toward the pack.
