@@ -36,4 +36,6 @@ For developer/backend tests only, use npm ci then PORT=8789 npm run site:dev (Po
 
 To prepare the default video catalog locally, sign in to `/admin`, open `/admin/packs`, press **Create five YouTube video meme folders**, open a folder and paste one item per line as `YouTube link | title | creator`. Mark the official-upload checkbox only after verifying the upload may be embedded, then make the folder Live. Region controls discovery order only; every country can browse every Live folder.
 
+For the collected launch candidates, press **Import the collected video and Phonk links as Drafts** instead of pasting them again. It creates or reuses the India, India After Dark, Worldwide and curated Phonk folders, imports 40 exact links, preserves adult/language labels and skips duplicates when repeated. Nothing becomes public until each item and its pack are explicitly approved and set Live.
+
 See [the checklist](docs/local-review-checklist.md), [the companion/tier model](docs/companion-model.md) and [meme publishing](docs/meme-publishing.md). Account approval, real provider tests, original regional recordings, native copy review, owner-key rotation and actual call/weak-laptop checks remain release prerequisites. No remote migrations, main merge, site deployment or Web Store publication was performed.

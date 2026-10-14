@@ -6,8 +6,9 @@ import { adminResponse, adminRedirect } from '../../src/http.js';
 import { isAdmin } from '../../src/security.js';
 import { hostedUsage } from '../../src/content-budget.js';
 import { packsListPage, packPage } from '../../src/packs-admin.js';
+import { CURATED_VIDEO_GROUPS } from '../../src/curated-video-catalog.js';
 import {
-  listPacks, getPack, getItem, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, addLinks, storageLimitBytes, storageUsed, PACK_ID_RE,
+  listPacks, getPack, getItem, listItems, createPack, updatePack, deletePack, addAudio, addLines, updateItem, deleteItem, setItemsTier, addLinks, storageLimitBytes, storageUsed, PACK_ID_RE, slugify,
 } from '../../src/packs.js';
 
 const MESSAGES = {
@@ -85,6 +86,24 @@ export async function onRequest({ request, env }) {
         made++;
       }
       return back('', made ? `${made} Draft YouTube video meme folder${made === 1 ? '' : 's'} created.` : 'The five YouTube video meme folders already exist.');
+    }
+    if (action === 'curated-video-import') {
+      let added = 0, skipped = 0, made = 0;
+      for (const group of CURATED_VIDEO_GROUPS) {
+        const expected = slugify(group.packTitle);
+        let pack = await getPack(env.DB, expected);
+        if (!pack) {
+          const id = await createPack(env.DB, { title: group.packTitle, kind: group.kind, region: group.region, tier: 'free', description: group.kind === 'links' ? 'Free curated music videos played through YouTube.' : 'Curated video memes played through YouTube.' });
+          pack = await getPack(env.DB, id); made++;
+        }
+        if (pack.kind !== group.kind) throw new Error(`${group.packTitle} already exists with the wrong pack type.`);
+        for (const video of group.items) {
+          const line = `https://www.youtube.com/watch?v=${video.videoId} | ${video.title} | ${video.credit || ''}`;
+          const result = await addLinks(env.DB, pack.id, line, { cleared: false, lang: video.lang, tags: video.tags, explicit: video.explicit });
+          added += result.added; skipped += result.skipped.length;
+        }
+      }
+      return back('', `${added} curated link${added === 1 ? '' : 's'} imported as Drafts into ${made || 'existing'} pack${made === 1 ? '' : 's'}. ${skipped} duplicate${skipped === 1 ? '' : 's'} skipped.`);
     }
     if (!PACK_ID_RE.test(packId) || !(await getPack(env.DB, packId))) return back('', '', 'That pack does not exist.');
     const meta = {

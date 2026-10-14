@@ -74,6 +74,11 @@ function memePackBlueprints() {
       <input type="hidden" name="action" value="global-video-pack-folders">
       <button type="submit" class="primary">Create five YouTube video meme folders</button>
     </form>
+    <form method="post" action="/admin/packs" class="inline">
+      <input type="hidden" name="action" value="curated-video-import">
+      <button type="submit" class="primary">Import the collected video and Phonk links as Drafts</button>
+    </form>
+    <p class="muted">The import is safe to repeat: duplicate video IDs are skipped. Imported items remain hidden Drafts until you verify the source, embedding and rights, then approve them individually.</p>
     <p class="muted">Safe to press again: existing folders are kept and duplicates are not created.</p>
   </section>`;
 }

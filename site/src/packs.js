@@ -214,9 +214,9 @@ export async function addLinks(db, packId, text, meta = {}) {
     seen.add(id);
     const item = { cleared, licence };
     const added = await db.prepare(
-      'INSERT INTO pack_items (id, pack_id, title, kind, text, source, credit, licence, cleared, status, sort, created_at, tier) SELECT ?, ?, ?, \'link\', ?, ?, ?, ?, ?, ?, 100, ?, ? ' +
+      'INSERT INTO pack_items (id, pack_id, title, kind, text, source, credit, licence, cleared, status, sort, created_at, tier, lang, tags, explicit) SELECT ?, ?, ?, \'link\', ?, ?, ?, ?, ?, ?, 100, ?, ?, ?, ?, ? ' +
       'WHERE (SELECT COUNT(*) FROM pack_items WHERE pack_id = ? AND kind = \'link\') < ? AND (SELECT COUNT(*) FROM pack_items WHERE kind = \'link\') < ?',
-    ).bind(newItemId(), packId, clip(title, 80) || 'YouTube track', id, `https://www.youtube.com/watch?v=${id}`, clip(artist, 120), licence, cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier), packId, LINK_LIMITS.perPlaylist, LINK_LIMITS.total).run();
+    ).bind(newItemId(), packId, clip(title, 80) || 'YouTube track', id, `https://www.youtube.com/watch?v=${id}`, clip(artist, 120), licence, cleared, canPublish(item) ? 'live' : 'draft', now(), cleanItemTier(meta.tier), cleanLang(meta.lang), clip(meta.tags, 120), meta.explicit ? 1 : 0, packId, LINK_LIMITS.perPlaylist, LINK_LIMITS.total).run();
     if (!added.meta.changes) { out.skipped.push('Video folder capacity reached (50 videos per folder, 500 total).'); break; }
     out.added++;
   }

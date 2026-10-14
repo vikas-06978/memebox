@@ -8,6 +8,7 @@
 - Clean India video catalog started in `docs/pack-content/india-video-memes.txt`; exact video links are stored in admin-import format and remain Draft candidates until source/creator verification.
 - Owner-selected Phonk/music video links are recorded in `docs/pack-content/phonk-video-tracks.txt`; Coffin Dance is the first Draft candidate and still needs official-source verification before Live.
 - Worldwide clean video candidates are recorded in `docs/pack-content/worldwide-video-memes.txt`, including language metadata for regional discovery without country-locking the item.
+- Launch preparation now includes a repeat-safe admin action that imports all 40 exact collected meme/Phonk links into four hidden Draft packs. It preserves language and 18+ metadata, skips duplicate video IDs and requires individual source/rights approval before anything becomes Live.
 - Remaining before release: add authorized/official video links and credits through `/admin/packs`, verify each embed, test **Send this tab’s sound** in a real Meet call, and finish native translations for the new video-meme labels. Original Desi/Drift/Midnight music revisions are deferred at the owner's request.
 
 **Deployment is paused until the owner explicitly requests it.** The historical notes below contain old versions, prices and release commands; use `docs/upgrade-progress.md` for current implementation status and `site/src/shop.js` for prices.

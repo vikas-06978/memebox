@@ -186,6 +186,29 @@ test('video meme packs publish official YouTube videos and use a separate owner 
   assert.match(admin, /50 videos per folder/);
 });
 
+test('collected video and Phonk links import once as hidden drafts with language and adult metadata', async () => {
+  const first = await call(adminPacks, post({ action: 'curated-video-import' }));
+  assert.match(msgOf(first), /40 curated links imported as Drafts/);
+  const packs = await listPacks(db);
+  assert.equal(packs.filter((p) => p.kind === 'memevideos').length, 3);
+  assert.equal(packs.filter((p) => p.kind === 'links').length, 1);
+  assert.ok(packs.every((p) => p.status === 'draft' && p.tier === 'free'));
+  const clean = await listItems(db, 'india-regional-video-memes');
+  const adult = await listItems(db, 'india-after-dark-video-memes');
+  const world = await listItems(db, 'worldwide-video-meme-classics');
+  const phonk = await listItems(db, 'memebox-curated-phonk');
+  assert.deepEqual([clean.length, adult.length, world.length, phonk.length], [18, 6, 14, 2]);
+  assert.ok([...clean, ...adult, ...world, ...phonk].every((i) => i.status === 'draft' && Number(i.cleared) === 0));
+  assert.ok(adult.every((i) => Number(i.explicit) === 1));
+  assert.equal(adult.find((i) => i.title === 'Deepak Kalal Marathi Meme').lang, 'mr');
+  assert.equal(world.find((i) => i.title === 'Chinese Rap Meme').lang, 'zh');
+  assert.equal(world.find((i) => i.title === 'Wide Putin Walk').lang, 'ru');
+  const second = await call(adminPacks, post({ action: 'curated-video-import' }));
+  assert.match(msgOf(second), /0 curated links imported/);
+  assert.match(msgOf(second), /40 duplicates skipped/);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM pack_items').first()).n, 40);
+});
+
 test('uploaded audio: stored in the bucket, a draft unless cleared with a licence, bad files skipped', async () => {
   const id = await makePack();
   const bad = new File(['hello'], 'notes.txt', { type: 'text/plain' });
