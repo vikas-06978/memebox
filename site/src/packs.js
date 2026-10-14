@@ -21,7 +21,7 @@ export const LANGS = {
   es: 'Español', fr: 'Français', de: 'Deutsch', pt: 'Português', it: 'Italiano', id: 'Bahasa Indonesia',
   tr: 'Türkçe', ar: 'العربية', bn: 'বাংলা', ta: 'தமிழ்', te: 'తెలుగు', mr: 'मराठी', gu: 'ગુજરાતી',
   pa: 'ਪੰਜਾਬੀ', ur: 'اردو', vi: 'Tiếng Việt', ja: '日本語', ko: '한국어', nl: 'Nederlands',
-  pl: 'Polski', sw: 'Kiswahili', ro: 'Română', sv: 'Svenska', fa: 'فارسی', ru: 'Русский',
+  pl: 'Polski', sw: 'Kiswahili', ro: 'Română', sv: 'Svenska', fa: 'فارسی', ru: 'Русский', uk: 'Українська',
   bho: 'भोजपुरी', haryanvi: 'हरियाणवी', raj: 'राजस्थानी', awa: 'अवधी', mai: 'मैथिली',
   chhattisgarhi: 'छत्तीसगढ़ी', kok: 'कोंकणी', hyderabadi: 'Hyderabadi',
   kn: 'ಕನ್ನಡ', ml: 'മലയാളം', or: 'ଓଡ଼ିଆ', as: 'অসমীয়া', ne: 'नेपाली',
