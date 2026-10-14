@@ -2,6 +2,9 @@
 
 ## Current local review, 2026-10-14
 
+- Admin pack destination selector added to the catalog and editor: choose an existing pack before adding content. No public content or deployment changed.
+- Next implementation: enforce personal audio duration and aggregate storage limits (currently only 12 tracks / 8 MB each), show personal tracks in the full-page music room, separate owner-curated collections from private editing, remove the optional app source-playlist link while retaining provider branding, and add an explicit tab-audio sharing flow for YouTube in calls. Real Meet delivery still needs verification. Original Desi/Drift/Midnight music revisions are deferred at the owner's request.
+
 **Deployment is paused until the owner explicitly requests it.** The historical notes below contain old versions, prices and release commands; use `docs/upgrade-progress.md` for current implementation status and `site/src/shop.js` for prices.
 
 - Latest consolidated review: the unified music room shows the five supplied playlist references and sixteen tunes, with a localhost launcher, private manager, published-catalog refresh, correct Max pass links and Free personal audio uploads. Source UI/logic is tested; live gateway/content/real-call release prerequisites remain. See START-HERE.md and docs/local-review.md.

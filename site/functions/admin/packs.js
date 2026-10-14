@@ -34,7 +34,7 @@ export async function onRequest({ request, env }) {
     if (id) {
       const pack = await getPack(env.DB, id);
       if (!pack) return adminRedirect('/admin/packs?err=' + encodeURIComponent('That pack does not exist.'));
-      return adminResponse(packPage({ pack, items: await listItems(env.DB, id), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
+      return adminResponse(packPage({ pack, packs: await listPacks(env.DB), items: await listItems(env.DB, id), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
     }
     return adminResponse(packsListPage({ packs: await listPacks(env.DB), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env), delivery: await hostedUsage(env), audioEnabled: env.HOSTED_AUDIO_ENABLED === 'on' } }));
   }

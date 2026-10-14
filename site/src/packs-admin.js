@@ -11,12 +11,46 @@ const itemTierOpts = (selected, packTier) => `<option value=""${selected ? '' : 
 // What you plan to give away free, per type (shown as a counter next to the real number).
 const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'picture'], links: [10, 'tracks'] };
 
+// Owner-supplied references for pack planning. These are deliberately not pack items:
+// a public YouTube reference is not permission to redistribute its audio.
+const MEME_CANDIDATES = [
+  { title: "Sike, That's the Wrong Number", pack: 'Global Internet Classics · Clean', url: 'https://youtu.be/GPXkjtpGCFI', evidence: '27M views in owner screenshot', status: 'Find original owner / permission' },
+  { title: '67 Kid', pack: 'Global Trending 2025–26 · Clean', url: 'https://youtu.be/L7ejl_Hj3A8', evidence: '7.4M views in owner screenshot', status: 'Verify original video, music and performer rights' },
+  { title: 'Wait a Minute, Who Are You?', pack: 'Global Internet Classics · Clean', url: 'https://youtube.com/shorts/wAMMfJcVaoI', evidence: '22K likes in owner screenshot', status: 'Find original videographer / permission' },
+];
+
 const COPYRIGHT = `
 <p class="notice" role="note"><b>Before you publish:</b> anything in a live pack is downloaded by real people, and paid packs are sold. It must be <b>yours</b>, or <b>licensed to you in writing</b> for sharing and selling inside an app.
 A video or song being "copyright free" on YouTube is not a licence. Drafts are never shown to anyone. An item only goes live when you tick <i>I may share this</i> and write the licence.</p>`;
 
 function notice(msg, err) {
   return `${msg ? `<p class="notice" role="status">${h(msg)}</p>` : ''}${err ? `<p class="error" role="alert">${h(err)}</p>` : ''}`;
+}
+
+function packPicker(packs, selected = '') {
+  return `<section class="card">
+    <h2>Choose a pack to add content</h2>
+    <p class="muted">Packs work like folders. Choose the destination first, then add memes, songs or pictures inside it. Changes stay in that pack.</p>
+    ${packs.length ? `<form method="get" action="/admin/packs" class="keyform">
+      <label>Destination pack <select name="id" required><option value="">Choose a pack</option>${packs.map((p) => `<option value="${h(p.id)}"${p.id === selected ? ' selected' : ''}>${h(p.title)} (${h(({ music: 'Music', memes: 'Memes', pictures: 'Pictures', links: 'YouTube collection' })[p.kind] || p.kind)}, ${h(REGIONS[p.region] || p.region)})</option>`).join('')}</select></label>
+      <button type="submit" class="primary">Open pack to add content</button>
+    </form>` : '<p class="muted">Create your first pack below, then add content inside it.</p>'}
+    <p class="muted">Only admins publish shared packs. Users add their own files privately on their device.</p>
+  </section>`;
+}
+
+function candidateQueue() {
+  const rows = MEME_CANDIDATES.map((m) => `<tr>
+    <td><b>${h(m.title)}</b><div class="muted">${h(m.evidence)}</div></td>
+    <td>${h(m.pack)}</td>
+    <td>${h(m.status)}</td>
+    <td><a class="button" href="${h(m.url)}" target="_blank" rel="noopener noreferrer">Preview on YouTube</a></td>
+  </tr>`).join('');
+  return `<section class="card">
+    <h2>Meme candidates (${MEME_CANDIDATES.length})</h2>
+    <p class="muted">References supplied for pack planning. Preview uses the source on YouTube; MemeBox has not downloaded or hosted these recordings. Move a clip into a public audio pack only after its owner and reuse permission are recorded.</p>
+    <div class="table-wrap"><table><thead><tr><th>Meme</th><th>Planned pack</th><th>Before publishing</th><th>Reference</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </section>`;
 }
 
 // "123 MB of 5000 MB": what the packs hold in the bucket against your budget (Cloudflare's free storage is 10 GB).
@@ -50,7 +84,9 @@ export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = 
   <a class="button" href="/admin">Back to admin</a>
 </header>
 ${notice(msg, err)}
-${hasBucket ? '' : '<p class="error" role="alert">The file storage is not set up yet. Run once: <code>npx wrangler r2 bucket create memebox-packs</code>, then deploy again. Until then you can add text memes, but not audio.</p>'}
+${hasBucket ? '' : '<p class="notice" role="note">Hosted file uploads are paused or storage is unavailable. Text memes and YouTube links can still be added. Review hosting limits before enabling file uploads.</p>'}
+${candidateQueue()}
+${packPicker(packs)}
 ${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">
@@ -120,7 +156,7 @@ function itemRow(p, i) {
     </tr>`;
 }
 
-export function packPage({ pack: p, items, hasBucket, msg = '', err = '', storage = null }) {
+export function packPage({ pack: p, packs = [p], items, hasBucket, msg = '', err = '', storage = null }) {
   const bytes = items.reduce((a, i) => a + Number(i.bytes || 0), 0), live = items.filter((i) => i.status === 'live').length;
   const licenceFields = `
       <label>Plan for these <select name="itemTier">${itemTierOpts('', p.tier)}</select></label>
@@ -138,6 +174,8 @@ export function packPage({ pack: p, items, hasBucket, msg = '', err = '', storag
   <a class="button" href="/admin/packs">All packs</a>
 </header>
 ${notice(msg, err)}
+${packPicker(packs, p.id)}
+<p class="notice" role="status">Adding content to: <b>${h(p.title)}</b>. New items start as drafts. Mark items and the pack Live when you want users to see them.</p>
 ${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">

@@ -96,6 +96,9 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   assert.equal(id, 'phonk-starter-pack');
   const list = await call(adminPacks, req('/admin/packs', { headers: { Cookie: cookie } }));
   const html = await list.text();
+  assert.match(html, /Meme candidates \(3\)/);
+  assert.match(html, /Sike, That&#39;s the Wrong Number/);
+  assert.match(html, /Wait a Minute, Who Are You\?/);
   assert.match(html, /Phonk starter pack/);
   assert.match(html, /licensed to you in writing/);
   assert.match(list.headers.get('Content-Security-Policy'), /media-src 'self'/);
@@ -236,7 +239,7 @@ test('without the R2 bucket the page says so and audio uploads are refused (text
   const make = await call(adminPacks, post({ action: 'pack-create', title: 'No bucket', kind: 'music' }), e);
   const id = idOf(make);
   const page = await (await call(adminPacks, req('/admin/packs', { headers: { Cookie: cookie } }), e)).text();
-  assert.match(page, /file storage is not set up/i);
+  assert.match(page, /Hosted file uploads are paused or storage is unavailable/i);
   const r = await call(adminPacks, post({ action: 'items-upload', pack: id, files: [audio('A.mp3')] }), e);
   assert.match(errOf(r), /not set up/);
   const r2 = await call(adminPacks, post({ action: 'lines-add', pack: id, lines: 'hello' }), e);
