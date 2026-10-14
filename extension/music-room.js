@@ -10,6 +10,7 @@ MemeRoomI18n.ready.then(async () => {
   let lists = [], showAdult = false, editId = '', selected = '', currentPlaylist = null, originalId = '', tier = 'all';
   let context = null, synth = null, timer = 0, paused = false, shuffle = false, published = [];
   const previewCatalog = Array.isArray(globalThis.MemeBoxPreviewCatalog) ? globalThis.MemeBoxPreviewCatalog : [];
+  const previewMemeCount = previewCatalog.filter(pack=>pack?.kind==='memevideos').reduce((total,pack)=>total+(Array.isArray(pack.items)?pack.items.length:0),0);
   const storageKey = 'memebox-room-playlists';
   const allowed = list => !list.explicit || showAdult;
   const make = (tag, text, className = '') => { const node=document.createElement(tag);node.textContent=text;if(className)node.className=className;return node; };
@@ -27,6 +28,7 @@ MemeRoomI18n.ready.then(async () => {
     document.querySelector('#how-to-add h2').textContent='Video memes in your call';
     document.querySelector('#how-to-add > p').textContent='Play the visible YouTube video. To let everyone hear it, click the MemeBox toolbar icon and choose “Send this tab’s sound”.';
   }
+  if(previewMemeCount)$('meme-library-count').textContent=previewMemeCount+' curated memes across worldwide and regional packs';
   async function save() {
     if(inExtension)await chrome.storage.local.set({musicRoomPlaylists:lists});
     else try{localStorage.setItem(storageKey,JSON.stringify(lists))}catch{ $('manager-status').textContent=t('room_storage_error'); }
@@ -108,7 +110,17 @@ MemeRoomI18n.ready.then(async () => {
       card.append(details);if(!memeMode)card.append(play);$('published-list').append(card);
     }
   }
+  function loadPreviewCatalog() {
+    published=previewCatalog.filter(pack=>pack?.kind===catalogKind).map((pack,index)=>({
+      id:'preview-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).filter(item=>/^[A-Za-z0-9_-]{11}$/.test(item.videoId||''))
+    })).filter(pack=>pack.items.length);
+    renderPublished();
+    const count=published.reduce((n,p)=>n+p.items.length,0);
+    $('published-status').textContent=count?'Local review catalog · '+count+' items':t('room_catalog_unavailable');
+    return count;
+  }
   $('published-browse').addEventListener('click',async()=>{
+    if(previewCatalog.length){loadPreviewCatalog();return;}
     $('published-browse').disabled=true;$('published-status').textContent=t('room_catalog_loading');
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),8000);
     try {
@@ -122,12 +134,7 @@ MemeRoomI18n.ready.then(async () => {
         id:'published-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).slice(0,50).filter(item=>typeof item?.videoId==='string'&&/^[A-Za-z0-9_-]{11}$/.test(item.videoId)).map(item=>({videoId:item.videoId,title:String(item.title||item.videoId).slice(0,100),credit:String(item.credit||'').slice(0,100),explicit:item.explicit===true}))
       })).filter(pack=>pack.items.length);
       renderPublished();$('published-status').textContent=published.length?'':t('room_catalog_empty');
-    }catch{
-      published=previewCatalog.filter(pack=>pack?.kind===catalogKind).map((pack,index)=>({
-        id:'preview-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).filter(item=>/^[A-Za-z0-9_-]{11}$/.test(item.videoId||''))
-      }));
-      renderPublished();$('published-status').textContent=published.length?'Local review catalog · '+published.reduce((n,p)=>n+p.items.length,0)+' items':t('room_catalog_unavailable');
-    }
+    }catch{loadPreviewCatalog();}
     finally{clearTimeout(timeout);$('published-browse').disabled=false;}
   });
   function cancelEdit(){editId='';$('playlist-form').reset();$('manager-status').textContent='';}
@@ -162,7 +169,7 @@ MemeRoomI18n.ready.then(async () => {
   window.addEventListener('message',event=>{
     if(event.origin!==EMBED||event.source!==$('youtube-player').contentWindow||!selected)return;
     let data;try{data=typeof event.data==='string'?JSON.parse(event.data):event.data}catch{return}
-    if(data?.event==='onError')status(t('room_embed_error',String(data.info||'')));
+    if(data?.event==='onError')status((currentPlaylist?.title||'This video')+' could not play here. YouTube may have removed it or blocked embedding in your region. Try another meme.');
     if(data?.event==='onStateChange'&&data.info===1){status(t('room_youtube_playing'));paused=false;command('setVolume',[Number($('room-volume').value)]);if(shuffle)command('setShuffle',[true]);}
   });
   if(inExtension) {
@@ -178,7 +185,7 @@ MemeRoomI18n.ready.then(async () => {
   $('room-adult').checked=showAdult;$('review-status').hidden=MEMEBOX_CONFIG.PRO_ENABLED!==false;
   $('room-language').replaceChildren(...MemeRoomI18n.choices.map(([id,name])=>new Option(name,id)));$('room-language').value=MemeRoomI18n.code;
   $('room-language').addEventListener('change',async()=>{await MemeRoomI18n.load($('room-language').value,true);renderLists();renderOriginals();renderPublished()});
-  renderLists();renderOriginals();
+  renderLists();renderOriginals();if(previewCatalog.length)loadPreviewCatalog();
   const query=new URLSearchParams(location.search),fragment=new URLSearchParams(location.hash.slice(1));
   for(const [key,value] of fragment)if(['list','videos','name','explicit'].includes(key))query.set(key,value);
   if(location.hash)history.replaceState(null,'',location.pathname+location.search);
