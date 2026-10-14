@@ -97,19 +97,41 @@ test('a new pack is a draft; the list and the pack page show it, with the copyri
   const list = await call(adminPacks, req('/admin/packs', { headers: { Cookie: cookie } }));
   const html = await list.text();
   assert.match(html, /Meme candidates \(3\)/);
+  assert.match(html, /Planned global meme packs/);
+  assert.match(html, /Universal Reactions &amp; SFX/);
+  assert.match(html, /Global After Dark/);
   assert.match(html, /Sike, That&#39;s the Wrong Number/);
   assert.match(html, /Wait a Minute, Who Are You\?/);
   assert.match(html, /Phonk starter pack/);
   assert.match(html, /licensed to you in writing/);
-  assert.match(list.headers.get('Content-Security-Policy'), /media-src 'self'/);
-  assert.doesNotMatch(html, /<script|style="/);
+  assert.match(list.headers.get('Content-Security-Policy'), /script-src 'self'/);
+  assert.match(list.headers.get('Content-Security-Policy'), /media-src 'self' blob:/);
+  assert.match(html, /<script src="\/assets\/admin\.js" defer><\/script>/);
+  assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)|style="/);
   const one = await (await call(adminPacks, req('/admin/packs?id=' + id, { headers: { Cookie: cookie } }))).text();
   assert.match(one, /Upload audio/);
+  assert.match(one, /Trim a full audio file to its main meme part/);
+  assert.match(one, /id="pack-upload-files"/);
   assert.doesNotMatch(one, /Add text memes/, 'text memes belong to memes packs');
   assert.match(one, /You planned 10 free tracks/, 'the free plan counter');
   const row = await db.prepare('SELECT * FROM packs WHERE id = ?').bind(id).first();
   assert.equal(row.status, 'draft');
   assert.equal(slugify('Indian Memes: Desi 😂!'), 'indian-memes-desi');
+});
+
+test('global meme pack folders are created once as free drafts', async () => {
+  const first = await call(adminPacks, post({ action: 'global-pack-folders' }));
+  assert.match(msgOf(first), /5 Draft global meme pack folders created/);
+  let packs = await listPacks(db);
+  const global = packs.filter((p) => ['universal-reactions-sfx', 'global-internet-classics', 'global-gaming-memes', 'global-trending', 'global-after-dark'].includes(p.id));
+  assert.equal(global.length, 5);
+  assert.ok(global.every((p) => p.kind === 'memes' && p.tier === 'free' && p.status === 'draft'));
+  assert.equal(global.find((p) => p.id === 'universal-reactions-sfx').region, 'common');
+  assert.ok(global.filter((p) => p.id !== 'universal-reactions-sfx').every((p) => p.region === 'global'));
+  const second = await call(adminPacks, post({ action: 'global-pack-folders' }));
+  assert.match(msgOf(second), /already exist/);
+  packs = await listPacks(db);
+  assert.equal(packs.filter((p) => p.id.startsWith('global-') || p.id === 'universal-reactions-sfx').length, 5);
 });
 
 test('uploaded audio: stored in the bucket, a draft unless cleared with a licence, bad files skipped', async () => {

@@ -14,9 +14,16 @@ const FREE_PLAN = { music: [10, 'tracks'], memes: [5, 'memes'], pictures: [1, 'p
 // Owner-supplied references for pack planning. These are deliberately not pack items:
 // a public YouTube reference is not permission to redistribute its audio.
 const MEME_CANDIDATES = [
-  { title: "Sike, That's the Wrong Number", pack: 'Global Internet Classics · Clean', url: 'https://youtu.be/GPXkjtpGCFI', evidence: '27M views in owner screenshot', status: 'Find original owner / permission' },
-  { title: '67 Kid', pack: 'Global Trending 2025–26 · Clean', url: 'https://youtu.be/L7ejl_Hj3A8', evidence: '7.4M views in owner screenshot', status: 'Verify original video, music and performer rights' },
-  { title: 'Wait a Minute, Who Are You?', pack: 'Global Internet Classics · Clean', url: 'https://youtube.com/shorts/wAMMfJcVaoI', evidence: '22K likes in owner screenshot', status: 'Find original videographer / permission' },
+  { title: "Sike, That's the Wrong Number", pack: 'Global Internet Classics · Clean', url: 'https://youtu.be/GPXkjtpGCFI', evidence: '27M views in owner screenshot', origin: 'Likely Supa Hot Fire / Deshawn Raw; verify exact original episode and owner', status: 'Find original owner / permission' },
+  { title: '67 Kid', pack: 'Global Trending 2025–26 · Clean', url: 'https://youtu.be/L7ejl_Hj3A8', evidence: '7.4M views in owner screenshot', origin: 'Unverified from supplied repost; identify original videographer and any underlying song', status: 'Verify original video, music and performer rights' },
+  { title: 'Wait a Minute, Who Are You?', pack: 'Global Internet Classics · Clean', url: 'https://youtube.com/shorts/wAMMfJcVaoI', evidence: '22K likes in owner screenshot', origin: 'Unverified from @Thatmemeguy42023 repost', status: 'Find original videographer / permission' },
+];
+const MEME_PACK_BLUEPRINTS = [
+  ['Universal Reactions & SFX', 'For everyone', '20', 'No-language reactions and licensed sound effects'],
+  ['Global Internet Classics', 'Worldwide · English', '30', 'Recognizable evergreen internet memes'],
+  ['Global Gaming Memes', 'Worldwide', '20', 'Game sounds and dialogue, only with publisher permission'],
+  ['Global Trending', 'Worldwide', '15', 'Rotating current memes; retire weak or expired trends'],
+  ['Global After Dark', 'Worldwide · 18+', '10–15', 'Hidden by default; strong language without slurs or targeted abuse'],
 ];
 
 const COPYRIGHT = `
@@ -42,7 +49,7 @@ function packPicker(packs, selected = '') {
 function candidateQueue() {
   const rows = MEME_CANDIDATES.map((m) => `<tr>
     <td><b>${h(m.title)}</b><div class="muted">${h(m.evidence)}</div></td>
-    <td>${h(m.pack)}</td>
+    <td>${h(m.pack)}<div class="muted">${h(m.origin)}</div></td>
     <td>${h(m.status)}</td>
     <td><a class="button" href="${h(m.url)}" target="_blank" rel="noopener noreferrer">Preview on YouTube</a></td>
   </tr>`).join('');
@@ -50,6 +57,20 @@ function candidateQueue() {
     <h2>Meme candidates (${MEME_CANDIDATES.length})</h2>
     <p class="muted">References supplied for pack planning. Preview uses the source on YouTube; MemeBox has not downloaded or hosted these recordings. Move a clip into a public audio pack only after its owner and reuse permission are recorded.</p>
     <div class="table-wrap"><table><thead><tr><th>Meme</th><th>Planned pack</th><th>Before publishing</th><th>Reference</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </section>`;
+}
+
+function memePackBlueprints() {
+  const rows = MEME_PACK_BLUEPRINTS.map(([title, audience, target, purpose]) => `<tr><td><b>${h(title)}</b></td><td>${h(audience)}</td><td>${h(target)}</td><td>${h(purpose)}</td></tr>`).join('');
+  return `<section class="card">
+    <h2>Planned global meme packs</h2>
+    <p class="muted">Region labels help discovery and never lock users to a country. Everyone may browse every Live pack. Audio will be attached later; these targets keep the first release useful without making the extension unnecessarily heavy.</p>
+    <div class="table-wrap"><table><thead><tr><th>Pack</th><th>Shown for</th><th>Launch target</th><th>Purpose</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <form method="post" action="/admin/packs" class="inline">
+      <input type="hidden" name="action" value="global-pack-folders">
+      <button type="submit" class="primary">Create these five Draft pack folders</button>
+    </form>
+    <p class="muted">Safe to press again: existing folders are kept and duplicates are not created.</p>
   </section>`;
 }
 
@@ -85,6 +106,7 @@ export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = 
 </header>
 ${notice(msg, err)}
 ${hasBucket ? '' : '<p class="notice" role="note">Hosted file uploads are paused or storage is unavailable. Text memes and YouTube links can still be added. Review hosting limits before enabling file uploads.</p>'}
+${memePackBlueprints()}
 ${candidateQueue()}
 ${packPicker(packs)}
 ${storageMeter(storage)}
@@ -105,7 +127,7 @@ ${COPYRIGHT}
     <label>About it <input name="description" maxlength="400" placeholder="One line users will read"></label>
     <button type="submit" class="primary">Make the pack</button>
   </form>
-</section>`);
+</section>`, { script: true });
 }
 
 // "4 free (plan: 10) · 40 Pro Max": how many items each plan has, next to what you planned to give away free.
@@ -218,9 +240,25 @@ ${p.kind === 'links' ? `<section class="card">
   <h2>Upload audio</h2>
   ${hasBucket ? '' : '<p class="error">File storage is not set up yet (see the packs list page).</p>'}
   <p class="muted">Choose one or many files (mp3, m4a, ogg, opus, wav, webm, flac, aac; up to ${Math.round(MAX_AUDIO_BYTES / 1048576)} MB each). The file name becomes the title. Shorter, compressed files download faster for your users.</p>
+  <details class="notice" id="audio-trimmer">
+    <summary><b>Trim a full audio file to its main meme part</b></summary>
+    <p class="muted">The file stays in this browser. Choose the start and end, preview it, then press “Use this trimmed clip”. Meme clips are limited to 10 seconds.</p>
+    <div class="keyform">
+      <label>Full audio <input type="file" id="trim-source" accept="audio/*,.mp3,.m4a,.ogg,.opus,.wav,.webm,.flac,.aac"></label>
+      <audio id="trim-preview" controls preload="metadata"></audio>
+      <div class="row-wrap">
+        <label>Start (seconds) <input type="number" id="trim-start" min="0" step="0.1" value="0"></label>
+        <label>End (seconds) <input type="number" id="trim-end" min="0.1" step="0.1" value="1"></label>
+        <button type="button" id="trim-play">Preview main part</button>
+        <button type="button" id="trim-use" class="primary">Use this trimmed clip</button>
+        <a id="trim-download" class="button" hidden>Save trimmed WAV</a>
+      </div>
+      <p class="muted" id="trim-status" role="status">Choose an audio file first.</p>
+    </div>
+  </details>
   <form method="post" action="/admin/packs" enctype="multipart/form-data" class="keyform">
     <input type="hidden" name="action" value="items-upload"><input type="hidden" name="pack" value="${h(p.id)}">
-    <label>Files <input type="file" name="files" multiple accept="audio/*,.mp3,.m4a,.ogg,.opus,.wav,.webm,.flac,.aac" required></label>
+    <label>Files <input type="file" id="pack-upload-files" name="files" multiple accept="audio/*,.mp3,.m4a,.ogg,.opus,.wav,.webm,.flac,.aac" required></label>
     ${licenceFields}
     <button type="submit" class="primary">Upload</button>
   </form>
@@ -245,5 +283,5 @@ ${p.kind === 'memes' ? `<section class="card">
     <button type="submit" class="primary">Set the plan</button>
   </form>
   <div class="table-wrap"><table><tbody>${items.map((i) => itemRow(p, i)).join('')}</tbody></table></div>` : '<p class="muted">Nothing here yet.</p>'}
-</section>`);
+</section>`, { script: true });
 }

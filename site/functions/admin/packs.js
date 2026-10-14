@@ -14,6 +14,16 @@ const MESSAGES = {
   created: 'Pack made. It is a draft: only you can see it.', saved: 'Saved.', deleted: 'Deleted.',
 };
 
+const GLOBAL_MEME_PACKS = [
+  { title: 'Universal Reactions & SFX', region: 'common', description: 'No-language reactions and globally useful sound effects.' },
+  { title: 'Global Internet Classics', region: 'global', description: 'Recognizable evergreen English and international internet memes.' },
+  { title: 'Global Gaming Memes', region: 'global', description: 'International gaming reactions, dialogue and sound memes.' },
+  { title: 'Global Trending', region: 'global', description: 'Current worldwide memes, reviewed and refreshed regularly.' },
+  { title: 'Global After Dark', region: 'global', description: 'Strong-language global memes, hidden until adult content is enabled.' },
+];
+const PACK_ADMIN_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self' blob:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'";
+const packResponse = (html) => adminResponse(html, { script: true, headers: { 'Content-Security-Policy': PACK_ADMIN_CSP } });
+
 const back = (id, msg, err) => {
   const q = new URLSearchParams();
   if (id) q.set('id', id);
@@ -34,9 +44,9 @@ export async function onRequest({ request, env }) {
     if (id) {
       const pack = await getPack(env.DB, id);
       if (!pack) return adminRedirect('/admin/packs?err=' + encodeURIComponent('That pack does not exist.'));
-      return adminResponse(packPage({ pack, packs: await listPacks(env.DB), items: await listItems(env.DB, id), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
+      return packResponse(packPage({ pack, packs: await listPacks(env.DB), items: await listItems(env.DB, id), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env) } }));
     }
-    return adminResponse(packsListPage({ packs: await listPacks(env.DB), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env), delivery: await hostedUsage(env), audioEnabled: env.HOSTED_AUDIO_ENABLED === 'on' } }));
+    return packResponse(packsListPage({ packs: await listPacks(env.DB), hasBucket, msg, err, storage: { used: await storageUsed(env.DB), limit: storageLimitBytes(env), delivery: await hostedUsage(env), audioEnabled: env.HOSTED_AUDIO_ENABLED === 'on' } }));
   }
 
   if (request.method !== 'POST') return adminResponse('Method not allowed', { status: 405, type: 'text/plain; charset=utf-8', headers: { Allow: 'GET, POST' } });
@@ -48,6 +58,16 @@ export async function onRequest({ request, env }) {
     if (action === 'pack-create') {
       const id = await createPack(env.DB, { title: form.get('title'), kind: form.get('kind'), region: form.get('region'), tier: form.get('tier'), description: form.get('description') });
       return back(id, 'created');
+    }
+    if (action === 'global-pack-folders') {
+      let made = 0;
+      for (const p of GLOBAL_MEME_PACKS) {
+        const id = p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        if (await getPack(env.DB, id)) continue;
+        await createPack(env.DB, { ...p, kind: 'memes', tier: 'free' });
+        made++;
+      }
+      return back('', made ? `${made} Draft global meme pack folder${made === 1 ? '' : 's'} created.` : 'The five global meme pack folders already exist.');
     }
     if (!PACK_ID_RE.test(packId) || !(await getPack(env.DB, packId))) return back('', '', 'That pack does not exist.');
     const meta = {
