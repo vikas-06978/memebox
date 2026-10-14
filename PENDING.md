@@ -4,6 +4,7 @@
 
 - Admin pack destination selector added to the catalog and editor: choose an existing pack before adding content. No public content or deployment changed.
 - Done locally: admin-controlled YouTube video meme packs are separate from Phonk and downloadable audio packs. One click creates five Draft folders: Worldwide Classics, Worldwide Trending, India & Regional, Gaming and After Dark. The visible player streams official YouTube embeds; MemeBox does not download or host the videos. Users can browse and play Live folders but cannot edit the shared catalog. Strong-language videos stay hidden until opt-in, and a separate `MEME_VIDEO_MODE=off` switch can pause this catalog.
+- Indian After Dark selection recorded in `docs/pack-content/india-after-dark-video-memes.txt`: seven owner-selected titles, all marked 18+. The supplied playlist text has titles but no individual video IDs, so exact Share links are still required before these can become playable admin items.
 - Remaining before release: add authorized/official video links and credits through `/admin/packs`, verify each embed, test **Send this tab’s sound** in a real Meet call, and finish native translations for the new video-meme labels. Original Desi/Drift/Midnight music revisions are deferred at the owner's request.
 
 **Deployment is paused until the owner explicitly requests it.** The historical notes below contain old versions, prices and release commands; use `docs/upgrade-progress.md` for current implementation status and `site/src/shop.js` for prices.

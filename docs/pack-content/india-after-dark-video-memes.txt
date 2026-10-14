@@ -1,0 +1,21 @@
+# India & Regional Video Memes: After Dark selection
+# Source playlist supplied by the owner on 2026-10-14:
+# https://www.youtube.com/playlist?list=PLSZN96b3ahbUbS9cDWoMmPs-0m6yKa1qX
+#
+# Every selected item is 18+ and must remain hidden until adult opt-in.
+# The copied playlist inventory did not contain individual video IDs. Replace
+# NEED-INDIVIDUAL-URL with each video's Share link before admin import.
+# Import format after replacement: URL | title | creator
+
+NEED-INDIVIDUAL-URL | Mood Kharab Kar Diya | Hindustani Bhau / verify original source
+NEED-INDIVIDUAL-URL | Bohut Bure Hain Hum Log | CarryMinati / verify original source
+NEED-INDIVIDUAL-URL | Yahan Ki Janta Chutiya Nahi | CarryMinati / verify original source
+NEED-INDIVIDUAL-URL | Bohot Paisa Hai Dekh | Hindustani Bhau / verify original source
+NEED-INDIVIDUAL-URL | Paisa Barbad | CarryMinati / verify original source
+NEED-INDIVIDUAL-URL | Ab To Sach Bol De | Gangs of Wasseypur / verify rights holder
+NEED-INDIVIDUAL-URL | Koi Baat Nahi, Hum To Chutiye Hain | CarryMinati / verify original source
+
+# “Hindustani Bhau wale saare” currently means the two matching entries visible
+# in the supplied inventory: Mood Kharab Kar Diya and Bohot Paisa Hai Dekh.
+# Add any further matching Share links below if YouTube reveals more items later;
+# the supplied playlist says 50 unavailable videos are hidden.
