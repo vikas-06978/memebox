@@ -31,10 +31,8 @@
     const packsBtn = el('button', { className: 'chip add-music', type: 'button' }, t('pk_get')); // free music packs from the site (Options → Online packs)
     packsBtn.addEventListener('click', () => api.openPacks());
     const phonkBtn = el('button', { className: 'chip add-music', type: 'button', title: t('mu_phonk_tip') }, t('mu_phonk')); // Phonk Mode: a page on our site with YouTube's own player
-    phonkBtn.addEventListener('click', () => {
-      if ((globalThis.MEMEBOX_CONFIG?.SITE_URL || '').startsWith('http://127.0.0.1:')) api.send({ type:'open-options', hash:'music-preview' });
-      else api.openSite('/phonk');
-    });
+    phonkBtn.dataset.musicRoom='true';
+    phonkBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'music-room' }));
     phonkBtn.title = t('mu_phonk_local_tip');
     mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });

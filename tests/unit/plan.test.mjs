@@ -217,3 +217,8 @@ test('owned Pro filters and costumes work without a running pass, Max exclusives
   plan.setLicense({key:'MBX-AAAA-BBBB-CCCC',status:'active',checkedAt:now,maxSeconds:60});plan.setPass({on:true});
   assert.equal(plan.canFx('filter:prism',now),true);assert.equal(plan.canFx('outfit:wizard',now),true);
 });
+
+test('personal uploads are available without a pass while premium bundled tunes retain their tiers',()=>{
+ const plan=withConfig({PRO_ENABLED:true});assert.equal(plan.canFx('music:own'),true);assert.equal(plan.canFx('music:phonk_desi'),false);assert.equal(plan.canFx('music:phonk_drift'),false);
+ plan.setLicense({key:'MBX-AAAA-BBBB-CCCC',status:'active',proSeconds:3600,checkedAt:Date.now()});plan.setPass({on:true});assert.equal(plan.canFx('music:own'),true);assert.equal(plan.canFx('music:phonk_desi'),true);assert.equal(plan.canFx('music:phonk_drift'),false);
+});

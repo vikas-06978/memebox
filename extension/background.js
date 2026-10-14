@@ -432,6 +432,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.hash === 'online') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#online-card') }).catch(() => {});
     else if (msg.hash === 'pictures') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#lines-card') }).catch(() => {});
     else if (msg.hash === 'plans') chrome.tabs.create({ url: chrome.runtime.getURL('plans.html') }).catch(() => {});
+    else if (msg.hash === 'music-room') chrome.tabs.create({ url: chrome.runtime.getURL('music-room.html') }).catch(() => {});
     else if (msg.hash === 'music-preview') chrome.tabs.create({ url: chrome.runtime.getURL('playground.html#music-library') }).catch(() => {});
     else chrome.runtime.openOptionsPage();
     return;

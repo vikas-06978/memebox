@@ -1,25 +1,33 @@
-# Local review before release
+# Consolidated local review
 
-Download the GitHub branch `review/memebox-local-2026-10-14` using Code > Download ZIP, then extract the entire archive. Follow [START-HERE](../START-HERE.md). No installation of Node or build commands is needed for the supplied Chrome extension and offline listening room.
+Download the branch review/memebox-local-2026-10-14 as a GitHub ZIP and extract it. See START-HERE.md. No deployment or real payment activation is included.
 
-- **review/extension**: ready-to-load minified extension named MemeBox Local Review. Paid features are unlocked only in this copy; checkout is closed and the site address is loopback. Load this folder through chrome://extensions > Developer mode > Load unpacked. Never publish the unlocked copy.
-- **review/listen.html** and **review/music**: three original arrangements with native audio controls. Double-click listen.html in Chrome. No server or internet is needed.
-- **extension**, **site**, **tests**, **tools** and **docs**: development source, backend, tests and guidance. Source shipping entitlement settings remain enabled; do not load extension expecting the same unlocked review experience.
+On Windows, run review/Start-MemeBox-Music.cmd and keep its console open. It serves the public preview files on loopback at http://127.0.0.1:8790/music-room.html. No Node installation, administrator permission, software installation or Windows policy change is performed. A Python 3 launcher is also provided for macOS/Linux. The ready-to-load extension is review/extension; its paid features are unlocked for local testing only. Never publish that copy.
 
-If replacing an earlier review, replace the extracted folder, reload the extension and reload your call tab. Use Playground to review actual species actions, emotes, Leave/Return, resting positions, all 28 filters and nine costumes. Music, Pictures and Plans have visible links. See [the checklist](local-review-checklist.md), [the tier model](companion-model.md) and [meme publishing](meme-publishing.md).
+The unified music room now displays the five exact supplied playlist references and sixteen bundled tunes. It has search, private add/edit/remove/restore, a default-off strong-language preference, playback controls and visible price/tier links. Welcome, Options, Playground and the actual call-panel Phonk button lead there. The local web player supplies the referrer YouTube requires; extension/file selections open that HTTP view. Original music runs on the device. Max music links select Max passes, and personal music uploads are Free with existing local size/count limits.
 
-Backend pages require a local server: npm ci, then PORT=8789 npm run site:dev (PowerShell: $env:PORT=8789; npm run site:dev). Use a supported Node version. Local configuration is documented in site/.dev.vars.example; no secrets/live credentials are supplied. The UPI setting is blank by default. See payment-testing.md before isolated provider tests. Live payments remain closed.
+Characters opens the shared Playground with fourteen companions, their species actions, manual emotes, head/shoulder/corner positions, leave/return behavior, nine outfits and twenty-eight filters. Plans shows server-derived prices and ownership rules with checkout explicitly closed. Its cosmetics remain closed drafts; Max-exclusive items have no individual product.
 
-The 30 YouTube titles are an editable shortlist, not verified playable additions. Official video IDs, embedding and rights/credit checks remain pending. The embedded player retains YouTube ads and restrictions. Original music is synthesized on the device; owner listening and actual call review remain necessary.
+Published owner collections can be refreshed from the existing catalog API, with titles/credits, validated video IDs and adult markers. Admin catalog changes need no extension release. No per-song API call is needed for playback. The static launcher contains no backend, credentials or database; without a running backend, the private supplied references and local originals still work.
 
-Hosted uploads/delivery/previews need HOSTED_FILES_ENABLED=on; hosted audio additionally needs HOSTED_AUDIO_ENABLED=on. Stored file deletion is paused while hosting is disabled to preserve cleanup records. These guards do not change account plans or cap provider billing. No deployment, remote database migration, main merge or Web Store publication is requested.
+Private selection names/markers travel in a URL fragment, not in a server query or license-key URL. The fragment is removed after reading. Known private adult markers survive reloads; opting out unloads marked playback and excludes marked public songs from the queue. Private edits do not publish for other users. Website and extension views have separate browser storage.
+
+## YouTube evidence and limits
+
+A real NCS player loaded in the cloud browser without Error 153, showing the supplied playlist's first video. Its googlevideo.com media requests failed through the cloud proxy; the media clock stayed at zero. Full live media streaming was not verified. Browser fixtures verify the application routes, visible embedding, controls, age preference, privacy and catalog updates, not provider availability.
+
+Five playlist references are wired into the preview. The separate thirty-title shortlist still lacks individually verified official video URLs/rights checks. Playlist contents remain controlled by YouTube. Ads, age/region restrictions, removals and embedding decisions remain with the provider. No YouTube audio is downloaded or rehosted.
 
 ## Current validation, 2026-10-14
 
-- Final unit run: 201 passed, no failures. Site fallback copy now matches the updated ten-character Pro model and all English translation keys.
-- Full source Chromium run: 125 cases, 124 passed initially. The one failed shoulder-preview override was fixed; the resting-position expectation was updated to the requested paused-exploration behavior. A targeted source run passed all 12 cases, covering that failure, tracker/absence/tears, outgoing pictures, local Plans and adult call/Options cancellation.
-- Packaged unlocked review: 20 cases covered for Music, Playground, call-panel UI and content. Nineteen passed initially; the new delayed Options-preview test used a fixed delay that expired while the user click scrolled the page. It now holds decoding until opt-out is confirmed instead. All three packaged content tests passed on rerun, including that case; the other nineteen checks already passed. No unresolved failure remains.
-- All three WAVs play from the actual GitHub review folder without external HTTP requests. The review opens without a license, exposes exclusive previews and keeps purchases unavailable. Stereo render peaks remain below 0.5 at conservative export gain.
-- Desktop/mobile layout checked for Playground and mobile Plans without horizontal overflow. Shipping minified build, review copy and separate shipping ZIP build successfully. Packaging is not publication.
+- Final unit run: 205 passed, no failures.
+- Full source Chromium run: 133/133 passed.
+- Packaged review: 21 focused music-room, music, Playground and content cases passed. Later focused rechecks cover privacy-marker persistence and pricing refinements.
+- The additional Free-user test uploaded through the real call-panel file chooser, measured audible outgoing audio and verified Stop all.
+- All five checkout cases and the additional real-site/CSP/catalog case passed after the final routing changes.
+- The three original WAVs have finite/non-silent/non-clipping samples and measured contrast before/after both drops. Their first-drop buttons play offline without external requests.
+- Desktop/mobile layouts checked without horizontal overflow. Prices/animals are available in the same static web preview; source shipping settings remain enabled.
+- The PowerShell launcher parsed and served the real files under portable PowerShell/.NET on Linux. Read-only POST handling and path boundaries were checked. The Windows .cmd/default-browser launch itself still needs normal platform review.
+- Shipping minified build, unlocked review copy and separate shipping ZIP build successfully. No secrets, local databases, dependencies or runtime downloads are bundled.
 
-Actual Razorpay account/provider tests, verified official YouTube links, original regional recordings, full native translation/review, real Meet/weak-laptop performance and release approvals remain pending. Previously exposed owner-key rotation must happen before release. See the current checklist rather than old PENDING.md release commands.
+Real account/international approval, provider payment tests, refund initiation/settlement work, original regional recordings, official content/rights review, complete native copy review and actual call/weak-laptop validation remain release work. Rotate the previously exposed owner key before release. Do not execute historical PENDING.md deploy commands during this review.

@@ -20,3 +20,9 @@ Playground uses the same renderer as the outgoing camera, with explicit leave/re
 Regions are optional collections, not country restrictions. For everyone is the common collection; India stays available to anyone. Interface language and meme language remain independent. Core new controls are localized in all 16 interface bundles; longer new helper/personality text still needs native translation/review outside English and the selected Hindi controls.
 
 Original Phonk now layers sub-bass with saturated 808 harmonics, stronger kicks and controlled kick ducking. It remains synthesized on-device with no sampled third-party audio or R2 download. Updated stereo WAVs in review/music are listening drafts. Their rendered peaks remain below 0.5 at the conservative export gain; musical quality and real-call loudness still need the owner's listening feedback. Real Meet calls and weak-laptop tracking remain unverified by fake-call tests.
+
+## Consolidated music room
+
+The call-panel Phonk button, Welcome, Options and Playground now open a unified room showing all sixteen tunes and five supplied playlist references. Its HTTP loopback launcher supplies the referrer YouTube requires. Published owner collections refresh through the existing catalog API without a new extension release; the thirty-title shortlist remains unverified individual-track curation.
+
+Personal uploads are Free with existing local size/count limits. Premium bundled tunes keep their tiers. Max music links select Max passes. Private labels/markers travel in a URL fragment to the web player, never with a license key; known adult markers survive reloads. Detailed evidence and external limitations are in local-review.md.

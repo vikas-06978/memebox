@@ -117,7 +117,7 @@
     if (feature === 'characters') return max;
     if (feature.startsWith('music:')) {
       const id = feature.slice(6);
-      return FREE_TUNES.includes(id) || max || (isPro(now) && (PRO_TUNES.includes(id) || id === 'phonk_desi'));
+      return id === 'own' || FREE_TUNES.includes(id) || max || (isPro(now) && (PRO_TUNES.includes(id) || id === 'phonk_desi'));
     }
     // Free has two, Pro has ten, Pro Max (or an unlimited key) has all fourteen.
     // Only the eight purchasable characters get new permanent add-ons.

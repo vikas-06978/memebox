@@ -14,3 +14,4 @@ for (const name of ['fx', 'music']) {
 }
 
 await import('./sync-shop.mjs');
+await import('./sync-music-room.mjs');

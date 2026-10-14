@@ -25,3 +25,11 @@ The new free catalog contains validated video IDs, so normal playback needs no s
 Keep Cloudflare's account on its free service plans, hosted audio disabled and existing application caps in place. This design reduces operations; it cannot guarantee zero bills for arbitrary traffic or changes to account/provider pricing. R2's usage alerts are not hard spending caps. Payment gateway/domain/store costs are separate. Real account billing settings must be checked before release.
 
 YouTube can show ads and publishers can disable embedding or remove videos. NCS's creator-video policy is not blanket permission for music distribution/application use. Check the applicable terms and credits before approval. Paid music here is the separately synthesized MemeBox collection, not a paywall on third-party embeds.
+
+## Consolidated local player, 2026-10-14
+
+The review includes a unified room with the five exact playlist references supplied in chat, not invented individual song IDs. On Windows run review/Start-MemeBox-Music.cmd. Its HTTP loopback page provides a valid web referrer; direct extension/file embedding may produce Error 153. The launcher does not deploy or enable hosting.
+
+Manage my playlists edits private browser preferences. Public collections are maintained in /admin/packs and loaded by Browse published collections, without reinstalling. The thirty-title shortlist still needs exact official video URLs/rights checks before becoming that public catalog.
+
+A real NCS frame loaded without Error 153, but googlevideo.com deliveries failed through the cloud proxy and its clock did not advance. Full live playback was not verified. Controlled browser fixtures verify application routing, embedding, privacy, adult opt-out and catalog updates; they do not establish provider availability.

@@ -1,6 +1,7 @@
 // Prepare an explicitly unlocked LOCAL review copy, without changing shipping settings.
 import fs from 'node:fs';
 import path from 'node:path';
+import { copyRoom } from './sync-music-room.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const input = path.join(root, 'extension/dist');
@@ -16,3 +17,6 @@ manifest.version_name = manifest.version + ' local review';
 fs.writeFileSync(path.join(output, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 fs.appendFileSync(path.join(output, 'options.css'), '\n/* Local review: purchases are unavailable. */\n#buy { display:none !important; }\n');
 console.log('Local review prepared: review/extension. Do not publish this unlocked build.');
+
+copyRoom(output, path.join(root, 'review/music-room'));
+console.log('Static music room prepared for the local review launcher.');

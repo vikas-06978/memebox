@@ -14,7 +14,7 @@
   <header class="top">
     <img src="icons/icon48.png" alt="" width="48" height="48">
     <div><h1>MemeBox <span data-i18n="fx_watermark">PREVIEW</span></h1><p class="sub" data-i18n="fx_locked">🔒 Preview only: not sent to your call.</p></div>
-    <nav class="preview-nav"><a class="button" href="#music-library" data-i18n="mu_title">Music</a><a class="button" href="#picture-library" data-i18n="pg_pictures">Pictures</a><a class="button" href="plans.html" data-i18n="plans_link">Plans, prices and how to buy</a><a class="button" href="options.html" data-i18n="options">Options</a></nav>
+    <nav class="preview-nav"><a class="button" href="music-room.html" data-i18n="mu_title">Music</a><a class="button" href="#picture-library" data-i18n="pg_pictures">Pictures</a><a class="button" href="plans.html" data-i18n="plans_link">Plans, prices and how to buy</a><a class="button" href="options.html" data-i18n="options">Options</a></nav>
   </header>
   <main class="playground-layout">
     <section class="preview-stage card">
@@ -51,7 +51,7 @@
         <label><span data-i18n="fx_looks">Looks (filters)</span><select id="filter"></select></label><a href="plans.html#filters" data-i18n="plans_link">Plans and how to buy</a>
         <label><span data-i18n="fx_colors">Light colour</span><select id="colour"></select></label>
       </section>
-      <section class="card" id="music-library"><h2 data-i18n="pg_music_title">Music listening room</h2><p data-i18n="pg_music_help"></p><label><span data-i18n="pg_preview_seconds">Preview length</span><select id="music-length"><option value="20">20 seconds</option><option value="60">60 seconds</option></select></label><label><span data-i18n="pg_volume">Listening volume</span><input id="music-volume" type="range" min="0" max="100" value="35"></label><div id="tunes" class="tune-grid"></div><button id="stop-music" type="button" data-i18n="mu_stop">Stop</button></section>
+      <section class="card" id="music-library"><h2 data-i18n="pg_music_title">Music listening room</h2><p data-i18n="pg_music_help"></p><a class="button" href="music-room.html" data-i18n="room_playlists">Free YouTube playlists</a><label><span data-i18n="pg_preview_seconds">Preview length</span><select id="music-length"><option value="20">20 seconds</option><option value="60">60 seconds</option></select></label><label><span data-i18n="pg_volume">Listening volume</span><input id="music-volume" type="range" min="0" max="100" value="35"></label><div id="tunes" class="tune-grid"></div><button id="stop-music" type="button" data-i18n="mu_stop">Stop</button></section>
     <section class="card" id="picture-library"><h2 data-i18n="pg_pictures">Picture mode</h2><p data-i18n="pg_pictures_help"></p><label class="button"><span data-i18n="pg_picture_choose">Try a local picture</span><input id="picture-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label><div id="picture-preview" hidden><button id="picture-close" type="button" data-i18n="pg_picture_close">Close picture</button><img id="picture-image" alt="Local picture preview"></div><p id="picture-status" role="status"></p><p data-i18n="pg_picture_privacy"></p><a class="button" href="options.html#lines-card" data-i18n="pg_add_memes">Add my memes and pictures</a></section>
       <section class="card"><h2 data-i18n="pg_add_music">How to add my music</h2><p data-i18n="pg_music_add_help"></p><p data-i18n="pg_collection_help"></p></section>
     </div>

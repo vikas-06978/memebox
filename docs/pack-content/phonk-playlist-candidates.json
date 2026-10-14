@@ -23,5 +23,15 @@
       "id": "PLGBKsNyGY-afmc5ff3n1HOYGTmZO1xJGw",
       "url": "https://www.youtube.com/playlist?list=PLGBKsNyGY-afmc5ff3n1HOYGTmZO1xJGw"
     }
-  ]
+  ],
+  "localReview": {
+    "referencesWired": true,
+    "referenceCount": 5,
+    "usesVisibleWebPlayer": true,
+    "individualSongIdsInvented": false,
+    "httpReferrerVerified": true,
+    "liveMediaStreamVerified": false,
+    "mediaCheckNote": "Real NCS frame loaded without Error 153; googlevideo.com deliveries failed through the cloud proxy and media time did not advance.",
+    "publishedRemotely": false
+  }
 }

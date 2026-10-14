@@ -34,3 +34,9 @@ Hosted uploads/playback remain disabled by default. Text packs can use the catal
 - Owners and users can mark text, recorded dialogues and picture memes. Unmarked recordings cannot be classified automatically; mark them accurately before distributing them.
 - Phonk's site has its own explicit preference for marked tracks, excluding them from playback queues when off. It does not hide or bypass YouTube age restrictions/advertisements.
 - Store content rating, listing disclosures and review must reflect the actual content before release. A checkbox does not guarantee store approval or establish verified adulthood.
+
+## Music collections
+
+The music room displays five supplied YouTube references and a private ten-collection manager. These preferences are separate from the public catalog. Native/website views have separate browser storage. Choosing a native collection transfers its selected reference/label/known adult marker in the URL fragment, never a license key. The fragment is removed after reading; known markers survive reloads.
+
+Use /admin/packs for public collections as described in pack-content/manage-phonk.md, then Browse published collections in the room. It consumes names/credits, validated video IDs and adult flags without additional per-song database calls. Private collection edits never automatically publish for other users.

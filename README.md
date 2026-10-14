@@ -1,6 +1,6 @@
 # MemeBox: Meme Soundboard & Voice Changer for Calls
 
-**Local testing branch:** follow [START-HERE.md](START-HERE.md). The ready-to-load unlocked test copy is `review/extension`; open `review/listen.html` for offline original music. Do not deploy this branch or publish its review build.
+**Local testing branch:** follow [START-HERE.md](START-HERE.md). The ready-to-load unlocked test copy is `review/extension`; open `review/Start-MemeBox-Music.cmd` on Windows for the full local music/playlist/character/price preview, or `review/listen.html` for offline original music. Do not deploy this branch or publish its review build.
 
 MemeBox plays meme lines, clips and sound effects **into your microphone** during browser video calls, so everyone in the call hears them. Only you need the extension.
 

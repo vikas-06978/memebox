@@ -16,6 +16,7 @@
     try { localStorage.setItem('memebox-theme', theme); } catch { /* private mode */ }
   }
 
+  if (!globalThis.chrome?.storage?.local) return;
   chrome.storage.local.get('settings').then((r) => fromSettings(r.settings)).catch(() => {});
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.settings) fromSettings(changes.settings.newValue);

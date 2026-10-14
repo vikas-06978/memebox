@@ -1,0 +1,2426 @@
+// MemeBox "Lights & looks": the picture on YOUR OWN camera. A hanging lamp, coloured corner lights,
+// a spotlight on you, filters, and lights that follow the sounds. Pure canvas drawing, no dependencies.
+// Classic script: loaded in the call page (mic-hook.js draws the camera with it) and in the panel
+// (the live preview draws the same thing), so what you preview is exactly what the call sees.
+//
+//   const r = MemeFx.createRenderer();
+//   r.render(ctx2d, source, w, h, config, performance.now(), { level, beat, mood }, { preview: true });
+//
+// The renderer keeps a little state (the lamp's drop animation, sparkles), so make one per camera.
+(() => {
+  'use strict';
+
+  const TAU = Math.PI * 2;
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const smooth = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+  const easeOutCubic = (t) => 1 - (1 - clamp(t)) ** 3;
+
+  // ---------- what exists, and what is free ----------
+
+  const COLORS = {
+    warm: '#ffc46b', white: '#fff3da', blue: '#8ec5ff',               // free
+    rose: '#ff7eb6', purple: '#b194ff', green: '#6ee7b7', red: '#ff6b6b', cyan: '#5de1ff', gold: '#ffd54a', // Pro
+  };
+  const FREE_COLORS = ['warm', 'white', 'blue'];
+  const LAMP_ANIMS = ['still', 'swing', 'drop', 'flicker', 'sway', 'bounce', 'pendulum', 'beat'];
+  const FIXTURES = ['lamp', 'discoball', 'lantern', 'fairy', 'chandelier', 'moon', 'star', 'spotlight']; // what hangs (only the lamp is free)        // "still" is free, the rest are Pro
+  const PATTERNS = ['auto', 'steady', 'pulse', 'candle', 'rainbow', 'disco', 'sweep', 'sparkle', 'aurora', 'fire', 'laser', 'neonframe', 'police', 'heart', 'party', 'equalizer', 'club']; // corner light shows (Pro)
+  const FREE_FILTERS = ['none', 'warm', 'bw', 'glow'];
+  const PRO_FILTERS = ['vintage', 'cool', 'noir', 'dream', 'sunset', 'neon', 'pixel', 'vhs', 'glam', 'sepia', 'peach', 'teal', 'soft', 'dusk', 'contrast'];
+  const ADDON_FILTERS = ['cyber', 'comic', 'matrix', 'night', 'film', 'wave', 'heat', 'snow', 'prism', 'startrail']; // Pro Max exclusive, never individually sold
+  const FILTERS = [...FREE_FILTERS, ...PRO_FILTERS, ...ADDON_FILTERS];
+  // Characters that sit in a bottom corner and react to the sounds. Pro: one of the standard three at a time.
+  // Pro Max: four additional exclusive companions. Every one is drawn with code (no pictures), so they are small and original.
+  const FREE_CHARACTERS = ['cat', 'dog'];                                              // free for everybody
+  const STANDARD_CHARACTERS = ['cat', 'dog', 'bunny', 'panda', 'owl', 'fox', 'penguin', 'lion', 'monkey', 'frog'];          // with a Pro pass (the free two included)
+  const PREMIUM_CHARACTERS = ['unicorn', 'robot', 'snake', 'bird'];
+  const CHARACTERS = [...STANDARD_CHARACTERS, ...PREMIUM_CHARACTERS];
+  const FREE_OUTFITS = ['none', 'party', 'crown', 'scarf'];
+  const PRO_OUTFITS = ['hoodie', 'bow', 'glasses'];
+  const MAX_OUTFITS = ['astronaut', 'wizard', 'superhero'];
+  const OUTFITS = [...FREE_OUTFITS, ...PRO_OUTFITS, ...MAX_OUTFITS];
+  const PERSONAS = Object.freeze({
+    cat: { gait: 'pad', pace: .24, action: 'lick' }, dog: { gait: 'trot', pace: .34, action: 'pant' },
+    bunny: { gait: 'hop', pace: .32, action: 'wiggle' }, panda: { gait: 'amble', pace: .16, action: 'munch' },
+    owl: { gait: 'fly', pace: .28, action: 'turn' }, fox: { gait: 'prowl', pace: .3, action: 'swish' },
+    penguin: { gait: 'waddle', pace: .18, action: 'waddle' }, lion: { gait: 'prowl', pace: .2, action: 'mane' },
+    monkey: { gait: 'swing', pace: .34, action: 'scratch' }, frog: { gait: 'hop', pace: .28, action: 'croak' },
+    unicorn: { gait: 'prance', pace: .3, action: 'sparkle' }, robot: { gait: 'march', pace: .2, action: 'scan' },
+    snake: { gait: 'slither', pace: .18, action: 'coil' }, bird: { gait: 'fly', pace: .38, action: 'preen' },
+  });
+  const COMMANDS = ['wave', 'jump', 'roll', 'sit', 'cry', 'heartbeat', 'dance', 'raspberry', 'cheer', 'signature', 'head', 'shoulder', 'corner'];
+  const MOODS = ['suspense', 'excited', 'surprise', 'sad', 'fun', 'awkward'];
+
+  const DEFAULTS = Object.freeze({
+    on: false,          // the Lights switch
+    armed: false,       // the camera is prepared in the next call (set once Lights has been used)
+    lamp: true,         // the hanging lamp
+    mirror: true,       // Left / Right as in a mirror (your own video): the picture sent is not flipped, your own view of it is
+    lampPos: 'center',  // center | left | right (so it does not cover your face)
+    lightAngle: 'auto', // the light's angle onto you: auto (aimed at you), or 90 / 60 / 45 / 30 degrees
+    lampX: null,        // where the lamp hangs, 0..1 across the picture (null = the Left / Centre / Right choice)
+    lampHang: 0,        // how much lower it hangs, as a share of the picture height (0..0.4)
+    lampSize: 1,        // 0.6..1.6
+    enhance: 0,         // HD enhance: sharper, clearer, smoother skin (0 = off, up to 1)
+    lampAnim: 'still',  // still | swing | drop | flicker | sway | bounce | pendulum | beat
+    fixture: 'lamp',    // lamp | discoball | lantern | fairy | chandelier | moon | star | spotlight
+    color: 'warm',      // a name from COLORS or '#rrggbb'
+    pattern: 'steady',  // corner light show
+    corners: false,     // coloured corner lights
+    focus: true,        // darker edges, light on you
+    sync: false,        // lights follow the sounds (mood, level, beat)
+    safe: true,         // no flashing: slow, gentle changes only
+    filter: 'none',
+    character: 'none',  // none | cat | dog | bunny | panda | owl | fox | penguin | lion | monkey | frog | unicorn | robot
+    outfit: 'none',     // a cosmetic never unlocks its underlying character
+    charHome: 'shoulder', // resting place when a tracked face is present
+    command: '', commandSeq: 0, // a single explicit emote, shared by panel and camera
+    follow: true,       // lights and the character follow where YOU are (left, right, standing up, out of the picture)
+    masti: true,        // the animal plays on you now and then: sits on your head or shoulder, hangs on your glasses, rolls around your head (needs Follow me)
+    sounds: true,       // the animal makes little sounds (sobbing, sniffing, a cheer, a heartbeat); others in the call hear them
+    gestures: true,     // the character understands your hands and head (thumbs up, heart, OK, rock, stop, clap, nod, shake) and your tongue
+    sens: 'normal',     // how easily those are noticed: low | normal | high
+    studio: true,       // brighten a dark room automatically (only while Lights is on)
+    awayDance: false,   // retained preference; companions never celebrate while you are absent
+    charPos: 'right',   // left | right (bottom corner)
+    intensity: 0.8,
+  });
+
+  const isHex = (c) => typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c);
+
+  // `can(feature)` says what the person may use: 'lampAnim', 'colors', 'corners', 'sync', 'filtersPro',
+  // and for a single add-on filter 'filter:neon'. Anything locked falls back to the free choice.
+  function sanitize(cfg, can = () => true) {
+    const c = { ...DEFAULTS, ...(cfg && typeof cfg === 'object' ? cfg : {}) };
+    const out = {
+      on: c.on === true,
+      armed: c.armed === true,
+      lamp: c.lamp !== false,
+      mirror: c.mirror !== false,
+      lampPos: ['center', 'left', 'right'].includes(c.lampPos) ? c.lampPos : 'center',
+      lightAngle: [90, 60, 45, 30].includes(Number(c.lightAngle)) ? Number(c.lightAngle) : 'auto',
+      lampX: Number.isFinite(Number(c.lampX)) && c.lampX !== null ? clamp(Number(c.lampX), 0.06, 0.94) : null,
+      lampHang: Number.isFinite(Number(c.lampHang)) ? clamp(Number(c.lampHang), 0, 0.4) : 0,
+      lampSize: Number.isFinite(Number(c.lampSize)) ? clamp(Number(c.lampSize), 0.6, 1.6) : 1,
+      enhance: Number.isFinite(Number(c.enhance)) ? clamp(Number(c.enhance), 0, 1) : 0,
+      lampAnim: LAMP_ANIMS.includes(c.lampAnim) ? c.lampAnim : 'still',
+      fixture: FIXTURES.includes(c.fixture) ? c.fixture : 'lamp',
+      color: Object.prototype.hasOwnProperty.call(COLORS, c.color) || isHex(c.color) ? c.color : 'warm',
+      pattern: PATTERNS.includes(c.pattern) ? c.pattern : 'steady',
+      corners: c.corners === true,
+      focus: c.focus !== false,
+      sync: c.sync === true,
+      safe: c.safe !== false,
+      filter: FILTERS.includes(c.filter) ? c.filter : 'none',
+      character: CHARACTERS.includes(c.character) ? c.character : 'none',
+      outfit: OUTFITS.includes(c.outfit) ? c.outfit : 'none',
+      charHome: ['corner', 'head', 'shoulder'].includes(c.charHome) ? c.charHome : 'shoulder',
+      command: COMMANDS.includes(c.command) ? c.command : '',
+      commandSeq: Number.isSafeInteger(c.commandSeq) && c.commandSeq > 0 ? c.commandSeq : 0,
+      charPos: c.charPos === 'left' ? 'left' : 'right',
+      follow: c.follow !== false,
+      masti: c.masti !== false,
+      sounds: c.sounds !== false,
+      gestures: c.gestures !== false,
+      sens: ['low', 'high'].includes(c.sens) ? c.sens : 'normal',
+      awayDance: c.awayDance === true,
+      studio: c.studio !== false,
+      intensity: Number.isFinite(Number(c.intensity)) ? clamp(Number(c.intensity), 0.2, 1) : 0.8,
+    };
+    if (out.lampAnim !== 'still' && !can('lampAnim')) out.lampAnim = 'still';
+    if (out.fixture !== 'lamp' && !can('fixtures')) out.fixture = 'lamp';
+    if (!FREE_COLORS.includes(out.color) && !can('colors')) out.color = 'warm';
+    if (out.corners && !can('corners')) out.corners = false;
+    if (out.pattern !== 'steady' && !can('corners')) out.pattern = 'steady';
+    if (out.sync && !can('sync')) out.sync = false;
+    if (PRO_FILTERS.includes(out.filter) && !can('filtersPro') && !can('filter:' + out.filter)) out.filter = 'none';
+    if (ADDON_FILTERS.includes(out.filter) && !can('filter:' + out.filter)) out.filter = 'none';
+    if (out.character !== 'none' && !can('character:' + out.character)) out.character = 'none';
+    if (!FREE_OUTFITS.includes(out.outfit) && !can('outfit:' + out.outfit)) out.outfit = 'none';
+    if (out.follow && !can('follow')) out.follow = false;
+    if (out.enhance > 0 && !can('enhance')) out.enhance = 0;
+    return out;
+  }
+
+  // What would be locked in `cfg` (so the panel can say "this is a preview").
+  function lockedParts(cfg, can) {
+    const want = sanitize(cfg, () => true);
+    const have = sanitize(cfg, can);
+    const locked = [];
+    for (const k of ['lampAnim', 'fixture', 'color', 'corners', 'pattern', 'sync', 'filter', 'character', 'outfit', 'follow', 'enhance']) {
+      if (k === 'follow' && !(cfg && cfg.follow === true)) continue; // Follow me is on by default: it is only "previewed" when someone chose it
+      if (want[k] !== have[k]) locked.push(k);
+    }
+    return locked;
+  }
+
+  // ---------- small helpers ----------
+
+  function hexToRgb(hex) {
+    const h = (COLORS[hex] || hex).replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const rgba = (rgb, a) => `rgba(${rgb[0] | 0},${rgb[1] | 0},${rgb[2] | 0},${clamp(a)})`;
+  function hsl(h, s, l, a = 1) { return `hsla(${((h % 360) + 360) % 360},${s}%,${l}%,${clamp(a)})`; }
+  const mixRgb = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+  // A smooth wobble in [-1, 1]: a few sines, so it needs no random state and is the same every run.
+  const wobble = (t, seed = 0) => (Math.sin(t * 2.1 + seed) + 0.6 * Math.sin(t * 3.7 + seed * 1.7 + 1.3) + 0.3 * Math.sin(t * 7.9 + seed * 2.3 + 2.2)) / 1.9;
+
+  function glow(g, x, y, r, rgb, alpha) {
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, rgba(rgb, alpha));
+    gr.addColorStop(0.45, rgba(rgb, alpha * 0.42));
+    gr.addColorStop(1, rgba(rgb, 0));
+    g.fillStyle = gr;
+    g.fillRect(x - r, y - r, r * 2, r * 2);
+  }
+
+  const chromaOf = (rgb) => (Math.max(rgb[0], rgb[1], rgb[2]) - Math.min(rgb[0], rgb[1], rgb[2])) / 255;
+  // The colour of the light must be SEEN: the whole picture takes on its hue (blue light makes the room blue),
+  // strongest around you. White light changes nothing.
+  function tintWash(g, w, h, rgb, amt, cx, cy) {
+    const a = clamp(amt * chromaOf(rgb) * 1.15, 0, 0.9);
+    if (a < 0.03) return;
+    g.save();
+    const R1 = Math.hypot(w, h) * 0.75;
+    const gr = g.createRadialGradient(cx, cy, h * 0.12, cx, cy, R1);
+    gr.addColorStop(0, rgba(rgb, a)); gr.addColorStop(0.6, rgba(rgb, a * 0.75)); gr.addColorStop(1, rgba(rgb, a * 0.5));
+    g.fillStyle = gr;
+    g.globalCompositeOperation = 'soft-light'; g.fillRect(0, 0, w, h);
+    g.globalCompositeOperation = 'color'; g.globalAlpha = 0.3; g.fillRect(0, 0, w, h); // shifts the hue, keeps the brightness
+    g.restore();
+  }
+
+  // The screen fills with the animal's tears while it waits for you: water rises from the bottom (with waves) and tear drops fall.
+  // level 0..1. It drains by itself when the level goes down again.
+  function drawTears(g, w, h, level, now) {
+    if (level < 0.01) return;
+    const t = now / 1000, top = Math.max(-h * 0.02, h * (1 - level)), N = 36;
+    g.save();
+    const surface = (x) => top + Math.sin((x / w) * 9 + t * 1.8) * h * 0.012 * (0.4 + level) + Math.sin((x / w) * 17 - t * 2.6) * h * 0.006;
+    const gr = g.createLinearGradient(0, top, 0, h);
+    gr.addColorStop(0, 'rgba(150,205,255,0.30)'); gr.addColorStop(1, 'rgba(60,130,230,0.58)');
+    g.fillStyle = gr; g.beginPath(); g.moveTo(0, h);
+    for (let i = 0; i <= N; i++) g.lineTo((i / N) * w, surface((i / N) * w));
+    g.lineTo(w, h); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(225,242,255,0.6)'; g.lineWidth = Math.max(1.5, h * 0.004); g.beginPath();
+    for (let i = 0; i <= N; i++) { const x = (i / N) * w; if (i) g.lineTo(x, surface(x)); else g.moveTo(x, surface(x)); }
+    g.stroke();
+    // tear drops falling from the top and splashing into the water
+    const n = Math.round(5 + 24 * level);
+    for (let i = 0; i < n; i++) {
+      const sp = 0.14 + ((i * 37) % 10) / 55, ph = (t * sp + i * 0.173) % 1;
+      const x = (((i * 0.754877) + Math.floor(t * sp + i * 0.173) * 0.31) % 1) * w, y = ph * h * 1.02;
+      const wl = surface(x);
+      if (y < wl) {
+        const r = h * (0.007 + (i % 3) * 0.0025);
+        g.fillStyle = 'rgba(170,215,255,0.78)'; g.beginPath(); g.ellipse(x, y, r, r * 1.7, 0, 0, TAU); g.fill();
+        g.fillStyle = 'rgba(255,255,255,0.7)'; g.beginPath(); g.ellipse(x - r * 0.3, y - r * 0.4, r * 0.28, r * 0.5, 0, 0, TAU); g.fill();
+      } else if (y < wl + h * 0.05) { // a ring where it lands
+        const k = (y - wl) / (h * 0.05);
+        g.strokeStyle = `rgba(225,242,255,${0.6 * (1 - k)})`; g.lineWidth = 1.4; g.beginPath(); g.ellipse(x, wl + 2, h * 0.012 + k * h * 0.03, h * 0.004 + k * h * 0.008, 0, 0, TAU); g.stroke();
+      }
+    }
+    g.restore();
+  }
+
+  // A soft cone of light from (x, y) opening downwards. dir is an angle in radians (0 = straight down).
+  function cone(g, x, y, length, spread, dir, rgb, alpha) {
+    g.save();
+    g.translate(x, y);
+    g.rotate(dir);
+    const grad = g.createLinearGradient(0, 0, 0, length);
+    grad.addColorStop(0, rgba(rgb, alpha));
+    grad.addColorStop(0.6, rgba(rgb, alpha * 0.28));
+    grad.addColorStop(1, rgba(rgb, 0));
+    g.fillStyle = grad;
+    g.beginPath();
+    g.moveTo(-spread * 0.07, 0);
+    g.lineTo(spread * 0.07, 0);
+    g.lineTo(spread / 2, length);
+    g.lineTo(-spread / 2, length);
+    g.closePath();
+    g.fill();
+    g.restore();
+  }
+
+  // ---------- filters ----------
+
+  const FILTER_CSS = {
+    sepia: 'sepia(.9) contrast(1.05)',
+    peach: 'sepia(.25) saturate(1.2) hue-rotate(-22deg) brightness(1.08)',
+    teal: 'hue-rotate(22deg) saturate(1.35) contrast(1.12)',
+    soft: 'blur(.65px) brightness(1.08) contrast(.92)',
+    dusk: 'sepia(.25) hue-rotate(290deg) contrast(1.15) brightness(.88)',
+    contrast: 'contrast(1.5) saturate(.92)',
+    prism: 'saturate(1.35) contrast(1.1)',
+    startrail: 'brightness(.92) contrast(1.12)',
+    warm: 'sepia(0.22) saturate(1.2) hue-rotate(-8deg) brightness(1.05)',
+    bw: 'grayscale(1) contrast(1.12)',
+    vintage: 'sepia(0.55) contrast(1.1) saturate(0.95) brightness(0.97)',
+    cool: 'saturate(1.1) hue-rotate(14deg) brightness(1.03)',
+    neon: 'saturate(2.1) contrast(1.28) brightness(1.08) hue-rotate(-18deg)',
+    noir: 'grayscale(1) contrast(1.65) brightness(0.86)',
+    sunset: 'sepia(0.45) saturate(1.7) hue-rotate(-24deg) brightness(1.04)',
+    dream: 'blur(1.1px) saturate(1.3) brightness(1.08)',
+    vhs: 'saturate(1.35) contrast(1.08) brightness(1.03)',
+    cyber: 'saturate(1.5) contrast(1.18) brightness(0.96)',
+    comic: 'saturate(1.9) contrast(1.55) brightness(1.02)',
+    matrix: 'grayscale(1) contrast(1.35) brightness(0.9)',
+    night: 'grayscale(1) contrast(1.5) brightness(1.3)',
+    film: 'sepia(0.75) contrast(1.15) brightness(0.96)',
+    wave: 'saturate(1.7) contrast(1.15) hue-rotate(-18deg)',
+    snow: 'saturate(0.85) brightness(1.07) hue-rotate(8deg)',
+    glam: 'brightness(1.12) contrast(0.92) saturate(1.2) sepia(0.12)',
+  };
+
+  function makeScratch(w, h) {
+    return typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
+  }
+
+  // Thermal camera: the picture is reduced to a small grey image, each brightness gets a heat colour, and it is
+  // blown up smoothly. Only about 14 000 pixels are read per frame, so it is cheap.
+  const HEAT_STOPS = [[0, [20, 8, 70]], [0.28, [40, 60, 215]], [0.5, [214, 36, 110]], [0.72, [255, 138, 26]], [0.9, [255, 240, 74]], [1, [255, 255, 235]]];
+  let HEAT_LUT = null;
+  function heatLut() {
+    if (HEAT_LUT) return HEAT_LUT;
+    HEAT_LUT = new Uint8Array(256 * 3);
+    for (let i = 0; i < 256; i++) {
+      const v = i / 255;
+      let k = 0; while (k < HEAT_STOPS.length - 2 && v > HEAT_STOPS[k + 1][0]) k++;
+      const [a, ca] = HEAT_STOPS[k], [b, cb] = HEAT_STOPS[k + 1];
+      const f = clamp((v - a) / (b - a));
+      for (let c = 0; c < 3; c++) HEAT_LUT[i * 3 + c] = Math.round(lerp(ca[c], cb[c], f));
+    }
+    return HEAT_LUT;
+  }
+  function drawHeat(R, g, src, w, h) {
+    const sw = 160, sh = Math.max(90, Math.round(160 * h / w));
+    if (!R.heat || R.heat.width !== sw || R.heat.height !== sh) { R.heat = makeScratch(sw, sh); R.heatCtx = R.heat.getContext('2d', { willReadFrequently: true }); }
+    const hg = R.heatCtx;
+    hg.drawImage(src, 0, 0, sw, sh);
+    let img;
+    try { img = hg.getImageData(0, 0, sw, sh); } catch { g.drawImage(src, 0, 0, w, h); return; }
+    const d = img.data, lut = heatLut();
+    for (let i = 0; i < d.length; i += 4) {
+      const l = Math.min(255, Math.round((0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]) * 1.25));
+      d[i] = lut[l * 3]; d[i + 1] = lut[l * 3 + 1]; d[i + 2] = lut[l * 3 + 2];
+    }
+    hg.putImageData(img, 0, 0);
+    g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(R.heat, 0, 0, sw, sh, 0, 0, w, h); g.restore();
+    const fs = Math.max(10, Math.round(h * 0.04)); // a little "thermal camera" readout
+    g.save(); g.font = `700 ${fs}px "Courier New", monospace`; g.textBaseline = 'top'; g.fillStyle = 'rgba(255,255,255,0.9)';
+    g.fillText('36.6 \u00B0C', fs * 0.7, fs * 0.6); g.restore();
+  }
+
+  // The "styled" filters: a base colour grade (FILTER_CSS) plus overlays drawn on top.
+  function drawStyled(R, g, src, w, h, filter, now) {
+    const t = now / 1000;
+    g.save();
+    if (filter === 'vhs') {
+      if ('filter' in g) { // colour fringes: a red ghost to the left, a cyan one to the right
+        const off = Math.max(2, Math.round(w / 200));
+        g.globalCompositeOperation = 'screen';
+        g.globalAlpha = 0.22;
+        g.filter = 'sepia(1) saturate(7) hue-rotate(-45deg) brightness(0.8)';
+        g.drawImage(src, -off, 0, w, h);
+        g.filter = 'sepia(1) saturate(7) hue-rotate(150deg) brightness(0.8)';
+        g.drawImage(src, off, 0, w, h);
+        g.filter = 'none';
+      }
+      g.globalCompositeOperation = 'source-over';
+      g.globalAlpha = 0.16;
+      g.fillStyle = '#000';
+      const step = Math.max(3, Math.round(h / 140));
+      for (let y = 0; y < h; y += step) g.fillRect(0, y, w, 1);
+      const band = ((t * 0.18) % 1.3 - 0.15) * h; // a slow tracking band rolling down
+      const bg = g.createLinearGradient(0, band, 0, band + h * 0.09);
+      bg.addColorStop(0, 'rgba(255,255,255,0)'); bg.addColorStop(0.5, 'rgba(255,255,255,0.10)'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+      g.globalAlpha = 1; g.fillStyle = bg; g.fillRect(0, band, w, h * 0.09);
+      const fs = Math.max(11, Math.round(h * 0.05));
+      g.font = `700 ${fs}px "Courier New", monospace`; g.textBaseline = 'top';
+      g.fillStyle = 'rgba(255,255,255,0.9)'; g.fillText('PLAY \u25B6', fs * 0.7, fs * 0.6);
+      if (Math.floor(t) % 2 === 0) { g.fillStyle = '#ff3b3b'; g.beginPath(); g.arc(w - fs * 1.1, fs * 1.1, fs * 0.32, 0, TAU); g.fill(); }
+    } else if (filter === 'cyber') {
+      const gr = g.createLinearGradient(0, 0, w, h);
+      gr.addColorStop(0, '#00e5ff'); gr.addColorStop(0.5, '#6a4cff'); gr.addColorStop(1, '#ff2bd6');
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.7; g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.1; g.fillRect(0, 0, w, h);
+    } else if (filter === 'comic') {
+      const dot = Math.max(5, Math.round(h / 55));
+      if (!R.dots || R.dotsH !== h) {
+        R.dotsH = h; R.dots = makeScratch(w, h);
+        const dg = R.dots.getContext('2d');
+        dg.fillStyle = '#fff'; dg.fillRect(0, 0, w, h); dg.fillStyle = '#000';
+        for (let y = 0, r = 0; y < h + dot; y += dot, r++) for (let x = (r % 2) * dot / 2; x < w + dot; x += dot) { dg.beginPath(); dg.arc(x, y, dot * 0.2, 0, TAU); dg.fill(); }
+      }
+      g.globalCompositeOperation = 'multiply'; g.globalAlpha = 0.2; g.drawImage(R.dots, 0, 0, w, h);
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+      g.strokeStyle = 'rgba(20,20,30,0.85)'; g.lineWidth = Math.max(3, h * 0.012); g.strokeRect(0, 0, w, h); // a comic panel border
+    } else if (filter === 'matrix') {
+      g.globalCompositeOperation = 'multiply'; g.fillStyle = '#19ff7a'; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'source-over';
+      const fs = Math.max(10, Math.round(h / 28)), cols = Math.ceil(w / fs);
+      if (!R.rain || R.rain.length !== cols) R.rain = Array.from({ length: cols }, (_, i) => ({ y: ((i * 7919) % 97) / 97 * h, v: 0.35 + ((i * 31) % 13) / 13 }));
+      g.font = `${fs}px "Courier New", monospace`; g.textBaseline = 'top';
+      const dt = Math.min(0.1, R.matrixAt ? t - R.matrixAt : 0.033); R.matrixAt = t;
+      R.rain.forEach((c, i) => {
+        c.y = (c.y + c.v * h * 0.35 * dt) % (h + fs * 8);
+        for (let k = 0; k < 7; k++) {
+          const y = c.y - k * fs; if (y < -fs || y > h) continue;
+          g.fillStyle = k === 0 ? 'rgba(210,255,225,0.95)' : `rgba(40,255,120,${0.55 - k * 0.07})`;
+          g.fillText(String.fromCharCode(0x30A0 + ((i * 13 + k * 7 + Math.floor(t * 6)) % 60)), i * fs, y);
+        }
+      });
+    } else if (filter === 'night') {
+      g.globalCompositeOperation = 'multiply'; g.fillStyle = '#3dff5a'; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'source-over';
+      g.fillStyle = 'rgba(180,255,190,0.07)'; // grain
+      for (let k = 0; k < 90; k++) g.fillRect(Math.random() * w, Math.random() * h, 2, 2);
+      const vg = g.createRadialGradient(w / 2, h / 2, h * 0.28, w / 2, h / 2, Math.hypot(w, h) * 0.5); // binoculars
+      vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(0.7, 'rgba(0,12,0,0.55)'); vg.addColorStop(1, 'rgba(0,0,0,0.95)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
+      const fs = Math.max(11, Math.round(h * 0.045));
+      g.font = `700 ${fs}px "Courier New", monospace`; g.textBaseline = 'top'; g.fillStyle = 'rgba(160,255,170,0.95)';
+      g.fillText('NIGHT VISION', fs * 0.7, fs * 0.6);
+      if (Math.floor(t) % 2 === 0) { g.fillStyle = '#ff3b3b'; g.beginPath(); g.arc(w - fs, fs * 1.1, fs * 0.3, 0, TAU); g.fill(); }
+    } else if (filter === 'film') {
+      g.globalAlpha = 0.9 + 0.1 * Math.sin(t * 23) * Math.sin(t * 7.3); // projector flicker, always gentle
+      g.fillStyle = 'rgba(255,240,210,0.10)';
+      for (let k = 0; k < 120; k++) g.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5);
+      g.globalAlpha = 1;
+      g.strokeStyle = 'rgba(255,255,255,0.18)'; g.lineWidth = 1;
+      for (let k = 0; k < 2; k++) { const sx = ((t * 0.37 + k * 0.51 + Math.floor(t * 2 + k) * 0.19) % 1) * w; if (Math.floor(t * 4 + k * 3) % 3 === 0) { g.beginPath(); g.moveTo(sx, 0); g.lineTo(sx + (k ? 2 : -2), h); g.stroke(); } }
+      const vg = g.createRadialGradient(w / 2, h / 2, h * 0.3, w / 2, h / 2, Math.hypot(w, h) * 0.55);
+      vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(30,15,0,0.6)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#000'; const bar = h * 0.06; g.fillRect(0, 0, w, bar * 0.5); g.fillRect(0, h - bar * 0.5, w, bar * 0.5); // film bars
+    } else if (filter === 'wave') {
+      const gr = g.createLinearGradient(0, 0, 0, h);
+      gr.addColorStop(0, '#2a0a5e'); gr.addColorStop(0.55, '#c2278f'); gr.addColorStop(1, '#ff7a3d');
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.85; g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.5;
+      const horizon = h * 0.74; // a perspective grid on the floor
+      g.strokeStyle = '#ff4fd8'; g.lineWidth = Math.max(1, h * 0.004);
+      for (let k = -8; k <= 8; k++) { g.beginPath(); g.moveTo(w / 2 + k * w * 0.012, horizon); g.lineTo(w / 2 + k * w * 0.14, h); g.stroke(); }
+      for (let k = 0; k < 6; k++) { const yy = horizon + ((k + (t * 0.6) % 1) / 6) ** 2 * (h - horizon); g.beginPath(); g.moveTo(0, yy); g.lineTo(w, yy); g.stroke(); }
+      g.globalAlpha = 0.25; const sun = g.createLinearGradient(0, h * 0.2, 0, horizon); sun.addColorStop(0, '#ffe45e'); sun.addColorStop(1, '#ff3d8b');
+      g.fillStyle = sun; g.beginPath(); g.arc(w / 2, horizon - h * 0.02, h * 0.26, Math.PI, TAU); g.fill();
+    } else if (filter === 'snow') {
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.35; g.fillStyle = '#9fd0ff'; g.fillRect(0, 0, w, h);
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+      const fs = Math.max(2, h / 130);
+      if (!R.snow) R.snow = Array.from({ length: 70 }, (_, i) => ({ x: ((i * 7919) % 101) / 101, y: ((i * 104729) % 97) / 97, v: 0.05 + ((i * 31) % 17) / 17 * 0.09, r: 0.5 + ((i * 13) % 7) / 7 * 1.6, ph: i }));
+      const dt = Math.min(0.1, R.snowAt ? t - R.snowAt : 0.033); R.snowAt = t;
+      for (const f of R.snow) {
+        f.y += f.v * dt; if (f.y > 1.03) { f.y = -0.03; f.x = Math.random(); }
+        const x = (f.x + Math.sin(t * 0.8 + f.ph) * 0.012) * w;
+        g.fillStyle = `rgba(255,255,255,${0.55 + 0.05 * f.r})`; g.beginPath(); g.arc(x, f.y * h, fs * f.r, 0, TAU); g.fill();
+      }
+      const vg = g.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, Math.hypot(w, h) * 0.55); // a frosty edge
+      vg.addColorStop(0, 'rgba(220,240,255,0)'); vg.addColorStop(1, 'rgba(220,240,255,0.4)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
+    } else if (filter === 'prism') {
+      const grad = g.createLinearGradient(0, 0, w, h); ['#fe749a', '#8c81ef', '#5cddd4'].forEach((c,i)=>grad.addColorStop(i/2,c));
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .35; g.fillStyle = grad; g.fillRect(0,0,w,h);
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = .2; g.strokeStyle = '#e6e3ff'; g.lineWidth = Math.max(2,w/180);
+      for(let i=0;i<4;i++) { const x=(i/4+(t*.025)%1)*w; g.beginPath(); g.moveTo(x,0); g.lineTo(x-w*.22,h); g.stroke(); }
+    } else if (filter === 'startrail') {
+      g.fillStyle = '#d4e6ff'; for(let i=0;i<24;i++) { const x=((i*.618+t*.012)%1)*w, y=((i*.381+t*.018)%1)*h; const r=1.2+(i%3); g.globalAlpha=.3+.25*Math.sin(t+i); g.beginPath(); g.arc(x,y,r,0,TAU); g.fill(); }
+    } else if (filter === 'glam') {
+      g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.42;
+      if ('filter' in g) g.filter = `blur(${Math.max(4, Math.round(h / 60))}px) brightness(1.25)`;
+      g.drawImage(src, 0, 0, w, h);
+      g.filter = 'none';
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.3; g.fillStyle = '#ff8fb8'; g.fillRect(0, 0, w, h);
+      const vg = g.createRadialGradient(w / 2, h * 0.45, h * 0.3, w / 2, h * 0.45, h * 0.95); // a soft golden vignette
+      vg.addColorStop(0, 'rgba(255,200,120,0)'); vg.addColorStop(1, 'rgba(255,170,90,0.35)');
+      g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 1; g.fillStyle = vg; g.fillRect(0, 0, w, h);
+    }
+    g.restore();
+  }
+
+  function drawFiltered(R, g, src, w, h, filter, now = 0) {
+    const css = FILTER_CSS[filter];
+    if (filter === 'pixel') {
+      const sw = Math.max(24, Math.round(w / 14)), sh = Math.max(18, Math.round(h / 14));
+      if (!R.pix || R.pix.width !== sw || R.pix.height !== sh) R.pix = makeScratch(sw, sh);
+      const pg = R.pix.getContext('2d');
+      pg.imageSmoothingEnabled = true;
+      pg.drawImage(src, 0, 0, sw, sh);
+      g.save();
+      g.imageSmoothingEnabled = false;
+      g.drawImage(R.pix, 0, 0, sw, sh, 0, 0, w, h);
+      g.restore();
+      return;
+    }
+    if (css && 'filter' in g) {
+      g.filter = css;
+      g.drawImage(src, 0, 0, w, h);
+      g.filter = 'none';
+    } else {
+      g.drawImage(src, 0, 0, w, h);
+    }
+    if (filter === 'glow' || filter === 'dream') {
+      g.save();
+      g.globalCompositeOperation = 'screen';
+      g.globalAlpha = filter === 'glow' ? 0.32 : 0.22;
+      if ('filter' in g) g.filter = `blur(${Math.max(4, Math.round(h / 60))}px) brightness(1.25)`;
+      g.drawImage(src, 0, 0, w, h);
+      g.restore();
+    } else if (filter === 'heat') {
+      drawHeat(R, g, src, w, h);
+    } else if (['vhs', 'cyber', 'comic', 'matrix', 'glam', 'night', 'film', 'wave', 'snow', 'prism', 'startrail'].includes(filter)) {
+      drawStyled(R, g, src, w, h, filter, now);
+    } else if (filter === 'cool' || filter === 'sunset' || filter === 'vintage') {
+      g.save();
+      g.globalCompositeOperation = 'soft-light';
+      g.globalAlpha = filter === 'cool' ? 0.22 : 0.28;
+      g.fillStyle = filter === 'cool' ? '#4a7bd0' : filter === 'sunset' ? '#ff8a3d' : '#b08a5a';
+      g.fillRect(0, 0, w, h);
+      g.restore();
+    }
+  }
+
+  // ---------- moods: what the lights do for the sound that is playing ----------
+
+  const MOOD = {
+    suspense: { rgb: [122, 92, 255], pattern: 'pulse', period: 3.8, focus: 0.3, dim: 0.9, swing: 0.05 },
+    excited:  { rgb: null, pattern: 'rainbow', period: 1, focus: 0, dim: 1.15, beats: true },
+    surprise: { rgb: [255, 226, 140], pattern: 'steady', period: 1, focus: 0.05, dim: 1.2, burst: true },
+    sad:      { rgb: [91, 141, 239], pattern: 'steady', period: 1, focus: 0.22, dim: 0.5 },
+    fun:      { rgb: null, pattern: 'sparkle', period: 1, focus: 0, dim: 1 },
+    awkward:  { rgb: [140, 175, 230], pattern: 'steady', period: 1, focus: 0.42, dim: 0.35 },
+  };
+
+  // ---------- the renderer ----------
+
+  // What each animal does when it is bored: each one is the thing THAT animal would really do.
+  const ACTIONS = {
+    frog:    ['tongue', 'croak', 'hop', 'heartbeat'],
+    monkey:  ['swing', 'scratch', 'drum', 'heartbeat'],
+    cat:     ['lick', 'stretch', 'knead', 'heartbeat'],
+    dog:     ['pant', 'shake', 'beg', 'heartbeat'],
+    bunny:   ['wiggle', 'hop', 'nibble', 'heartbeat'],
+    panda:   ['munch', 'roll', 'belly', 'heartbeat'],
+    owl:     ['turn', 'flap', 'hoot', 'heartbeat'],
+    fox:     ['swish', 'pounce', 'twitch', 'heartbeat'],
+    penguin: ['waddle', 'flap', 'heartbeat'],
+    lion:    ['roar', 'yawn', 'mane', 'heartbeat'],
+    unicorn: ['prance', 'sparkle', 'heartbeat'],
+    robot:   ['scan', 'beep', 'popping', 'heartbeat'],
+    snake:   ['coil', 'raspberry', 'dance', 'heartbeat'],
+    bird:    ['preen', 'peck', 'flap', 'heartbeat'],
+  };
+
+  // ---------- HD enhance: a small GPU shader that makes the camera picture look better ----------
+  // One pass over the picture: edge-aware smoothing (strongest on skin, so noise goes but eyes and hair stay sharp),
+  // an unsharp mask, a touch of clarity (local contrast), natural vibrance, and an exposure lift for dark rooms.
+  // It runs on the graphics card at the camera's own size; if WebGL is not available the picture is simply left as it is.
+  const ENH_VS = 'attribute vec2 p; varying vec2 uv; void main(){ uv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }';
+  const ENH_FS = `precision mediump float;
+varying vec2 uv; uniform sampler2D tex; uniform vec2 px;
+uniform float sharp, smoothAmt, clarity, vib, lift, nz;
+vec3 S(vec2 o){ return texture2D(tex, uv + o * px).rgb; }
+float L(vec3 c){ return dot(c, vec3(0.299, 0.587, 0.114)); }
+float skinMask(vec3 c){
+  float cb = -0.1687 * c.r - 0.3313 * c.g + 0.5 * c.b + 0.5, cr = 0.5 * c.r - 0.4187 * c.g - 0.0813 * c.b + 0.5;
+  return smoothstep(0.0, 1.0, 1.0 - (abs(cb - 0.42) / 0.12 + abs(cr - 0.58) / 0.12) * 0.5) * step(0.12, L(c));
+}
+void main(){
+  vec3 c = S(vec2(0.0));
+  vec3 blur = c * 0.25 + (S(vec2(1.,0.)) + S(vec2(-1.,0.)) + S(vec2(0.,1.)) + S(vec2(0.,-1.))) * 0.125
+            + (S(vec2(1.,1.)) + S(vec2(-1.,1.)) + S(vec2(1.,-1.)) + S(vec2(-1.,-1.))) * 0.0625;
+  // edge-aware smoothing: neighbours that look like the centre count, edges do not
+  float rng = 26.0 / (1.0 + nz * 8.0), rad = 1.0 + nz * 0.7; // a dark, grainy picture gets a wider and stronger clean-up
+  vec3 sum = c; float ws = 1.0;
+  for (int i = 0; i < 8; i++) {
+    float a = float(i) * 0.7853982;
+    vec2 dir = vec2(cos(a), sin(a));
+    vec3 n1 = S(dir * 1.7 * rad); vec3 d1 = n1 - c;
+    float w1 = exp(-dot(d1, d1) * rng);
+    vec3 n2 = S(dir * 3.4 * rad); vec3 d2 = n2 - c;
+    float w2 = 0.6 * exp(-dot(d2, d2) * rng);
+    sum += n1 * w1 + n2 * w2; ws += w1 + w2;
+  }
+  vec3 sm = sum / ws;
+  float sk = skinMask(c);
+  vec3 o = mix(c, sm, clamp(smoothAmt * (0.35 + 0.65 * sk) * (1.0 + nz * 0.9), 0.0, 0.95));
+  o += (sm - blur) * sharp * (1.0 - 0.5 * nz) * 2.2 * (1.0 - 0.5 * sk);            // sharpen, a bit less on skin
+  o = mix(o, o * o * (3.0 - 2.0 * o), clarity * 0.5);            // midtone contrast
+  float l = L(o);
+  float sat = max(max(o.r, o.g), o.b) - min(min(o.r, o.g), o.b);
+  o = mix(vec3(l), o, 1.0 + vib * (1.0 - sat));                  // vibrance: lifts dull colours, not loud ones
+  o = pow(max(o, vec3(0.0)), vec3(1.0 - 0.6 * lift)) * (1.0 + 1.0 * lift); // dark room: brighter, shadows lifted
+  gl_FragColor = vec4(clamp(o, 0.0, 1.0), 1.0);
+}`;
+
+  function createEnhancer() {
+    const E = { ok: null, canvas: null, gl: null, w: 0, h: 0 };
+    function init(w, h) {
+      try {
+        const canvas = typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
+        const gl = canvas.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: true });
+        if (!gl) return false;
+        const sh = (type, src) => { const x = gl.createShader(type); gl.shaderSource(x, src); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(x)); return x; };
+        const prog = gl.createProgram();
+        gl.attachShader(prog, sh(gl.VERTEX_SHADER, ENH_VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, ENH_FS));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+        gl.useProgram(prog);
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        const tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        const u = {};
+        for (const n of ['px', 'sharp', 'smoothAmt', 'clarity', 'vib', 'lift', 'nz']) u[n] = gl.getUniformLocation(prog, n);
+        E.canvas = canvas; E.gl = gl; E.u = u; E.w = w; E.h = h;
+        return true;
+      } catch { return false; }
+    }
+    // Returns a canvas with the enhanced picture, or null (use the plain picture).
+    E.apply = (src, w, h, k, dark) => {
+      if (E.ok === false || k <= 0.01) return null;
+      if (!E.canvas || E.w !== w || E.h !== h) { E.ok = init(w, h); if (!E.ok) return null; }
+      const { gl, u } = E;
+      try {
+        if (gl.isContextLost()) { E.ok = false; return null; }
+        gl.viewport(0, 0, w, h);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, src);
+        gl.uniform2f(u.px, 1 / w, 1 / h);
+        gl.uniform1f(u.sharp, 0.75 * k);
+        gl.uniform1f(u.smoothAmt, 0.6 * k);
+        gl.uniform1f(u.clarity, 0.7 * k);
+        gl.uniform1f(u.vib, 0.55 * k);
+        gl.uniform1f(u.nz, clamp(dark * 1.6));
+        gl.uniform1f(u.lift, clamp(dark * 1.3) * Math.min(1, k * 1.3));
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        return E.canvas;
+      } catch { E.ok = false; return null; }
+    };
+    return E;
+  }
+
+  function createRenderer() {
+    const R = {
+      dropStart: -1, lastKey: '', mood: '', moodBlend: 0, moodStart: 0, lastSeen: 0,
+      beat: 0, lastBeat: 0, burstAt: -1, sparkles: [], lastT: 0, pix: null,
+      charStart: -1, charKey: '', cMood: '', cSeen: -1e9, cStart: 0, cSawExit: -1e9, cSawEnter: -1e9, cSawRise: -1e9, followX: 0.5, followY: 0.45,
+    };
+
+    // Lamp: drawn around (0,0) = the point where the cord hangs.
+    function drawLamp(g, w, h, st) {
+      const { cx, rgb, bright, angle, dy } = st;
+      const lampW = h * 0.23, lampH = h * 0.14, cord = h * 0.035 + dy + (st.hang || 0);
+      g.save();
+      g.translate(cx, 0);
+      g.rotate(angle);
+      // cord and cap
+      g.strokeStyle = '#17171c';
+      g.lineWidth = Math.max(2, h * 0.0045);
+      g.beginPath(); g.moveTo(0, -h * 0.1 + dy); g.lineTo(0, cord); g.stroke();
+      g.fillStyle = '#2a2b33';
+      g.fillRect(-lampW * 0.07, cord - lampH * 0.1, lampW * 0.14, lampH * 0.16);
+      // shade
+      g.translate(0, cord);
+      const sg = g.createLinearGradient(-lampW / 2, 0, lampW / 2, 0);
+      sg.addColorStop(0, '#1d1e2b'); sg.addColorStop(0.35, '#4d5170'); sg.addColorStop(0.55, '#3a3d58'); sg.addColorStop(1, '#171824');
+      g.fillStyle = sg;
+      g.beginPath();
+      g.moveTo(-lampW / 2, lampH);
+      g.bezierCurveTo(-lampW / 2, lampH * 0.28, -lampW * 0.22, 0, 0, 0);
+      g.bezierCurveTo(lampW * 0.22, 0, lampW / 2, lampH * 0.28, lampW / 2, lampH);
+      g.closePath();
+      g.fill();
+      g.save(); g.globalCompositeOperation = 'screen'; g.fillStyle = rgba(rgb, (0.2 + 0.4 * bright) * (0.4 + chromaOf(rgb))); g.fill(); g.restore(); // the shade takes the colour of the light
+      g.strokeStyle = 'rgba(255,255,255,0.18)';
+      g.lineWidth = Math.max(1, h * 0.0025);
+      g.beginPath();
+      g.moveTo(-lampW * 0.33, lampH * 0.62);
+      g.bezierCurveTo(-lampW * 0.33, lampH * 0.3, -lampW * 0.15, lampH * 0.1, -lampW * 0.02, lampH * 0.09);
+      g.stroke();
+      // lit opening and bulb
+      const og = g.createRadialGradient(0, lampH, 0, 0, lampH, lampW * 0.5);
+      og.addColorStop(0, rgba(mixRgb([255, 252, 240], rgb, 0.5 * chromaOf(rgb) + 0.1), 0.55 + 0.45 * bright));
+      og.addColorStop(0.5, rgba(rgb, 0.75 * bright + 0.15));
+      og.addColorStop(1, rgba(rgb, 0.05));
+      g.fillStyle = og;
+      g.beginPath(); g.ellipse(0, lampH, lampW / 2, lampH * 0.13, 0, 0, TAU); g.fill();
+      const bulb = lampH * 0.17;
+      const bg = g.createRadialGradient(0, lampH + bulb * 0.2, 0, 0, lampH + bulb * 0.2, bulb * 3.4);
+      bg.addColorStop(0, rgba(mixRgb([255, 255, 255], rgb, 0.35 * chromaOf(rgb)), 0.95 * bright));
+      bg.addColorStop(0.3, rgba(rgb, 1.0 * bright));
+      bg.addColorStop(1, rgba(rgb, 0));
+      g.globalCompositeOperation = 'screen';
+      g.fillStyle = bg;
+      g.beginPath(); g.arc(0, lampH + bulb * 0.2, bulb * 3.4, 0, TAU); g.fill();
+      g.restore();
+    }
+
+    // ---- other things that hang (or shine) like the lamp ----
+    // Where the light comes from, below the point where the cord hangs, as a share of the picture height.
+    const FIX_OFF = { lamp: 0.175, discoball: 0.14, lantern: 0.13, chandelier: 0.13, moon: 0.12, star: 0.11, fairy: 0.06, spotlight: 0.07 };
+
+    function cordTo(g, h, st, len) {
+      g.strokeStyle = '#17171c'; g.lineWidth = Math.max(2, h * 0.0045);
+      g.beginPath(); g.moveTo(0, -h * 0.1 + st.dy); g.lineTo(0, len + st.dy); g.stroke();
+    }
+
+    function drawDiscoBall(g, w, h, st) {
+      const r = h * 0.088, cord = h * 0.05 + (st.hang || 0), t = st.now / 1000;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy + r);
+      g.fillStyle = '#2a2b33'; g.fillRect(-r * 0.12, -r * 1.12, r * 0.24, r * 0.18);
+      const base = g.createRadialGradient(-r * 0.35, -r * 0.35, r * 0.1, 0, 0, r);
+      base.addColorStop(0, '#f4f6ff'); base.addColorStop(0.55, '#9aa2c0'); base.addColorStop(1, '#3a3f5a');
+      g.fillStyle = base; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
+      g.save(); g.beginPath(); g.arc(0, 0, r, 0, TAU); g.clip(); // the little mirrors, turning
+      const rows = 9, rot = t * 0.9;
+      for (let i = 0; i < rows; i++) {
+        const lat = -Math.PI / 2 + ((i + 0.5) / rows) * Math.PI, y = Math.sin(lat) * r, ring = Math.cos(lat) * r, cols = Math.max(4, Math.round(rows * 1.8 * Math.cos(lat)));
+        for (let j = 0; j < cols; j++) {
+          const lon = (j / cols) * TAU + rot, vis = Math.cos(lon);
+          if (vis <= 0) continue;
+          const x = Math.sin(lon) * ring, sz = (r * Math.PI / rows) * 0.88 * (0.35 + 0.65 * vis);
+          const shine = 0.25 + 0.75 * Math.max(0, Math.sin(lon * 2.3 + i * 1.7 + t * 2.1));
+          g.fillStyle = `rgba(${Math.round(150 + 105 * shine)},${Math.round(160 + 95 * shine)},${Math.round(190 + 65 * shine)},${0.35 + 0.6 * vis * shine})`;
+          g.fillRect(x - sz / 2, y - (r * Math.PI / rows) * 0.44, sz, (r * Math.PI / rows) * 0.88);
+        }
+      }
+      g.restore();
+      g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = Math.max(1, h * 0.002); g.beginPath(); g.arc(0, 0, r, 0, TAU); g.stroke();
+      glow(g, 0, 0, r * 2.3, st.rgb, 0.3 * st.bright);
+      g.restore();
+    }
+
+    function drawLantern(g, w, h, st) {
+      const cord = h * 0.04 + (st.hang || 0), hh = h * 0.17, ww = h * 0.11;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy);
+      g.fillStyle = '#7a1d12'; g.beginPath(); g.moveTo(-ww * 0.14, 0); g.lineTo(ww * 0.14, 0); g.lineTo(ww * 0.34, hh * 0.1); g.lineTo(-ww * 0.34, hh * 0.1); g.closePath(); g.fill();
+      const body = g.createLinearGradient(-ww / 2, 0, ww / 2, 0);
+      body.addColorStop(0, '#a4251a'); body.addColorStop(0.5, rgba(mixRgb([255, 120, 50], st.rgb, 0.35), 1)); body.addColorStop(1, '#a4251a');
+      g.fillStyle = body; g.beginPath();
+      g.moveTo(-ww * 0.34, hh * 0.1); g.bezierCurveTo(-ww * 0.75, hh * 0.3, -ww * 0.62, hh * 0.78, -ww * 0.2, hh * 0.9);
+      g.lineTo(ww * 0.2, hh * 0.9); g.bezierCurveTo(ww * 0.62, hh * 0.78, ww * 0.75, hh * 0.3, ww * 0.34, hh * 0.1); g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(255,220,150,0.5)'; g.lineWidth = Math.max(1, h * 0.003); // paper ribs
+      for (const k of [-0.45, -0.2, 0, 0.2, 0.45]) { g.beginPath(); g.moveTo(k * ww * 0.5, hh * 0.1); g.quadraticCurveTo(k * ww * 1.4, hh * 0.5, k * ww * 0.4, hh * 0.9); g.stroke(); }
+      glow(g, 0, hh * 0.5, hh * 0.75, [255, 200, 120], 0.5 * st.bright);
+      g.fillStyle = '#7a1d12'; g.fillRect(-ww * 0.2, hh * 0.9, ww * 0.4, hh * 0.05);
+      g.strokeStyle = '#f0b23c'; g.lineWidth = Math.max(1.5, h * 0.004); // tassel
+      for (const k of [-1, 0, 1]) { g.beginPath(); g.moveTo(k * ww * 0.08, hh * 0.95); g.lineTo(k * ww * 0.12 + Math.sin(st.now / 700 + k) * ww * 0.03, hh * 1.2); g.stroke(); }
+      g.restore();
+    }
+
+    function fairyPoints(w, h, ls, t) {
+      const pts = [], N = 13, sag = h * (0.13 + 0.01 * Math.sin(t * 0.8));
+      for (let i = 0; i < N; i++) {
+        const u = (i + 0.5) / N;
+        pts.push([u * w + ls.angle * h * 0.5 * Math.sin(u * 3), h * 0.03 + sag * 4 * u * (1 - u) + ls.dy * 0.55 + ls.angle * w * 0.08 * Math.sin(u * TAU)]);
+      }
+      return pts;
+    }
+    function drawFairy(g, w, h, st) {
+      const t = st.now / 1000, pts = fairyPoints(w, h, st, t);
+      g.save();
+      g.strokeStyle = '#1a1a20'; g.lineWidth = Math.max(1.5, h * 0.004); g.beginPath();
+      pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke();
+      pts.forEach(([x, y], i) => {
+        const tw = 0.55 + 0.45 * Math.sin(t * 2.2 + i * 1.7), col = mixRgb(st.rgb, hexToRgb(hslHex(i * 43 + t * 8)), 0.45);
+        g.globalCompositeOperation = 'screen';
+        glow(g, x, y + h * 0.014, h * 0.075, col, 0.5 * tw * st.bright);
+        g.globalCompositeOperation = 'source-over';
+        g.fillStyle = rgba(mixRgb(col, [255, 255, 255], 0.5), 0.55 + 0.45 * tw); g.beginPath(); g.ellipse(x, y + h * 0.014, h * 0.0085, h * 0.012, 0, 0, TAU); g.fill();
+      });
+      g.restore();
+    }
+
+    function drawChandelier(g, w, h, st) {
+      const cord = h * 0.03 + (st.hang || 0), t = st.now / 1000, ww = h * 0.3;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy);
+      g.strokeStyle = '#b8892e'; g.fillStyle = '#b8892e'; g.lineWidth = Math.max(2, h * 0.006); g.lineCap = 'round';
+      g.fillRect(-h * 0.012, 0, h * 0.024, h * 0.05);
+      ell(g, 0, h * 0.06, h * 0.026, h * 0.016, '#d9a843');
+      for (let i = 0; i < 5; i++) { // five arms with a flame each
+        const k = i - 2, x = k * ww * 0.22, y = h * 0.1 + Math.abs(k) * h * 0.012;
+        g.beginPath(); g.moveTo(0, h * 0.07); g.quadraticCurveTo(x * 0.35, h * 0.115, x, y); g.stroke();
+        g.fillStyle = '#d9a843'; g.fillRect(x - h * 0.007, y - h * 0.004, h * 0.014, h * 0.012);
+        const f = 0.85 + 0.15 * wobble(t * 4.2, i * 3);
+        g.globalCompositeOperation = 'screen'; glow(g, x, y - h * 0.016, h * 0.06 * f, [255, 205, 120], 0.6 * st.bright);
+        g.globalCompositeOperation = 'source-over';
+        ell(g, x, y - h * 0.016, h * 0.005, h * 0.011 * f, '#fff6d0');
+      }
+      for (let i = 0; i < 9; i++) { // crystals that catch the light
+        const x = (i - 4) * ww * 0.115, y = h * 0.13 + (i % 2) * h * 0.02, sh = 0.4 + 0.6 * Math.max(0, Math.sin(t * 2.6 + i * 1.9));
+        g.fillStyle = `rgba(215,235,255,${0.45 + 0.5 * sh})`; g.beginPath();
+        g.moveTo(x, y); g.lineTo(x + h * 0.007, y + h * 0.016); g.lineTo(x, y + h * 0.034); g.lineTo(x - h * 0.007, y + h * 0.016); g.closePath(); g.fill();
+      }
+      g.restore();
+    }
+
+    function drawMoon(g, w, h, st) {
+      const R0 = h * 0.075, cord = h * 0.04 + (st.hang || 0), t = st.now / 1000;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy + R0 * 1.05);
+      const cool = mixRgb(st.rgb, [200, 222, 255], 0.55);
+      glow(g, 0, 0, R0 * 3, cool, 0.3 * st.bright);
+      g.save(); g.beginPath(); g.arc(0, 0, R0, 0, TAU); g.clip();
+      const mg = g.createLinearGradient(-R0, -R0, R0, R0); mg.addColorStop(0, '#fffbe6'); mg.addColorStop(1, '#f0d98a');
+      g.fillStyle = mg; g.beginPath(); g.rect(-2 * R0, -2 * R0, 4 * R0, 4 * R0); g.arc(R0 * 0.42, -R0 * 0.14, R0 * 0.84, 0, TAU); g.fill('evenodd');
+      g.restore();
+      for (let i = 0; i < 3; i++) { // little stars twinkling nearby
+        const sx = [R0 * 1.4, R0 * 1.9, R0 * 1.1][i], sy = [-R0 * 0.5, R0 * 0.5, R0 * 1.2][i], tw = 0.4 + 0.6 * Math.max(0, Math.sin(t * 2.4 + i * 2));
+        g.fillStyle = `rgba(255,248,210,${tw})`; const s = R0 * (0.12 + 0.05 * i);
+        g.beginPath(); g.moveTo(sx, sy - s); g.lineTo(sx + s * 0.3, sy - s * 0.3); g.lineTo(sx + s, sy); g.lineTo(sx + s * 0.3, sy + s * 0.3); g.lineTo(sx, sy + s); g.lineTo(sx - s * 0.3, sy + s * 0.3); g.lineTo(sx - s, sy); g.lineTo(sx - s * 0.3, sy - s * 0.3); g.closePath(); g.fill();
+      }
+      g.restore();
+    }
+
+    function drawStar(g, w, h, st) {
+      const R0 = h * 0.07, cord = h * 0.04 + (st.hang || 0), t = st.now / 1000;
+      g.save(); g.translate(st.cx, 0); g.rotate(st.angle);
+      cordTo(g, h, st, cord);
+      g.translate(0, cord + st.dy + R0 * 0.95);
+      g.rotate(Math.sin(t * 0.9) * 0.06);
+      glow(g, 0, 0, R0 * 3.2, st.rgb, 0.35 * st.bright);
+      g.beginPath();
+      for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? R0 * 0.45 : R0; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      g.closePath();
+      const sg = g.createRadialGradient(0, 0, R0 * 0.1, 0, 0, R0); sg.addColorStop(0, '#fffbe0'); sg.addColorStop(1, '#ffc93c');
+      g.fillStyle = sg; g.fill(); g.strokeStyle = 'rgba(255,255,255,0.5)'; g.lineWidth = Math.max(1, h * 0.003); g.stroke();
+      g.restore();
+    }
+
+    function drawSpotlight(g, w, h, st) {
+      const aim = st.aim;
+      g.save(); g.translate(st.cx, h * 0.035 + st.dy);
+      g.rotate(Math.atan2(aim[1] - (h * 0.07 + st.dy), aim[0] - st.cx) - Math.PI / 2);
+      g.fillStyle = '#101014'; g.fillRect(-h * 0.012, -h * 0.05, h * 0.024, h * 0.045); // arm to the ceiling
+      const cg = g.createLinearGradient(-h * 0.04, 0, h * 0.04, 0); cg.addColorStop(0, '#16161c'); cg.addColorStop(0.5, '#3a3b46'); cg.addColorStop(1, '#14141a');
+      g.fillStyle = cg; g.beginPath(); g.moveTo(-h * 0.03, 0); g.lineTo(h * 0.03, 0); g.lineTo(h * 0.045, h * 0.075); g.lineTo(-h * 0.045, h * 0.075); g.closePath(); g.fill();
+      ell(g, 0, h * 0.075, h * 0.045, h * 0.012, rgba(mixRgb(st.rgb, [255, 255, 255], 0.6), 0.9 * st.bright));
+      g.globalCompositeOperation = 'screen'; glow(g, 0, h * 0.08, h * 0.1, st.rgb, 0.7 * st.bright);
+      g.restore();
+    }
+
+    function fixtureAim(w, h, ls, t) { return [w / 2 + ls.angle * w * 1.6 + Math.sin(t * 0.45) * w * 0.02, h * 0.5]; }
+
+    function drawFixtureBody(g, w, h, kind, st) {
+      if (kind === 'discoball') drawDiscoBall(g, w, h, st);
+      else if (kind === 'lantern') drawLantern(g, w, h, st);
+      else if (kind === 'fairy') drawFairy(g, w, h, st);
+      else if (kind === 'chandelier') drawChandelier(g, w, h, st);
+      else if (kind === 'moon') drawMoon(g, w, h, st);
+      else if (kind === 'star') drawStar(g, w, h, st);
+      else if (kind === 'spotlight') drawSpotlight(g, w, h, { ...st, aim: st.aim || fixtureAim(w, h, st, st.now / 1000) });
+    }
+
+    // The light each of them throws on you (drawn with 'screen', under the body).
+    function fixtureLight(g, w, h, kind, c) {
+      const { bx, by, ls, e, I, now } = c, t = now / 1000, rgb = e.rgb, b = ls.bright;
+      const FX = c.fx != null ? c.fx : w / 2, FY = c.fy != null ? c.fy : h * 0.5; // the face the light is aimed at
+      const dir = -ls.angle * 0.9 + (bx - w / 2) / w * 0.55;
+      if (kind === 'discoball') {
+        glow(g, bx, by, h * 0.3, rgb, 0.3 * I * b);
+        const N = 44, rot = t * 0.5, reach = Math.hypot(w, h) * 0.6;
+        for (let k = 0; k < N; k++) { // spots of light turning around the room
+          const a = k * 2.39996 + rot, rho = Math.sqrt((k + 0.5) / N) * reach;
+          const x = bx + Math.cos(a) * rho * 1.15, y = by + Math.sin(a) * rho * 0.8;
+          if (x < -30 || x > w + 30 || y < -30 || y > h + 30) continue;
+          const tw = 0.5 + 0.5 * Math.sin(t * 2.6 + k * 1.9), col = mixRgb(rgb, hexToRgb(hslHex(k * 47 + t * 18)), 0.65);
+          glow(g, x, y, h * (0.04 + 0.04 * ((k * 7) % 5) / 5), col, (0.75 * tw + 0.25) * I * b);
+        }
+        glow(g, FX, FY, h * 0.55, rgb, 0.1 * I * b);
+      } else if (kind === 'lantern') {
+        cone(g, bx, by, h * 0.95, w * 0.62, dir, rgb, 0.32 * I * b);
+        glow(g, bx, by, h * 0.38, rgb, 0.42 * I * b);
+        glow(g, FX + (bx - FX) * 0.3, FY, h * 0.62, rgb, 0.2 * I * b);
+      } else if (kind === 'chandelier') {
+        cone(g, bx, by, h * 1.05, w * 0.95, dir, rgb, 0.26 * I * b);
+        glow(g, FX + (bx - FX) * 0.3, FY, h * 0.66, rgb, 0.24 * I * b);
+      } else if (kind === 'moon' || kind === 'star') {
+        const col = kind === 'moon' ? mixRgb(rgb, [200, 222, 255], 0.55) : rgb;
+        cone(g, bx, by, h, w * 0.66, dir, col, 0.3 * I * b);
+        glow(g, bx, by, h * 0.3, col, 0.38 * I * b);
+        glow(g, FX + (bx - FX) * 0.3, FY, h * 0.6, col, 0.2 * I * b);
+        if (kind === 'star') { g.save(); g.translate(bx, by); g.rotate(t * 0.15); for (let i = 0; i < 8; i++) { g.rotate(Math.PI / 4); const gr = g.createLinearGradient(0, 0, 0, h * 0.18); gr.addColorStop(0, rgba(rgb, 0.4 * I * b)); gr.addColorStop(1, rgba(rgb, 0)); g.fillStyle = gr; g.fillRect(-h * 0.003, 0, h * 0.006, h * 0.18); } g.restore(); }
+      } else if (kind === 'fairy') {
+        const grad = g.createLinearGradient(0, 0, 0, h * 0.5); grad.addColorStop(0, rgba(rgb, 0.22 * I * b)); grad.addColorStop(1, rgba(rgb, 0));
+        g.fillStyle = grad; g.fillRect(0, 0, w, h * 0.5);
+        glow(g, FX, FY, h * 0.62, rgb, 0.16 * I * b);
+      } else if (kind === 'spotlight') {
+        const aim = c.aim || fixtureAim(w, h, ls, t), sx = c.cx, sy = h * 0.1 + ls.dy, d = Math.atan2(-(aim[0] - sx), aim[1] - sy);
+        cone(g, sx, sy, h * 1.25, w * 0.4, d, mixRgb(rgb, [255, 255, 255], 0.35), 0.62 * I * b);
+        glow(g, aim[0], aim[1], h * 0.5, rgb, 0.3 * I * b);
+      }
+    }
+
+    // Where the lamp is, and how it moves, at time `now`.
+    function lampState(cfg, h, now, e, audio) {
+      const anim = cfg.lampAnim;
+      let dy = 0, angle = 0, bright = 1, focusRamp = 1;
+      const t = now / 1000;
+      if (anim === 'swing' || e.swing) {
+        const a = e.swing || 0.11;
+        angle = a * Math.sin(t * (TAU / (e.swingPeriod || 3.4)));
+      } else if (anim === 'still') {
+        angle = 0;
+      }
+      if (anim === 'flicker') bright = clamp(0.78 + 0.28 * wobble(t * 3.2, 4), 0.35, 1);
+      if (anim === 'sway') angle = 0.07 * Math.sin(t * (TAU / 5.2)) + 0.025 * Math.sin(t * (TAU / 2.3) + 1);       // a breeze
+      if (anim === 'pendulum') angle = 0.3 * Math.sin(t * (TAU / 3.2));                                              // a big, slow, hypnotic swing
+      if (anim === 'bounce') { dy = h * 0.034 * Math.sin(t * (TAU / 1.2)); angle = 0.03 * Math.sin(t * (TAU / 2.4)); } // on a spring
+      if (anim === 'beat') { // kicks to the beat of the sound that is playing
+        const lv = audio ? clamp(audio.level || 0) : 0;
+        if (audio && audio.beat > 0.5 && now - (R.beatAnimAt || 0) > 300) { R.beatAnimAt = now; R.beatAnim = 1; R.beatDir = -(R.beatDir || 1); }
+        R.beatAnim = (R.beatAnim || 0) * 0.93;
+        angle = 0.16 * (R.beatAnim || 0) * (R.beatDir || 1) + 0.02 * Math.sin(t * 1.3);
+        dy = h * 0.022 * (R.beatAnim || 0);
+        bright = clamp(0.7 + 0.5 * lv + 0.3 * (R.beatAnim || 0), 0.4, 1);
+      }
+      if (anim === 'drop' && R.dropStart >= 0) {
+        const D = 2.8; // seconds: a slow, smooth drop from above
+        const tau = (now - R.dropStart) / 1000;
+        const travel = h * 0.46;
+        dy = -travel * (1 - easeOutCubic(tau / D));
+        if (tau > D) {
+          const s = tau - D;
+          dy += h * 0.012 * Math.exp(-3.2 * s) * Math.sin(TAU * 2.3 * s);
+          angle = 0.15 * Math.exp(-1.5 * s) * Math.sin(TAU * 0.85 * s) + 0.012 * Math.sin(t * 1.7);
+        }
+        bright = tau < D ? 0.2 : clamp(0.2 + (tau - D) / 0.45, 0, 1) * (tau < D + 0.5 ? 0.78 + 0.22 * wobble(t * 18) : 1);
+        focusRamp = smooth((tau - D * 0.35) / (D * 0.9));
+      }
+      return { dy, angle, bright: clamp(bright), focusRamp };
+    }
+
+    function corner(g, x, y, r, rgb, a) { glow(g, x, y, r, rgb, a); }
+
+    // Moving-head beams hanging from the top edge: they sweep, change colour with the music, and snap on the beat.
+    function drawPartyBeams(g, w, h, I, t, e, hueOff) {
+      const beat = e.beat || 0, bass = e.bass || 0, lvl = e.level || 0;
+      const n = 6;
+      for (let k = 0; k < n; k++) {
+        const x = w * ((k + 0.5) / n);
+        const dir = 0.7 * Math.sin(t * 0.9 + k * 1.1) + (k % 2 ? 0.12 : -0.12) * beat * 2;
+        const col = hexToRgb(hslHex(hueOff + k * (360 / n) + bass * 50));
+        cone(g, x, -h * 0.03, h * 1.2, w * (0.2 + 0.06 * bass), dir, col, (0.3 * I + 0.16 * lvl + 0.22 * beat) * (0.75 + 0.25 * Math.sin(t * 2 + k)));
+        glow(g, x, 0, h * 0.09, col, 0.5 * I + 0.3 * beat);
+      }
+    }
+
+    // A spectrum along the bottom (and up the sides) that jumps with the music: a real equalizer.
+    function drawEqualizer(g, w, h, I, t, e, hueOff) {
+      const spec = e.spec, n = 24, gap = w * 0.006, bw = (w - gap * (n + 1)) / n;
+      for (let k = 0; k < n; k++) {
+        const kk = k < n / 2 ? k : n - 1 - k; // mirrored: low sounds at the edges, high in the middle... the other way round
+        const idx = Math.min(15, Math.floor((1 - kk / (n / 2)) * 15.99));
+        const v = spec ? spec[idx] : 0.25 + 0.2 * Math.sin(t * 3 + k * 0.7) * Math.sin(t * 1.3 + k);
+        const bh = h * (0.03 + 0.34 * clamp(v * 1.5 + (e.beat || 0) * 0.15));
+        const hue = (hueOff + k * 9) % 360;
+        const x = gap + k * (bw + gap);
+        const gr = g.createLinearGradient(0, h, 0, h - bh);
+        gr.addColorStop(0, hsl(hue, 90, 55, 0.85 * Math.min(1, I + 0.25))); gr.addColorStop(1, hsl(hue + 40, 95, 68, 0.15));
+        g.fillStyle = gr;
+        g.beginPath(); if (g.roundRect) g.roundRect(x, h - bh, bw, bh + 2, bw * 0.4); else g.rect(x, h - bh, bw, bh); g.fill();
+      }
+      glow(g, 0, h, w * 0.3, hexToRgb(hslHex(hueOff)), 0.18 * I + 0.2 * (e.bass || 0));
+      glow(g, w, h, w * 0.3, hexToRgb(hslHex(hueOff + 180)), 0.18 * I + 0.2 * (e.bass || 0));
+    }
+
+    function drawCorners(g, w, h, pattern, rgb, I, now, e) {
+      const t = e.mt || now / 1000, r = Math.max(w, h) * 0.58; // t is "music time": it runs faster with loud, bassy sound
+      const bass = e.bass || 0, hueOff = R.hue || 0;
+      const pts = [[0, 0], [w, 0], [0, h], [w, h]];
+      g.save();
+      g.globalCompositeOperation = 'screen';
+      const beat = e.beat || 0;
+      const lvl = e.level || 0;
+      if (pattern === 'steady') {
+        for (const [x, y] of pts) corner(g, x, y, r * (1 + 0.15 * bass), rgb, 0.5 * I + 0.25 * lvl + 0.3 * bass + 0.25 * beat);
+      } else if (pattern === 'pulse') {
+        const k = 0.5 + 0.5 * Math.sin(t * (TAU / (e.period || 2.6)));
+        for (const [x, y] of pts) corner(g, x, y, r, rgb, (0.2 + 0.4 * k) * I + 0.25 * lvl);
+      } else if (pattern === 'candle') {
+        const warm = hexToRgb('warm');
+        pts.forEach(([x, y], i) => corner(g, x, y, r * (0.92 + 0.08 * wobble(t * 2.4, i)), warm, clamp(0.34 + 0.2 * wobble(t * 3.1, i * 3)) * I));
+      } else if (pattern === 'rainbow') {
+        pts.forEach(([x, y], i) => {
+          const hue = (t * 38 + i * 90 + hueOff) % 360;
+          glow(g, x, y, r, hexToRgb(hslHex(hue)), (0.5 * I) + 0.3 * lvl + 0.3 * beat);
+        });
+      } else if (pattern === 'sweep') {
+        const hue = (t * 22 + hueOff) % 360;
+        const c1 = hexToRgb(hslHex(hue)), c2 = hexToRgb(hslHex(hue + 140));
+        const x = (0.5 + 0.5 * Math.sin(t * 0.55)) * w;
+        glow(g, x, 0, w * 0.7, c1, 0.45 * I + 0.25 * lvl);
+        glow(g, w - x, h, w * 0.7, c2, 0.45 * I + 0.25 * lvl);
+        glow(g, 0, h * 0.5, r * 0.6, c2, 0.18 * I);
+        glow(g, w, h * 0.5, r * 0.6, c1, 0.18 * I);
+      } else if (pattern === 'sparkle') {
+        for (const [x, y] of pts) corner(g, x, y, r * 0.8, rgb, 0.22 * I);
+        drawSparkles(g, w, h, rgb, I, t, e);
+      } else if (pattern === 'aurora') {
+        for (let k = 0; k < 5; k++) {
+          const x = w * (0.1 + 0.2 * k + 0.07 * Math.sin(t * 0.35 + k * 1.3));
+          const hue = 130 + k * 38 + 22 * Math.sin(t * 0.25 + k);
+          glow(g, x, -h * 0.06, h * (0.75 + 0.1 * Math.sin(t * 0.6 + k)), hexToRgb(hslHex(hue)), 0.3 * I + 0.15 * lvl);
+        }
+        glow(g, 0, h, r * 0.5, hexToRgb(hslHex(150)), 0.14 * I); glow(g, w, h, r * 0.5, hexToRgb(hslHex(280)), 0.14 * I);
+      } else if (pattern === 'fire') {
+        const emb = (R.embers = R.embers || []);
+        if (t - (R.embT || 0) > 0.06 / (1 + 3 * bass) && emb.length < 70) { R.embT = t; const side = Math.random() < 0.5; emb.push({ x: side ? Math.random() * w * 0.25 : w - Math.random() * w * 0.25, y: h, v: 0.12 + Math.random() * 0.2, born: t, life: 1.6 + Math.random() * 1.4, s: h * (0.006 + Math.random() * 0.012) }); }
+        R.embers = emb.filter((m) => t - m.born < m.life);
+        for (const [x, y] of [[0, h], [w, h]]) {
+          const f = 0.8 + 0.2 * wobble(t * 4.5, x ? 3 : 0);
+          glow(g, x, y, r * (0.95 + 0.35 * bass) * f, [255, 90, 20], (0.5 * I + 0.2 * lvl + 0.25 * beat) * f);
+          glow(g, x, y, r * 0.55 * f, [255, 190, 60], 0.35 * I * f);
+        }
+        for (const m of R.embers) { const p = (t - m.born) / m.life; g.fillStyle = `rgba(255,${Math.round(190 - 110 * p)},60,${(1 - p) * 0.9 * I})`; g.beginPath(); g.arc(m.x + Math.sin(t * 2 + m.born * 9) * w * 0.012, m.y - p * m.v * h * 5, m.s * (1 - p * 0.5), 0, TAU); g.fill(); }
+      } else if (pattern === 'laser') {
+        // four thin beams, one from each corner, sweeping slowly across the picture
+        const L = Math.hypot(w, h);
+        const many = e.react && lvl > 0.25; // with loud music a second set of beams joins in
+        [[0, 0, 0], [w, 0, Math.PI], [0, h, -0], [w, h, Math.PI], ...(many ? [[0, 0, 1], [w, 0, 1], [0, h, 1], [w, h, 1]] : [])].forEach(([x, y], i0) => {
+          const i = i0, sw = 0.5 + 0.5 * Math.sin(t * 0.6 + i * 1.7 + (i > 3 ? 2 : 0)), ang = 0.12 + sw * 1.25;
+          const a = i === 0 ? ang : i === 1 ? Math.PI - ang : i === 2 ? -ang : Math.PI + ang;
+          const col = e.react ? hexToRgb(hslHex(hueOff + i * 47 + bass * 60)) : [hexToRgb('green'), hexToRgb('cyan'), hexToRgb('rose'), hexToRgb('purple')][i % 4];
+          g.save(); g.translate(x, y); g.rotate(a);
+          const grad = g.createLinearGradient(0, 0, L, 0);
+          grad.addColorStop(0, rgba(col, 0.95 * Math.min(1, I + 0.2))); grad.addColorStop(1, rgba(col, 0.15));
+          const wide = 1 + 1.6 * beat + 0.8 * bass;
+          g.fillStyle = grad; g.fillRect(0, -h * 0.004 * wide, L, h * 0.008 * wide);
+          g.fillStyle = rgba(col, (0.16 + 0.25 * beat) * I); g.fillRect(0, -h * 0.02 * wide, L, h * 0.04 * wide);
+          g.restore();
+          glow(g, x, y, r * (0.4 + 0.2 * beat), col, 0.45 * I + 0.3 * beat);
+        });
+      } else if (pattern === 'neonframe') {
+        const lw = Math.max(3, h * 0.012) * (1 + 0.8 * beat), m = lw * 2.2;
+        const hue = e.rainbowFrame ? (t * 40) % 360 : null;
+        const col = hue === null ? rgb : hexToRgb(hslHex(hue));
+        for (const [wid, a] of [[lw * 6, 0.07], [lw * 3.5, 0.12], [lw * 1.8, 0.3], [lw, 0.95]]) {
+          g.strokeStyle = rgba(col, a * (0.8 + 0.2 * I + 0.3 * lvl)); g.lineWidth = wid;
+          g.beginPath(); if (g.roundRect) g.roundRect(m, m, w - 2 * m, h - 2 * m, h * 0.05); else g.rect(m, m, w - 2 * m, h - 2 * m); g.stroke();
+        }
+      } else if (pattern === 'police') {
+        const k = 0.5 + 0.5 * Math.sin(t * 2.2); // slow crossfade: red and blue take turns, never a flash
+        glow(g, 0, 0, r, [255, 40, 50], (0.55 * k + 0.05) * I); glow(g, 0, h, r * 0.8, [255, 40, 50], 0.4 * k * I);
+        glow(g, w, 0, r, [50, 90, 255], (0.55 * (1 - k) + 0.05) * I); glow(g, w, h, r * 0.8, [50, 90, 255], 0.4 * (1 - k) * I);
+      } else if (pattern === 'heart') {
+        const hs = (R.hearts = R.hearts || []);
+        if (t - (R.heartT || 0) > 0.28 / (1 + 2 * bass) && hs.length < 34) { R.heartT = t; const side = Math.random() < 0.5; hs.push({ x: side ? Math.random() * w * 0.2 : w - Math.random() * w * 0.2, born: t, life: 2.4 + Math.random() * 1.6, s: h * (0.025 + Math.random() * 0.03), ph: Math.random() * 6 }); }
+        R.hearts = hs.filter((m) => t - m.born < m.life);
+        glow(g, 0, h, r * 0.6, [255, 90, 150], 0.22 * I); glow(g, w, h, r * 0.6, [255, 90, 150], 0.22 * I);
+        for (const m of R.hearts) {
+          const p = (t - m.born) / m.life, x = m.x + Math.sin(t * 1.4 + m.ph) * w * 0.02, y = h - p * h * 0.95, s = m.s;
+          g.fillStyle = `rgba(255,${Math.round(90 + 80 * Math.sin(m.ph))},150,${Math.sin(Math.PI * p) * 0.9 * I})`;
+          g.beginPath(); g.moveTo(x, y + s * 0.35); g.bezierCurveTo(x - s, y - s * 0.4, x - s * 0.35, y - s * 1.1, x, y - s * 0.45); g.bezierCurveTo(x + s * 0.35, y - s * 1.1, x + s, y - s * 0.4, x, y + s * 0.35); g.fill();
+        }
+      } else if (pattern === 'party' || pattern === 'club') {
+        drawPartyBeams(g, w, h, I, t, e, hueOff);
+        if (pattern === 'club') {
+          // lasers from the corners and a pulsing floor, on top of the moving heads
+          const L = Math.hypot(w, h);
+          [[0, h, -1], [w, h, 1]].forEach(([x, y, dir], i) => {
+            const a = dir * (0.35 + 0.5 * Math.abs(Math.sin(t * 0.9 + i * 2)));
+            const col = hexToRgb(hslHex(hueOff + 120 + i * 90));
+            g.save(); g.translate(x, y); g.rotate(-Math.PI / 2 + a);
+            g.fillStyle = rgba(col, 0.9 * Math.min(1, I + 0.2)); g.fillRect(0, -h * 0.004 * (1 + beat), L, h * 0.008 * (1 + beat));
+            g.restore();
+          });
+        }
+        glow(g, 0, h, r * (0.55 + 0.3 * bass), hexToRgb(hslHex(hueOff + 200)), 0.3 * I + 0.3 * beat);
+        glow(g, w, h, r * (0.55 + 0.3 * bass), hexToRgb(hslHex(hueOff + 320)), 0.3 * I + 0.3 * beat);
+      } else if (pattern === 'equalizer') {
+        drawEqualizer(g, w, h, I, t, e, hueOff);
+      } else if (pattern === 'disco') {
+        const sway = e.safe ? 0.5 : 0.9;
+        for (let side = 0; side < 2; side++) {
+          const x = side ? w : 0;
+          for (let b = 0; b < 3; b++) {
+            const hue = (t * 30 + side * 120 + b * 80) % 360;
+            const base = side ? 0.2 : -0.2;
+            const dir = base + 0.62 * Math.sin(t * sway + b * 1.9 + side * 1.2);
+            cone(g, x, -h * 0.02, h * 1.25, w * 0.42, dir * (side ? 1 : 1) , hexToRgb(hslHex(hue)), (0.36 * I) + 0.2 * lvl + 0.2 * beat);
+          }
+        }
+        corner(g, 0, h, r * 0.7, hexToRgb(hslHex((t * 30 + 200) % 360)), 0.28 * I);
+        corner(g, w, h, r * 0.7, hexToRgb(hslHex((t * 30 + 300) % 360)), 0.28 * I);
+      }
+      g.restore();
+    }
+
+    function hslHex(hue) {
+      // hsl(hue, 90%, 62%) as #rrggbb
+      const s = 0.9, l = 0.62, c = (1 - Math.abs(2 * l - 1)) * s, hp = (((hue % 360) + 360) % 360) / 60, x = c * (1 - Math.abs((hp % 2) - 1));
+      const [r1, g1, b1] = hp < 1 ? [c, x, 0] : hp < 2 ? [x, c, 0] : hp < 3 ? [0, c, x] : hp < 4 ? [0, x, c] : hp < 5 ? [x, 0, c] : [c, 0, x];
+      const m = l - c / 2, to = (v) => Math.round((v + m) * 255).toString(16).padStart(2, '0');
+      return '#' + to(r1) + to(g1) + to(b1);
+    }
+
+    function drawSparkles(g, w, h, rgb, I, t, e) {
+      if (t - R.lastT > 0.05) {
+        R.lastT = t;
+        if (R.sparkles.length < 44 && Math.random() < 0.55 + (e.level || 0)) {
+          const edge = Math.random();
+          R.sparkles.push({
+            x: edge < 0.5 ? Math.random() * w : (Math.random() < 0.5 ? Math.random() * w * 0.2 : w - Math.random() * w * 0.2),
+            y: edge < 0.5 ? (Math.random() < 0.5 ? Math.random() * h * 0.25 : h - Math.random() * h * 0.25) : Math.random() * h,
+            born: t, life: 0.8 + Math.random() * 0.9, size: h * (0.012 + Math.random() * 0.022), hue: Math.random() * 360,
+          });
+        }
+      }
+      R.sparkles = R.sparkles.filter((s) => t - s.born < s.life);
+      for (const s of R.sparkles) {
+        const p = (t - s.born) / s.life, a = Math.sin(Math.PI * p) * I;
+        g.fillStyle = hsl(s.hue, 95, 80, a);
+        const len = s.size * (0.6 + 0.4 * a);
+        g.beginPath();
+        g.moveTo(s.x, s.y - len); g.lineTo(s.x + len * 0.18, s.y - len * 0.18); g.lineTo(s.x + len, s.y); g.lineTo(s.x + len * 0.18, s.y + len * 0.18);
+        g.lineTo(s.x, s.y + len); g.lineTo(s.x - len * 0.18, s.y + len * 0.18); g.lineTo(s.x - len, s.y); g.lineTo(s.x - len * 0.18, s.y - len * 0.18);
+        g.closePath(); g.fill();
+      }
+    }
+
+    // One burst of rays from the middle (the "surprise" mood).
+    function drawBurst(g, w, h, now) {
+      const tau = (now - R.burstAt) / 1000;
+      if (tau < 0 || tau > 1.1) return;
+      const a = (1 - tau / 1.1) ** 1.4;
+      g.save();
+      g.globalCompositeOperation = 'screen';
+      g.translate(w / 2, h * 0.45);
+      for (let i = 0; i < 14; i++) {
+        g.rotate(TAU / 14);
+        const grad = g.createLinearGradient(0, 0, 0, h * (0.35 + tau * 0.5));
+        grad.addColorStop(0, `rgba(255,236,160,${0.5 * a})`);
+        grad.addColorStop(1, 'rgba(255,236,160,0)');
+        g.fillStyle = grad;
+        g.fillRect(-h * 0.012, h * 0.04, h * 0.024, h * (0.35 + tau * 0.5));
+      }
+      g.restore();
+    }
+
+    // ---- the light on YOUR face: works in a dark room too ----
+    // How dark is the room? A tiny copy of the picture is measured about twice a second.
+    function measureDark(source, w, h, now) {
+      if (now - (R.darkAt || -1e9) > 450) {
+        R.darkAt = now;
+        try {
+          if (!R.dk) { R.dk = makeScratch(24, 14); R.dkg = R.dk.getContext('2d', { willReadFrequently: true }); }
+          R.dkg.drawImage(source, w * 0.25, h * 0.2, w * 0.5, h * 0.55, 0, 0, 24, 14); // the middle, where your face is
+          const d = R.dkg.getImageData(0, 0, 24, 14).data;
+          let sum = 0;
+          for (let i = 0; i < d.length; i += 4) sum += 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2];
+          R.darkTarget = clamp((95 - sum / (d.length / 4)) / 80);
+        } catch { R.darkTarget = 0; }
+      }
+      R.dark = lerp(R.dark || 0, R.darkTarget || 0, 0.12);
+      return R.dark;
+    }
+
+    // A dark room: the whole picture is lifted (more the darker it is) so you can be seen with no lamp at all.
+    function studioLift(g, w, h, dark) {
+      const k = clamp((dark - 0.1) / 0.9);
+      if (k < 0.03 || !('filter' in g) || !g.canvas) return 0;
+      if (!R.sl || R.sl.width !== w || R.sl.height !== h) R.sl = makeScratch(w, h);
+      const sg = R.sl.getContext('2d');
+      sg.globalCompositeOperation = 'copy';
+      sg.filter = `brightness(${(1 + 2.4 * k).toFixed(2)}) contrast(${(1 - 0.12 * k).toFixed(2)}) saturate(${(1 + 0.25 * k).toFixed(2)})`;
+      sg.drawImage(g.canvas, 0, 0, w, h);
+      sg.filter = 'none';
+      g.save();
+      g.globalAlpha = clamp(0.35 + 0.65 * k);
+      g.drawImage(R.sl, 0, 0, w, h);
+      g.restore();
+      return k;
+    }
+
+    // Brightens the real picture around your face and tints it with the light's colour, so the lamp
+    // lights YOU (features and all), not just the air in front of the camera. Darker room = stronger lift.
+    function relight(g, w, h, rgb, amount, aimX, aimY, dark) {
+      if (amount < 0.02 || !('filter' in g) || !g.canvas) return;
+      if (!R.rl || R.rl.width !== w || R.rl.height !== h) R.rl = makeScratch(w, h);
+      const rg = R.rl.getContext('2d');
+      rg.globalCompositeOperation = 'copy';
+      rg.filter = `brightness(${(1.3 + 2.6 * dark).toFixed(2)}) contrast(0.92) saturate(1.1)`;
+      rg.drawImage(g.canvas, 0, 0, w, h);
+      rg.filter = 'none';
+      rg.globalCompositeOperation = 'multiply';
+      rg.fillStyle = rgba(mixRgb([255, 255, 255], rgb, 0.5 + 0.4 * chromaOf(rgb)), 1);
+      rg.fillRect(0, 0, w, h);
+      rg.globalCompositeOperation = 'destination-in';
+      const m = rg.createRadialGradient(aimX, aimY, h * 0.04, aimX, aimY, h * 0.64);
+      m.addColorStop(0, 'rgba(0,0,0,1)'); m.addColorStop(0.55, 'rgba(0,0,0,0.62)'); m.addColorStop(1, 'rgba(0,0,0,0)');
+      rg.fillStyle = m;
+      rg.fillRect(0, 0, w, h);
+      g.save();
+      g.globalCompositeOperation = 'screen';
+      g.globalAlpha = clamp(0.8 * amount * (0.7 + 0.6 * dark));
+      g.drawImage(R.rl, 0, 0, w, h);
+      g.restore();
+    }
+
+    // ---- where you are: a tiny, private tracker ----
+    // About 15 times a second a 64x36 copy of YOUR camera picture is looked at (it never leaves the page and is not
+    // stored): skin colour gives your face position, the difference between two frames gives how much you move.
+    // That is enough to know: left / right, standing up, moving a lot, and out of the picture. No model, no download.
+    // Skin, but not a bright orange or yellow wall: skin is paler (less saturated) and has some blue in it.
+    const skinPx = (r, g2, b, Y, cb, cr) => Y > 35 && cb > 77 && cb < 127 && cr > 135 && cr < 173 && r > g2 && g2 > b * 0.8 && b > r * 0.38 && (r - b) < r * 0.62;
+    const IDLE_TRACK = Object.freeze({ present: true, x: 0.5, y: 0.45, energy: 0, side: 0, rise: 0, away: 0, vx: 0, vy: 0, enterAt: -1e9, exitAt: -1e9, exitSide: 0, riseAt: -1e9, waveAt: -1e9, thumbAt: -1e9, peaceAt: -1e9, kissAt: -1e9, tongueAt: -1e9, heartAt: -1e9, okAt: -1e9, rockAt: -1e9, callAt: -1e9, stopAt: -1e9, clapAt: -1e9, nodAt: -1e9, shakeAt: -1e9, tongue: false, bs: null, live: false });
+
+    function trackFrame(src, now) {
+      const T = R.tr || (R.tr = { ...IDLE_TRACK, live: true, at: -1e9, prev: null, lastSeen: now, wasPresent: true, px: 0.5, py: 0.45, calm: 0 });
+      if (now - T.at < 60) return T;
+      const dt = Math.max(0.03, (now - T.at) / 1000);
+      T.at = now;
+      try {
+        if (!R.trc) { R.trc = makeScratch(64, 36); R.trcg = R.trc.getContext('2d', { willReadFrequently: true }); }
+        R.trcg.drawImage(src, 0, 0, 64, 36);
+        const d = R.trcg.getImageData(0, 0, 64, 36).data;
+        const n = 64 * 36, luma = new Uint8Array(n);
+        let sk = 0, sx = 0, sy = 0, mv = 0, mx = 0;
+        for (let i = 0, p = 0; i < d.length; i += 4, p++) {
+          const r = d[i], g2 = d[i + 1], b = d[i + 2];
+          const Y = 0.299 * r + 0.587 * g2 + 0.114 * b;
+          luma[p] = Y;
+          const cb = 128 - 0.168736 * r - 0.331264 * g2 + 0.5 * b, cr = 128 + 0.5 * r - 0.418688 * g2 - 0.081312 * b;
+          const x = p % 64, y = (p / 64) | 0;
+          if (skinPx(r, g2, b, Y, cb, cr)) { sk++; sx += x; sy += y; }
+          if (T.prev && Math.abs(Y - T.prev[p]) > 22) { mv++; mx += x; }
+        }
+        T.prev = luma;
+        // waving "hi": the moving part of the picture swings left and right a few times, quickly
+        const hist = T.mh || (T.mh = []);
+        if (mv > 10 && mv / n < 0.4) hist.push({ t: now, x: mx / mv });
+        while (hist.length && now - hist[0].t > 1400) hist.shift();
+        if (hist.length > 7 && now - (T.waveAt || -1e9) > 3500) {
+          let turns = 0, dir = 0, last = hist[0].x, lo = last, hi = last;
+          for (const q of hist) {
+            const d = q.x - last;
+            if (Math.abs(d) > 1.2) { const nd = Math.sign(d); if (dir && nd !== dir) turns++; dir = nd; last = q.x; }
+            lo = Math.min(lo, q.x); hi = Math.max(hi, q.x);
+          }
+          // with the hand model running, a wave needs a raised open hand; without it, the motion alone decides
+          if (turns >= 4 && hi - lo > 5 && (!T.handsOk || now - (T.openAt || -1e9) < 1500)) { T.waveAt = now; T.mh = []; }
+        }
+        // refine: look again only near the first centre, so a wooden shelf far away does not pull it
+        let cx = sk ? sx / sk : 32, cy = sk ? sy / sk : 18;
+        if (sk > 12) {
+          let s2 = 0, x2 = 0, y2 = 0;
+          for (let i = 0, p = 0; i < d.length; i += 4, p++) {
+            const x = p % 64, y = (p / 64) | 0;
+            if (Math.abs(x - cx) > 16 || Math.abs(y - cy) > 12) continue;
+            const r = d[i], g2 = d[i + 1], b = d[i + 2], Y = 0.299 * r + 0.587 * g2 + 0.114 * b;
+            const cb = 128 - 0.168736 * r - 0.331264 * g2 + 0.5 * b, cr = 128 + 0.5 * r - 0.418688 * g2 - 0.081312 * b;
+            if (skinPx(r, g2, b, Y, cb, cr)) { s2++; x2 += x; y2 += y; }
+          }
+          if (s2 > 8) { cx = x2 / s2; cy = y2 / s2; sk = s2; }
+        }
+        const skinFrac = sk / n, energy = clamp(mv / n * 9);
+        // With the face model running (the bridge sends a result about 10 times a second), the face decides where you are and
+        // whether you are there. Without it, the skin colour does (it is fooled by an orange wall, the face model is not).
+        const mlOk = !!R.ml && now - R.ml.at < 1800;
+        T.ml = mlOk;
+        const faceNow = mlOk && R.ml.face;
+        if (mlOk && R.ml.at !== T.mlSeen) { // a new answer from the models (about 10 a second)
+          T.mlSeen = R.ml.at;
+          const bs = R.ml.bs;
+          if (bs && faceNow) {
+            const B = T.bs || (T.bs = { blinkL: 0, blinkR: 0, jaw: 0, smile: 0, tongue: 0, brow: 0, pucker: 0, wide: 0 });
+            for (const k of Object.keys(B)) B[k] = lerp(B[k], bs[k] || 0, k.startsWith('blink') ? 0.9 : 0.6);
+            const G = R.gestOn !== false, K = R.sensK || 1;
+            T.tongueN = G && bs.tongue > 0.5 * K ? (T.tongueN || 0) + 1 : 0;
+            T.puckerN = G && bs.pucker > 0.6 * K ? (T.puckerN || 0) + 1 : 0;
+            const tongueNow = T.tongueN >= 2 || (G && bs.tongue > 0.75 * K);
+            if (tongueNow && !T.tongue) T.tongueAt = now;
+            T.tongue = tongueNow;
+            if (T.puckerN === 3 && now - T.kissAt > 3000) T.kissAt = now; // a kiss: lips pushed forward for a moment
+            // nodding (yes) and shaking the head (no): the nose swings up and down, or left and right, a few times
+            const pose = faceNow.pose;
+            if (pose) T.yaw = lerp(T.yaw == null ? pose.yaw : T.yaw, pose.yaw, 0.5); // which way your head is turned (nose left or right of the middle of your face)
+            if (G && pose) {
+              const hp = T.hp || (T.hp = []);
+              hp.push({ t: now, yaw: pose.yaw, pitch: pose.pitch });
+              while (hp.length && now - hp[0].t > 1600) hp.shift();
+              const swing = (key, min) => {
+                let turns = 0, dir = 0, last = hp[0][key], lo = last, hi = last;
+                for (const q of hp) { const dv = q[key] - last; if (Math.abs(dv) > min * 0.3) { const nd = Math.sign(dv); if (dir && nd !== dir) turns++; dir = nd; last = q[key]; } lo = Math.min(lo, q[key]); hi = Math.max(hi, q[key]); }
+                return { turns, range: hi - lo };
+              };
+              if (hp.length >= 5) {
+                const nod = swing('pitch', 0.07 * K), shake = swing('yaw', 0.16 * K);
+                if (nod.turns >= 2 && nod.range > 0.07 * K && shake.range < 0.14 * K && now - T.nodAt > 3500) { T.nodAt = now; T.hp = []; }
+                else if (shake.turns >= 3 && shake.range > 0.16 * K && Math.abs(T.vx) < 0.2 && now - T.shakeAt > 3500) { T.shakeAt = now; T.hp = []; }
+              }
+            }
+          } else { T.bs = null; T.tongue = false; T.tongueN = 0; T.puckerN = 0; }
+          if (R.ml.hands && R.ml.handsAt !== T.handsSeen) { // raised hands (the hand model answers every other time)
+            T.handsSeen = R.ml.handsAt;
+            const hs = R.ml.hands, open = hs.find((h) => h.open);
+            if (open) {
+              T.openAt = now;
+              const hh = T.hh || (T.hh = []);
+              hh.push({ t: now, x: open.x });
+              while (hh.length && now - hh[0].t > 1800) hh.shift();
+              let turns = 0, dir = 0, last = hh[0].x, lo = last, hi = last;
+              for (const q of hh) { const dx = q.x - last; if (Math.abs(dx) > 0.02) { const nd = Math.sign(dx); if (dir && nd !== dir) turns++; dir = nd; last = q.x; } lo = Math.min(lo, q.x); hi = Math.max(hi, q.x); }
+              if (turns >= 2 && hi - lo > 0.07 && now - (T.waveAt || -1e9) > 3500) { T.waveAt = now; T.hh = []; }
+            }
+            const G = R.gestOn !== false;
+            // a shape must be held for two answers in a row (about a fifth of a second), and the same one is not repeated for 3 seconds
+            const hold = (name, at, cond) => { const k = name + 'N'; T[k] = G && cond ? (T[k] || 0) + 1 : 0; if (T[k] === 2 && now - T[at] > 3000) T[at] = now; };
+            hold('thumb', 'thumbAt', hs.some((h) => h.thumbUp));
+            hold('peace', 'peaceAt', hs.some((h) => h.peace));
+            hold('heart', 'heartAt', hs.some((h) => h.fingerHeart || h.heart2));
+            hold('ok', 'okAt', hs.some((h) => h.ok));
+            hold('rock', 'rockAt', hs.some((h) => h.rock));
+            hold('call', 'callAt', hs.some((h) => h.callMe));
+            if (G && open) { // an open hand held up and still: stop
+              const hh = T.hh || [];
+              if (hh.length >= 5 && now - hh[0].t > 1100 && Math.max(...hh.map((q) => q.x)) - Math.min(...hh.map((q) => q.x)) < 0.035 && now - T.stopAt > 4000) { T.stopAt = now; T.hh = []; }
+            }
+            if (G && hs.length >= 2) { // two open hands coming together: a clap
+              const dd = Math.hypot(hs[0].x - hs[1].x, hs[0].y - hs[1].y), cl = T.cl || (T.cl = []);
+              cl.push({ t: now, d: dd });
+              while (cl.length && now - cl[0].t > 800) cl.shift();
+              if (hs[0].open && hs[1].open && Math.max(...cl.map((q) => q.d)) > 0.26 && dd < 0.11 && now - T.clapAt > 2500) { T.clapAt = now; T.cl = []; }
+            } else T.cl = [];
+          }
+        }
+        T.handsOk = mlOk && now - (R.ml.handsAt || -1e9) < 2500;
+        if (!mlOk) { T.hp = []; }
+        const wallLike = !mlOk && skinFrac > 0.28; // a skin-coloured wall fills the picture: the colour says nothing about where you are
+        // With the face model, "you are there" is more than "your face was found": looking down, leaning very close, a hand in front of the
+        // face or turning away all lose the face for a while. A raised hand, a lot of movement just after the face was seen, and a last face that
+        // was big or at the edge of the picture (so probably only partly out of it) all mean you are still there.
+        let seen, grace = 1400;
+        if (mlOk) {
+          const handsNow = !!R.ml.hands && R.ml.hands.length > 0 && now - R.ml.handsAt < 1200;
+          if (faceNow) { T.lastFace = now; T.lastFaceBox = faceNow; }
+          const lb = T.lastFaceBox, sinceFace = now - (T.lastFace || -1e9);
+          const nearEdge = !!lb && (lb.w > 0.32 || lb.y - lb.h / 2 < 0.04 || lb.y + lb.h / 2 > 0.96 || lb.x - lb.w / 2 < 0.03 || lb.x + lb.w / 2 > 0.97);
+          seen = !!faceNow || handsNow || (energy > 0.25 && sinceFace < 12000);
+          grace = nearEdge ? 9000 : 2500;
+        } else seen = wallLike || skinFrac > 0.012 || energy > 0.05;
+        if (seen) T.lastSeen = now;
+        const present = now - T.lastSeen < grace;
+        if (seen && !wallLike && (mlOk ? !!faceNow : skinFrac > 0.012)) {
+          const nx = mlOk ? clamp(faceNow.x, 0, 1) : clamp(0.5 + (cx / 64 - 0.5) * 1.25, 0, 1), ny = mlOk ? clamp(faceNow.y, 0, 1) : cy / 36; // your face at the side of the picture reads as the very edge
+          T.vx = lerp(T.vx, (nx - T.px) / dt, 0.4); T.vy = lerp(T.vy, (ny - T.py) / dt, 0.4);
+          T.px = nx; T.py = ny;
+          T.x = lerp(T.x, nx, 0.45); T.y = lerp(T.y, ny, 0.35);
+          if (mlOk) { T.fw = lerp(T.fw == null ? faceNow.w : T.fw, faceNow.w, 0.4); T.fh = lerp(T.fh == null ? faceNow.h : T.fh, faceNow.h, 0.4); } // how big your face is, for the animal that plays on you
+        } else { T.vx *= 0.8; T.vy *= 0.8; }
+        T.energy = lerp(T.energy, energy, 0.35);
+        T.rise = lerp(T.rise, clamp((0.4 - T.y) / 0.2), 0.2);
+        // standing up (or jumping): your face is clearly higher than where it has been for the last couple of seconds
+        if (seen && !wallLike && (mlOk ? !!faceNow : skinFrac > 0.012)) {
+          if (T.baseY == null) T.baseY = T.y;
+          if (T.y < T.baseY - 0.13 && now - T.riseAt > 2000) T.riseAt = now;
+          T.baseY = lerp(T.baseY, T.y, 0.03);
+        }
+        if (present && !T.wasPresent) T.enterAt = now;
+        if (!present && T.wasPresent) { T.exitAt = now; T.exitSide = T.x < 0.5 ? -1 : 1; }
+        T.wasPresent = present;
+        T.present = present;
+        T.side = clamp((T.x - 0.5) * 2, -1, 1);
+        T.away = present ? 0 : (now - T.exitAt) / 1000;
+      } catch { /* no pixels to read (a locked frame): keep the last answer */ }
+      return T;
+    }
+
+    // ---- characters ----
+    const easeOutBack = (x) => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2; };
+    const FUR = {
+      cat:     { fur: '#f4a259', light: '#fff0dc', dark: '#b8651f', ear: '#ff9fb5' },
+      dog:     { fur: '#c98d5c', light: '#f5dfc3', dark: '#7a4a28', ear: '#8a5430' },
+      bunny:   { fur: '#f6f1ee', light: '#ffffff', dark: '#cfc3bd', ear: '#ffb3c6' },
+      panda:   { fur: '#fbfbfb', light: '#ffffff', dark: '#26262b', ear: '#26262b' },
+      owl:     { fur: '#9a7452', light: '#e8d3b0', dark: '#5f452c', ear: '#7d5b3b' },
+      fox:     { fur: '#ee7b30', light: '#fff4e6', dark: '#3a2418', ear: '#3a2418' },
+      penguin: { fur: '#2d3b52', light: '#ffffff', dark: '#1b2434', ear: '#2d3b52' },
+      lion:    { fur: '#f2b96b', light: '#ffe9c6', dark: '#a85d1c', ear: '#d98c3d' },
+      monkey:  { fur: '#8d5b3d', light: '#f1cfa6', dark: '#4e2f1e', ear: '#f1cfa6' },
+      frog:    { fur: '#6cc24a', light: '#d9f5b8', dark: '#3b8a2c', ear: '#6cc24a' },
+      unicorn: { fur: '#fbeaff', light: '#ffffff', dark: '#c9a6e0', ear: '#ffc2e0' },
+      robot:   { fur: '#b4bfcc', light: '#e8eef5', dark: '#5d6b7c', ear: '#5d6b7c' },
+      snake:   { fur: '#6dcc91', light: '#e5ffd0', dark: '#25875f', ear: '#ffd56b' },
+      bird:    { fur: '#58c7eb', light: '#d7f6ff', dark: '#278cb9', ear: '#ffb853' },
+    };
+
+    const ACT_LEN = { nod: 1.8, headshake: 1.8, clap: 2.6, freeze: 3, raspberry: 30, cry: 30, wipe: 2, heartbreak: 3.2, heartbeat: 3.5, miss: 4, greet: 2.6, dance: 5, search: 2.2, cheer: 2, wave: 2.4, jump: 1.1, listen: 3, reply: 2.2, walk: 1 };
+    const pulse = (u, a, b) => smooth((u - a) / Math.max(1e-3, (b - a))) * (1 - smooth((u - b) / Math.max(1e-3, (1 - b))));
+    const bump = (u) => Math.sin(Math.PI * clamp(u)); // 0 -> 1 -> 0
+
+    // The little sounds that go with what the animal does. The renderer only says which (R.takeSfx); the camera hook plays them.
+    function noteSounds(cfg, kind, act, start, now) {
+      if (cfg.sounds === false || !act) return;
+      const q = R.sfx || (R.sfx = []), at = R.sfxAt || (R.sfxAt = {}), key = act + '|' + start;
+      const once = (k) => { if (R.sfxKey !== key) q.push({ k, a: kind }); };
+      const every = (k, ms) => { if (now - (at[k] || -1e9) > ms) { at[k] = now; q.push({ k, a: kind }); } };
+      switch (act) {
+        case 'float': case 'cry': every('sob', 2700); break;
+        case 'miss': every('whimper', 3300); break;
+        case 'wipe': once('sniff'); break;
+        case 'greet': case 'cheer': once('cheer'); break;
+        case 'jump': once('boing'); break;
+        case 'heartbeat': every('heart', 900); break;
+        case 'heartbreak': once('crack'); break;
+        case 'raspberry': once('blep'); break;
+        case 'wave': once('hi'); break;
+        case 'clap': every('clap', 450); break;
+        case 'freeze': once('gasp'); break;
+        default: break;
+      }
+      R.sfxKey = key;
+      while (q.length > 8) q.shift();
+    }
+    R.takeSfx = () => { const q = R.sfx || []; R.sfx = []; return q.slice(0, 4); };
+
+    // The pose of one animal at one moment: how high it hops, how far its arms are raised, its mouth, its tongue.
+    // t = seconds into the action, u = 0..1 through it. Arms: 0 = hanging, about 2.8 = straight up.
+    function actPose(kind, act, t, u, tt) {
+      const p = { hop: 0, sy: 1, sx: 1, tilt: 0, head: 0, armL: 0, armR: 0, mouth: 0, tongue: 0, ear: 0, tail: 1, puff: 0, lookX: null, ex: '', prop: '', pulse: 0, fly: 0, sparkle: 0, stepped: false };
+      const bounce = (f, h) => { const k = Math.abs(Math.sin(t * f)); p.hop = k * h; p.sy = 1 - 0.12 * (1 - k) ** 3; p.sx = 1 + 0.08 * (1 - k) ** 3; };
+      switch (act) {
+        case 'fly': p.armL = p.armR = 1.7 + Math.sin(t * 17) * 1.3; p.hop = 4 * Math.sin(t * 6); p.tilt = Math.sin(t * 4) * .08; p.lookX = .6; break;
+        case 'climb': p.armL = 1.7 + .7 * Math.sin(t * 9); p.armR = 1.7 - .7 * Math.sin(t * 9); p.sy = .95; p.tilt = .07 * Math.sin(t * 9); break;
+        case 'float': p.ex = 'cry'; p.armL = p.armR = 1.9 + .4 * Math.sin(t * 4); p.mouth = .45; p.tilt = .08 * Math.sin(t * 2); break;
+        case 'coil': p.tail = .4; p.sy = .85 + .06 * Math.sin(t * 2); p.tongue = Math.max(0, Math.sin(t * 5)) * .7; p.head = .15 * Math.sin(t * 1.5); break;
+        case 'preen': p.armR = .8; p.head = .35 * Math.sin(t * 4); p.lookX = .6; p.mouth = .2; break;
+        case 'peck': p.head = .22 * Math.sin(t * 8); p.hop = -4 * Math.max(0, Math.sin(t * 8)); p.armL = p.armR = .4; break;
+        // ---------- shared ----------
+        case 'wave': p.armR = 2.2 + 0.5 * Math.sin(t * 9); p.ex = 'happy'; p.mouth = 0.5; p.lookX = 0; break;
+        case 'sit': p.ex = 'idle'; p.sx = 1.08; p.hop = -3; p.armL = p.armR = 0.35; p.tail = 2.6; p.head = 0.07 * Math.sin(t * 1.8); p.sy = 1 + 0.012 * Math.sin(t * 3); break;      // sitting on you
+        case 'hang': p.armL = p.armR = 2.75; p.tilt = 0.14 * Math.sin(t * 2.1); p.ex = 'happy'; p.mouth = 0.25; break;                                           // hanging on your glasses
+        case 'roll': p.tilt = t * 6.5; p.armL = p.armR = 1.1; p.ex = 'happy'; p.mouth = 0.5; break;                                                                // rolling around your head
+        case 'nod': p.sy = 1 - 0.05 * Math.abs(Math.sin(t * 6.5)); p.hop = -2 * Math.abs(Math.sin(t * 6.5)); p.ex = 'happy'; p.lookX = 0; break;           // yes
+        case 'headshake': p.head = 0.28 * Math.sin(t * 9); p.ex = 'wary'; p.lookX = Math.sin(t * 9); p.mouth = 0; break;                                  // no
+        case 'clap': p.armL = 0.9 + 0.8 * Math.max(0, Math.sin(t * 11)); p.armR = p.armL; p.ex = 'happy'; p.mouth = 0.6; p.hop = Math.abs(Math.sin(t * 5.5)) * 5; break;
+        case 'freeze': p.armR = 2.4; p.armL = 0.3; p.ex = 'wary'; p.lookX = 0; p.mouth = 0; p.sy = 1.02; break;                                          // you said stop
+        case 'raspberry': // tongue out, like yours
+          p.tongue = 0.95 + 0.05 * Math.sin(t * 12); p.mouth = 0.3; p.ex = 'happy'; p.head = 0.06 * Math.sin(t * 9); p.lookX = 0; p.armL = p.armR = 0.4; break;
+        case 'cry': // sobbing: eyes squeezed shut, mouth wide open, shoulders shaking
+          p.ex = 'cry'; p.mouth = 0.85 + 0.1 * Math.sin(t * 9); p.head = 0.05 * Math.sin(t * 6); p.sy = 1 + 0.025 * Math.sin(t * 13); p.hop = Math.abs(Math.sin(t * 6.5)) * 1.6;
+          p.armL = 0.45 + 0.1 * Math.sin(t * 6); p.armR = 0.45 - 0.1 * Math.sin(t * 6); p.lookX = 0; break;
+        case 'wipe': // wipes the tears away with the arm, then a little smile
+          p.ex = u < 0.72 ? 'sad' : 'happy'; p.armR = 2.5 + 0.45 * Math.sin(t * 12); p.armL = 0.35; p.head = -0.05; p.mouth = u < 0.72 ? 0.15 : 0; p.lookX = 0; break;
+        case 'heartbreak': // hands on the chest: a broken heart
+          p.ex = 'miss'; p.armL = p.armR = 1.35 + 0.1 * Math.sin(t * 10); p.prop = 'brokenheart'; p.head = 0.06 * Math.sin(t * 5); break;
+        case 'heartbeat': { // hands on the chest: the heart beats (lub-dub), love in the eyes
+          const q = t * 7.5, hb = Math.max(0, Math.sin(q)) ** 4 + 0.6 * Math.max(0, Math.sin(q - 1.1)) ** 4;
+          p.ex = 'love'; p.armL = p.armR = 1.3; p.prop = 'heart'; p.pulse = hb; p.sy = 1 + 0.03 * hb; p.sx = 1 - 0.015 * hb; break; }
+        case 'miss': // eager for you to come back: big wet eyes, reaching out, hopping to see over the edge, looking around
+          p.ex = 'miss'; p.armL = 1.9 + 0.7 * Math.sin(t * 5); p.armR = 1.9 - 0.7 * Math.sin(t * 5); p.hop = Math.abs(Math.sin(t * 3.1)) * 11; p.head = 0.1 * Math.sin(t * 2.2); p.lookX = Math.sin(t * 1.6); p.mouth = 0; break;
+        case 'greet': // you are back: wide eyes, a jump, then a happy bounce
+          p.ex = u < 0.3 ? 'wow' : 'happy'; p.armL = p.armR = 2.7 + 0.25 * Math.sin(t * 10); bounce(7.5, 18); p.mouth = u < 0.3 ? 0.5 : 0.8; break;
+        case 'walk': {
+          const gait = PERSONAS[kind].gait, phase = t * (gait === 'amble' ? 4 : gait === 'march' ? 7 : 10);
+          p.armL = .45 + .5 * Math.sin(phase); p.armR = .45 - .5 * Math.sin(phase);
+          if (gait === 'hop') { p.hop = 16 * Math.abs(Math.sin(phase * .55)); p.sy = 1 - .13 * (1 - p.hop / 16); p.armL = p.armR = .65; }
+          else if (gait === 'waddle') { p.tilt = .17 * Math.sin(phase); p.hop = 2; p.armL = p.armR = .7; }
+          else if (gait === 'slither') { p.tilt = .13 * Math.sin(phase * .6); p.head = -p.tilt; p.tail = 2.5; }
+          else if (gait === 'march') { p.hop = Math.abs(Math.sin(phase)) * 3; p.stepped = true; p.head = Math.round(Math.sin(phase) * 2) * .04; }
+          else if (gait === 'prance') { p.hop = Math.abs(Math.sin(phase * .65)) * 9; p.tail = 2; }
+          else { p.hop = Math.abs(Math.sin(phase)) * (gait === 'trot' ? 4 : 1.5); p.head = Math.sin(phase * .5) * .04; }
+          break;
+        }
+        case 'listen': p.head = 0.09 * Math.sin(t * 3.4); p.ear = 0.7; p.armL = p.armR = 0.3; p.lookX = 0; p.sy = 1.015; break;   // all ears, nodding
+        case 'reply': p.mouth = 0.55 * Math.abs(Math.sin(t * 9)); p.head = 0.08 * Math.sin(t * 4.5); p.armR = 0.9 + 0.5 * Math.sin(t * 6); p.ex = 'happy'; p.lookX = 0; break;
+        case 'cheer': p.armL = p.armR = 2.7 + 0.25 * Math.sin(t * 10); bounce(7, 14); p.ex = 'happy'; p.mouth = 0.8; break;
+        case 'jump': p.hop = bump(u) * 26; p.armL = p.armR = 2.5 * bump(u); p.ex = 'wow'; break;
+        case 'search': // hand over the eyes, looking for you
+          p.armR = 2.3; p.head = 0.12 * Math.sin(t * 2.6); p.lookX = Math.sin(t * 2.6); p.ex = 'wary'; break;
+        // ---------- dances: each animal dances the way it moves ----------
+        case 'dance':
+          if (kind === 'snake') { p.tilt = Math.sin(t * 4.5) * 0.22; p.head = -p.tilt * 0.7; p.tail = 3; p.tongue = Math.max(0, Math.sin(t * 6)) * 0.7; p.ex = 'happy'; break; }
+          if (kind === 'bird') { p.armL = p.armR = 1.3 + Math.sin(t * 10); p.head = Math.sin(t * 4) * 0.12; bounce(5, 12); p.ex = 'happy'; break; }
+          if (kind === 'frog') { bounce(5, 15); p.tongue = pulse((t * 2.5) % 1, 0.1, 0.5) * 0.9; p.fly = 1; p.puff = 0.5 + 0.5 * Math.sin(t * 10); p.armL = 0.6 + Math.sin(t * 5); p.armR = 0.6 - Math.sin(t * 5); }
+          else if (kind === 'monkey') { p.armL = 2.0 + 0.8 * Math.sin(t * 6); p.armR = 2.0 - 0.8 * Math.sin(t * 6); p.tilt = Math.sin(t * 3) * 0.1; p.mouth = 0.55 + 0.4 * Math.abs(Math.sin(t * 6)); p.tongue = 0.35; bounce(3, 6); p.tail = 2; }
+          else if (kind === 'cat') { p.tilt = Math.sin(t * 3.2) * 0.1; p.armL = 2.2 * Math.max(0, Math.sin(t * 6)); p.armR = 2.2 * Math.max(0, -Math.sin(t * 6)); p.tail = 2.2; p.tongue = pulse((t * 1.5) % 1, 0.4, 0.7) * 0.5; bounce(3.2, 5); }
+          else if (kind === 'dog') { bounce(5.5, 9); p.armL = p.armR = 1.9 + 0.3 * Math.sin(t * 11); p.tongue = 0.7 + 0.2 * Math.sin(t * 9); p.mouth = 0.5; p.tail = 4; p.ear = Math.sin(t * 11); }
+          else if (kind === 'bunny') { bounce(4.2, 22); p.ear = Math.sin(t * 8.4); p.armL = 1.2 + Math.sin(t * 4.2); p.armR = 1.2 - Math.sin(t * 4.2); }
+          else if (kind === 'panda') { p.tilt = Math.sin(t * 2.4) * 0.17; p.sx = 1 + 0.05 * Math.sin(t * 4.8); p.armL = 1.2 + Math.sin(t * 2.4); p.armR = 1.2 - Math.sin(t * 2.4); p.prop = 'bamboo'; p.mouth = 0.3 + 0.3 * Math.abs(Math.sin(t * 6)); }
+          else if (kind === 'owl') { p.armL = p.armR = 1.1 + 1.0 * Math.sin(t * 12); p.head = 0.22 * Math.sin(t * 4); bounce(4, 7); p.mouth = 0.4 * Math.abs(Math.sin(t * 4)); }
+          else if (kind === 'fox') { const k = (t * 1.6) % 1; p.sy = k < 0.3 ? 1 - 0.22 * (k / 0.3) : 1; p.hop = k > 0.3 && k < 0.8 ? Math.sin(((k - 0.3) / 0.5) * Math.PI) * 26 : 0; p.armL = p.armR = k > 0.3 ? 1.6 : 0.3; p.tail = 3.5; p.tongue = 0.3; p.ear = Math.sin(t * 7); }
+          else if (kind === 'penguin') { p.tilt = Math.sin(t * 4.5) * 0.14; p.armL = 1.3 + 1.2 * Math.sin(t * 9); p.armR = 1.3 - 1.2 * Math.sin(t * 9); bounce(4.5, 4); }
+          else if (kind === 'lion') { p.head = 0.28 * Math.sin(t * 7); p.mouth = 0.9 * pulse((t * 1.2) % 1, 0.1, 0.6); p.tongue = 0.45 * pulse((t * 1.2) % 1, 0.1, 0.6); p.armL = 2.2; p.armR = 2.2 + 0.3 * Math.sin(t * 7); bounce(3.5, 6); p.ex = 'happy'; }
+          else if (kind === 'unicorn') { bounce(3.6, 14); p.armL = 1.4 * Math.max(0, Math.sin(t * 3.6)); p.armR = 1.4 * Math.max(0, -Math.sin(t * 3.6)); p.sparkle = 1; p.tail = 2.5; p.tilt = Math.sin(t * 1.8) * 0.07; }
+          else if (kind === 'robot') { const q = (v) => Math.round(v * 3) / 3; p.armL = 1.4 + 1.2 * q(Math.sin(t * 3.4)); p.armR = 1.4 - 1.2 * q(Math.sin(t * 3.4)); p.head = 0.2 * q(Math.sin(t * 3.4 + 1)); p.tilt = 0.06 * q(Math.sin(t * 3.4 + 2)); p.hop = 4 * (Math.sin(t * 6.8) > 0 ? 1 : 0); p.mouth = 0.8; p.stepped = true; }
+          p.ex = p.ex || 'happy';
+          break;
+        // ---------- frog ----------
+        case 'tongue': p.fly = 1; p.tongue = pulse(u, 0.25, 0.5) ; p.mouth = 0.4 * p.tongue; p.puff = pulse(u, 0.55, 0.75); p.ex = u > 0.8 ? 'happy' : 'idle'; if (u > 0.55) p.fly = 0; break;
+        case 'croak': p.puff = pulse((t * 1.7) % 1, 0.1, 0.5); p.mouth = 0.3 * p.puff; p.sy = 1 + 0.04 * p.puff; break;
+        case 'hop': { const k = bump(u); p.hop = k * (kind === 'bunny' ? 24 : 20); p.sy = 1 + 0.1 * k; p.sx = 1 - 0.05 * k; p.armL = p.armR = 0.9 * k; p.ear = Math.sin(t * 10) * k; p.ex = 'happy'; break; }
+        // ---------- monkey ----------
+        case 'swing': p.armL = 2.4 + 0.6 * Math.sin(t * 7); p.armR = 2.4 - 0.6 * Math.sin(t * 7); p.mouth = 0.6; p.tongue = 0.5 * Math.abs(Math.sin(t * 3.5)); p.tilt = Math.sin(t * 3.5) * 0.06; p.ex = 'happy'; break;
+        case 'scratch': p.armR = 2.5 + 0.25 * Math.sin(t * 14); p.head = -0.1; p.lookX = 0.4; p.ex = 'awk'; p.tail = 2; break;
+        case 'drum': p.armL = 1.0 + 0.9 * Math.max(0, Math.sin(t * 9)); p.armR = 1.0 + 0.9 * Math.max(0, -Math.sin(t * 9)); p.mouth = 0.7; p.sy = 1 + 0.02 * Math.sin(t * 18); p.ex = 'happy'; break;
+        // ---------- cat ----------
+        case 'lick': p.armR = 2.0 + 0.15 * Math.sin(t * 9); p.head = 0.25 * bump(u); p.tongue = 0.85 * Math.abs(Math.sin(t * 6)) * bump(u * 1.05); p.mouth = 0.35 * bump(u); p.lookX = 0.8; break;
+        case 'stretch': p.sy = 1 + 0.12 * bump(u); p.sx = 1 - 0.05 * bump(u); p.armL = p.armR = 2.6 * bump(u); p.mouth = 0.7 * bump(u); p.tongue = 0.3 * bump(u); p.ex = 'happy'; break;
+        case 'knead': p.armL = 1.6 + 0.9 * Math.max(0, Math.sin(t * 5)); p.armR = 1.6 + 0.9 * Math.max(0, -Math.sin(t * 5)); p.hop = 1.5 * Math.abs(Math.sin(t * 5)); p.ex = 'happy'; p.tail = 2; break;
+        // ---------- dog ----------
+        case 'pant': p.tongue = 0.8 + 0.2 * Math.sin(t * 10); p.mouth = 0.55; p.tail = 4; p.ear = Math.sin(t * 6) * 0.5; p.ex = 'happy'; p.sy = 1 + 0.015 * Math.sin(t * 10); break;
+        case 'shake': p.armR = 1.5 + 0.35 * Math.sin(t * 10); p.head = 0.08; p.tongue = 0.35; p.mouth = 0.4; p.tail = 3; p.ex = 'happy'; break;
+        case 'beg': p.armL = p.armR = 1.9 + 0.2 * Math.sin(t * 7); p.sy = 0.96; p.head = 0.15 * Math.sin(t * 2.4); p.tongue = 0.3; p.mouth = 0.3; p.tail = 3; break;
+        // ---------- bunny ----------
+        case 'wiggle': p.ear = Math.sin(t * 14); p.head = 0.04 * Math.sin(t * 14); p.ex = 'happy'; break;
+        case 'nibble': p.armL = p.armR = 1.5; p.mouth = 0.45 * Math.abs(Math.sin(t * 12)); p.prop = 'carrot'; p.ear = 0.3 * Math.sin(t * 6); break;
+        // ---------- panda ----------
+        case 'munch': p.armL = p.armR = 1.5; p.prop = 'bamboo'; p.mouth = 0.5 * Math.abs(Math.sin(t * 7)); p.head = 0.05 * Math.sin(t * 7); p.ex = 'happy'; break;
+        case 'roll': p.tilt = 0.2 * Math.sin(t * 3); p.sx = 1 + 0.04 * Math.sin(t * 6); p.armL = 1.4; p.armR = 1.4; break;
+        case 'belly': p.armR = 0.9 + 0.2 * Math.sin(t * 9); p.armL = 0.9 - 0.2 * Math.sin(t * 9); p.sy = 1 + 0.02 * Math.sin(t * 9); p.ex = 'happy'; break;
+        // ---------- owl ----------
+        case 'turn': p.head = 0.5 * Math.sin(u * TAU) * bump(u * 1.0); p.lookX = Math.sin(u * TAU); break;
+        case 'flap': p.armL = p.armR = 1.0 + 1.3 * Math.sin(t * 13); p.hop = 4 * Math.abs(Math.sin(t * 13)); break;
+        case 'hoot': p.mouth = 0.6 * pulse((t * 1.4) % 1, 0.1, 0.5); p.sy = 1 + 0.04 * p.mouth; p.head = 0.08 * Math.sin(t * 2.8); break;
+        // ---------- fox ----------
+        case 'swish': p.tail = 5; p.tilt = 0.04 * Math.sin(t * 4); p.ex = 'happy'; p.tongue = 0.25 * bump(u); break;
+        case 'pounce': { const k = u; p.sy = k < 0.35 ? 1 - 0.2 * (k / 0.35) : 1; p.hop = k > 0.4 && k < 0.85 ? Math.sin(((k - 0.4) / 0.45) * Math.PI) * 24 : 0; p.armL = p.armR = k > 0.4 ? 1.7 : 0.3; p.ex = k > 0.4 ? 'wow' : 'wary'; p.lookX = 0.7; break; }
+        case 'twitch': p.ear = Math.sin(t * 16) * bump(u * 2 % 1); p.head = 0.06 * Math.sin(t * 8); break;
+        // ---------- penguin ----------
+        case 'waddle': p.tilt = 0.13 * Math.sin(t * 5); p.hop = 1.5 * Math.abs(Math.sin(t * 5)); p.armL = 0.7; p.armR = 0.7; break;
+        // ---------- lion ----------
+        case 'roar': p.mouth = bump(u); p.tongue = 0.55 * bump(u); p.head = -0.1 * bump(u); p.sy = 1 + 0.05 * bump(u); p.ex = 'wow'; p.tilt = 0.015 * Math.sin(t * 40) * bump(u); break;
+        case 'yawn': p.mouth = bump(u * 1.0); p.tongue = 0.4 * bump(u); p.armR = 1.2 * bump(u); p.ex = 'sad'; break;
+        case 'mane': p.head = 0.25 * Math.sin(t * 8) * bump(u); p.ex = 'happy'; break;
+        // ---------- unicorn ----------
+        case 'prance': { const k = Math.abs(Math.sin(t * 3.2)); p.hop = k * 9; p.armL = 1.3 * Math.max(0, Math.sin(t * 3.2)); p.armR = 1.3 * Math.max(0, -Math.sin(t * 3.2)); p.tail = 2.5; p.ex = 'happy'; break; }
+        case 'sparkle': p.sparkle = bump(u); p.head = 0.1 * bump(u); p.ex = 'happy'; break;
+        // ---------- robot ----------
+        case 'scan': p.lookX = Math.sin(t * 2.5); p.head = 0.18 * Math.sin(t * 2.5); p.stepped = true; break;
+        case 'beep': p.mouth = 0.8; p.ex = 'wow'; p.stepped = true; break;
+        case 'popping': { const q = (v) => Math.round(v * 3) / 3; p.armL = 1.3 + 1.1 * q(Math.sin(t * 4)); p.armR = 1.3 - 1.1 * q(Math.sin(t * 4)); p.head = 0.18 * q(Math.sin(t * 4 + 1)); p.stepped = true; break; }
+        default: break;
+      }
+      return p;
+    }
+
+    // Where it sits on you (fractions of the picture): the centre of its feet, and how big it is.
+    const perchTarget = (kind, side, tr, t) => {
+      const fw = tr.fw || 0.2, fh = tr.fh || 0.3, x = tr.x, y = tr.y;
+      const size = (m) => clamp(fh * 1.25 * m, 0.26, 0.6); // it is about as big as half your face, whatever your distance from the camera
+      switch (kind) {
+        case 'head': return { x, fy: y - fh * 0.55, sc: size(1.1) };
+        case 'shoulder': return { x: x + side * fw * 0.95, fy: y + fh * 0.95, sc: size(1.2) };
+        case 'glasses': return { x: x + side * fw * 0.55, fy: y - fh * 0.1 + 0.17 * size(0.9) / 0.38, sc: size(0.9) }; // its hands are at the height of your eyes
+        default: { const a = t * 1.5; return { x: x + Math.cos(a) * fw * 0.95, fy: y + Math.sin(a) * fh * 0.7 + 0.07, sc: size(0.85) }; }     // rolling around your head
+      }
+    };
+    const PERCH_ACT = { head: 'sit', shoulder: 'sit', glasses: 'hang', orbit: 'roll' };
+    const GESTURE_SET = new Set(['wave', 'cheer', 'jump', 'heartbeat', 'dance', 'reply', 'freeze', 'clap', 'nod', 'headshake', 'raspberry']);
+    const AWAY_MODES = ['search', 'miss', 'cry', 'party'];
+    // what you do -> the bubble over its head, and what it does about it (seconds)
+    const GESTURE_BUBBLES = [['thumbAt', '👍', 2200], ['peaceAt', '✌️', 2200], ['kissAt', '😘', 2400], ['tongueAt', '😛', 2000], ['heartAt', '💖', 2600], ['okAt', '👌', 2200],
+      ['rockAt', '🤘', 2200], ['callAt', '🤙', 2200], ['stopAt', '✋', 2600], ['clapAt', '👏', 2200], ['nodAt', '✔️', 1800], ['shakeAt', '✖️', 1800]];
+    const GESTURE_ACTS = { thumbAt: ['cheer', 2.4], peaceAt: ['jump', 1.1], kissAt: ['heartbeat', 3], heartAt: ['heartbeat', 3.2], okAt: ['cheer', 2], rockAt: ['dance', 3.5],
+      callAt: ['reply', 2.4], stopAt: ['freeze', 3], clapAt: ['clap', 2.6], nodAt: ['nod', 1.8], shakeAt: ['headshake', 1.8] };
+
+    // How the character feels for the sound that is playing (it holds the feeling for 1.6 s).
+    function characterMood(audio, now) {
+      const lvl = audio ? clamp(audio.level || 0) : 0;
+      if (audio && MOODS.includes(audio.mood) && lvl > 0.02) {
+        if (R.cMood !== audio.mood) R.cStart = now;
+        R.cMood = audio.mood; R.cSeen = now;
+      }
+      const m = now - R.cSeen < 1600 ? R.cMood : '';
+      return { mood: m, lvl, since: (now - R.cStart) / 1000 };
+    }
+
+    // ---- the stage: where the animal is, and whether it stands (with legs) or only peeks in from the bottom ----
+    // Normally it peeks from a bottom corner. With "Follow me" it comes out, walks, searches and welcomes you.
+    function stageUpdate(cfg, tr, audio, now, pos, S, w) {
+      const T = R.stg || (R.stg = { x: null, fy: .988, sc: 1, s: 1, pf: 1, dir: 1, ph: 0, mode: 'rest', moving: false, bubble: '', bubbleUntil: 0, last: now, tear: 0, backT: 0, nextTrip: now + 7000, side: pos === 'left' ? -1 : 1, perch: 'corner', commandSeq: cfg.commandSeq, homePos: pos });
+      const dt = clamp((now - T.last) / 1000, 0, .1); T.last = now;
+      const corner = pos === 'left' ? S * .6 / w : 1 - S * .6 / w;
+      if (T.x == null) T.x = corner;
+      const follow = cfg.follow && tr?.live;
+      const bodyReady = follow && tr.present && tr.ml && tr.fw > .05;
+      const kind = cfg.character, persona = PERSONAS[kind];
+      const say = (text, ms = 2200) => { T.bubble = text; T.bubbleUntil = now + ms; };
+      const target = where => where === 'corner' ? { x: corner, fy: .988, sc: 1 } : perchTarget(where, T.side, tr, now / 1000);
+      const trip = where => {
+        const to = target(where), from = { x: T.x, fy: T.fy, sc: T.sc };
+        const shoulder = bodyReady ? target('shoulder') : to;
+        const points = [from];
+        // Ground animals use the shoulder as a foothold instead of gliding through the face.
+        if (persona.gait !== 'fly' && where !== 'corner' && T.perch === 'corner') points.push(shoulder);
+        else if (persona.gait !== 'fly' && where === 'corner' && T.perch !== 'corner' && bodyReady) points.push(shoulder);
+        points.push(to);
+        T.travel = { points, start: now, duration: persona.gait === 'fly' ? 1800 : persona.gait === 'slither' ? 3300 : 2700, to: where };
+        T.mode = 'travel'; T.perch = where; T.nextTrip = now + 12000 + Math.random() * 6000;
+      };
+      // Absence always wins over music, idle actions and manual happy emotes.
+      if (follow && !tr.present) {
+        T.backT = 0; T.travel = null; T.emoteReturnAt = 0; T.command = ''; T.commandSeq = cfg.commandSeq;
+        if (!['search', 'miss', 'cry'].includes(T.mode)) { T.absentAt = now; T.mode = 'search'; say('?'); }
+        const absent = Math.max(tr.away || 0, (now - T.absentAt) / 1000);
+        T.mode = absent > 7 ? 'cry' : absent > 3.2 ? 'miss' : 'search';
+        if (T.mode === 'cry') { T.cryAt ||= now; T.tear = Math.min(.92, T.tear + dt / 25); }
+        T.x = lerp(T.x, .5, Math.min(1, dt * 2)); T.fy = lerp(T.fy, .988, dt * 3); T.sc = lerp(T.sc, .8, dt * 3);
+        T.moving = false; if (now > T.bubbleUntil) say(T.mode === 'cry' ? '😭' : T.mode === 'miss' ? '🥺' : '?');
+        return T;
+      }
+      if (['search', 'miss', 'cry'].includes(T.mode)) {
+        T.backT += dt;
+        if (T.backT < .9) return T; // a briefly reacquired face must not trigger happiness
+        T.mode = 'welcome'; T.welcomeAt = now; T.wipeUntil = now + (T.tear > .02 ? 1800 : 0); T.until = T.wipeUntil + 2800; T.cryAt = 0; say('❤', 3500);
+      }
+      T.tear = Math.max(0, T.tear - dt / 2.6);
+      if (T.mode === 'welcome') { if (now > T.until) { T.mode = 'rest'; if (bodyReady) trip(cfg.charHome); } return T; }
+      if (cfg.commandSeq && cfg.commandSeq !== T.commandSeq) {
+        T.commandSeq = cfg.commandSeq;
+        if (['head', 'shoulder', 'corner'].includes(cfg.command)) { if (bodyReady || cfg.command === 'corner') trip(cfg.command); }
+        else {
+          if (cfg.command === 'roll' && bodyReady) { trip('orbit'); T.emoteReturnAt = now + 7500; }
+          T.command = cfg.command === 'signature' ? persona.action : cfg.command; T.commandAt = now; T.commandUntil = now + (cfg.command === 'sit' ? 7000 : 4000);
+        }
+      }
+      if (T.command && now >= T.commandUntil) T.command = '';
+      if (T.emoteReturnAt && now >= T.emoteReturnAt && bodyReady) { T.emoteReturnAt = 0; trip(cfg.charHome); }
+      if (!follow) { T.travel = null; T.mode = 'rest'; T.perch = 'corner'; T.x = lerp(T.x, corner, dt * 4); T.fy = lerp(T.fy, .988, dt * 4); T.sc = lerp(T.sc, 1, dt * 4); T.moving = false; }
+      else if (R.forcePerch && bodyReady) { T.travel = null; T.mode = 'perch'; T.perch = R.forcePerch; Object.assign(T, perchTarget(T.perch, R.forceSide, tr, now / 1000)); }
+      else if (T.travel) {
+        const route = T.travel, u0 = clamp((now - route.start) / route.duration), steps = route.points.length - 1;
+        const i = Math.min(steps - 1, Math.floor(u0 * steps)), u = smooth(u0 * steps - i);
+        const a = route.points[i], b = i === steps - 1 ? target(route.to) : route.points[i + 1];
+        T.x = lerp(a.x, b.x, u); T.fy = lerp(a.fy, b.fy, u); T.sc = lerp(a.sc, b.sc, u);
+        if (persona.gait === 'fly') T.fy -= Math.sin(u0 * Math.PI) * .12;
+        T.moving = true; T.dir = Math.sign(b.x - a.x) || T.dir; T.ph += dt * 10;
+        if (u0 >= 1) { T.travel = null; T.mode = route.to === 'corner' ? 'rest' : 'perch'; T.moving = false; }
+      } else if (bodyReady && T.perch !== 'corner') {
+        if (cfg.masti === false && !T.emoteReturnAt && T.perch !== cfg.charHome) trip(cfg.charHome);
+        else { const p = target(T.perch); T.x = lerp(T.x, p.x, Math.min(1, dt * 7)); T.fy = lerp(T.fy, p.fy, dt * 7); T.sc = lerp(T.sc, p.sc, dt * 7); T.moving = false; }
+        if (cfg.masti !== false && !T.command && now > T.nextTrip) { const places = ['head', 'shoulder', 'orbit'].filter(p => p !== T.perch); trip(places[Math.floor(Math.random() * places.length)]); }
+      } else if (bodyReady && cfg.charHome !== 'corner') trip(cfg.charHome);
+      else if (cfg.masti !== false && follow && tr.present && now > T.nextTrip) {
+        T.floorTarget = T.x < .5 ? 1 - S * .6 / w : S * .6 / w; T.nextTrip = now + 13000; T.mode = 'walk';
+      }
+      if (T.mode === 'walk') {
+        const d = T.floorTarget - T.x; T.moving = Math.abs(d) > .01; T.dir = Math.sign(d) || T.dir;
+        T.x += Math.sign(d) * Math.min(Math.abs(d), dt * persona.pace); T.ph += dt * 10;
+        if (!T.moving) T.mode = 'rest';
+      }
+      T.x = clamp(T.x, .06, .94); T.fy = clamp(T.fy, .16, .988); T.sc = clamp(T.sc, .26, 1);
+      if (now > T.bubbleUntil) T.bubble = '';
+      return T;
+    }
+
+    // What the animal does next: it reacts to YOU first (you left, came back, stood up), then to the sound, then
+    // it does one of its own things now and then.
+    function chooseAct(kind, cfg, tr, mood, now, st, audio) {
+      const A = R.cAct || (R.cAct = { name: '', start: now, dur: 0, next: now + 2500 });
+      const follow = cfg.follow && tr && tr.live;
+      const begin = (name, dur) => { if (A.name !== name) { A.name = name; A.start = now; } A.dur = dur || ACT_LEN[name] || 2.4; };
+      const done = A.name && now - A.start > A.dur * 1000;
+      if (st?.command && !['search','miss','cry','welcome','travel'].includes(st.mode)) { if(A.commandSeq!==st.commandSeq) { A.commandSeq=st.commandSeq; A.name=''; } begin(st.command,4); A.start=st.commandAt; return A; }
+      if (follow && st) {
+        // where it is decides first: searching, partying, welcoming you back, coming out when you stand up
+        if (st.mode === 'search') { begin(st.moving ? 'walk' : 'search', 30); return A; }
+        if (st.mode === 'miss') { begin(st.moving ? 'walk' : 'miss', 30); return A; }
+        if (st.mode === 'cry') { begin(st.tear > .78 ? 'float' : 'cry', 30); return A; }
+        if (st.mode === 'travel') { begin(PERSONAS[kind].gait === 'fly' ? 'fly' : PERSONAS[kind].gait === 'slither' ? 'walk' : 'climb', 30); return A; }
+        if (st.command) { begin(st.command, 5); return A; }
+        if (st.mode === 'welcome') {
+          const cheerEnd = st.wipeUntil + 2600;
+          if (now < st.wipeUntil) begin('wipe', 30);
+          else if (st.moving) begin('walk', 30);
+          else begin(now < cheerEnd ? 'greet' : 'heartbeat', 30);
+          return A;
+        }
+        if (st.moving && (st.s > 0.5)) { begin('walk', 30); return A; }
+        if (st.mode === 'out' && A.name !== 'cheer' && A.name !== 'dance' && now - (R.cOutAt || 0) > 9000) { R.cOutAt = now; begin('cheer', 2.2); return A; }
+        // "hi": you wave, it waves back
+        if (tr.waveAt > (R.cSawWave || -1e9)) { R.cSawWave = tr.waveAt; begin('wave', 2.6); return A; }
+        // what your face and hands do, it does back: thumbs up -> it cheers, peace -> it jumps, a kiss -> its heart beats, tongue out -> tongue out
+        R.cSaw = R.cSaw || {};
+        for (const k of Object.keys(GESTURE_ACTS)) if (tr[k] > (R.cSaw[k] || -1e9)) { R.cSaw[k] = tr[k]; begin(GESTURE_ACTS[k][0], GESTURE_ACTS[k][1]); return A; }
+        if (tr.tongue) { begin('raspberry', 30); return A; }
+        if (A.name === 'raspberry') { A.name = ''; A.next = now + 1200; }
+        if (A.name && !done && A.dur < 30 && GESTURE_SET.has(A.name)) return A; // finish what it is doing in answer to you
+        if (A.dur >= 30 && ['greet','heartbeat'].includes(A.name)) { A.name = ''; A.next = now + 1200; }
+        if (st.mode === 'perch' && st.perch === 'orbit') { begin(kind === 'bird' || kind === 'owl' ? 'fly' : 'roll', 30); return A; }
+        // you talk, it listens (ears up, nodding); when you stop, it answers
+        const v = audio ? clamp(audio.voice || 0) : 0;
+        const T = R.talk || (R.talk = { on: false, since: 0, last: 0, sawReply: -1e9, replyAt: -1e9 });
+        if (v > 0.2) { if (!T.on) { T.on = true; T.since = now; } T.last = now; }
+        else if (T.on && now - T.last > 800) { T.on = false; if (T.last - T.since > 1600) T.replyAt = now; }
+        if (T.on && now - T.since > 450) { begin('listen', 30); return A; }
+        if (T.replyAt > T.sawReply) { T.sawReply = T.replyAt; begin('reply', 2.2); return A; }
+        if (A.name === 'listen' || A.name === 'walk' || A.name === 'climb' || A.name === 'fly' || A.name === 'search' || A.name === 'cry' || A.name === 'float' || A.name === 'miss' || A.name === 'wipe') { A.name = ''; A.next = now + 1500; }
+        if (tr.energy > 0.5 && (A.name !== 'dance' || done)) { begin(PERSONAS[kind].action, 3.5); return A; }
+      }
+      if ((mood === 'excited' || mood === 'fun') && (A.name !== 'dance' || done)) { begin('dance', 4); return A; }
+      if (A.name && done) { A.name = ''; A.next = now + 2500 + Math.random() * 4500; }
+      if (!A.name && now >= A.next) { const list = ACTIONS[kind]; begin(list[Math.floor(Math.random() * list.length)], 2.2 + Math.random() * 1.2); }
+      return A;
+    }
+
+    function ell(g, x, y, rx, ry, fill, rot = 0) {
+      g.fillStyle = fill; g.beginPath(); g.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot, 0, TAU); g.fill();
+    }
+    // a heart centred at (x, y), about 2r wide
+    function heart(g, x, y, r, fill) {
+      g.fillStyle = fill; g.beginPath();
+      g.moveTo(x, y + r * 0.9);
+      g.bezierCurveTo(x - r * 1.5, y - r * 0.1, x - r * 0.9, y - r * 1.2, x, y - r * 0.4);
+      g.bezierCurveTo(x + r * 0.9, y - r * 1.2, x + r * 1.5, y - r * 0.1, x, y + r * 0.9);
+      g.fill();
+    }
+    function tri(g, a, b, c, fill) {
+      g.fillStyle = fill; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.lineTo(c[0], c[1]); g.closePath(); g.fill();
+    }
+    function rrect(g, x, y, w, h, r, fill) {
+      g.fillStyle = fill; g.beginPath();
+      if (g.roundRect) g.roundRect(x, y, w, h, r); else g.rect(x, y, w, h);
+      g.fill();
+    }
+
+    // The tongue: pink, with a line down the middle. `len` 0..1. Frogs shoot it out to the fly.
+    function drawTongue(g, kind, len, mx, my, fly) {
+      if (len < 0.03) return;
+      g.save();
+      if (kind === 'frog' && fly) {
+        const ex = mx + (fly[0] - mx) * len, ey = my + (fly[1] - my) * len;
+        g.strokeStyle = '#ff6f8a'; g.lineWidth = 5.5; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(mx, my); g.quadraticCurveTo((mx + ex) / 2 + 3, (my + ey) / 2 + 6, ex, ey); g.stroke();
+        ell(g, ex, ey, 5.5, 5, '#ff4f72');
+      } else if (kind === 'snake') {
+        const tip = my + 8 + len * 18;
+        g.strokeStyle = '#ff6284'; g.lineWidth = 2.8; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(mx, my); g.lineTo(mx, tip); g.lineTo(mx - 4, tip + 4); g.moveTo(mx, tip); g.lineTo(mx + 4, tip + 4); g.stroke();
+      } else {
+        const L = 5 + 17 * len, W = kind === 'dog' ? 7.5 : 6;
+        rrect(g, mx - W / 2, my - 2, W, L, W / 2, '#ff6f8a');
+        g.strokeStyle = 'rgba(190,40,70,0.55)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(mx, my + 1); g.lineTo(mx, my + L - 3); g.stroke();
+      }
+      g.restore();
+    }
+
+    // The character is drawn in a 100-unit box: the ground is y = 0, the head is around y = -62.
+    function drawCharacter(g, w, h, kind, pos, now, audio, cfg, tr, o = {}) {
+      const P = FUR[kind];
+      const stage = o.stage || { x: pos === 'left' ? (h * 0.24) / w : 1 - (h * 0.24) / w, s: o.charStand || 0, dir: 1, ph: (o.charT || 0) * 13, moving: !!o.charWalk, mode: 'peek', bubble: o.charBubble || '' };
+      const sS = clamp(stage.s);
+      const t = now / 1000;
+      const pf = clamp(stage.pf || 0), sc = lerp(1, stage.sc || 1, pf);
+      const Sfull = h * 0.4, S = Sfull * sc, u = S / 100; // (smaller when it sits on you)
+      const { mood, lvl, since } = characterMood(audio, now);
+      // what it is doing: a forced action (for the preview sheet) or the scheduler's choice
+      let act, at, au, actStart = 0;
+      if (o.charAct) { act = o.charAct; at = o.charT || 0; au = o.charU == null ? ((at % 3) / 3) : o.charU; }
+      else {
+        const A = chooseAct(kind, cfg, tr, mood, now, stage, audio);
+        act = A.name; actStart = A.start; at = (now - A.start) / 1000; au = A.dur ? clamp(at / A.dur) : 0;
+      }
+      const pz = actPose(kind, act, at, au, t);
+      if (!o.charAct) noteSounds(cfg, kind, act, actStart, now);
+      const deep = clamp(((o.tear || 0) - 0.8) / 0.12); // in water up to the top: it sinks and rises, arms up, glub
+      if (deep > 0.05 && act === 'cry') { pz.armL = pz.armR = 2.3 + 0.35 * Math.sin(t * 3.2); pz.mouth = 0.5 + 0.4 * Math.abs(Math.sin(t * 5)); }
+      // your face, mirrored: when nothing else is going on it opens its mouth when you do, smiles when you smile, is amazed when you are
+      const bsv = (cfg.follow && tr && tr.live && tr.present && tr.bs) || o.mimic || null;
+      if (bsv && !act) {
+        if (!pz.mouth) pz.mouth = clamp(bsv.jaw * 0.9);
+        if (!pz.ex) { if (bsv.jaw > 0.5 && bsv.brow > 0.35) pz.ex = 'wow'; else if (bsv.smile > 0.55) pz.ex = 'happy'; }
+      }
+      let ex = mood === 'excited' || mood === 'fun' ? 'happy' : mood === 'surprise' ? 'wow' : mood === 'sad' ? 'sad'
+        : mood === 'suspense' ? 'wary' : mood === 'awkward' ? 'awk' : 'idle';
+      if (pz.ex) ex = pz.ex;
+      const rise = stage.pf > .2 ? 0 : (1 - easeOutBack((now - R.charStart) / 900)) * 125; // pops up from the bottom with a little bounce
+      let bob = Math.sin(t * 1.7) * 1.2 + lvl * 2.5;                  // breathing
+      let tilt = pz.tilt, lift = pz.hop;
+      if (!act) {
+        if (ex === 'happy') { bob = -Math.abs(Math.sin(t * (mood === 'fun' ? 5 : 7))) * 9; tilt = Math.sin(t * (mood === 'fun' ? 5 : 7)) * 0.07; }
+        if (ex === 'wow') lift = Math.max(0, Math.sin(clamp(since * 3.2, 0, Math.PI))) * 16;
+      }
+      if (ex === 'sad') bob = 6 + Math.sin(t * 1.1);
+      if (ex === 'miss') bob = -Math.abs(Math.sin(t * 3.1)) * 3;
+      if (ex === 'cry') bob = 5 + Math.sin(t * 13) * 0.8;
+      if (ex === 'wary' && !act) tilt = Math.sin(t * 1.3) * 0.04;
+      // it follows you: it leans the way you move and looks at you
+      const follow = cfg.follow && tr && tr.live;
+      let lookX = pz.lookX, shift = 0;
+      if (follow && tr.present) {
+        if (lookX == null) lookX = clamp((tr.x - stage.x) * 3.2, -1, 1);
+        tilt += clamp(tr.vx * 0.25, -0.12, 0.12);
+        shift = clamp((tr.x - 0.5) * (pos === 'left' ? 1 : -1) * 0.0, -0.3, 0.3);
+      }
+      if (stage.moving && sS > 0.5) { tilt += stage.dir * 0.06; if (lookX == null) lookX = stage.dir * 0.8; }
+      // you turn your head towards it and it turns towards you: it looks at you, tilts its head to you, ears up, a smile
+      let attn = 0;
+      if (follow && tr.present && tr.yaw != null && R.gestOn !== false && !act) {
+        const toward = stage.x < tr.x ? -1 : 1; // your nose goes to the side where the animal is
+        if (Math.sign(tr.yaw) === toward) attn = clamp((Math.abs(tr.yaw) - 0.08) / 0.2);
+      }
+      if (attn > 0.03) {
+        const dirU = tr.x > stage.x ? 1 : -1;
+        lookX = (lookX == null ? 0 : lookX) * (1 - attn) + dirU * attn;
+        tilt += dirU * 0.07 * attn;
+        pz.head += dirU * 0.16 * attn;
+        pz.ear = Math.max(pz.ear, 0.6 * attn);
+        if (attn > 0.6 && ex === 'idle') ex = 'happy';
+      }
+      const blink = (now % 3600) < 130 && ex !== 'happy' && !(cfg.follow && tr && tr.live && tr.bs); // it blinks by itself, unless it is copying your blinks
+      const wag = Math.sin(t * (ex === 'happy' ? 11 : 3.2) * pz.tail);
+      const dark = '#23222b';
+      const isRobot = kind === 'robot', isFrog = kind === 'frog', isPeng = kind === 'penguin', isBird = kind === 'bird', isSnake = kind === 'snake';
+
+      // The animal is drawn on its own small canvas so it can be lit by your light and get a soft shadow.
+      const cw = Math.ceil(Sfull * (act === 'roll' ? 2.4 : 1.7)), ch = Math.ceil(Sfull * (act === 'roll' ? 2.4 : 1.95));
+      const groundIn = ch + 2 * u - 8 * u * sS; // where the feet are inside the little canvas
+      if (!R.cv || R.cv.width !== cw || R.cv.height !== ch) { R.cv = makeScratch(cw, ch); R.cvg = R.cv.getContext('2d'); }
+      const cg0 = g;
+      g = R.cvg;
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.globalCompositeOperation = 'source-over';
+      g.clearRect(0, 0, cw, ch);
+      g.save();
+      g.translate(cw / 2, groundIn + rise * u * (1 - sS));
+      g.scale(u * (1 - 0.2 * sS), u * (1 - 0.2 * sS));
+      const legL = (act === 'sit' ? 25 : 44) * sS;
+      g.translate(0, -legL + bob - lift);
+      if (act === 'roll') { g.translate(0,-55); g.rotate(tilt); g.translate(0,55); }
+      else g.rotate(tilt);
+      g.scale(pz.sx, pz.sy);
+      g.lineCap = 'round'; g.lineJoin = 'round';
+
+      // legs: when it stands, you see them (and they walk)
+      if (sS > 0.03 && !isSnake) {
+        const swing = stage.moving ? Math.sin(stage.ph) * (PERSONAS[kind].gait === 'hop' ? .2 : .55) : act === 'hang' ? 0.4 * Math.sin(t * 3.2) : act === 'roll' ? 0.9 * Math.sin(t * 9) : 0;
+        const LEG = { cat: ['#f4a259', '#fff0dc', 11, 6], dog: ['#c98d5c', '#f5dfc3', 11, 6], bunny: ['#f6f1ee', '#ffffff', 15, 6], panda: ['#26262b', '#26262b', 12, 6.5], owl: ['#f2a33a', '#f2a33a', 11, 3.5],
+          fox: ['#ee7b30', '#3a2418', 11, 6], penguin: ['#f2a33a', '#f2a33a', 14, 4], lion: ['#f2b96b', '#ffe9c6', 12, 6], monkey: ['#8d5b3d', '#f1cfa6', 12, 6], frog: ['#6cc24a', '#d9f5b8', 16, 5], unicorn: ['#fbeaff', '#ffd54a', 10, 5.5], robot: ['#5d6b7c', '#b4bfcc', 14, 5], bird: ['#ffb853', '#ffb853', 11, 3.5] }[kind];
+        for (const sg of [-1, 1]) {
+          g.save();
+          g.translate(sg * 14, 4); g.rotate(sg * swing);
+          const len = legL + 4;
+          if (isRobot) { rrect(g, -6, 0, 12, len - 6, 5, LEG[0]); ell(g, 0, len * 0.55, 6.5, 6.5, '#8a96a6'); rrect(g, -LEG[2] / 2 - 2, len - 10, LEG[2] + 4, 9, 4, LEG[1]); }
+          else {
+            rrect(g, -6.5, 0, 13, len, 6.5, LEG[0]);
+            if (isFrog) { ell(g, sg * 5, len - 3, LEG[2], LEG[3], LEG[0]); for (const dx of [-8, 0, 8]) ell(g, sg * 5 + dx, len - 1, 3.4, 3.4, LEG[1]); }
+            else ell(g, 0, len - 2, LEG[2], LEG[3], LEG[1]);
+          }
+          g.restore();
+        }
+      }
+      // tails and things behind the body
+      if (kind === 'cat' || kind === 'dog' || kind === 'fox' || kind === 'lion' || kind === 'monkey') {
+        g.save(); g.translate(28, -18); g.rotate(-0.5 + wag * (kind === 'monkey' ? 0.2 : 0.35));
+        g.strokeStyle = P.fur; g.lineWidth = kind === 'fox' ? 17 : kind === 'monkey' ? 6 : 9;
+        g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(26, -8, kind === 'monkey' ? 20 : 24, -38);
+        if (kind === 'monkey') g.quadraticCurveTo(14, -52, 24, -50);
+        g.stroke();
+        if (kind === 'fox') { g.strokeStyle = P.light; g.lineWidth = 12; g.beginPath(); g.moveTo(21, -24); g.quadraticCurveTo(25, -30, 24, -38); g.stroke(); }
+        if (kind === 'lion') ell(g, 24, -42, 7, 9, P.dark);
+        g.restore();
+      }
+      if (kind === 'unicorn') { // a rainbow tail
+        g.save(); g.translate(30, -16); g.rotate(-0.4 + wag * 0.25);
+        ['#ff7eb6', '#ffd54a', '#6ee7b7', '#8ec5ff', '#b194ff'].forEach((c, k) => { g.strokeStyle = c; g.lineWidth = 5; g.beginPath(); g.moveTo(0, k * 3 - 6); g.quadraticCurveTo(24, k * 3 - 14, 20 + k * 2, -34 + k * 2); g.stroke(); });
+        g.restore();
+      }
+      // body
+      if (isSnake) {
+        ell(g, 0, 4 + legL, 44, 16, P.dark);
+        ell(g, 0, -1 + legL, 38, 13, P.fur);
+        ell(g, -4, -5 + legL, 24, 7, P.light);
+        g.strokeStyle = P.fur; g.lineWidth = 23; g.beginPath(); g.moveTo(8, -1 + legL); g.bezierCurveTo(28, -23, -22, -26, -2, -46); g.stroke();
+        g.strokeStyle = P.light; g.lineWidth = 10; g.beginPath(); g.moveTo(7, -2 + legL); g.bezierCurveTo(18, -22, -12, -27, -2, -44); g.stroke();
+        const tailRaise = pz.armR + (ex === 'happy' ? 0.6 : 0);
+        g.strokeStyle = P.dark; g.lineWidth = 10; g.beginPath(); g.moveTo(27, 3 + legL); g.quadraticCurveTo(47, -2 + legL, 46 + Math.sin(t * 5) * 4, -8 + legL - tailRaise * 15); g.stroke();
+      } else if (isRobot) {
+        rrect(g, -34, -50, 68, 56, 12, P.fur);
+        rrect(g, -22, -38, 44, 30, 8, P.dark);
+        for (let k = 0; k < 3; k++) ell(g, -12 + k * 12, -23, 3.4, 3.4, ['#5de1ff', '#ffd54a', '#ff7eb6'][k] + (Math.sin(t * 3 + k * 2) > 0 ? '' : '88'));
+      } else {
+        ell(g, 0, -14, 37, 36, P.fur);
+        if (kind === 'owl') ell(g, 0, -12, 25, 28, P.light);
+        else if (isPeng) ell(g, 0, -10, 26, 29, P.light);
+        else ell(g, 0, -6, 21, 24, kind === 'panda' ? P.fur : P.light);
+      }
+      // a heart on the chest: it beats, or it is broken
+      if (pz.prop === 'heart') {
+        const k = 1 + 0.28 * pz.pulse;
+        g.save(); g.shadowColor = 'rgba(255,60,110,0.8)'; g.shadowBlur = 10 * pz.pulse; heart(g, 0, isRobot ? -24 : -14, 13 * k, '#ff3d6e'); g.restore();
+        ell(g, -4, (isRobot ? -24 : -14) - 5, 2.4, 2.4, 'rgba(255,255,255,0.7)');
+      } else if (pz.prop === 'brokenheart') {
+        const yy = isRobot ? -24 : -14, sh = 1.6 + 0.8 * Math.sin(t * 20);
+        for (const sg of [-1, 1]) { g.save(); g.translate(sg * sh, 0); g.beginPath(); g.rect(sg < 0 ? -20 : 0, yy - 18, 20, 40); g.clip(); g.translate(0, yy); g.rotate(sg * 0.12); heart(g, 0, 0, 13, '#c81e4d'); g.restore(); }
+        g.strokeStyle = '#23222b'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(0, yy - 7); g.lineTo(-3, yy - 2); g.lineTo(2, yy + 3); g.lineTo(-2, yy + 9); g.stroke();
+      }
+      // arms (flippers, wings, paws): raised by the action; a prop in the right hand
+      const waveD = !act && ex === 'happy' ? Math.sin(t * 9) * 0.5 : 0;
+      for (const s of isSnake ? [] : [-1, 1]) {
+        const raise = (s < 0 ? pz.armL : pz.armR) + (!act && ex === 'happy' ? 0.9 + waveD * s : 0);
+        g.save(); g.translate(s * (isRobot ? 38 : 30), -20); g.rotate(-s * (0.25 + raise));
+        if (isRobot) rrect(g, -6, -2, 12, 28, 6, P.dark);
+        else if (isBird) { ell(g, 0, 9, 11, 22, P.dark); for (let k = 0; k < 3; k++) ell(g, -5 + k * 5, 18, 3.5, 12, P.fur); }
+        else ell(g, 0, 8, isPeng ? 7 : 9, 17, kind === 'panda' || isPeng ? P.dark : P.fur);
+        if (s > 0 && pz.prop === 'bamboo') { g.fillStyle = '#7fc96a'; g.fillRect(-3, 8, 6, 30); g.fillStyle = '#4e9a43'; for (const yy of [14, 26]) g.fillRect(-3.6, yy, 7.2, 2); g.fillStyle = '#9ad982'; g.beginPath(); g.ellipse(6, 10, 7, 3, -0.6, 0, TAU); g.fill(); }
+        if (s > 0 && pz.prop === 'carrot') { tri(g, [-5, 8], [5, 8], [0, 34], '#ff8a3d'); g.fillStyle = '#58b947'; g.fillRect(-3, 3, 2, 6); g.fillRect(1, 2, 2, 7); }
+        g.restore();
+      }
+      // flies and sparkles (outside the head so they do not tilt with it)
+      if (pz.fly > 0) {
+        const fx = 30 + 4 * Math.sin(t * 5), fy = -86 + 5 * Math.cos(t * 6);
+        ell(g, fx, fy, 3.2, 2.2, '#2a2a30');
+        ell(g, fx - 2.5, fy - 3, 3.2, 1.6, 'rgba(210,225,255,0.8)', 0.5 + Math.sin(t * 60) * 0.4);
+        ell(g, fx + 2.5, fy - 3, 3.2, 1.6, 'rgba(210,225,255,0.8)', -0.5 - Math.sin(t * 60) * 0.4);
+        pz.flyAt = [fx, fy];
+      }
+      if (ex === 'love') for (let k = 0; k < 5; k++) { // hearts float up
+        const f = (t * 0.6 + k / 5) % 1;
+        heart(g, Math.sin(k * 2.1 + t) * 26 + (k - 2) * 10, -66 - f * 52, 4 + 2.5 * (k % 2), 'rgba(255,90,130,' + (0.95 - f * 0.9) + ')');
+      }
+      if (pz.sparkle > 0.02) {
+        for (let k = 0; k < 9; k++) {
+          const a = k * 2.399 + t * 1.5, rr = 40 + ((k * 13) % 32) + 14 * Math.sin(t * 2 + k);
+          const sx = Math.cos(a) * rr, sy = -60 + Math.sin(a) * rr * 0.8, s2 = 2.5 + (k % 3) * 1.4;
+          g.fillStyle = `hsla(${(k * 40 + t * 90) % 360},95%,78%,${pz.sparkle * (0.5 + 0.5 * Math.sin(t * 6 + k))})`;
+          g.beginPath(); g.moveTo(sx, sy - s2 * 2); g.lineTo(sx + s2 * 0.6, sy - s2 * 0.6); g.lineTo(sx + s2 * 2, sy); g.lineTo(sx + s2 * 0.6, sy + s2 * 0.6); g.lineTo(sx, sy + s2 * 2); g.lineTo(sx - s2 * 0.6, sy + s2 * 0.6); g.lineTo(sx - s2 * 2, sy); g.lineTo(sx - s2 * 0.6, sy - s2 * 0.6); g.closePath(); g.fill();
+        }
+      }
+
+      // ---- the head: it turns and tilts on the neck ----
+      g.save();
+      g.translate(0, -36); g.rotate(pz.head); g.translate(0, 36);
+      const earY = -86;
+      const earW = pz.ear;
+      if (kind === 'lion') { // a big mane
+        ell(g, 0, -62, 52, 49, '#c97a2b');
+        for (let k = 0; k < 14; k++) { const a = (k / 14) * TAU; ell(g, Math.cos(a) * 46, -62 + Math.sin(a) * 43, 11, 11, k % 2 ? '#c97a2b' : '#b86a1f'); }
+        for (const s of [-1, 1]) ell(g, s * 28, -88, 11, 11, P.fur);
+      } else if (kind === 'cat' || kind === 'fox') {
+        for (const s of [-1, 1]) {
+          const d = ex === 'sad' ? 8 : 0, wg = earW * (s > 0 ? 4 : -3);
+          tri(g, [s * 8, earY + 8], [s * 30, earY - 14 + d + wg], [s * 31, earY + 14], P.fur);
+          tri(g, [s * 14, earY + 8], [s * 27, earY - 6 + d + wg * 0.7], [s * 28, earY + 11], P.ear);
+          if (kind === 'fox') tri(g, [s * 22, earY - 4 + d + wg * 0.8], [s * 30, earY - 14 + d + wg], [s * 31, earY + 6], P.dark);
+        }
+      } else if (kind === 'bunny') {
+        for (const s of [-1, 1]) {
+          const droop = ex === 'sad' ? 0.9 : 0, sway = Math.sin(t * 2 + s) * 0.05 + earW * 0.35 * s;
+          g.save(); g.translate(s * 13, -88); g.rotate(s * (0.12 + droop) + sway);
+          ell(g, 0, -22, 10, 30, P.fur); ell(g, 0, -20, 5.5, 22, P.ear);
+          g.restore();
+        }
+      } else if (kind === 'panda') {
+        for (const s of [-1, 1]) ell(g, s * 27, -88, 12, 12, P.ear);
+      } else if (kind === 'owl') {
+        for (const s of [-1, 1]) tri(g, [s * 12, -90], [s * 30, -108], [s * 32, -80], P.dark);
+      } else if (kind === 'monkey') {
+        for (const s of [-1, 1]) { ell(g, s * 36, -64, 14, 14, P.fur); ell(g, s * 36, -64, 8, 8, P.light); }
+      } else if (kind === 'unicorn') {
+        ['#ff7eb6', '#ffd54a', '#6ee7b7', '#8ec5ff'].forEach((c, k) => ell(g, -31 - (k % 2) * 2, -78 + k * 9, 8, 13, c, 0.15 + Math.sin(t * 2 + k) * 0.08));
+        for (const s of [-1, 1]) tri(g, [s * 12, -88], [s * 24, -108], [s * 30, -84], P.fur);
+      } else if (isRobot) {
+        g.strokeStyle = P.dark; g.lineWidth = 3; g.beginPath(); g.moveTo(0, -92); g.lineTo(0, -108); g.stroke();
+        ell(g, 0, -111, 5.5, 5.5, Math.sin(t * 4) > 0 ? '#ff5a5a' : '#8a2a2a');
+        for (const s of [-1, 1]) rrect(g, s * 40 - 4, -72, 8, 20, 4, P.dark);
+      } else if (isBird) {
+        for (let k = 0; k < 3; k++) { g.save(); g.translate(-9 + k * 8, -87); g.rotate(-0.35 + k * 0.2 + pz.ear * 0.2); ell(g, 0, -9, 5, 15, k % 2 ? P.light : P.fur); g.restore(); }
+      }
+
+      // head shape
+      if (isRobot) {
+        rrect(g, -36, -92, 72, 60, 16, P.fur);
+        rrect(g, -30, -86, 60, 34, 10, '#2a3340');
+      } else if (isSnake) {
+        ell(g, 0, -62, 37, 25, P.fur); ell(g, 0, -49, 27, 9, P.light);
+      } else if (isBird) {
+        ell(g, 0, -62, 34, 32, P.fur); ell(g, 0, -55, 28, 20, P.light);
+      } else if (isFrog) {
+        ell(g, 0, -58, 40, 29, P.fur);
+        for (const s of [-1, 1]) ell(g, s * 21, -84, 15, 15, P.fur); // eyes bulge on top of the head
+        if (pz.puff > 0.02) ell(g, 0, -42 + 4 * pz.puff, 15 + 7 * pz.puff, 8 + 8 * pz.puff, P.light); // the throat swells
+      } else if (isPeng) {
+        ell(g, 0, -62, 36, 33, P.fur);
+        ell(g, -14, -58, 17, 21, P.light); ell(g, 14, -58, 17, 21, P.light); ell(g, 0, -50, 16, 14, P.light);
+      } else {
+        ell(g, 0, -62, 36, 33, P.fur);
+      }
+      if (kind === 'owl') { ell(g, 0, -58, 30, 26, P.light); }
+      if (kind === 'dog') { for (const s of [-1, 1]) { g.save(); g.translate(s * 31, -74); g.rotate(s * (ex === 'sad' ? 0.1 : -0.15) + wag * 0.04 * s + earW * 0.35 * s); ell(g, 0, 12, 11, 24, P.ear); g.restore(); } }
+      if (kind === 'panda') for (const s of [-1, 1]) { g.save(); g.translate(s * 14, -64); g.rotate(s * 0.45); ell(g, 0, 0, 8, 11, P.dark); g.restore(); }
+      if (kind === 'fox') { for (const s of [-1, 1]) tri(g, [s * 36, -62], [s * 12, -42], [s * 30, -42], P.light); ell(g, 0, -44, 15, 10, P.light); }
+      if (kind === 'monkey') { ell(g, -12, -66, 15, 16, P.light); ell(g, 12, -66, 15, 16, P.light); ell(g, 0, -50, 19, 15, P.light); }
+      if (kind === 'cat') { g.strokeStyle = P.dark; g.lineWidth = 2.4; for (const dx of [-8, 0, 8]) { g.beginPath(); g.moveTo(dx, -94); g.lineTo(dx * 0.8, -86); g.stroke(); } }
+      if (kind === 'unicorn') { // the horn glows when it sparkles
+        g.save(); g.translate(0, -94);
+        if (pz.sparkle > 0.05) glow(g, 0, -12, 26, [255, 230, 120], 0.8 * pz.sparkle);
+        tri(g, [-7, 4], [7, 4], [0, -26], '#ffd54a');
+        g.strokeStyle = '#e0a800'; g.lineWidth = 1.6; for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-5 + k * 0.5, -2 - k * 7); g.lineTo(5 - k * 0.5, -6 - k * 7); g.stroke(); }
+        g.restore();
+      }
+      if (kind === 'cat' || kind === 'dog' || kind === 'bunny' || kind === 'lion' || kind === 'unicorn') ell(g, 0, -50, 17, 12, P.light); // muzzle
+
+      // eyes
+      const ey = isFrog ? -84 : isRobot ? -70 : -64, ed = isFrog ? 21 : kind === 'owl' ? 15 : 14;
+      const eyeInk = kind === 'panda' ? '#fff' : dark;
+      const look = (lookX != null ? lookX * 3.2 : 0) + (ex === 'awk' ? 3 * Math.sign(Math.sin(t * 0.8)) : 0);
+      for (const s of [-1, 1]) {
+        const cx = s * ed;
+        const closedE = blink || (bsv && (s > 0 ? bsv.blinkL : bsv.blinkR) > 0.55); // your blinks and winks, on the same side of the picture
+        if (kind === 'panda') { g.save(); g.translate(cx, ey); g.rotate(s * 0.5); ell(g, 0, 0, 7.5, 10, P.dark); g.restore(); }
+        if (kind === 'owl') ell(g, cx, ey, 12, 12, '#fffdf5');
+        if (isFrog) ell(g, cx, ey, 11, 11, '#ffffff');
+        if (isRobot) { // LED eyes: they change shape with the feeling
+          const c = ex === 'sad' || ex === 'miss' || ex === 'cry' ? '#7aa8ff' : ex === 'love' ? '#ff6f9c' : ex === 'wary' ? '#ffb347' : ex === 'wow' ? '#ffffff' : '#5de1ff';
+          if (closedE) rrect(g, cx - 8, ey - 1.5, 16, 3, 1.5, c);
+          else if (ex === 'happy') { g.strokeStyle = c; g.lineWidth = 4; g.beginPath(); g.arc(cx, ey + 4, 7, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
+          else rrect(g, cx - 8 + look, ey - (ex === 'wow' || ex === 'miss' ? 10 : ex === 'wary' ? 3 : 7), 16, ex === 'wow' || ex === 'miss' ? 20 : ex === 'wary' ? 6 : 14, 5, c);
+          continue;
+        }
+        if (ex === 'cry') { g.strokeStyle = eyeInk; g.lineWidth = 3; g.beginPath(); g.moveTo(cx + s * 6, ey - 5); g.lineTo(cx - s * 4, ey); g.lineTo(cx + s * 6, ey + 5); g.stroke(); continue; }
+        if (ex === 'love') { heart(g, cx + look, ey, 7.5 * (1 + 0.12 * Math.max(0, Math.sin(t * 7.5)) ** 4), '#ff3d6e'); ell(g, cx + look - 2.5, ey - 2.5, 1.6, 1.6, 'rgba(255,255,255,0.85)'); continue; }
+        if (closedE) { g.strokeStyle = eyeInk; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - 5, ey); g.lineTo(cx + 5, ey); g.stroke(); continue; }
+        if (ex === 'happy') { g.strokeStyle = eyeInk; g.lineWidth = 3; g.beginPath(); g.arc(cx, ey + 2, 5.5, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); continue; }
+        const r = ex === 'wow' ? 8 : ex === 'miss' ? 8.6 : kind === 'owl' || isFrog ? 6.5 : 5.5;
+        if (kind !== 'panda' && kind !== 'owl' && !isFrog) ell(g, cx, ey, r + 1.5, r + 2, '#ffffff');
+        ell(g, cx + look, ey, kind === 'panda' ? r - 1 : r - 1.2, kind === 'panda' ? r - 1 : r, kind === 'panda' ? '#fff' : dark);
+        ell(g, cx + look, ey, r * 0.62, r * 0.62, dark);
+        ell(g, cx + look + 1.6, ey - 2, 1.8, 1.8, '#fff'); // sparkle in the eye
+        if (ex === 'wary') { g.fillStyle = P.fur; g.fillRect(cx - 11, ey - 12, 22, 11); g.strokeStyle = dark; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - 9, ey - 1); g.lineTo(cx + 9, ey - 1); g.stroke(); }
+        if (ex === 'miss') { // big shiny eyes and worried brows: "where are you? come back"
+          ell(g, cx + look - 2, ey - 3, 2.6, 2.6, '#fff'); ell(g, cx + look + 2.5, ey + 2.5, 1.5, 1.5, 'rgba(255,255,255,0.85)');
+          g.strokeStyle = dark; g.lineWidth = 2.6; g.beginPath(); g.moveTo(cx - s * 10, ey - 15); g.lineTo(cx + s * 8, ey - 10 - 2 * Math.sin(t * 5)); g.stroke();
+        }
+        if (ex === 'sad') { g.strokeStyle = dark; g.lineWidth = 2.4; g.beginPath(); g.moveTo(cx - s * 9, ey - 11); g.lineTo(cx + s * 7, ey - 7); g.stroke(); }
+      }
+      if (ex === 'sad' && !isRobot) { const k = (t * 0.7) % 1; ell(g, -ed - 2, (isFrog ? -74 : -56) + k * 16, 2.6, 3.8, 'rgba(110,180,255,' + (0.9 - k * 0.7) + ')'); }
+      if (ex === 'cry') { // tears run down the face and drip
+        const y0 = isFrog ? -74 : -56;
+        for (const s of [-1, 1]) {
+          const x0 = s * ed + s * 3;
+          g.strokeStyle = 'rgba(150,205,255,0.8)'; g.lineWidth = 4.2; g.beginPath(); g.moveTo(x0, y0 + 4);
+          g.quadraticCurveTo(x0 + s * 3 + Math.sin(t * 9 + s) * 1.5, y0 + 20, x0 + s * 2, y0 + 34); g.stroke();
+          for (let k = 0; k < 3; k++) { const f = (t * 1.3 + k / 3 + (s > 0 ? 0.17 : 0)) % 1; ell(g, x0 + s * 2, y0 + 30 + f * 40, 2.8, 4, 'rgba(160,210,255,' + (0.95 - f * 0.9) + ')'); }
+        }
+      }
+      if (ex === 'miss' && !isRobot) for (const s of [-1, 1]) { const k = ((t * 0.55) + (s > 0 ? 0.5 : 0)) % 1; ell(g, s * ed + s * 2, (isFrog ? -74 : -56) + k * 14, 2.4, 3.4, 'rgba(120,190,255,' + (0.95 - k * 0.8) + ')'); } // tears welling up
+      if (ex === 'awk') { const k = (t * 0.9) % 1; ell(g, 32, -82 + k * 10, 3.4, 5, 'rgba(120,190,255,' + (0.95 - k * 0.5) + ')'); }
+
+      // nose and mouth (an open mouth shows teeth and the tongue)
+      const my = -48, open = pz.mouth;
+      g.strokeStyle = dark; g.fillStyle = dark; g.lineWidth = 2.2;
+      const openMouth = (cx, cy, rx, ry) => {
+        ell(g, cx, cy, rx, ry, '#4a1620');
+        if (kind === 'lion' && open > 0.5) { tri(g, [cx - rx * 0.7, cy - ry * 0.7], [cx - rx * 0.3, cy - ry * 0.7], [cx - rx * 0.5, cy + 1], '#fff'); tri(g, [cx + rx * 0.3, cy - ry * 0.7], [cx + rx * 0.7, cy - ry * 0.7], [cx + rx * 0.5, cy + 1], '#fff'); }
+        ell(g, cx, cy + ry * 0.45, rx * 0.6, ry * 0.5, '#ff6f8a');
+      };
+      if (isRobot) {
+        const bars = 5;
+        for (let k = 0; k < bars; k++) {
+          const hgt = open > 0.3 ? 4 + 9 * Math.abs(Math.sin(t * 9 + k * 1.7)) : (ex === 'wow' ? 10 : 6);
+          rrect(g, -14 + k * 7 - 2, -50 + (7 - hgt) / 2 - 2, 4, hgt, 2, '#5de1ff');
+        }
+      } else if (kind === 'owl') {
+        tri(g, [-5, -52], [5, -52], [0, -42 + 3 * open], '#f2a33a');
+        if (open > 0.1) tri(g, [-4, -45], [4, -45], [0, -38 - 4 * open], '#e0832a');
+      } else if (isPeng || isBird) {
+        tri(g, [-9, -54], [9, -54], [0, -42], '#f2a33a');
+        if (ex === 'happy' || open > 0.2) tri(g, [-6, -46], [6, -46], [0, -38 - 3 * open], '#e0832a');
+      } else if (isFrog) {
+        g.lineWidth = 2.6; g.beginPath();
+        if (open > 0.2) { g.ellipse(0, -46, 8 + 6 * open, 3 + 6 * open, 0, 0, TAU); g.fillStyle = '#4a1620'; g.fill(); }
+        else if (ex === 'sad' || ex === 'miss' || ex === 'cry') g.arc(0, -36, 18, Math.PI * 1.15, Math.PI * 1.85);
+        else if (ex === 'wow') g.ellipse(0, -44, 6, 8, 0, 0, TAU);
+        else if (ex === 'wary') { g.moveTo(-14, -45); g.lineTo(14, -45); }
+        else g.arc(0, -52, 20, 0.12 * Math.PI, 0.88 * Math.PI);
+        g.stroke();
+        for (const s of [-1, 1]) ell(g, s * 4, -58, 1.6, 1.6, dark);
+      } else {
+        if (kind === 'cat') tri(g, [-4, -53], [4, -53], [0, -48], '#ff8fa8');
+        else if (kind === 'bunny' || kind === 'unicorn') ell(g, 0, -52, 4, 3, '#ff9bb3');
+        else if (kind === 'monkey') { for (const s of [-1, 1]) ell(g, s * 3.2, -54, 1.8, 2.4, dark); }
+        else if (kind === 'lion') tri(g, [-6, -55], [6, -55], [0, -48], P.dark);
+        else ell(g, 0, -53, kind === 'dog' ? 6 : 4.5, kind === 'dog' ? 4.5 : 3.4, dark);
+        if (open > 0.15) {
+          openMouth(0, my + 3, 5 + 7 * open, 2 + 8 * open);
+        } else if (ex === 'happy' || ex === 'love') {
+          g.beginPath(); g.moveTo(-8, my); g.quadraticCurveTo(0, my + 16, 8, my); g.closePath(); g.fill();
+          if (kind === 'dog' || kind === 'cat' || kind === 'lion') ell(g, 0, my + 7, 4.5, 4, '#ff7a8f');
+        } else if (ex === 'wow') {
+          ell(g, 0, my + 4, 4, 6, dark);
+        } else if (ex === 'miss') { // a small wobbly mouth
+          g.beginPath(); g.moveTo(-6, my + 8); g.quadraticCurveTo(-3, my + 3 + Math.sin(t * 14) * 1.2, 0, my + 6); g.quadraticCurveTo(3, my + 9 - Math.sin(t * 14) * 1.2, 6, my + 5); g.stroke();
+        } else if (ex === 'sad') {
+          g.beginPath(); g.arc(0, my + 9, 7, Math.PI * 1.2, Math.PI * 1.8); g.stroke();
+        } else if (ex === 'wary') {
+          g.beginPath(); g.moveTo(-5, my + 2); g.lineTo(5, my + 2); g.stroke();
+        } else if (ex === 'awk') {
+          g.beginPath(); g.moveTo(-6, my + 3); g.quadraticCurveTo(-3, my - 1, 0, my + 3); g.quadraticCurveTo(3, my + 7, 6, my + 3); g.stroke();
+        } else {
+          g.beginPath();
+          if (kind === 'cat') { g.arc(-3.5, my, 3.5, 0.1 * Math.PI, 0.9 * Math.PI); g.moveTo(10.5, my + 1); g.arc(3.5, my, 3.5, 0.1 * Math.PI, 0.9 * Math.PI); }
+          else g.arc(0, my - 3, 8, 0.2 * Math.PI, 0.8 * Math.PI);
+          g.stroke();
+        }
+        if (kind === 'bunny' && open < 0.15 && (ex === 'idle' || ex === 'happy')) { g.fillStyle = '#fff'; g.strokeStyle = P.dark; g.lineWidth = 1; g.fillRect(-3.4, my + (ex === 'happy' ? 6 : 1.5), 3.2, 5); g.fillRect(0.2, my + (ex === 'happy' ? 6 : 1.5), 3.2, 5); }
+        if (kind === 'cat' || kind === 'fox' || kind === 'lion') { // whiskers
+          g.strokeStyle = 'rgba(40,36,46,0.55)'; g.lineWidth = 1.3;
+          for (const s of [-1, 1]) for (const dy of [-1.5, 3]) { g.beginPath(); g.moveTo(s * 15, -50 + dy); g.lineTo(s * 33, -52 + dy * 1.8); g.stroke(); }
+        }
+      }
+      // the tongue (frogs shoot theirs at the fly)
+      if (!isRobot && (!(kind === 'owl' || isPeng || isBird) || pz.tongue > 0.5)) { // (a bird shows it only when copying yours)
+        const tx = (kind === 'cat' && act === 'lick') ? 5 : 0;
+        drawTongue(g, kind, pz.tongue, tx, isFrog ? -46 : (kind === 'owl' || isPeng || isBird) ? -41 : my + 4 + (open > 0.15 ? 4 : 0), pz.flyAt || null);
+      }
+      // cheeks
+      if (!isRobot && (ex === 'happy' || ex === 'love' || ex === 'awk' || kind === 'bunny' || isPeng || kind === 'unicorn')) for (const s of [-1, 1]) ell(g, s * 25, -52, 5.5, 3.4, 'rgba(255,120,150,0.35)');
+      if (cfg.outfit === 'hoodie') { rrect(g, -28, -38, 56, 30, 12, '#8878d5'); g.strokeStyle = '#e9dcff'; g.lineWidth = 2; g.beginPath(); g.moveTo(-7, -34); g.lineTo(-7, -15); g.moveTo(7, -34); g.lineTo(7, -15); g.stroke(); }
+      if (cfg.outfit === 'bow') { tri(g, [-2,-35],[-20,-45],[-20,-25], '#fa718d'); tri(g,[2,-35],[20,-45],[20,-25],'#fa718d'); ell(g,0,-35,5,5,'#ffe18a'); }
+      if (cfg.outfit === 'glasses') { g.strokeStyle = '#544277'; g.lineWidth = 3; for(const x of [-14,14]) { g.beginPath(); g.arc(x,ey,11,0,TAU); g.stroke(); } g.beginPath(); g.moveTo(-3,ey); g.lineTo(3,ey); g.stroke(); }
+      if (cfg.outfit === 'astronaut') { g.strokeStyle = 'rgba(185,227,255,.8)'; g.lineWidth = 4; g.beginPath(); g.ellipse(0,-66,43,48,0,0,TAU); g.stroke(); rrect(g,-28,-34,56,11,5,'#dbe9ff'); ell(g,23,-29,3,3,ex==='cry'?'#68a8ff':'#85efa1'); }
+      if (cfg.outfit === 'wizard') { tri(g,[-35,-92],[33,-92],[3,-148],'#7161bc'); rrect(g,-35,-95,70,7,3,'#a69ade'); for(let k=0;k<5;k++) { const a=t*1.5+k*TAU/5; ell(g,Math.cos(a)*48,-75+Math.sin(a)*35,2+(ex==='happy'?1:0),2,'#ffe18a'); } }
+      if (cfg.outfit === 'superhero') { g.save(); g.globalAlpha=.85; g.fillStyle='#ee547c'; g.beginPath(); g.moveTo(-25,-31); g.quadraticCurveTo(-43-Math.sin(t*4)*8,5,-34,18); g.lineTo(30,18); g.quadraticCurveTo(43+Math.sin(t*4)*8,5,25,-31); g.closePath(); g.fill(); g.restore(); heart(g,0,-21,8,ex==='cry'?'#84adff':'#ffe18a'); }
+      // Accessories move with the head and leave the eyes/mouth clear for reactions.
+      if (cfg.outfit === 'party') {
+        tri(g, [-18, -91], [18, -91], [2, -130], '#a78bfa');
+        g.strokeStyle = '#fde68a'; g.lineWidth = 3;
+        for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(-13 + k * 4, -97 - k * 8); g.lineTo(13 - k * 3, -97 - k * 8); g.stroke(); }
+        ell(g, 2, -130, 4, 4, '#fb7185');
+      } else if (cfg.outfit === 'crown') {
+        g.beginPath(); g.moveTo(-22, -94); g.lineTo(-25, -114); g.lineTo(-11, -104);
+        g.lineTo(0, -120); g.lineTo(11, -104); g.lineTo(25, -114); g.lineTo(22, -94); g.closePath();
+        g.fillStyle = '#fbbf24'; g.fill(); g.strokeStyle = '#b45309'; g.lineWidth = 1.5; g.stroke();
+        for (const x of [-13, 0, 13]) ell(g, x, -99, 2.5, 2.5, x ? '#a78bfa' : '#fb7185');
+      } else if (cfg.outfit === 'scarf') {
+        rrect(g, -23, -35, 46, 10, 5, '#fb7185');
+        g.save(); g.translate(12, -27); g.rotate(0.12 + Math.sin(t * 2) * 0.07);
+        rrect(g, -5, 0, 10, 24, 3, '#f43f5e');
+        g.strokeStyle = '#fda4af'; g.lineWidth = 2;
+        for (const y of [7, 14, 21]) { g.beginPath(); g.moveTo(-4, y); g.lineTo(4, y); g.stroke(); }
+        g.restore();
+      }
+      g.restore(); // the head
+      g.restore(); // the whole animal
+
+      // a speech bubble: ? when it looks for you, ! when you stand up, 👋 when you wave, ❤ when you are back, ♪ when it dances
+      if (stage.bubble) {
+        g.save();
+        g.translate(cw / 2 + 30 * u, groundIn - (legL + 128) * u * (1 - 0.2 * sS));
+        const bu = u * 1.5, bwid = 26 * bu, bhgt = 20 * bu;
+        g.fillStyle = 'rgba(255,255,255,0.96)'; g.strokeStyle = 'rgba(0,0,0,0.2)'; g.lineWidth = Math.max(1, u * 0.6);
+        g.beginPath(); if (g.roundRect) g.roundRect(-bwid / 2, -bhgt, bwid, bhgt, 10 * bu * 0.6); else g.rect(-bwid / 2, -bhgt, bwid, bhgt); g.fill(); g.stroke();
+        g.beginPath(); g.moveTo(-6 * bu, 0); g.lineTo(-12 * bu, 8 * bu); g.lineTo(2 * bu, 0); g.closePath(); g.fill();
+        g.fillStyle = '#23222b'; g.font = `700 ${Math.round(14 * bu)}px system-ui, "Segoe UI Emoji", sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.translate(0, Math.sin(now / 220) * u * 1.2);
+        g.fillText(stage.bubble, 0, -bhgt / 2 + 1);
+        g.restore();
+      }
+
+      // lit by your light: the colour of the lamp tints the animal a little, brighter on top
+      const L = o.lightRgb;
+      if (L) {
+        g.save();
+        g.globalCompositeOperation = 'source-atop';
+        const lg = g.createLinearGradient(0, 0, 0, ch);
+        lg.addColorStop(0, rgba(L, 0.2 * (o.lightAmt || 0.7))); lg.addColorStop(1, rgba(L, 0.04));
+        g.fillStyle = lg; g.fillRect(0, 0, cw, ch);
+        g.restore();
+      }
+      // onto the picture, with a soft shadow
+      cg0.save();
+      cg0.shadowColor = 'rgba(0,0,0,0.38)'; cg0.shadowBlur = Math.max(4, h * 0.02); cg0.shadowOffsetY = h * 0.006;
+      const gAbsFloor = (h + 4 * u) + ((h - 0.012 * h) - (h + 4 * u)) * sS; // the feet: below the picture when peeking, on the floor when standing
+      const gAbs = pf > 0.01 ? lerp(gAbsFloor, h * (stage.fy || 0.988), pf) : gAbsFloor; // or on you
+      const floatUp = Math.max(0, (o.tear || 0) - 0.35) / 0.65 * h * 0.32 * (1 + 0.04 * Math.sin(t * 1.7)) - deep * h * 0.12 * (0.5 + 0.5 * Math.sin(t * 0.55)); // in deep water it floats up, and slowly sinks and rises
+      cg0.drawImage(R.cv, w * stage.x - cw / 2, gAbs - (ch + 2 * u - 8 * u * sS) - floatUp);
+      if (deep > 0.05) for (let k = 0; k < 6; k++) { // bubbles from its mouth
+        const f = (t * 0.45 + k / 6) % 1, bx = w * stage.x + Math.sin(k * 2.3 + t * 2) * u * 8, by = gAbs - floatUp - (ch - 40 * u) * 0.55 - f * h * 0.3;
+        cg0.strokeStyle = `rgba(225,242,255,${0.85 * (1 - f)})`; cg0.lineWidth = 1.5; cg0.beginPath(); cg0.arc(bx, by, u * (2 + (k % 3) * 1.4), 0, TAU); cg0.stroke();
+      }
+      cg0.restore();
+    }
+
+    // The effective look right now: the settings, nudged by the mood of the sound that is playing.
+    // Which corner show suits each tune when the pattern is "Auto" (follow the music).
+    const TUNE_SHOW = { chill: 'aurora', funky: 'party', party: 'party', suspense: 'pulse', retro: 'equalizer', jazz: 'candle', epic: 'aurora',
+      tropical: 'sparkle', disco: 'disco', club: 'club', bass: 'equalizer', desi: 'party', house: 'sweep', mine: 'club' };
+
+    function effective(cfg, audio, now) {
+      const e = { rgb: hexToRgb(cfg.color), pattern: cfg.pattern, corners: cfg.corners, focus: cfg.focus ? 0.4 : 0,
+        dim: 1, level: 0, bass: 0, mid: 0, high: 0, spec: null, beat: 0, period: 2.6, safe: cfg.safe, swing: 0, swingPeriod: 3.4, react: false, mt: 0 };
+      // "music time": it runs faster the louder and bassier the sound is, so every show speeds up with the music
+      const dtms = R.mtAt && now - R.mtAt < 250 ? now - R.mtAt : 33;
+      R.mtAt = now;
+      let speed = 1;
+      if (cfg.sync && audio) {
+        e.bass = clamp(audio.bass || 0); e.mid = clamp(audio.mid || 0); e.high = clamp(audio.high || 0); e.spec = audio.spec || null;
+        const playing = (audio.level || 0) > 0.03 || !!audio.tune;
+        if (playing) {
+          e.react = true; e.corners = true;
+          speed = 1 + 1.8 * clamp(audio.level || 0) + 1.4 * e.bass;
+          if (cfg.pattern === 'auto' || cfg.pattern === 'steady') e.pattern = TUNE_SHOW[audio.tune] || 'sweep';
+          // the colours drift with the music, bass pushes them
+          R.hue = ((R.hue || 0) + dtms * 0.012 * speed) % 360;
+        }
+      }
+      if (e.pattern === 'auto') e.pattern = 'sweep';
+      R.mt = (R.mt || 0) + (dtms / 1000) * speed;
+      e.mt = R.mt;
+      if (cfg.sync && audio) {
+        e.level = clamp(audio.level || 0);
+        const mood = MOODS.includes(audio.mood) ? audio.mood : '';
+        if (mood && e.level > 0.02) { if (R.mood !== mood) { R.mood = mood; R.moodStart = now; if (MOOD[mood].burst) R.burstAt = now; } R.lastSeen = now; }
+        const hold = now - R.lastSeen < 1500 && R.mood;
+        R.moodBlend = lerp(R.moodBlend, hold ? 1 : 0, 0.12);
+        if (R.moodBlend < 0.02) { R.moodBlend = 0; if (!hold) R.mood = ''; }
+        if (R.mood && R.moodBlend > 0) {
+          const m = MOOD[R.mood], k = R.moodBlend;
+          if (m.rgb) e.rgb = mixRgb(e.rgb, m.rgb, k);
+          e.corners = true;
+          if (k > 0.45 && (cfg.pattern === 'steady' || cfg.pattern === 'auto') && !audio.tune) e.pattern = m.pattern;
+          if (m.period > 1) e.period = m.period;
+          e.focus = lerp(e.focus, e.focus + m.focus, k);
+          e.dim = lerp(1, m.dim, k);
+          if (m.swing) { e.swing = m.swing * k; e.swingPeriod = 4.2; }
+        }
+        // one gentle beat pulse at most about 3 times a second (never a strobe)
+        const b = clamp(audio.beat || 0);
+        if (b > 0.5 && now - R.lastBeat > 330) { R.lastBeat = now; R.beat = 1; }
+        R.beat *= 0.86;
+        if (e.react || (R.mood && MOOD[R.mood] && MOOD[R.mood].beats)) e.beat = R.beat * (cfg.safe ? 0.45 : 1);
+      } else {
+        R.moodBlend = 0; R.mood = ''; R.beat = 0;
+      }
+      return e;
+    }
+
+    R.render = function render(g, src, w, h, cfgIn, now, audio, opts = {}) {
+      const cfg = cfgIn;
+      // HD enhance first: everything else (filters, lights, characters) is drawn on the better picture
+      const darkRaw = measureDark(src, w, h, now);
+      const enhK = Math.max(cfg.enhance || 0, cfg.on ? 0.3 : 0); // lights always get a little sharpening, so the glow never makes the picture look soft
+      const enhanced = enhK > 0 ? (R.enh || (R.enh = createEnhancer())).apply(src, w, h, enhK, darkRaw) : null;
+      const base = enhanced || src;
+      drawFiltered(R, g, base, w, h, cfg.filter, now);
+      if (cfg.on) {
+        // restart the lamp's drop each time Lights is switched on or "Slow drop" is picked
+        const key = cfg.lampAnim + '|' + cfg.fixture + '|' + (cfg.on ? 1 : 0);
+        if (key !== R.lastKey) { R.lastKey = key; R.dropStart = now; }
+        const e = effective(cfg, audio, now);
+        const t = now / 1000;
+
+        // ---- where YOU are (only when "Follow me" is on) ----
+        const follow = cfg.follow === true;
+        if (follow) R.followOn = now; // the camera hook asks for face results only while this is fresh
+        R.gestOn = cfg.gestures !== false; R.sensK = { low: 1.25, normal: 1, high: 0.8 }[cfg.sens] || 1;
+        const tr = follow ? (opts.track || trackFrame(src, now)) : IDLE_TRACK;
+        const party = false; // no celebration while the person is absent
+        if (follow) {
+          const tx = tr.present ? tr.x : 0.5, ty = tr.present ? clamp(tr.y, 0.28, 0.62) : 0.46;
+          R.followX = lerp(R.followX, tx, 0.3); R.followY = lerp(R.followY, ty, 0.22);
+          const ev = Math.max(tr.riseAt, tr.enterAt);
+          if (ev > (R.evSeen || -1e9)) { R.evSeen = ev; R.evAt = now; R.burstAt = now; } // a burst of light when you stand up or come back
+        } else { R.followX = lerp(R.followX, 0.5, 0.2); R.followY = lerp(R.followY, 0.46, 0.2); }
+        const fx = R.followX, fy = R.followY;
+        const pulseK = clamp(1 - (now - (R.evAt || -1e9)) / 1500);
+        if (party) { e.corners = true; e.pattern = 'rainbow'; } // nobody there: the lights throw a party
+
+        const I = cfg.intensity * e.dim * (1 + 0.45 * pulseK) * (0.78 + 0.22 * clamp(darkRaw * 2)); // a little softer in a bright room, full strength in a dark one
+        const flip = cfg.mirror !== false; // "my left" is the left of the picture you see in your own video, which is the right of the picture that is sent
+        const base = cfg.lampX != null ? cfg.lampX : cfg.lampPos === 'left' ? (flip ? 0.78 : 0.22) : cfg.lampPos === 'right' ? (flip ? 0.22 : 0.78) : 0.5;
+        const lsz = cfg.lampSize || 1, hang = h * (cfg.lampHang || 0);
+        const offs = cfg.lampX != null ? cfg.lampX - 0.5 : cfg.lampPos === 'left' ? (flip ? 0.28 : -0.28) : cfg.lampPos === 'right' ? (flip ? -0.28 : 0.28) : 0; // with Follow me, Left / Right means beside YOU
+        const lampPos = { cx: follow ? clamp(w * (0.5 + (fx - 0.5) * 1.3 + offs), w * 0.03, w * 0.97) : w * base }; // follows you all the way to the edges
+        const ls = lampState(cfg, h, now, e, audio);
+        if (party) { ls.angle += 0.2 * Math.sin(t * 2.7); ls.dy += h * 0.012 * Math.sin(t * 5.4); }
+        const focus = e.focus * ls.focusRamp;
+        const dark = darkRaw;                             // measured on the plain camera picture
+        const lifted = cfg.studio !== false && !enhanced ? studioLift(g, w, h, dark) : (enhanced ? clamp(dark) * enhK : 0);
+        const faceX = w * fx, faceY = h * fy;
+        // The light angle (any hanging light): 90 = straight down on you (a bright pool, shade below your chin), 60 / 45 / 30 = more and more from the side
+        // (it lights the side of your face that faces the lamp, the other side falls into shade). Auto = aimed at you.
+        const angD = [90, 60, 45, 30].includes(cfg.lightAngle) ? cfg.lightAngle : 0, sideK0 = angD ? (90 - angD) / 60 : 0;
+        const aimX0 = follow ? faceX : w / 2 + ls.angle * w * 0.5;
+        // The lamp (any hanging light) lights your face; with no lamp there is still a soft light on you.
+        relight(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.55) * I * ls.bright * ls.focusRamp * (angD === 90 ? 1.12 : 1), aimX0 + (lampPos.cx - aimX0) * 0.3 * sideK0, follow ? faceY : h * 0.48, dark * (1 - 0.5 * lifted));
+
+        tintWash(g, w, h, e.rgb, (cfg.lamp ? 1 : 0.6) * I * ls.bright * (0.5 + 0.5 * ls.focusRamp), follow ? faceX : w / 2, follow ? faceY : h * 0.46);
+        const chromaK = 1 + 0.7 * chromaOf(e.rgb);
+        g.save();
+        if (focus > 0.01) { // darker edges, light on you
+          const vcx = follow ? faceX : w / 2, vcy = follow ? faceY : h * 0.46;
+          const vg = g.createRadialGradient(vcx, vcy, h * 0.18, vcx, vcy, Math.hypot(w, h) * 0.58);
+          vg.addColorStop(0, 'rgba(0,0,0,0)');
+          vg.addColorStop(0.55, `rgba(0,0,0,${0.18 * focus * 2})`);
+          vg.addColorStop(1, `rgba(0,0,0,${clamp(focus * 1.5, 0, 0.82)})`);
+          g.fillStyle = vg;
+          g.fillRect(0, 0, w, h);
+        }
+        if (e.corners) drawCorners(g, w, h, e.pattern, e.rgb, I, now, e);
+        g.globalCompositeOperation = 'screen';
+        const fixture = cfg.fixture || 'lamp';
+        const drop = (h * (FIX_OFF[fixture] || 0.26) + hang) * lsz;
+        const bulbY = drop + ls.dy;
+        const sway = ls.angle * 1.2;
+        const bx = lampPos.cx + Math.sin(ls.angle) * drop;
+        const ang = angD, sideK = sideK0, tgtX = follow ? faceX : w / 2, sgn = Math.abs(tgtX - bx) < w * 0.02 ? (bx < w / 2 ? 1 : -1) : Math.sign(tgtX - bx);
+        if (cfg.lamp && fixture !== 'lamp') {
+          fixtureLight(g, w, h, fixture, { cx: lampPos.cx, bx, by: bulbY, ls, e, I, now, fx: follow ? faceX : null, fy: follow ? faceY : null, aim: follow ? [faceX, faceY] : null });
+          if (ang) { // the same angle choice for every kind of light: a key light on the side of your face that faces it
+            const kx = (follow ? faceX : w / 2) + (bx - (follow ? faceX : w / 2)) * 0.4 * sideK, ky = follow ? faceY : h * 0.46;
+            glow(g, kx, ky, h * (ang === 90 ? 0.5 : 0.62), e.rgb, 0.3 * chromaK * I * ls.bright * (1 + 0.9 * dark) * (ang === 90 ? 1.1 : 0.9));
+          }
+        } else if (cfg.lamp) {
+          let dir = follow ? Math.atan2(-(faceX - bx), Math.max(10, faceY - bulbY)) * 0.9 - ls.angle * 0.9 : -sway * 0.9 + (bx - w / 2) / w * 0.55;
+          if (ang) dir = -sgn * ((90 - ang) * Math.PI / 180) - ls.angle * 0.9; // 90 = straight down; the smaller the angle, the more it comes from the side
+          const spread = w * (ang === 90 ? 0.52 : ang === 60 ? 0.66 : 0.78);               // straight down is a focused beam, from the side it is a wide wash
+          cone(g, bx, bulbY, h * 1.05, spread, dir, e.rgb, 0.46 * chromaK * I * ls.bright * (1 + 0.5 * dark) * (ang === 90 ? 1.2 : 1));
+          const gx0 = follow ? faceX : w / 2 + (bx - w / 2) * 0.3, gy = follow ? faceY : h * 0.46, gx = gx0 + (bx - gx0) * 0.4 * sideK;
+          glow(g, gx, gy, h * 0.66, e.rgb, 0.34 * chromaK * I * ls.bright * (1 + 0.9 * dark)); // light on your face (more in a dark room)
+        } else {
+          glow(g, follow ? faceX : w / 2, follow ? faceY : h * 0.46, h * 0.62, e.rgb, 0.22 * I * (1 + 0.9 * dark)); // no lamp: a soft light on you
+        }
+        g.restore();
+        if (cfg.lamp && angD) { // the shade that goes with the angle
+          g.save();
+          if (angD === 90) { // from straight above: the lower part (under the chin, the shoulders) is darker
+            const sh = g.createLinearGradient(0, follow ? faceY : h * 0.5, 0, h);
+            sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,0.3)');
+            g.fillStyle = sh; g.fillRect(0, 0, w, h);
+          } else { // from the side: the far side falls into shade, the more so the lower the angle
+            const sk = (90 - angD) / 60, ax = follow ? faceX : w / 2, sg = ax >= bx ? 1 : -1;
+            const sh = g.createLinearGradient(ax - sg * w * 0.05, 0, ax + sg * w * 0.5, 0);
+            sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(0,0,0,${0.55 * sk})`);
+            g.fillStyle = sh; g.fillRect(0, 0, w, h);
+          }
+          g.restore();
+        }
+
+        if (R.mood && MOOD[R.mood] && MOOD[R.mood].burst && R.burstAt >= 0) drawBurst(g, w, h, now);
+        else if (follow && pulseK > 0.01) drawBurst(g, w, h, now);
+        const body = { cx: lampPos.cx, rgb: e.rgb, bright: ls.bright * clamp(0.55 + I), angle: ls.angle, dy: ls.dy, now, hang };
+        g.save(); // the lamp can be made bigger or smaller: it grows from the point on the ceiling where it hangs
+        g.translate(lampPos.cx, 0); g.scale(lsz, lsz); g.translate(-lampPos.cx, 0);
+        if (cfg.lamp && fixture !== 'lamp') drawFixtureBody(g, w, h, fixture, { ...body, aim: follow ? [faceX, faceY] : null });
+        else if (cfg.lamp) drawLamp(g, w, h, body);
+        g.restore();
+        if (cfg.character !== 'none') {
+          const cpos = flip ? (cfg.charPos === 'left' ? 'right' : 'left') : cfg.charPos;
+          const ck = cfg.character + '|' + cpos;
+          if (ck !== R.charKey) { R.charKey = ck; R.charStart = now; R.cAct = null; R.stg = null; }
+          R.forcePerch = opts.perch || ''; R.forceSide = opts.perchSide || 1;
+          const stg = stageUpdate(cfg, tr, audio, now, cpos, h * 0.4, w);
+          const tearLv = opts.charAct === 'cry' ? (opts.tear == null ? 0.7 : opts.tear) : opts.charAct ? 0 : stg.tear;
+          if (tearLv > 0.01) drawTears(g, w, h, tearLv, now); // the water is behind the animal, which floats up in it
+          drawCharacter(g, w, h, cfg.character, cpos, now, audio, cfg, tr, { stage: stg, charAct: opts.charAct, charT: opts.charT, charU: opts.charU, charStand: opts.charStand, lightRgb: e.rgb, lightAmt: clamp(I * ls.bright), mimic: opts.mimic, tear: tearLv });
+        } else R.charKey = '';
+      }
+      if (opts.preview) {
+        const fs = Math.max(11, Math.round(h * 0.045));
+        g.save();
+        g.font = `700 ${fs}px system-ui, "Segoe UI", sans-serif`;
+        const text = opts.watermark || 'PREVIEW', tw = g.measureText(text).width + fs, th = fs * 1.6;
+        g.fillStyle = 'rgba(15,15,20,0.62)';
+        g.beginPath(); g.roundRect ? g.roundRect(w - tw - fs * 0.5, h - th - fs * 0.5, tw, th, th / 2) : g.rect(w - tw - fs * 0.5, h - th - fs * 0.5, tw, th); g.fill();
+        g.fillStyle = '#ffd43b';
+        g.textBaseline = 'middle'; g.textAlign = 'center';
+        g.fillText(text, w - tw / 2 - fs * 0.5, h - th / 2 - fs * 0.5);
+        g.restore();
+      }
+    };
+
+    R.track = trackFrame; // (the tracker on its own, for tests)
+    // What the camera sees right now, for the panel's live line: a face, hands, and the last thing you did.
+    R.seen = (now) => {
+      const T = R.tr, ml = R.ml;
+      if (!T || !ml || now - ml.at > 1800) return { ml: false, face: false, hands: 0, did: '' };
+      let did = '', best = now - 2500;
+      for (const [k, glyph] of GESTURE_BUBBLES) if (T[k] > best) { best = T[k]; did = glyph; }
+      if (T.tongue) did = '😛';
+      return { ml: true, face: !!ml.face, hands: ml.hands ? ml.hands.length : 0, did };
+    };
+
+    // Run the lamp's drop again (the "Replay" button in the panel).
+    R.replay = (now) => { R.dropStart = now; };
+    return R;
+  }
+
+  // A friendly stand-in for "you" when no camera is used (the panel preview, and the website demo).
+  // `p` moves the person: { dx, dy } as shares of the picture, `visible` false = nobody there.
+  function drawSample(g, w, h, t = 0, p = {}) {
+    const bg = g.createLinearGradient(0, 0, 0, h);
+    bg.addColorStop(0, '#3a3f5c'); bg.addColorStop(1, '#23253a');
+    g.fillStyle = bg; g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,255,255,0.05)';
+    g.fillRect(w * 0.06, h * 0.12, w * 0.2, h * 0.5); g.fillRect(w * 0.74, h * 0.2, w * 0.2, h * 0.42); // a shelf and a window
+    if (p.visible === false) return;
+    const ox = (p.dx || 0) * w, oy = (p.dy || 0) * h;
+    const cx = w / 2 + ox, cy = h * 0.5 + oy, bob = Math.sin(t / 700) * h * 0.006;
+    g.fillStyle = '#6b7aa8'; // shoulders
+    g.beginPath(); g.ellipse(cx, h * 1.02 + oy, w * 0.3, h * 0.38, 0, Math.PI, TAU); g.fill();
+    g.fillStyle = '#d9b99b'; // neck
+    g.fillRect(cx - w * 0.04, cy + h * 0.14 + bob, w * 0.08, h * 0.16);
+    g.beginPath(); g.ellipse(cx, cy + bob, w * 0.115, h * 0.2, 0, 0, TAU); g.fill(); // head
+    g.fillStyle = '#2d2a3a'; // hair
+    g.beginPath(); g.ellipse(cx, cy - h * 0.07 + bob, w * 0.125, h * 0.17, 0, Math.PI, TAU); g.fill();
+    g.fillRect(cx - w * 0.125, cy - h * 0.07 + bob, w * 0.03, h * 0.12);
+    g.fillStyle = '#2b2b33'; // eyes and smile
+    g.beginPath(); g.arc(cx - w * 0.04, cy + h * 0.01 + bob, h * 0.014, 0, TAU); g.arc(cx + w * 0.04, cy + h * 0.01 + bob, h * 0.014, 0, TAU); g.fill();
+    g.strokeStyle = '#2b2b33'; g.lineWidth = Math.max(1.5, h * 0.008); g.lineCap = 'round';
+    g.beginPath(); g.arc(cx, cy + h * 0.055 + bob, w * 0.04, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
+    if (p.wave) { // a raised hand, waving
+      const sw = Math.sin(p.wave / 90) * w * 0.03;
+      g.fillStyle = '#6b7aa8'; g.save(); g.translate(cx + w * 0.22, cy + h * 0.28); g.rotate(-0.25); g.fillRect(-w * 0.03, -h * 0.3, w * 0.06, h * 0.32); g.restore();
+      g.fillStyle = '#d9b99b'; g.beginPath(); g.ellipse(cx + w * 0.2 + sw, cy - h * 0.04, w * 0.04, h * 0.065, 0, 0, TAU); g.fill();
+    }
+  }
+
+  // A scripted "you" for the preview: you wave hi, talk, move left and right, stand up, leave and come back
+  // (24 s, then again). Returns the person for drawSample and a tracker answer shaped like the real one.
+  const CYCLE = 34000;
+  function simulate(now) {
+    const ms = ((now % CYCLE) + CYCLE) % CYCLE, c0 = now - ms;
+    const where = (m) => { // x, y, visible at m ms into the cycle
+      const ease = (a, b, k) => lerp(a, b, smooth(k));
+      if (m < 6000) return [0.5, 0.45, true];                                   // hello (wave), then talking
+      if (m < 7500) return [ease(0.5, 0.18, (m - 6000) / 1500), 0.45, true];   // to the far left
+      if (m < 8500) return [0.18, 0.45, true];
+      if (m < 11000) return [ease(0.18, 0.84, (m - 8500) / 2500), 0.45, true];  // all the way to the right
+      if (m < 12000) return [0.84, 0.45, true];
+      if (m < 13500) return [ease(0.84, 0.5, (m - 12000) / 1500), 0.45, true];
+      if (m < 14000) return [0.5, 0.45, true];
+      if (m < 14800) return [0.5, ease(0.45, 0.2, (m - 14000) / 800), true];   // standing up
+      if (m < 15800) return [0.5, ease(0.2, 0.45, (m - 14800) / 1000), true];
+      if (m < 16400) return [ease(0.5, 0.97, (m - 15800) / 600), 0.45, true];  // walking out to the right
+      if (m < 29000) return [1.2, 0.45, false];                                 // gone (long enough for it to miss you, then cry)
+      return [ease(1.0, 0.5, (m - 29000) / 1200), 0.45, true];                  // coming back
+    };
+    const [x, y, visible] = where(ms), [x0, y0] = where(Math.max(0, ms - 120));
+    const at = (o) => (ms >= o ? c0 + o : c0 - CYCLE + o);
+    const moving = (ms > 6000 && ms < 14000) || (ms > 15800 && ms < 16600);
+    const waving = ms > 2000 && ms < 3600, talking = ms > 3600 && ms < 6000;
+    return {
+      person: { dx: clamp(x, -0.3, 1.1) - 0.5, dy: y - 0.45, visible, wave: waving ? ms : 0 },
+      voice: talking ? 0.4 + 0.3 * Math.abs(Math.sin(ms / 170)) : 0,
+      track: { present: visible, x: clamp(x, 0, 1), y, energy: moving || waving ? 0.75 : 0.1, side: clamp((x - 0.5) * 2, -1, 1), rise: clamp((0.4 - y) / 0.2), away: visible ? 0 : Math.max(0, (ms - 16400) / 1000), vx: (x - x0) / 0.12, vy: (y - y0) / 0.12,
+        enterAt: at(29000), exitAt: at(16400), exitSide: 1, riseAt: at(14400), waveAt: at(2400), live: true, ml: true, fw: 0.17, fh: 0.3 },
+    };
+  }
+
+  globalThis.MemeFx = Object.freeze({
+    COLORS, FREE_COLORS, LAMP_ANIMS, FIXTURES, CHARACTERS, OUTFITS, FREE_OUTFITS, PRO_OUTFITS, MAX_OUTFITS, PERSONAS, COMMANDS, FREE_CHARACTERS, STANDARD_CHARACTERS, PREMIUM_CHARACTERS, PATTERNS, FILTERS, FREE_FILTERS, PRO_FILTERS, ADDON_FILTERS, MOODS, DEFAULTS,
+    sanitize, lockedParts, createRenderer, drawSample, simulate, ACTIONS, FIX_OFF: { lamp: 0.175, discoball: 0.14, lantern: 0.13, chandelier: 0.13, moon: 0.12, star: 0.11, fairy: 0.06, spotlight: 0.07 },
+  });
+})();

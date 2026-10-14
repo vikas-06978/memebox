@@ -1962,5 +1962,191 @@
   },
   "plans_availability": {
     "message": "Checkout availability"
+  },
+  "room_title": {
+    "message": "Ruang musik"
+  },
+  "room_characters": {
+    "message": "Karakter"
+  },
+  "room_language": {
+    "message": "Bahasa"
+  },
+  "room_everyone": {
+    "message": "Your music. Every mood."
+  },
+  "room_heading": {
+    "message": "Pick a playlist. Feel the drop."
+  },
+  "room_intro": {
+    "message": "Free YouTube collections and original MemeBox music in one place. Browse every collection, wherever you are; YouTube availability may vary."
+  },
+  "room_pick": {
+    "message": "Choose music to start"
+  },
+  "room_previous": {
+    "message": "Sebelumnya"
+  },
+  "room_pause": {
+    "message": "Pause / resume"
+  },
+  "room_next": {
+    "message": "Berikutnya"
+  },
+  "room_shuffle": {
+    "message": "Acak"
+  },
+  "room_youtube_help": {
+    "message": "YouTube uses its visible player and may show ads or restrict a video. Original music runs on your device."
+  },
+  "room_web_player": {
+    "message": "Open website player"
+  },
+  "room_provider": {
+    "message": "View source playlist"
+  },
+  "room_local_help": {
+    "message": "For the local YouTube player, run Start-MemeBox-Music.cmd from the extracted review folder once. No Node installation is needed. It opens a localhost page with a valid website referrer."
+  },
+  "room_playlists": {
+    "message": "Playlist YouTube gratis"
+  },
+  "room_supplied": {
+    "message": "Starter collections for every listener. Rename or replace them whenever you want; YouTube controls the songs and availability."
+  },
+  "room_search": {
+    "message": "Search your playlists"
+  },
+  "room_empty": {
+    "message": "No matching playlists. Change the search or add a collection."
+  },
+  "room_manage": {
+    "message": "Kelola playlist saya"
+  },
+  "room_private": {
+    "message": "Changes are saved only on this browser. They do not publish for other users."
+  },
+  "room_name": {
+    "message": "Collection name"
+  },
+  "room_url": {
+    "message": "YouTube playlist link"
+  },
+  "room_save": {
+    "message": "Simpan playlist"
+  },
+  "room_cancel": {
+    "message": "Batalkan edit"
+  },
+  "room_restore": {
+    "message": "Restore supplied playlists"
+  },
+  "room_originals": {
+    "message": "Musik asli MemeBox"
+  },
+  "room_original_help": {
+    "message": "Phonk builds into a pause and beat drop, then returns with a layered second drop. Other tunes cover chill, funk, party and more."
+  },
+  "room_all": {
+    "message": "Semua lagu"
+  },
+  "room_call": {
+    "message": "Music in your call"
+  },
+  "room_call_help": {
+    "message": "Original tunes play into your mic from the call panel’s Music tab. For YouTube, keep the website player open, click the MemeBox toolbar icon and choose Send this tab’s sound. Ads are included in captured tab audio."
+  },
+  "room_review": {
+    "message": "Local review: paid music is unlocked, checkout is closed, and nothing is deployed."
+  },
+  "room_storage_error": {
+    "message": "Could not save in this browser. Your changes remain available until the page closes."
+  },
+  "room_web_required": {
+    "message": "YouTube playback opens in the website player so it receives a valid web referrer."
+  },
+  "room_youtube_loading": {
+    "message": "YouTube player opened. Press Play in the visible player if autoplay is blocked."
+  },
+  "room_original_playing": {
+    "message": "Playing on your speakers. To send originals into a call, use the call panel’s Music tab."
+  },
+  "room_preview": {
+    "message": "20-second preview on your speakers. This tune requires its applicable pass in a call."
+  },
+  "room_preview_finished": {
+    "message": "Preview finished. View Plans for this tune’s tier."
+  },
+  "room_collection_meta": {
+    "message": "Free · YouTube controls the song list"
+  },
+  "room_play": {
+    "message": "Putar"
+  },
+  "room_edit": {
+    "message": "Edit"
+  },
+  "room_remove": {
+    "message": "Hapus"
+  },
+  "room_drop_at": {
+    "message": "Drop at $1s"
+  },
+  "room_preview_badge": {
+    "message": "20s preview"
+  },
+  "room_invalid": {
+    "message": "Enter a name and a valid HTTPS YouTube playlist link or playlist ID."
+  },
+  "room_duplicate": {
+    "message": "This playlist is already saved. Edit its existing card instead."
+  },
+  "room_limit": {
+    "message": "Keep up to $1 playlists. Remove one before adding another."
+  },
+  "room_saved": {
+    "message": "Playlist changes saved"
+  },
+  "room_embed_error": {
+    "message": "YouTube could not play this selection (error $1). Its availability, age or embedding restrictions may prevent playback."
+  },
+  "room_youtube_playing": {
+    "message": "Playing through YouTube’s visible player"
+  },
+  "room_external": {
+    "message": "Selected playlist"
+  },
+  "room_adult": {
+    "message": "Saya berusia 18 tahun ke atas; tampilkan koleksi bertanda bahasa kasar"
+  },
+  "room_published": {
+    "message": "Published MemeBox collections"
+  },
+  "room_published_help": {
+    "message": "The owner can update these collections without an extension release. Browse to load the current catalog."
+  },
+  "room_browse": {
+    "message": "Browse published collections"
+  },
+  "room_published_count": {
+    "message": "Free · $1 songs"
+  },
+  "room_catalog_loading": {
+    "message": "Loading published collections…"
+  },
+  "room_catalog_paused": {
+    "message": "Published Phonk collections are paused by the owner."
+  },
+  "room_catalog_empty": {
+    "message": "No published collections yet. Your own playlists above remain available."
+  },
+  "room_catalog_unavailable": {
+    "message": "The published catalog is unavailable here. Your own playlists above remain available."
+  },
+  "plans_choose_tier": {
+    "message": "Show passes"
+  },
+  "plans_all_passes": {
+    "message": "All passes"
   }
 }

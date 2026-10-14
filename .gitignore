@@ -18,3 +18,7 @@ tests/.tmp/
 # OS
 .DS_Store
 Thumbs.db
+
+# Python preview-server caches
+__pycache__/
+*.pyc

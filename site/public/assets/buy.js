@@ -80,7 +80,7 @@
     dialog.on('payment.failed', () => { $('gateway-message').textContent = 'Payment failed. Check its status before starting another payment.'; });
     dialog.open();
   }
-  const wanted = /^(pass|char|chars)_[a-z0-9_]{2,20}$/.test(params.get('product') || '') ? params.get('product') : '';
+  const wanted = /^(pass|char|chars|filter|outfit)_[a-z0-9_]{2,30}$/.test(params.get('product') || '') ? params.get('product') : '';
 
   function showError(text) {
     $('error').textContent = text;

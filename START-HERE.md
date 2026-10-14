@@ -1,23 +1,36 @@
-# Chrome mein local review
+# One consolidated local review
 
-This branch is for local testing. Do not deploy it or publish the unlocked review build.
+Download **review/memebox-local-2026-10-14** on GitHub using **Code > Download ZIP**, then extract the entire archive. This is a local review, with no deployment or real checkout.
 
-1. On GitHub select **review/memebox-local-2026-10-14**, then **Code > Download ZIP**.
-2. Extract the entire ZIP onto your computer. Opening files inside a ZIP is insufficient.
-3. For music, open **review/listen.html** in Chrome and press Play. All three original tracks play offline. The revised dance arrangements have a build-up, pause and first drop at roughly 12–13 seconds; Hear the first drop starts two seconds before that transition.
-4. Open **chrome://extensions**, turn on **Developer mode**, click **Load unpacked**, and select **review/extension** inside the extracted folder. This is the folder containing the review manifest.json.
-5. If you loaded an earlier copy, replace it with this extracted **review/extension** folder and click Reload in chrome://extensions. Reload the call tab too.
-6. Pin **MemeBox Local Review**, open its options and choose **Preview/Playground**. Try the species action, Jump, Roll, Sit, Leave/Return and Head/Shoulder/Corner controls. Preview all 28 filters and nine costumes. Music, Pictures and Plans have their own visible links.
-7. Try a real browser call: switch meme language, add a private meme, play all three original Phonks, show/close a picture and use Stop all. Mark a benign test line as strong language and check it stays hidden until the 18+ preference is on.
+## Review the full page first
 
-No Node installation, build command or payment is required for the supplied extension and music player. The review extension has paid features unlocked just for testing and uses a local site address. Buy is hidden. Plans shows the proposed tiers and prices with checkout clearly closed. Draft individual Pro filter/outfit prices are not activated. Original shipping settings remain in extension/config.js; do not load extension/ expecting the same unlocked experience.
+On Windows, double-click **review/Start-MemeBox-Music.cmd** and keep its console window open. It opens **http://127.0.0.1:8790/music-room.html** in your browser. No Node installation is needed. It serves only the supplied public preview files on loopback, without administrator privileges, software installation or Windows policy changes. Closing that console stops the server.
 
-The full development source is also in this repository. If you want to run the website locally, use a supported Node version, run npm ci, then PORT=8789 npm run site:dev (on Windows PowerShell: $env:PORT=8789; npm run site:dev). The site listens only on loopback. See site/.dev.vars.example for local configuration and docs/payment-testing.md for provider testing. No secrets or live payment credentials are bundled.
+On macOS/Linux, use **python3 review/start-music.py** if Python 3 is installed. The supplied .command launcher does the same. The Chrome review extension and standalone listen.html work without Python.
 
-The 30-song YouTube collection is a shortlist. Official video links and embedding/rights verification are still pending. The offline player contains three original arrangements, not those YouTube songs. Backend/provider testing, native translations and real-call performance still need review before release.
+The music room contains:
 
-Hosted file uploads, playback and stored file deletion are paused unless deliberately enabled with HOSTED_FILES_ENABLED=on. Audio needs HOSTED_AUDIO_ENABLED=on as well. These application guards do not guarantee that third-party pricing or policies will never change.
+- Your five supplied YouTube playlist references, with a visible web player, Play/Pause/Next/Previous/Shuffle/Stop and volume. Internet is required; YouTube controls the tracks, ads and availability.
+- Private collection add/rename/remove/restore controls, search and a default-off strong-language preference. These changes are not automatically published to other users.
+- All sixteen bundled tunes, including the three revised original Phonk arrangements. Paid tunes are unlocked in this review. First Phonk drops land around 12–13 seconds; each has a build, pause, drop, breakdown and layered second drop.
+- **Characters** opens the shared Playground: all fourteen companions, real species actions, Head/Shoulder/Corner, Roll/Sit, Leave/Return, nine outfits and 28 filters. This previews the same engine used on the call camera.
+- **Plans, prices and how to buy** shows pass/character prices and draft individual Pro cosmetic prices. Max music links select Max passes, not Pro. Checkout remains explicitly closed.
+- **Browse published collections** can read a running local/backend catalog or, later, the deployed owner-managed catalog. A backend is not included in the read-only launcher. Without one, your five private references and local originals remain available. Owner catalog edits through /admin/packs do not require an extension release.
 
-For developers: npm run review:build rebuilds the ready-to-load review extension. Rendering the audio drafts separately uses node tools/render-original-music.mjs review/music with Playwright Chromium installed. Nothing in these commands deploys the site or extension.
+YouTube requires a web referrer: opening its player directly from an extension or file page can produce Error 153. The local launcher provides the HTTP website player. The extension’s Phonk button opens the music room; choosing a playlist there opens its web player. No remote-player code executes in the extension itself.
 
-See [the current checklist](docs/local-review-checklist.md) for what was completed locally and what still requires your account, content or real-call review. [Meme publishing](docs/meme-publishing.md) explains private uploads, regional packs and the 18+ marker; [the companion model](docs/companion-model.md) explains permanent ownership and Max exclusives.
+The editable 30-title song shortlist is still a separate curation document. It is not thirty individually verified/published tracks. The supplied five playlist references are embedded as playlists; their contents remain controlled by YouTube. Availability, official sources, rights/credits and regional content still need review before release. Cloud proxy restrictions prevented full YouTube media-stream verification here; see docs/local-review.md for exact evidence.
+
+For a quick offline listen, double-click **review/listen.html**. Its three complete WAV drafts have **Hear the first drop** buttons that start two seconds before the drop. Subjective sound quality remains for your listening feedback.
+
+## Then test a call once
+
+1. Temporarily disable the Web Store copy while testing, to avoid two copies wrapping the same call.
+2. Open **chrome://extensions**, enable Developer mode, choose **Load unpacked** and select **review/extension**. No Pro key is needed: this copy unlocks both tiers for review. Never publish it.
+3. If replacing an older review, use the same extracted folder path, reload the extension and refresh the call tab. That preserves the review copy’s stored local data.
+4. In a real browser call, test mic mixing, species movement/gestures, language switching, private memes/music and persistent pictures. Close/Escape/Stop all removes a picture. For YouTube, keep the website player tab open, click the MemeBox toolbar icon and choose **Send this tab’s sound**; YouTube ad audio would be sent too.
+5. Your own uploaded music is available on Free; premium bundled tunes keep their tiers. Private files stay on the device. Marked adult memes/collections are hidden until explicit self-declared opt-in; opting out stops active marked playback/call mixing.
+
+For developer/backend tests only, use npm ci then PORT=8789 npm run site:dev (PowerShell: $env:PORT=8789; npm run site:dev). See site/.dev.vars.example and docs/payment-testing.md; no live secrets are supplied. Hosted Cloudflare files remain default-off. Application limits do not guarantee provider pricing will never change.
+
+See [the checklist](docs/local-review-checklist.md), [the companion/tier model](docs/companion-model.md) and [meme publishing](docs/meme-publishing.md). Account approval, real provider tests, original regional recordings, native copy review, owner-key rotation and actual call/weak-laptop checks remain release prerequisites. No remote migrations, main merge, site deployment or Web Store publication was performed.
