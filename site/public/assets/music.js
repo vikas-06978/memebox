@@ -54,6 +54,16 @@
           oscillator.onended = () => { oscillator.disconnect(); if (--alive === 0) { gain.disconnect(); filter.disconnect(); pan.disconnect(); } };
         }
       },
+      rise(t, len, peak) {
+        const source = ctx.createBufferSource(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+        source.buffer = noiseBuf; source.loop = true;
+        filter.type = 'bandpass'; filter.Q.value = .8;
+        filter.frequency.setValueAtTime(280, t); filter.frequency.exponentialRampToValueAtTime(8200, t + len);
+        gain.gain.setValueAtTime(.0001, t); gain.gain.exponentialRampToValueAtTime(peak, t + len * .94);
+        gain.gain.exponentialRampToValueAtTime(.0001, t + len);
+        source.connect(filter).connect(gain).connect(out); source.start(t); source.stop(t + len + .02);
+        source.onended = () => { source.disconnect(); filter.disconnect(); gain.disconnect(); };
+      },
       // "Pumping": the notes sent through `side` duck on every kick and swell back (the club sound).
       pump(t, depth = 0.22, rel = 0.2) {
         if (!side) return;
@@ -341,40 +351,72 @@
   const IDS = Object.keys(TUNES);
   // Original arrangements, synthesized locally: no vocal samples, YouTube, CDN or R2 requests.
   const PHONK_IDS = ['phonk_desi', 'phonk_drift', 'phonk_midnight'];
-  function phonk(bpm, roots, melody, desi = false, halfTime = false) {
+  // Eight-bar phrases with a real pause before each drop. The first drop lands
+  // inside the 20-second panel preview, rather than after a long quiet loop.
+  const PHONK_STRUCTURE = Object.freeze([
+    { name: 'intro', startBar: 0, bars: 4 },
+    { name: 'build', startBar: 4, bars: 4 },
+    { name: 'drop', startBar: 8, bars: 8 },
+    { name: 'breakdown', startBar: 16, bars: 4 },
+    { name: 'build', startBar: 20, bars: 4 },
+    { name: 'second-drop', startBar: 24, bars: 8 },
+  ]);
+  function phonk(bpm, roots, melody, desi = false, dark = false) {
     return {
-      bpm, swing: halfTime ? 0.08 : 0.02, bars: 32,
+      bpm, swing: .015, bars: 32, structure: PHONK_STRUCTURE,
       step(s, t, h, q) {
-        const i = s % 16, bar = Math.floor(s / 16) % 32, section = Math.floor(bar / 8);
-        const root = roots[Math.floor(bar / 2) % roots.length];
-        const intro = section === 0, build = section === 1, drop = section === 2, breakDown = section === 3;
-        const kicks = breakDown ? [0] : intro ? [0, 8] : halfTime ? [0, 10] : desi ? [0, 6, 10] : [0, 4, 8, 12];
-        if (kicks.includes(i)) { h.kick(t, drop ? .76 : .48, halfTime ? 38 : 42); h.pump(t,.18,.16); }
-        if (!intro && !breakDown && (halfTime ? i === 8 : i === 4 || i === 12)) { h.snare(t, 0.2); h.clap(t, 0.08); }
-        if (i % (intro || breakDown ? 4 : 2) === 0) h.hat(t, i % 4 === 2 ? 0.055 : 0.03);
-        if (drop && i >= 14 && bar % 2) h.hat(t + q / 2, 0.025);
-        if (build && bar % 8 >= 6 && i % (bar % 8 === 7 ? 1 : 2) === 0) h.snare(t, 0.035 + i * 0.003);
-        const bassSteps = intro || breakDown ? [0, 8] : [0, 6, 10, 14];
+        const i = s % 16, bar = Math.floor(s / 16) % 32;
+        const intro = bar < 4, build = (bar >= 4 && bar < 8) || (bar >= 20 && bar < 24);
+        const drop = (bar >= 8 && bar < 16) || bar >= 24, second = bar >= 24;
+        const breakdown = bar >= 16 && bar < 20;
+        const phrase = bar % 4, root = roots[Math.floor(bar / 2) % roots.length];
+        // Remove the drums, bass and lead for the last two beats. Their preceding
+        // notes are short enough to finish before this gap; the next downbeat hits hard.
+        if (build && phrase === 3 && i >= 8) return;
+        if (build && phrase === 0 && i === 0) h.rise(t, q * 55, .13);
+        if (drop && bar % 8 === 0 && i === 0) {
+          h.noise(t, q * 5, .17, 'highpass', 4600, .5); // crash
+          h.note(root - 12, t, q * 3, 'sine', .24, { slideTo: root - 19 }); // impact
+        }
+        const kicks = drop ? [0, 4, 8, 12, ...(second && phrase === 3 ? [14] : [])]
+          : intro ? [0, 8] : build && phrase < 2 ? [0, 4, 8, 12] : [];
+        if (kicks.includes(i)) { h.kick(t, drop ? .86 : .48, dark ? 39 : 44); h.pump(t, .10, q * 1.8); }
+        if (drop && (i === 4 || i === 12)) { h.snare(t, .29); h.clap(t, .11); }
+        if (build) {
+          const spacing = phrase === 0 ? 4 : phrase === 1 ? 2 : 1;
+          if (i % spacing === 0) h.snare(t, .055 + phrase * .025 + i * .0018);
+          if (phrase >= 2 && i % 2 === 0) h.snare(t + q / 2, .055);
+        }
+        if ((drop || intro || (build && phrase < 2)) && i % (intro ? 4 : 2) === 0) h.hat(t, i % 4 === 2 ? .095 : .055, drop && i % 4 === 2);
+        if (drop && (i === 7 || i === 15)) { h.hat(t, .055); h.hat(t + q / 2, .04); h.hat(t + q * .75, .025); }
+        if (drop && phrase === 3 && i >= 14) h.snare(t, .10);
+        const bassSteps = drop ? [0, 3, 6, 8, 10, 14] : intro ? [0, 8] : [];
         if (bassSteps.includes(i)) {
-          h.note(root, t, q * (i === 14 ? 1.7 : 3.8), 'sine', drop ? .36 : .24, { slideTo: root - (i === 10 ? 2 : 0), side: true, drive: true });
-          if (!breakDown) h.note(root-12, t, q*3.5, 'sine', drop ? .19 : .1, {side:true});
-          if (!intro) h.note(root + 12, t, q * 2.5, 'sawtooth', drop ? .065 : .035, { lowpass: 650, side: true });
+          const pitch = root + (i === 6 ? 7 : i === 14 ? -2 : 0), len = q * (i === 0 || i === 8 ? 2.6 : 1.4);
+          h.note(pitch, t, len, 'sine', drop ? .34 : .12, { side: true, drive: drop, slideTo: pitch + (i === 10 ? -5 : .01) });
+          if (drop) {
+            h.note(pitch - 12, t, len, 'sine', .20, { side: true });
+            h.note(pitch + 12, t, len, 'sawtooth', .065, { lowpass: dark ? 550 : 850, side: true });
+          }
         }
-        const melodicSteps = drop ? [0, 2, 3, 6, 8, 10, 11, 14] : breakDown ? [0, 8] : [0, 3, 6, 10];
-        if (melodicSteps.includes(i)) {
-          const note = root + 36 + melody[(i + (bar % 2) * 4) % melody.length];
-          h.bell(note, t, q * (halfTime ? 2 : 1.4), drop ? 0.055 : 0.033);
-          if (desi && drop) h.note(note + 12, t + 0.012, q, 'triangle', 0.02, { attack: 0.003 });
+        // A syncopated call-and-answer hook, with extra answers in the second drop.
+        const steps = drop ? [0, 2, 3, 6, 8, 10, 11, 14] : intro ? [0, 6, 10] : build ? [0, 3, 6, 10] : [0, 10];
+        const k = steps.indexOf(i);
+        if (k >= 0) {
+          const note = root + 36 + melody[(k + (bar % 2) * 4) % melody.length];
+          h.bell(note, t, q * (drop ? 1.2 : 1.4), drop ? .065 : .022);
+          if (drop && (second || desi)) h.note(note + (second ? 12 : 0), t + q * .06, q * .85, 'triangle', .035, { attack: .003 });
+          if (second && [3, 11].includes(i)) h.bell(note + 7, t + q / 2, q * .65, .028);
         }
-        if (desi && [3, 7, 11, 14].includes(i)) h.noise(t, 0.06, 0.07, 'bandpass', 2200, 2);
-        if (i === 0 && (intro || breakDown)) [0, 3, 7].forEach(interval => h.note(root + 24 + interval, t, q * 15, 'sine', 0.018, { attack: 0.18, side: true }));
-        if (build && bar % 8 === 7 && i === 0) h.noise(t, q * 15, 0.025, 'highpass', 1800, 0.5);
+        if (desi && drop && [3, 7, 11, 14].includes(i)) h.noise(t, .055, .12, 'bandpass', 2200, 2);
+        if (drop && second && i === 2) h.noise(t, .06, .08, 'bandpass', 850, 1.5);
+        if (i === 0 && (intro || breakdown)) [0, 3, 7].forEach(interval => h.note(root + 24 + interval, t, q * 12, 'sine', .024, { attack: .10, side: true }));
       },
     };
   }
-  TUNES.phonk_desi = phonk(108, [38, 38, 41, 36], [0, 1, 7, 5, 4, 7, 8, 5], true);
-  TUNES.phonk_drift = phonk(144, [33, 36, 31, 34], [0, 7, 3, 10, 7, 3, 12, 10]);
-  TUNES.phonk_midnight = phonk(96, [36, 32, 34, 31], [0, 3, 7, 10, 12, 10, 7, 3], false, true);
+  TUNES.phonk_desi = phonk(150, [38, 38, 41, 36], [0, 1, 7, 5, 4, 7, 8, 5], true);
+  TUNES.phonk_drift = phonk(156, [33, 36, 31, 34], [0, 7, 3, 10, 7, 3, 12, 10]);
+  TUNES.phonk_midnight = phonk(144, [36, 32, 34, 31], [0, 3, 7, 10, 12, 10, 7, 3], false, true);
 
   function makeNoise(ctx) {
     const len = Math.floor(ctx.sampleRate * 0.8);

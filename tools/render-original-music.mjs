@@ -39,9 +39,22 @@ try {
         view.setInt16(44 + (frame * 2 + channel) * 2, Math.round(Math.max(-1, Math.min(1, value)) * 32767), true);
       }
       if (peak >= 0.98 || peak < 0.05) throw Error('Review audio level outside expected bounds: ' + peak);
+      const rmsWindow = (start, end) => {
+        let energy = 0, count = 0;
+        for (let at = Math.max(0, Math.floor(start * sampleRate)); at < Math.min(frames, Math.floor(end * sampleRate)); at++)
+          for (const channel of channels) { energy += channel[at] ** 2; count++; }
+        return Math.sqrt(energy / Math.max(1, count));
+      };
+      const barSeconds = 240 / tune.bpm;
+      const arrangement = tune.structure.map(part => ({ ...part, startSeconds: part.startBar * barSeconds, rms: rmsWindow(part.startBar * barSeconds + .03, (part.startBar + part.bars) * barSeconds - .03) }));
+      const dropChecks = arrangement.filter(part => part.name.includes('drop')).map(part => {
+        const before = rmsWindow(part.startSeconds - .30, part.startSeconds - .04), after = rmsWindow(part.startSeconds, part.startSeconds + 1.5);
+        if (after < .045 || after < before * 4) throw Error('Drop lacks audible contrast: ' + id + ' ' + part.name);
+        return { name: part.name, seconds: part.startSeconds, beforeRms: before, afterRms: after };
+      });
       const bytes = new Uint8Array(wav), chunks = [];
       for (let start = 0; start < bytes.length; start += 32768) chunks.push(String.fromCharCode(...bytes.subarray(start, start + 32768)));
-      return { base64: btoa(chunks.join('')), stats: { seconds, bpm: tune.bpm, bars: tune.bars, peak, rms: Math.sqrt(sum / (frames * 2)), sectionRms: sectionSums.map((s, i) => Math.sqrt(s / sectionCounts[i])) } };
+      return { base64: btoa(chunks.join('')), stats: { seconds, bpm: tune.bpm, bars: tune.bars, peak, rms: Math.sqrt(sum / (frames * 2)), sectionRms: sectionSums.map((s, i) => Math.sqrt(s / sectionCounts[i])), arrangement, dropChecks } };
     }, id);
     fs.writeFileSync(path.join(output, id + '.wav'), Buffer.from(rendered.base64, 'base64'));
     fs.writeFileSync(path.join(output, id + '.json'), JSON.stringify(rendered.stats, null, 2) + '\n');

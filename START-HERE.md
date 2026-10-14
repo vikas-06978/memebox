@@ -4,7 +4,7 @@ This branch is for local testing. Do not deploy it or publish the unlocked revie
 
 1. On GitHub select **review/memebox-local-2026-10-14**, then **Code > Download ZIP**.
 2. Extract the entire ZIP onto your computer. Opening files inside a ZIP is insufficient.
-3. For music, open **review/listen.html** in Chrome and press Play. All three original tracks play offline.
+3. For music, open **review/listen.html** in Chrome and press Play. All three original tracks play offline. The revised dance arrangements have a build-up, pause and first drop at roughly 12–13 seconds; Hear the first drop starts two seconds before that transition.
 4. Open **chrome://extensions**, turn on **Developer mode**, click **Load unpacked**, and select **review/extension** inside the extracted folder. This is the folder containing the review manifest.json.
 5. If you loaded an earlier copy, replace it with this extracted **review/extension** folder and click Reload in chrome://extensions. Reload the call tab too.
 6. Pin **MemeBox Local Review**, open its options and choose **Preview/Playground**. Try the species action, Jump, Roll, Sit, Leave/Return and Head/Shoulder/Corner controls. Preview all 28 filters and nine costumes. Music, Pictures and Plans have their own visible links.
