@@ -19,6 +19,18 @@ function notice(msg, err) {
   return `${msg ? `<p class="notice" role="status">${h(msg)}</p>` : ''}${err ? `<p class="error" role="alert">${h(err)}</p>` : ''}`;
 }
 
+function packPicker(packs, selected = '') {
+  return `<section class="card">
+    <h2>Choose a pack to add content</h2>
+    <p class="muted">Packs work like folders. Choose the destination first, then add memes, songs or pictures inside it. Changes stay in that pack.</p>
+    ${packs.length ? `<form method="get" action="/admin/packs" class="keyform">
+      <label>Destination pack <select name="id" required><option value="">Choose a pack</option>${packs.map((p) => `<option value="${h(p.id)}"${p.id === selected ? ' selected' : ''}>${h(p.title)} (${h(({ music: 'Music', memes: 'Memes', pictures: 'Pictures', links: 'YouTube collection' })[p.kind] || p.kind)}, ${h(REGIONS[p.region] || p.region)})</option>`).join('')}</select></label>
+      <button type="submit" class="primary">Open pack to add content</button>
+    </form>` : '<p class="muted">Create your first pack below, then add content inside it.</p>'}
+    <p class="muted">Only admins publish shared packs. Users add their own files privately on their device.</p>
+  </section>`;
+}
+
 // "123 MB of 5000 MB": what the packs hold in the bucket against your budget (Cloudflare's free storage is 10 GB).
 function storageMeter(storage) {
   if (!storage) return '';
@@ -50,7 +62,8 @@ export function packsListPage({ packs, hasBucket, msg = '', err = '', storage = 
   <a class="button" href="/admin">Back to admin</a>
 </header>
 ${notice(msg, err)}
-${hasBucket ? '' : '<p class="error" role="alert">The file storage is not set up yet. Run once: <code>npx wrangler r2 bucket create memebox-packs</code>, then deploy again. Until then you can add text memes, but not audio.</p>'}
+${hasBucket ? '' : '<p class="notice" role="note">Hosted file uploads are paused or storage is unavailable. Text memes and YouTube links can still be added. Review hosting limits before enabling file uploads.</p>'}
+${packPicker(packs)}
 ${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">
@@ -120,7 +133,7 @@ function itemRow(p, i) {
     </tr>`;
 }
 
-export function packPage({ pack: p, items, hasBucket, msg = '', err = '', storage = null }) {
+export function packPage({ pack: p, packs = [p], items, hasBucket, msg = '', err = '', storage = null }) {
   const bytes = items.reduce((a, i) => a + Number(i.bytes || 0), 0), live = items.filter((i) => i.status === 'live').length;
   const licenceFields = `
       <label>Plan for these <select name="itemTier">${itemTierOpts('', p.tier)}</select></label>
@@ -138,6 +151,8 @@ export function packPage({ pack: p, items, hasBucket, msg = '', err = '', storag
   <a class="button" href="/admin/packs">All packs</a>
 </header>
 ${notice(msg, err)}
+${packPicker(packs, p.id)}
+<p class="notice" role="status">Adding content to: <b>${h(p.title)}</b>. New items start as drafts. Mark items and the pack Live when you want users to see them.</p>
 ${storageMeter(storage)}
 ${COPYRIGHT}
 <section class="card">
