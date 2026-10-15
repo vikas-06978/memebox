@@ -112,10 +112,11 @@
   });
 
   let roomPeer=null,roomNode=null,roomSink=null;
-  function stopRoomAudio(){if(roomSink){roomSink.pause();roomSink.srcObject=null;roomSink=null;}if(roomNode)roomNode.disconnect();roomNode=null;if(roomPeer)roomPeer.close();roomPeer=null;}
+  function stopRoomAudio(){const peer=roomPeer;roomPeer=null;if(roomSink){roomSink.pause();roomSink.srcObject=null;roomSink=null;}if(roomNode)roomNode.disconnect();roomNode=null;if(peer){peer.close();post({type:'room-audio-state',on:false});}}
   async function receiveRoomAudio(d){
     if(!isActive()){post({type:'room-audio-answer',requestId:d.requestId,error:'Microphone is not connected.'});return;}
     stopRoomAudio();const peer=new RTCPeerConnection({iceServers:[]});roomPeer=peer;
+    peer.addEventListener('connectionstatechange',()=>{if(roomPeer!==peer)return;if(peer.connectionState==='connected')post({type:'room-audio-state',on:true});else if(['failed','closed','disconnected'].includes(peer.connectionState))stopRoomAudio();});
     peer.ontrack=e=>{if(roomPeer!==peer||e.track.kind!=='audio')return;ensureCtx();const stream=new MediaStream([e.track]);
       // Chromium starts WebRTC audio playout through a media sink; keep it muted to prevent duplicate speaker audio.
       roomSink=document.createElement('audio');roomSink.muted=true;roomSink.srcObject=stream;roomSink.play().catch(()=>{});

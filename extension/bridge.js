@@ -42,6 +42,7 @@
     const d = e.data;
     if (!d || typeof d !== 'object' || d.source !== HOOK) return;
     if(d.type==='room-audio-answer'){toRuntime({type:d.type,requestId:d.requestId,sdp:d.sdp,error:d.error});}
+    else if(d.type==='room-audio-state'){toRuntime({type:d.type,on:d.on===true});}
     else if (d.type === 'status') {
       toRuntime({ type: 'frame-status', active: d.active === true, muted: d.muted === true, ctxState: String(d.ctxState) });
     } else if (d.type === 'played') {

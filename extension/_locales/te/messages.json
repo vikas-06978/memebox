@@ -2169,5 +2169,7 @@
   },
   "picture_add": {
     "message": "Add picture"
-  }
+  },
+  "picture_silent": { "message": "🔇 శబ్దం లేని చిత్రం" },
+  "picture_voice": { "message": "🔊 స్వరం ఆన్" }
 }

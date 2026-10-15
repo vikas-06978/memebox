@@ -253,7 +253,7 @@ async function audioFor(item) {
     if (!clip) throw new Error('Clip not found. Re-upload it in Options.');
     return { b64: toBase64(clip.bytes), tone };
   }
-  const text = String(item.say || item.text || '').trim().slice(0, LIMITS.textChars);
+  const text = MEME.speechText(item);
   if (!text) throw new Error('Empty line');
   return { b64: await tts(text, MEME.isLang(item.lang) ? item.lang : 'en', tone), tone };
 }
@@ -263,7 +263,7 @@ const playbackEpoch = new Map();
 async function handlePlay(tabId, { frameId, reqId, item }) {
   const epoch = playbackEpoch.get(tabId) || 0;
   try {
-    const silentPicture = item.speak === false || (item.pictureId && item.pictureCaption === '');
+    const silentPicture = MEME.silentLine(item);
     const { b64, tone } = silentPicture ? { b64: 'UklGRiYAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQIAAAAAAA==', tone: 'normal' } : await audioFor(item);
     const t = TONES[tone];
     const lineVolume = Number.isFinite(Number(item.volume)) ? Math.min(2, Math.max(0, Number(item.volume))) : 1;
@@ -437,8 +437,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     else if (msg.hash === 'plans') chrome.tabs.create({ url: chrome.runtime.getURL('plans.html') }).catch(() => {});
     else if (msg.hash === 'music-room' || msg.hash === 'meme-room') {
       const local=SITE_URL.startsWith('http://127.0.0.1:');const url=new URL(local?'http://127.0.0.1:8790/music-room.html':new URL('/music-room',SITE_URL));
-      if(msg.hash==='meme-room')url.searchParams.set('mode','memes');url.hash=new URLSearchParams({extension:chrome.runtime.id}).toString();
-      chrome.tabs.create({url:url.href}).catch(()=>{});
+      if(msg.hash==='meme-room')url.searchParams.set('mode','memes');url.hash=new URLSearchParams({extension:chrome.runtime.id,audience:msg.audience==='call'?'call':'me'}).toString();
+      chrome.tabs.create({url:url.href}).then(async tab=>{if(sender.tab)await updateCallTab(sender.tab.id,e=>{e.playerTab=tab.id});}).catch(()=>{});
     }
 
     else if (msg.hash === 'music-preview') chrome.tabs.create({ url: chrome.runtime.getURL('playground.html#music-library') }).catch(() => {});
@@ -483,6 +483,25 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (!sender.tab) return;
   const tabId = sender.tab.id;
 
+  if (['panel-player-info', 'panel-audio-offer', 'panel-audio-stop'].includes(msg.type)) {
+    (async () => {
+      const entry = (await getCallTabs())[tabId];
+      if (!entry || !Object.keys(entry.frames).length) { sendResponse({ok:false,error:'Join a call and connect your microphone first.'}); return; }
+      const frameId = Number(Object.keys(entry.frames)[0]);
+      if (msg.type === 'panel-player-info') {
+        const player = Number.isInteger(entry.playerTab) ? await chrome.tabs.get(entry.playerTab).catch(()=>null) : null;
+        sendResponse({ok:true,playerOpen:!!player}); return;
+      }
+      if (msg.type === 'panel-audio-stop') {
+        sendToTab(tabId,{type:'hook',cmd:{type:'room-audio-stop'}},frameId);
+        await updateCallTab(tabId,e=>{e.roomAudioFrom=null});
+        sendResponse({ok:true}); return;
+      }
+      await offerRoomAudio({tabId,frames:entry.frames},tabId,msg.sdp,sendResponse);
+    })().catch(()=>sendResponse({ok:false,error:'Could not connect player audio.'}));
+    return true;
+  }
+
   // "Follow me": a small camera picture from the call tab, answered with where the face is (the face model lives in the offscreen document).
   if (msg.type === 'face-detect' && typeof msg.b64 === 'string' && msg.b64.length < 300000) {
     ensureOffscreen()
@@ -502,6 +521,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   switch (msg.type) {
+    case 'room-audio-state':
+      updateCallTab(tabId,e=>{e.roomAudioActive=msg.on===true;});
+      sendToTab(tabId,{type:'room-audio-state',on:msg.on===true},0);
+      break;
     // A frame's mic hook reported something -> tell the UI in the top frame.
     // The call tab says: a call is running with the pass switched on.
     case 'pass-tick':
@@ -610,6 +633,14 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 
 // Audio-only, user-approved player sharing. No remote scripts or media downloads.
 const roomOffers=new Map();
+async function offerRoomAudio(call, sourceTabId, sdp, reply) {
+  if(typeof sdp!=='string'||sdp.length>32768||!sdp.includes('m=audio')||sdp.includes('m=video')||(sdp.match(/^m=/gm)||[]).length!==1){reply({ok:false,error:'Invalid audio connection.'});return;}
+  const frameId=Number(Object.keys(call.frames)[0]),requestId=crypto.randomUUID();
+  const timer=setTimeout(()=>{roomOffers.delete(requestId);reply({ok:false,error:'Call did not answer. Reload the call tab and try again.'});},12000);
+  roomOffers.set(requestId,{tabId:call.tabId,frameId,reply,timer});
+  await updateCallTab(call.tabId,e=>{e.roomAudioFrom=sourceTabId});
+  sendToTab(call.tabId,{type:'hook',cmd:{type:'room-audio-offer',sdp,requestId}},frameId);
+}
 chrome.runtime.onMessageExternal.addListener((msg,sender,reply)=>{
   let url;try{url=new URL(sender.url)}catch{return}
   const trusted=['https://memebox.site','https://www.memebox.site','https://memebox.pages.dev','http://127.0.0.1:8790','http://localhost:8790'];
@@ -618,13 +649,8 @@ chrome.runtime.onMessageExternal.addListener((msg,sender,reply)=>{
   (async()=>{
     const call=await currentCall();if(!call){reply({ok:false,error:'Join a call and connect your microphone first.'});return;}
     const frameId=Number(Object.keys(call.frames)[0]);
-    if(msg.type==='room-info'){reply({ok:true});return;}
-    if(msg.type==='room-audio-stop'){if(call.roomAudioFrom===sender.tab.id)sendToTab(call.tabId,{type:'hook',cmd:{type:'room-audio-stop'}},frameId);reply({ok:true});return;}
-    if(typeof msg.sdp!=='string'||msg.sdp.length>32768||!msg.sdp.includes('m=audio')||msg.sdp.includes('m=video')||(msg.sdp.match(/^m=/gm)||[]).length!==1){reply({ok:false,error:'Invalid audio connection.'});return;}
-    const requestId=crypto.randomUUID();
-    const timer=setTimeout(()=>{roomOffers.delete(requestId);reply({ok:false,error:'Call did not answer. Reload the call tab and try again.'});},12000);
-    roomOffers.set(requestId,{tabId:call.tabId,frameId,reply,timer});
-    await updateCallTab(call.tabId,e=>{e.roomAudioFrom=sender.tab.id});
-    sendToTab(call.tabId,{type:'hook',cmd:{type:'room-audio-offer',sdp:msg.sdp,requestId}},frameId);
+    if(msg.type==='room-info'){await updateCallTab(call.tabId,e=>{e.playerTab=sender.tab.id});reply({ok:true,panelSharing:call.roomAudioFrom===call.tabId&&call.roomAudioActive===true});return;}
+    if(msg.type==='room-audio-stop'){if(call.roomAudioFrom===sender.tab.id||call.roomAudioFrom===call.tabId){sendToTab(call.tabId,{type:'hook',cmd:{type:'room-audio-stop'}},frameId);await updateCallTab(call.tabId,e=>{e.roomAudioFrom=null});}reply({ok:true});return;}
+    await offerRoomAudio(call,sender.tab.id,msg.sdp,reply);
   })().catch(()=>reply({ok:false,error:'Audio connection failed.'}));return true;
 });

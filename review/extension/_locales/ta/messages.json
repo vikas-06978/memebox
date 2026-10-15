@@ -2169,5 +2169,7 @@
   },
   "picture_add": {
     "message": "Add picture"
-  }
+  },
+  "picture_silent": { "message": "🔇 ஒலியில்லாப் படம்" },
+  "picture_voice": { "message": "🔊 குரல் இயக்கத்தில்" }
 }

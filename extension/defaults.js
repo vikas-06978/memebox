@@ -179,12 +179,15 @@
     return out;
   }
 
+  // A picture's library title is never a fallback for its spoken caption.
+  const speechText = item => String(item.say || (item.pictureId ? (item.pictureCaption ?? item.text) : item.text) || '').trim().slice(0, LIMITS.textChars);
+  const silentLine = item => item.speak === false || (item.pictureId && item.kind === 'tts' && !speechText(item));
   const contentAllowed = (item, settings) => !item?.explicit || (settings?.showStrong === true && settings?.adultConfirmed === true);
   function libraryLines(items, settings, languages = null) {
     return items.filter(item => contentAllowed(item, settings) && (!languages || item.universal || item.pictureId || item.kind === 'sfx' || (!isBuiltinLine(item) && !item.packId) || languages.has(item.lang)));
   }
   globalThis.MEME = Object.freeze({
-    TONES, VOICES, THEMES, LANGS, isLang, langOf, isBuiltinLine, contentAllowed, libraryLines, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
+    TONES, VOICES, THEMES, LANGS, isLang, langOf, isBuiltinLine, speechText, silentLine, contentAllowed, libraryLines, LINES, SFX, SFX_MOOD, moodFor, SETTINGS, LIMITS, sanitizeLine, cleanUrl, isVideoPage, isDirectFileLink,
     defaultLines: () => LINES.map((l) => ({ ...l })),
     defaultSettings: () => JSON.parse(JSON.stringify(SETTINGS)),
   });

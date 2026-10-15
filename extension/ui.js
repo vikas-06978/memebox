@@ -595,7 +595,11 @@
     details[data-page] > summary { display: none; }
     details[data-page] { border-top: 0; padding-top: 0; }
     details[data-page] .settings-body { padding-top: 2px; }
-    .adult-preference { font-size:11px; line-height:1.35; margin:8px 0; } .panel:not([data-tab=memes]) .adult-preference { display:none; } .pictures-tools { display:none; } .panel[data-tab="pictures"] .pictures-tools { display:grid; gap:10px; padding:10px 0; } .panel[data-tab="pictures"] :is(.chips,.langchips,.memes-row,.packs-link) { display:none; } .pagetabs { flex-wrap:wrap; } .ptab { min-width:0; padding:8px 4px; font-size:12px; justify-content:center; } .pagetabs { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px; } .toggle-help { display:block; font-size:11px; line-height:1.4; color:var(--p-muted); margin-top:3px; }
+    .adult-preference { font-size:11px; line-height:1.35; margin:8px 0; } .panel:not([data-tab=memes]) .adult-preference { display:none; } .pictures-tools { display:none; } .panel[data-tab="pictures"] .pictures-tools { display:grid; gap:10px; padding:10px 0; } .panel[data-tab="pictures"] :is(.chips,.langchips,.memes-row,.packs-link) { display:none; }
+    .pagetabs { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; }
+    .ptab { min-width:0; padding:8px 2px; font-size:11px; line-height:1.2; flex-direction:column; gap:5px; overflow-wrap:anywhere; }
+    .pti { line-height:18px; font-size:17px; }
+    .toggle-help { display:block; font-size:11px; line-height:1.4; color:var(--p-muted); margin-top:3px; }
     .panel[data-tab="memes"] .foot { display: block; }
     .panel:not([data-tab="memes"]) > .foot, .panel:not([data-tab="memes"]) > .start { display: none; }
     .langchips { margin-top: -4px; }
@@ -723,7 +727,7 @@
   const packsLink = el('button', { className: 'chip small packs-link', type: 'button', title: t('op_online_hint') }, t('pk_get'));
   packsLink.addEventListener('click', () => api.openPacks());
   const videoMemesLink = el('button', { className: 'chip small packs-link', type: 'button', title: 'Browse admin-curated video meme packs' }, '🎬 Video memes');
-  videoMemesLink.addEventListener('click', () => bridge.toRuntime({ type: 'open-options', hash: 'meme-room' }));
+  videoMemesLink.addEventListener('click', () => bridge.toRuntime({ type: 'open-options', hash: 'meme-room', audience:state.settings.musicAudience }));
   const packLinks = el('div', { className: 'row packs-link' }, packsLink, videoMemesLink);
   const optionsBtn = el('button', { className: 'icon', type: 'button', title: t('options') }, '⚙️');
   const feedbackBtn = el('button', { className: 'icon', type: 'button', title: t('feedback') }, '💬');
@@ -982,7 +986,7 @@
       star.addEventListener('click', (e) => { e.stopPropagation(); toggleStar(line); });
       // The whole row plays the line (the ▶ button's click bubbles up to here).
       const li = el('li', { className: 'pick' + (line.id === state.nowPlayingId ? ' now' : ''), title: t('play') + ': ' + line.text },
-        play, el('span', { className: 'txt' }, line.text), tags, star);
+        play, el('span', { className: 'txt' }, line.pictureId ? (line.pictureCaption || line.say || t('tag_picture')) : line.text), tags, star);
       li.addEventListener('click', () => playLine(line));
       list.append(li);
     }

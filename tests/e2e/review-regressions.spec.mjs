@@ -2,6 +2,7 @@ import {test,expect} from './fixtures.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {CURATED_VIDEO_GROUPS} from '../../site/src/curated-video-catalog.js';
+import {clickPanel,panelElement} from './closed-panel.mjs';
 const root=path.resolve(import.meta.dirname,'../..');
 async function room(context,extensionId,{catalog=true}={}){
  await context.route('https://memebox.site/**',async route=>{
@@ -64,4 +65,50 @@ test('picture selection stays a draft and optional caption/speech never use the 
  await options.locator('#line-submit').click();
  const silent=await sw.evaluate(async()=>((await chrome.storage.local.get('lines')).lines||[]).find(l=>l.text==='Visible but silent'));
  expect(silent.speak).toBe(false);
+});
+
+test('picture pronunciation is audible with Read caption aloud and silent when unchecked',async({context,extensionId,callPage})=>{
+ const options=await context.newPage();await options.goto(`chrome-extension://${extensionId}/options.html`);
+ const image=await options.evaluate(()=>{const c=document.createElement('canvas');c.width=80;c.height=60;return c.toDataURL().split(',')[1]});
+ await options.locator('#line-pic').setInputFiles({name:'do-not-speak.png',mimeType:'image/png',buffer:Buffer.from(image,'base64')});
+ await options.locator('#line-say').fill('Hello everyone this picture has a voice');
+ await options.locator('#line-speak').check();await options.locator('#line-submit').click();
+ const sw=context.serviceWorkers()[0];
+ await expect.poll(()=>sw.evaluate(async()=>((await chrome.storage.local.get('lines')).lines||[]).filter(l=>l.pictureId).length)).toBe(1);
+ await callPage.evaluate(async()=>{await window.joinCall();await window.noDuck()});
+ const play=async()=>sw.evaluate(async()=>{const item=(await chrome.storage.local.get('lines')).lines.find(l=>l.pictureId);const [tab]=await chrome.tabs.query({url:'https://meet.google.com/*'});await handlePlay(tab.id,{frameId:0,reqId:911,item})});
+ await play();await expect.poll(()=>callPage.evaluate(()=>window.peakOver(700)),{timeout:15000}).toBeGreaterThan(.15);
+ await sw.evaluate(async()=>{const {lines}=await chrome.storage.local.get('lines');lines.find(l=>l.pictureId).speak=false;await chrome.storage.local.set({lines})});
+ await callPage.evaluate(()=>window.postMessage({source:'memebox-bridge-9c1e',type:'stop'},'*'));
+ await expect.poll(()=>callPage.evaluate(()=>window.peakOver(200))).toBeLessThan(.1);
+ await play();
+ expect(await callPage.evaluate(()=>window.peakOver(700))).toBeLessThan(.1);
+});
+
+test('call panel Everyone in call sends playlist audio and tabs have room for their labels',async({context,extensionId,callPage})=>{
+ await callPage.evaluate(async()=>{await window.joinCall();await window.noDuck()});
+ const player=await room(context,extensionId,{catalog:false});
+ await callPage.bringToFront();await callPage.mouse.click(42,574,{button:'right'});await clickPanel(callPage,'[data-tab="music"]');
+ const cdp=await context.newCDPSession(callPage),contexts=[];
+ cdp.on('Runtime.executionContextCreated',e=>contexts.push(e.context));await cdp.send('Runtime.enable');
+ let world;
+ for(const ctx of contexts){const r=await cdp.send('Runtime.evaluate',{contextId:ctx.id,expression:'typeof globalThis.MemeBridge'});if(r.result.value==='object')world=ctx.id;}
+ expect(world).toBeTruthy();
+ await cdp.send('Runtime.evaluate',{contextId:world,expression:`navigator.mediaDevices.getDisplayMedia=async()=>{const ac=new AudioContext();await ac.resume();globalThis.testShareAudio=ac;const out=ac.createMediaStreamDestination(),osc=ac.createOscillator(),gain=ac.createGain();gain.gain.value=.5;osc.connect(gain).connect(out);osc.start();return out.stream;}`});
+ await clickPanel(callPage,'[data-audience="call"]');
+ await expect.poll(async()=>(await panelElement(callPage,'[data-share-player]')).text,{timeout:20000}).toContain('Player audio shared');
+ await expect.poll(()=>callPage.evaluate(()=>window.peakOver(700)),{timeout:10000}).toBeGreaterThan(.15);
+ await expect(player.locator('#room-everyone')).toHaveAttribute('aria-pressed','true');
+ const tabs=await Promise.all(['memes','music','lights','pictures','sound'].map(id=>panelElement(callPage,`.ptab[data-tab="${id}"]`)));
+ for(let i=1;i<tabs.length;i++)expect(tabs[i].x-tabs[i].width/2).toBeGreaterThan(tabs[i-1].x+tabs[i-1].width/2);
+ await callPage.screenshot({path:'tests/.tmp/fixed-panel-audio-tabs.png'});
+ await clickPanel(callPage,'[data-audience="me"]');
+ await expect.poll(()=>callPage.evaluate(()=>window.peakOver(300))).toBeLessThan(.1);
+ await expect(player.locator('#room-only-me')).toHaveAttribute('aria-pressed','true');
+ await clickPanel(callPage,'[data-audience="call"]');
+ await expect.poll(()=>callPage.evaluate(()=>window.peakOver(300))).toBeGreaterThan(.15);
+ await expect(player.locator('#room-everyone')).toHaveAttribute('aria-pressed','true');
+ await player.locator('#room-only-me').click();
+ await expect.poll(()=>callPage.evaluate(()=>window.peakOver(300))).toBeLessThan(.1);
+ await cdp.detach();
 });

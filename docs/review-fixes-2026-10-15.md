@@ -2,6 +2,15 @@
 
 Local review branch only. No production deployment, remote migration or live payment activation.
 
+## Follow-up: caption voice, shared playlists and panel layout
+
+- Fixed the reported case where a picture has an empty visible caption and explicit pronunciation text: Read caption aloud now speaks that text. Checked/unchecked behavior uses the same rule in Options preview, WAV export and meeting playback. Empty captions without explicit speech remain silent; filenames and generic picture titles are never spoken.
+- Saved picture rows show a thumbnail, caption/pronunciation and Voice on / Silent status. Edit/Delete remain visible, with WAV/WhatsApp in the extra actions menu.
+- The call-panel Everyone in call control now starts browser-approved playlist / meme tab capture when a player is open. A dedicated Share playlist / meme audio button can reconnect it. The audio-only local connection feeds the same meeting microphone output used by built-in tunes. Only me in either panel/player stops sharing; the player reflects capture initiated in the call panel. Switching built-in or uploaded audio audience restarts that selection in the selected destination.
+- Five tabs use an icon above each label, avoiding overlap in the narrow panel. Music instructions are shorter and show whether player audio is actually connected.
+- Regression checks measure outgoing audio for checked/unchecked picture speech, sharing started from both player and call panel, reconnect and Only me. Browser consent uses a synthetic audio fixture in automation; a real meeting and Windows tab-picker check remains necessary.
+- Final follow-up validation: all 212 unit checks and 17 browser cases against the rebuilt, minified review package pass. This includes Options uploads, pack import/export, language choices, volume and direct player navigation.
+
 ## Requested changes and implementation
 
 - Library loads the local review catalog in both the extension and localhost copy. Music view also includes meme cards; Video memes filters to meme packs. Backend libraries load automatically on entry.
@@ -21,7 +30,7 @@ Local review branch only. No production deployment, remote migration or live pay
 
 ## Local review
 
-Run review/Start-MemeBox-Music.cmd first. Reload review/extension in Chrome and reload the meeting tab. Open Music or Video memes from the call panel. Inside the player choose Everyone in call, select THIS tab, and enable Share tab audio. Keep the meeting mic unmuted. Only me stops outgoing player audio.
+Run review/Start-MemeBox-Music.cmd first. Reload review/extension in Chrome and reload the meeting tab. Open Music or Video memes from the call panel. Choose Everyone in call in the call panel (or the player), select the PLAYER tab, and enable Share tab audio. Keep the meeting mic unmuted. Only me stops outgoing player audio.
 
 Provider embeds, browser sharing consent on the owner's Windows machine, real meeting codec quality, poor-light hand detection and weak-laptop performance still need normal platform review. No guaranteed playback claim is made for third-party links.
 

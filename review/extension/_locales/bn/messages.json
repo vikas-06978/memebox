@@ -2169,5 +2169,7 @@
   },
   "picture_add": {
     "message": "Add picture"
-  }
+  },
+  "picture_silent": { "message": "🔇 নীরব ছবি" },
+  "picture_voice": { "message": "🔊 কণ্ঠ চালু" }
 }

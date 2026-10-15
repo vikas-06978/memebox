@@ -10,6 +10,7 @@ const $ = (id) => document.getElementById(id);
 
 let lines = [];
 let settings = MEME.defaultSettings();
+const pictureThumbnails = new Set();
 
 // ---------- helpers ----------
 
@@ -116,13 +117,14 @@ function synth(text, lang, tone) {
 
 // Bytes (WAV/MP3/…) for a line: synthesized speech or the stored clip.
 async function lineBytes(line) {
+  if (MEME.silentLine(line)) return Uint8Array.from(atob('UklGRiYAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQIAAAAAAA=='), c => c.charCodeAt(0)).buffer;
   if (line.kind === 'sfx') return (await fetch(chrome.runtime.getURL(`sfx/${line.sfx}.wav`))).arrayBuffer();
   if (line.kind === 'clip') {
     const clip = await MemeDB.getClip(line.clipId);
     if (!clip) throw new Error(t('op_err_clip_missing'));
     return clip.bytes.slice(0);
   }
-  return synth(line.say || line.text, line.lang, TONES[line.tone] ? line.tone : 'normal');
+  return synth(MEME.speechText(line), line.lang, TONES[line.tone] ? line.tone : 'normal');
 }
 
 function stopPreview() {
@@ -204,7 +206,7 @@ function shareWhatsApp(line) {
 async function preview(line) {
   if(!MEME.contentAllowed(line,settings)){toast(t('adult_blocked'),true);return;}
   stopPreview();
-  if (line.speak === false || (line.pictureCaption === '' && (line.pictureId || pic.mode === 'new'))) return;
+  if (MEME.silentLine(line)) return;
   const generation = previewGeneration;
   try {
     const buffer = await audioCtx().decodeAudioData(await lineBytes(line));
@@ -246,6 +248,8 @@ function render() {
 }
 
 function renderLines() {
+  for (const url of pictureThumbnails) URL.revokeObjectURL(url);
+  pictureThumbnails.clear();
   const body = $('lines-body');
   body.replaceChildren();
   const q = $('lines-search').value.trim().toLowerCase();
@@ -260,8 +264,15 @@ function renderLines() {
   if (!shown.length) body.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint' }, lines.length ? t('empty_search') : t('op_no_lines'))));
   for (const line of shown) {
     const tone = TONES[line.tone] || TONES.normal;
-    const text = el('td', { className: 'text' }, line.text);
-    if (line.say) text.append(el('span', { className: 'say', lang: line.lang }, line.say));
+    const text = el('td', { className: 'text' }, line.pictureId ? (line.pictureCaption || line.say || t('tag_picture')) : line.text);
+    if (line.say && (!line.pictureId || line.pictureCaption)) text.append(el('span', { className: 'say', lang: line.lang }, line.say));
+    if (line.pictureId) {
+      const image=el('img',{className:'line-thumbnail',alt:'',hidden:true});text.prepend(image);
+      MemeDB.getPicture(line.pictureId).then(picture=>{
+        if(!picture||!image.isConnected)return;
+        const url=URL.createObjectURL(new Blob([picture.bytes],{type:picture.type}));pictureThumbnails.add(url);image.src=url;image.hidden=false;
+      }).catch(()=>{});
+    }
     const play = el('button', { type: 'button', className: 'small', title: t('op_preview_tip') }, '▶');
     play.addEventListener('click', () => preview(line));
     const star = el('button', { type: 'button', className: 'small star' + (line.star ? ' on' : ''), title: line.star ? t('unstar') : t('star') }, line.star ? '★' : '☆');
@@ -275,19 +286,20 @@ function renderLines() {
     const wa = el('button', { type: 'button', className: 'small', title: t('op_share_wa_tip') }, t('op_share_wa'));
     wa.addEventListener('click', () => shareWhatsApp(line));
     const vol = Math.round((line.volume ?? 1) * 100);
-    const about = el('td', { className: 'about' },
+    const about = line.pictureId ? el('td', { className: 'about' }, el('span', {className:'tag'}, t(MEME.silentLine(line) ? 'picture_silent' : 'picture_voice'))) : el('td', { className: 'about' },
       el('span', { className: 'tag' }, line.kind === 'tts' ? line.lang : '🎵 ' + t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip')),
       ' ', el('span', { className: 'tag', title: toneName(line.tone) }, `${tone.emoji} ${toneName(line.tone)}`),
       ' ', el('span', { className: 'tag' }, categoryLabel(line.category)),
       vol !== 100 ? el('span', { className: 'tag' }, `🔊 ${vol}%`) : '',
       line.pictureId ? el('span', { className: 'tag', title: t('tag_picture') }, '🖼') : '');
-    body.append(el('tr', { className: line.id === editingId ? 'editing' : '' },
+    const secondary = el('details', { className: 'line-share' }, el('summary', { title: t('op_col_actions') }, '⋯'), el('div', {className:'actions'}, wav, wa));
+    body.append(el('tr', { className: (line.id === editingId ? 'editing ' : '') + (line.pictureId ? 'picture-row' : '') },
       el('td', {}, play),
       text,
       about,
       el('td', {}, line.fav ? el('span', { className: 'tag' }, 'Alt+' + line.fav) : ''),
       el('td', {}, star),
-      el('td', { className: 'right' }, wav, ' ', wa, ' ', edit, ' ', del)));
+      el('td', { className: 'right' }, ...(line.pictureId ? [edit, del, secondary] : [wav, ' ', wa, ' ', edit, ' ', del]))));
   }
 }
 
@@ -404,6 +416,7 @@ function formLine() {
   const text = $('line-text').value.trim() || ((pic.mode === 'new' || (pic.mode === 'keep' && existing?.pictureId)) ? t('pg_pictures') : '');
   return sanitizeLine({
     ...(existing || { id: newId('l'), kind: 'tts' }),
+    ...(pic.mode === 'new' ? { pictureId: existing?.pictureId || 'draft-picture' } : pic.mode === 'remove' ? { pictureId: '' } : {}),
     explicit: $('line-explicit').checked,
     text,
     pictureCaption: $('line-text').value.trim(),

@@ -21,7 +21,7 @@
     };
     let audience = api.getSettings().musicAudience === 'call' ? 'call' : 'me';
 
-    const how = el('div', { className: 'fx-how' }, t('mu_how'), el('p', {}, t('mu_collection_help')));
+    const how = el('div', { className: 'fx-how' }, 'Play a tune here, or open Phonk / Video memes below.');
     // ---- my own music: added right here, played into the call on repeat ----
     let mine = [];
     const mineBox = el('div', { className: 'fx-group' });
@@ -33,10 +33,10 @@
     packsBtn.addEventListener('click', () => api.openPacks());
     const phonkBtn = el('button', { className: 'chip add-music', type: 'button', title: t('mu_phonk_tip') }, t('mu_phonk')); // Phonk Mode: a page on our site with YouTube's own player
     phonkBtn.dataset.musicRoom='true';
-    phonkBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'music-room' }));
+    phonkBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'music-room', audience }));
     phonkBtn.title = t('mu_phonk_local_tip');
     const videoMemesBtn = el('button', { className: 'chip add-music', type: 'button', title: 'Browse admin-curated video memes from every region' }, '🎬 Video memes');
-    videoMemesBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'meme-room' }));
+    videoMemesBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'meme-room', audience }));
     mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });
     const status = el('div', { className: 'fx-status' });
@@ -51,8 +51,11 @@
     const everyone = el('button', { className: 'chip', type: 'button' }, '🎙 Everyone in call');
     onlyMe.dataset.audience = 'me';
     everyone.dataset.audience = 'call';
+    const shareHelp = el('div', {className:'fx-how', role:'status'}, 'For playlists and video memes, share the player tab audio once.');
+    const shareBtn = el('button', {className:'chip', type:'button'}, 'Share playlist / meme audio');
+    shareBtn.dataset.sharePlayer='true';
     const audienceRow = el('div', { className: 'fx-group' }, el('div', { className: 'fx-label' }, 'Who hears the music?'), el('div', { className: 'fx-chips' }, onlyMe, everyone));
-    const body = el('div', { className: 'settings-body fx-body' }, how, audienceRow, chips, mineBox, status, lock,
+    const body = el('div', { className: 'settings-body fx-body' }, how, audienceRow, shareBtn, shareHelp, chips, mineBox, status, lock,
       el('div', { className: 'row' }, el('span', {}, '\u{1F50A}'), vol, stopBtn));
     const sum = el('span', { className: 'sum' });
     const details = el('details', { className: 'settings fx' }, el('summary', {}, el('span', {}, t('mu_title')), sum), body);
@@ -169,8 +172,62 @@
     }
 
     stopBtn.addEventListener('click', stopAll);
-    const setAudience = value => { audience=value;api.setLocal('musicAudience',value);api.saveSetting('musicAudience',value);stopAll();render(); };
-    onlyMe.addEventListener('click',()=>setAudience('me'));everyone.addEventListener('click',()=>setAudience('call'));
+    let sharePeer=null,shareStream=null,shareBusy=false,shareGeneration=0;
+    function stopPlayerShare(notify=true) {
+      shareGeneration++;
+      const peer=sharePeer;sharePeer=null;if(peer)peer.close();
+      const stream=shareStream;shareStream=null;if(stream)stream.getTracks().forEach(track=>track.stop());
+      shareBtn.textContent='Share playlist / meme audio';
+      if(notify)api.ask({type:'panel-audio-stop'}).catch(()=>{});
+    }
+    async function sharePlayer() {
+      if(shareBusy||sharePeer)return;
+      const generation=++shareGeneration;
+      shareBusy=true;shareBtn.disabled=true;
+      try {
+        shareHelp.textContent='Choose your Phonk / Video memes player tab and tick Share tab audio.';
+        const stream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser'},audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,suppressLocalAudioPlayback:false},selfBrowserSurface:'exclude',surfaceSwitching:'exclude'});
+        if(generation!==shareGeneration){stream.getTracks().forEach(track=>track.stop());return;}
+        shareStream=stream;
+        const surface=stream.getVideoTracks()[0]?.getSettings().displaySurface,track=stream.getAudioTracks()[0];
+        if(surface&&surface!=='browser')throw Error('Choose the player browser tab, not a screen or window.');
+        if(!track)throw Error('No audio selected. Choose the player tab and tick Share tab audio.');
+        const peer=new RTCPeerConnection({iceServers:[]});sharePeer=peer;peer.addTrack(track,new MediaStream([track]));
+        track.addEventListener('ended',()=>{if(shareStream===stream){stopPlayerShare();shareHelp.textContent='Player sharing stopped. Only you hear that tab.';}});
+        peer.addEventListener('connectionstatechange',()=>{
+          if(sharePeer!==peer)return;
+          if(peer.connectionState==='connected'){shareBtn.textContent='✓ Player audio shared';shareHelp.textContent='Everyone hears this player’s music and memes while your meeting mic is unmuted.';}
+          else if(['failed','closed','disconnected'].includes(peer.connectionState)){stopPlayerShare();shareHelp.textContent='Player disconnected. Share its tab audio again.';}
+        });
+        await peer.setLocalDescription(await peer.createOffer());
+        if(peer.iceGatheringState!=='complete')await new Promise(resolve=>{const timer=setTimeout(resolve,4000);peer.addEventListener('icegatheringstatechange',()=>{if(peer.iceGatheringState==='complete'){clearTimeout(timer);resolve()}})});
+        if(generation!==shareGeneration)return;
+        const result=await api.ask({type:'panel-audio-offer',sdp:peer.localDescription.sdp});
+        if(generation!==shareGeneration)return;
+        if(!result?.ok)throw Error(result?.error||'Could not connect the player to your call.');
+        await peer.setRemoteDescription({type:'answer',sdp:result.sdp});
+      } catch(error) {
+        if(generation!==shareGeneration)return;
+        stopPlayerShare();shareHelp.textContent=error.name==='NotAllowedError'?'Sharing cancelled. Only you hear the playlist / video memes.':error.message;
+      } finally {shareBusy=false;shareBtn.disabled=false;}
+    }
+    const setAudience = value => {
+      const playing=callId||localId;
+      audience=value;api.setLocal('musicAudience',value);api.saveSetting('musicAudience',value);stopAll();
+      if(value==='me'){stopPlayerShare();shareHelp.textContent='Only you hear music. Player audio is disconnected from the call.';}
+      if(playing){if(playing.startsWith('mine:'))playMine(playing.slice(5));else pick(playing);}
+      render();
+    };
+    onlyMe.addEventListener('click',()=>setAudience('me'));
+    everyone.addEventListener('click',async()=>{setAudience('call');const info=await api.ask({type:'panel-player-info'}).catch(()=>null);if(audience==='call'&&info?.playerOpen)sharePlayer();});
+    shareBtn.addEventListener('click',()=>{setAudience('call');sharePlayer();});
+    window.addEventListener('pagehide',()=>stopPlayerShare());
+    api.onMessage(msg=>{
+      if(msg.type!=='room-audio-state')return;
+      if(msg.on){audience='call';api.setLocal('musicAudience','call');shareHelp.textContent='Everyone hears the shared player while your meeting mic is unmuted.';shareBtn.textContent='✓ Player audio shared';}
+      else {if(sharePeer?.connectionState==='connected')stopPlayerShare(false);shareHelp.textContent='Player sharing stopped. Only you hear that tab.';shareBtn.textContent='Share playlist / meme audio';}
+      render();
+    });
     vol.addEventListener('input', () => {
       const v = Number(vol.value) / 100;
       api.setLocal('musicVolume', v);

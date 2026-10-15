@@ -2169,5 +2169,11 @@
   },
   "picture_add": {
     "message": "Add picture"
+  },
+  "picture_silent": {
+    "message": "🔇 Silent picture"
+  },
+  "picture_voice": {
+    "message": "🔊 Voice on"
   }
 }

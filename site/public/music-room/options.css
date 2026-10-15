@@ -72,6 +72,12 @@ table.lines { width: 100%; border-collapse: collapse; }
 .lines td.text { width: 100%; overflow-wrap: anywhere; }
 .lines td.text .say { display: block; color: var(--muted); font-size: 12px; }
 .lines .right { text-align: right; white-space: nowrap; }
+.lines .picture-row .right { display:flex; align-items:center; justify-content:flex-end; gap:6px; }
+.line-thumbnail { float:inline-start; width:56px; height:42px; object-fit:contain; margin-inline-end:10px; border-radius:6px; background:var(--field); }
+.line-share { position:relative; }
+.line-share summary { cursor:pointer; list-style:none; border:1px solid var(--line); border-radius:8px; padding:2px 10px; }
+.line-share summary::-webkit-details-marker { display:none; }
+.line-share > .actions { position:absolute; inset-inline-end:0; top:100%; z-index:2; background:var(--field); padding:8px; border:1px solid var(--line); border-radius:10px; flex-wrap:nowrap; }
 .lines tr.editing td { background: color-mix(in srgb, var(--accent) 18%, transparent); }
 .tag { display: inline-block; padding: 1px 7px; border-radius: 6px; background: color-mix(in srgb, var(--muted) 16%, transparent); font-size: 12px; white-space: nowrap; }
 

@@ -2169,5 +2169,7 @@
   },
   "picture_add": {
     "message": "Add picture"
-  }
+  },
+  "picture_silent": { "message": "🔇 મૌન ચિત્ર" },
+  "picture_voice": { "message": "🔊 અવાજ ચાલુ" }
 }

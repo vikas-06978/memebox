@@ -39,7 +39,7 @@ Meme lines are turned into speech by eSpeak-NG. This engine is bundled inside th
 
 If you open a video in another tab (for example YouTube or Instagram) and click **Send this tab's sound into my call** in the MemeBox toolbar popup, MemeBox mixes that one tab's sound live into your call microphone. This happens only for the tab you chose, only after that click, and only until you press Stop or close the tab. The sound isn't recorded, saved or uploaded by MemeBox, and nothing is downloaded.
 
-The player also offers **Everyone in call**. After you choose the player tab and enable tab audio in the browser sharing dialog, it sends an audio-only WebRTC stream directly to the extension in the call tab. The selected screen video is never forwarded. Connection messages stay inside your browser, use no relay service, and the audio is not saved. Only me, Stop sharing, closing the player or leaving the call disconnects it. This can include YouTube ad audio.
+The player and call panel offer **Everyone in call** for playlist and meme audio. After you choose the player tab and enable tab audio in the browser sharing dialog, an audio-only WebRTC stream goes directly to the extension's meeting microphone output. The selected screen video is never forwarded. Connection messages stay inside your browser, use no relay service, and the audio is not saved. Only me, Stop sharing, closing the player or leaving the call disconnects it. This can include YouTube ad audio.
 
 ## Lights & looks
 

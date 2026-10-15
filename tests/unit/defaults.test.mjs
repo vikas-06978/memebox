@@ -4,6 +4,15 @@ import { loadScript } from './helpers.mjs';
 
 const { MEME } = loadScript('defaults.js');
 
+test('picture speech uses the explicit caption or pronunciation, never a title or filename', () => {
+  const picture = {kind:'tts',pictureId:'p',text:'Picture mode',pictureCaption:''};
+  assert.equal(MEME.silentLine(picture),true);
+  assert.equal(MEME.speechText({...picture,say:'Hello there'}),'Hello there');
+  assert.equal(MEME.silentLine({...picture,say:'Hello there'}),false);
+  assert.equal(MEME.speechText({...picture,pictureCaption:'Visible caption'}),'Visible caption');
+  assert.equal(MEME.silentLine({...picture,say:'Hello there',speak:false}),true);
+});
+
 test('all six tones exist with eSpeak values in range', () => {
   assert.deepEqual(Object.keys(MEME.TONES).sort(), ['chipmunk', 'excited', 'normal', 'robot', 'slowmo', 'villain']);
   for (const [id, t] of Object.entries(MEME.TONES)) {

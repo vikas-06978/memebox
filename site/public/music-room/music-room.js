@@ -19,7 +19,17 @@ MemeRoomI18n.ready.then(async () => {
   let shareStream=null,sharePeer=null,shareBusy=false;
   const shareStatus=text=>{$('room-share-status').textContent=text};
   const sendExternal=msg=>new Promise((resolve,reject)=>{if(!extensionId||!globalThis.chrome?.runtime?.sendMessage){reject(Error('Open this player from the MemeBox call panel first.'));return;}chrome.runtime.sendMessage(extensionId,msg,result=>{const error=chrome.runtime.lastError;if(error)reject(Error('Reload MemeBox and open the player from your call again.'));else resolve(result)});});
-  function stopSharing(notify=true){if(sharePeer)sharePeer.close();sharePeer=null;if(shareStream)shareStream.getTracks().forEach(track=>track.stop());shareStream=null;$('room-only-me').setAttribute('aria-pressed','true');$('room-everyone').setAttribute('aria-pressed','false');shareStatus('Only you hear this player.');if(notify)sendExternal({type:'room-audio-stop'}).catch(()=>{});}
+  if(extensionId)sendExternal({type:'room-info'}).catch(()=>{});
+  if(incoming.get('audience')==='call')shareStatus('Everyone in call selected. Click Everyone in call here and approve this tab’s audio once, or share it from your call panel.');
+  let panelShared=false;
+  const sharingPoll=extensionId?setInterval(async()=>{
+    if(sharePeer||shareBusy)return;
+    try {const info=await sendExternal({type:'room-info'});const shared=info?.panelSharing===true;
+      if(shared!==panelShared){panelShared=shared;$('room-everyone').setAttribute('aria-pressed',String(shared));$('room-only-me').setAttribute('aria-pressed',String(!shared));shareStatus(shared?'Everyone hears this player through your call panel. Keep your meeting mic unmuted.':'Only you hear this player.');}
+    } catch { /* The call may have closed. */ }
+  },1500):null;
+  window.addEventListener('pagehide',()=>clearInterval(sharingPoll));
+  function stopSharing(notify=true){const active=sharePeer||shareStream||panelShared;panelShared=false;if(sharePeer)sharePeer.close();sharePeer=null;if(shareStream)shareStream.getTracks().forEach(track=>track.stop());shareStream=null;$('room-only-me').setAttribute('aria-pressed','true');$('room-everyone').setAttribute('aria-pressed','false');shareStatus('Only you hear this player.');if(notify&&active)sendExternal({type:'room-audio-stop'}).catch(()=>{});}
   $('room-only-me').addEventListener('click',()=>stopSharing());
   $('room-everyone').addEventListener('click',async()=>{
     if(shareBusy||sharePeer)return;shareBusy=true;$('room-everyone').disabled=true;
