@@ -5,7 +5,7 @@ test('Playground previews characters and music without changing call settings', 
   const errors = []; page.on('pageerror', (error) => errors.push(error.message));
   await page.goto(`chrome-extension://${extensionId}/playground.html`);
   await expect(page.locator('[data-character]')).toHaveCount(14);
-  await expect(page.locator('[data-tune]')).toHaveCount(13);
+  await expect(page.locator('[data-tune]')).toHaveCount(16);
   const before = await page.evaluate(() => chrome.storage.local.get('settings'));
   const imageBefore = await page.locator('#preview').evaluate((c) => c.toDataURL());
   await page.locator('[data-character="bird"]').click();

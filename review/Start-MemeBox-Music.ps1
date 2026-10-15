@@ -34,7 +34,7 @@ try {
           $body = [IO.File]::ReadAllBytes($file); $status = '200 OK'; $contentType = $types[$extension]
         }
       }
-      $response = "HTTP/1.1 $status`r`nContent-Type: $contentType`r`nContent-Length: $($body.Length)`r`nConnection: close`r`nCache-Control: no-store`r`nX-Content-Type-Options: nosniff`r`nReferrer-Policy: strict-origin-when-cross-origin`r`nContent-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; frame-src https://www.youtube-nocookie.com; connect-src 'self' http://127.0.0.1:8789; object-src 'none'; base-uri 'self'`r`n`r`n"
+      $response = "HTTP/1.1 $status`r`nContent-Type: $contentType`r`nContent-Length: $($body.Length)`r`nConnection: close`r`nCache-Control: no-store`r`nAccess-Control-Allow-Origin: *`r`nX-Content-Type-Options: nosniff`r`nReferrer-Policy: strict-origin-when-cross-origin`r`nContent-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; frame-src https://www.youtube-nocookie.com; connect-src 'self' http://127.0.0.1:8789; object-src 'none'; base-uri 'self'`r`n`r`n"
       $bytes = [Text.Encoding]::ASCII.GetBytes($response); $stream.Write($bytes,0,$bytes.Length)
       if ($method -ne 'HEAD') { $stream.Write($body,0,$body.Length) }
       $stream.Flush()

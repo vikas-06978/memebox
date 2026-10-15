@@ -11,8 +11,9 @@ MemeRoomI18n.ready.then(async () => {
   let playerReady=false, playerState='idle', loadTimer=0;
   const unavailable=new Set();
   let context = null, synth = null, timer = 0, paused = false, shuffle = false, published = [];
-  const previewCatalog = Array.isArray(globalThis.MemeBoxPreviewCatalog) ? globalThis.MemeBoxPreviewCatalog : [];
+  const previewCatalog = Array.isArray(globalThis.MemeBoxPreviewCatalog) ? globalThis.MemeBoxPreviewCatalog : (globalThis.MemeBoxBundledCatalog || []);
   const previewMemeCount = previewCatalog.filter(pack=>pack?.kind==='memevideos').reduce((total,pack)=>total+(Array.isArray(pack.items)?pack.items.length:0),0);
+  let usingStarter = true;
   const incoming=new URLSearchParams(location.hash.slice(1));
   let extensionId=inExtension?chrome.runtime.id:incoming.get('extension');
   try{if(extensionId&&/^[a-p]{32}$/.test(extensionId))sessionStorage.setItem('memebox-extension',extensionId);else extensionId=sessionStorage.getItem('memebox-extension');}catch{}
@@ -74,23 +75,22 @@ MemeRoomI18n.ready.then(async () => {
     $('youtube-player').removeAttribute('src');$('youtube-box').hidden=true;$('player-empty').hidden=false;
     $('youtube-link').hidden=true;$('now-title').textContent=memeMode?'Choose a video meme to start':t('room_pick');status('');renderOriginals();renderLists();renderPublished();
   }
-  function webUrl(list) {
-    const config=globalThis.MEMEBOX_CONFIG||{},local=(config.SITE_URL||'').startsWith('http://127.0.0.1:');
-    const url=new URL(local?'http://127.0.0.1:8790/music-room.html':new URL('/music-room',config.SITE_URL||location.origin));
-    if(memeMode)url.searchParams.set('mode','memes');
-    const selection=new URLSearchParams();if(extensionId)selection.set('extension',extensionId);
-    if(list.videos)selection.set('videos',list.videos.join(','));else selection.set('list',list.id);selection.set('name',list.title);
-    if(list.explicit)selection.set('explicit','1');url.hash=selection.toString();return url;
-  }
   function watchLoad(list){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{if(selected===list.id){playerState='paused';status('If playback has not started, press Play inside the video once.');renderPublished();}},12000);}
-  function playPlaylist(list) {
+  async function playPlaylist(list) {
     if(!allowed(list)){status(t('adult_blocked'));return;}
     if (unavailable.has(list.id)) { status('This video cannot play in the embedded player. Choose another meme.'); return; }
     clearTimeout(timer);if(synth)synth.stop();originalId='';renderOriginals();selected=list.id;currentPlaylist=list;paused=false;playerState='loading';$('now-title').textContent=list.title;
     $('youtube-link').hidden=true;
     if(needsWeb) {
-      const url=webUrl(list);$('website-player').href=url.href;$('website-player').hidden=false;
-      status(t('room_web_required'));renderLists();location.replace(url.href);return;
+      status('Opening the current player…');
+      const base = await MemePlayerRoute.resolve();
+      if (!base) {
+        playerState = 'idle';
+        status('The website player has not been released yet. Start Start-MemeBox-Music.cmd from the review download once, keep it open, then press Play here. Your included meme library is already available below.');
+        $('extension-player-help').hidden = false;
+        renderLists(); renderPublished(); return;
+      }
+      location.replace(MemePlayerRoute.selection(base, { memes: memeMode, extension: extensionId, list: list.videos ? null : list.id, videos: list.videos, name: list.title, explicit: list.explicit })); return;
     }
     if(playerReady && list.videos?.length===1){command('loadVideoById',[list.videos[0]]);status('Loading '+list.title+'…');renderPublished();watchLoad(list);return;}
     playerReady=false;
@@ -115,7 +115,7 @@ MemeRoomI18n.ready.then(async () => {
     for(const item of visible) {
       const card=make('article','','room-track');card.dataset.playlist=item.id;
       const details=make('div',''),heading=make('h3',item.title);details.append(heading,make('p',t('room_collection_meta')));
-      const actions=make('div','','room-actions'),play=make('button',needsWeb?t('room_web_player'):t('room_play'));
+      const actions=make('div','','room-actions'),play=make('button',t('room_play'));
       play.type='button';play.dataset.playlistPlay=item.id;play.setAttribute('aria-pressed',String(selected===item.id));play.addEventListener('click',()=>playPlaylist(item));
       actions.append(play);card.append(details,actions);$('playlist-list').append(card);
     }
@@ -139,19 +139,20 @@ MemeRoomI18n.ready.then(async () => {
       const songs=make(videoPack?'div':'ol','',videoPack?'meme-items':'');
       for(const item of items) {
         if(videoPack) {
-          const row=make('div','','meme-item'),name=make('span',item.title),playOne=make('button',needsWeb?t('room_web_player'):t('room_play'));
+          const row=make('div','','meme-item'),name=make('span',item.title),playOne=make('button',t('room_play'));
           playOne.type='button';playOne.dataset.videoId=item.videoId;const active=selected===item.videoId;playOne.disabled=unavailable.has(item.videoId)||(active&&playerState==='loading');playOne.setAttribute('aria-pressed',String(active));if(unavailable.has(item.videoId))playOne.textContent='Unavailable';else if(active)playOne.textContent=playerState==='playing'?'Playing':playerState==='paused'?'Play in video':'Loading…';playOne.addEventListener('click',()=>playPlaylist({id:item.videoId,title:item.title,videos:[item.videoId],explicit:item.explicit}));
           row.append(name,playOne);songs.append(row);
         } else songs.append(make('li',item.title+(item.credit?' · '+item.credit:'')));
       }
       details.append(songs);
-      const play=make('button',needsWeb?t('room_web_player'):t('room_play'));play.type='button';play.dataset.publishedPlay=pack.id;
+      const play=make('button',t('room_play'));play.type='button';play.dataset.publishedPlay=pack.id;
       play.addEventListener('click',()=>{const playable=pack.items.filter(item=>showAdult||!item.explicit);if(playable.length)playPlaylist({id:pack.id,title:pack.title,videos:playable.map(item=>item.videoId),explicit:playable.some(item=>item.explicit)})});
       card.append(details);if(!videoPack)card.append(play);$('published-list').append(card);
     }
     if(published.length){let memes=0,music=0;for(const pack of published){const n=pack.items.filter(item=>!item.unavailable&&(showAdult||!item.explicit)).length;if(pack.kind==='memevideos'||memeMode)memes+=n;else music+=n;}$('published-status').textContent=memes+' memes · '+music+' music tracks';}
   }
   function loadPreviewCatalog() {
+    usingStarter = true;
     published=previewCatalog.filter(pack=>(memeMode?pack?.kind==='memevideos':['links','memevideos'].includes(pack?.kind))).map((pack,index)=>({
       id:'preview-'+index,kind:pack.kind,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).filter(item=>/^[A-Za-z0-9_-]{11}$/.test(item.videoId||''))
     })).filter(pack=>pack.items.length);
@@ -162,7 +163,7 @@ MemeRoomI18n.ready.then(async () => {
     return count;
   }
   $('published-browse').addEventListener('click',async()=>{
-    if(previewCatalog.length){loadPreviewCatalog();return;}
+    if(previewCatalog.length)loadPreviewCatalog();
     $('published-browse').disabled=true;$('published-status').textContent=t('room_catalog_loading');
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),8000);
     try {
@@ -175,7 +176,8 @@ MemeRoomI18n.ready.then(async () => {
       const data=await response.json();published=(Array.isArray(data.packs)?data.packs:[]).filter(pack=>(memeMode?pack?.kind==='memevideos':['links','memevideos'].includes(pack?.kind))).slice(0,memeMode?30:10).map((pack,index)=>({
         id:'published-'+index,kind:pack.kind,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).slice(0,50).filter(item=>typeof item?.videoId==='string'&&/^[A-Za-z0-9_-]{11}$/.test(item.videoId)).map(item=>({videoId:item.videoId,title:String(item.title||item.videoId).slice(0,100),credit:String(item.credit||'').slice(0,100),explicit:item.explicit===true,unavailable:item.unavailable===true}))
       })).filter(pack=>pack.items.length);
-      renderPublished();if(!published.length)$('published-status').textContent=t('room_catalog_empty');
+      if(!published.length && previewCatalog.length)loadPreviewCatalog();
+      else {usingStarter=false;renderPublished();if(!published.length)$('published-status').textContent=t('room_catalog_empty');}
     }catch{loadPreviewCatalog();}
     finally{clearTimeout(timeout);$('published-browse').disabled=false;}
   });
@@ -198,7 +200,7 @@ MemeRoomI18n.ready.then(async () => {
     if(!showAdult&&currentPlaylist?.explicit)stop();
     if(inExtension){const {settings}=await chrome.storage.local.get('settings');await chrome.storage.local.set({settings:{...settings,showStrong:showAdult,adultConfirmed:showAdult}})}
     else try{localStorage.setItem('memebox-room-adult',showAdult?'on':'off')}catch{}
-    renderLists();renderPublished();if(previewCatalog.length)loadPreviewCatalog();
+    renderLists();renderPublished();if(usingStarter&&previewCatalog.length)loadPreviewCatalog();
   });
   $('stop').addEventListener('click',stop);
   $('pause').addEventListener('click',()=>{if(originalId&&context){if(paused)context.resume().catch(()=>{});else context.suspend().catch(()=>{});paused=!paused}else if(selected){command(paused?'playVideo':'pauseVideo');paused=!paused}});
@@ -229,7 +231,11 @@ MemeRoomI18n.ready.then(async () => {
   $('room-adult').checked=showAdult;$('review-status').hidden=MEMEBOX_CONFIG.PRO_ENABLED!==false;
   $('room-language').replaceChildren(...MemeRoomI18n.choices.map(([id,name])=>new Option(name,id)));$('room-language').value=MemeRoomI18n.code;
   $('room-language').addEventListener('change',async()=>{await MemeRoomI18n.load($('room-language').value,true);renderLists();renderOriginals();renderPublished()});
-  renderLists();renderOriginals();if(previewCatalog.length)loadPreviewCatalog();else $('published-browse').click();
+  renderLists();renderOriginals();
+  if(previewCatalog.length) {
+    loadPreviewCatalog();
+    if(!inExtension && !Array.isArray(globalThis.MemeBoxPreviewCatalog))$('published-browse').click();
+  } else $('published-browse').click();
   const query=new URLSearchParams(location.search),fragment=new URLSearchParams(location.hash.slice(1));
   for(const [key,value] of fragment)if(['list','videos','name','explicit'].includes(key))query.set(key,value);
   if(location.hash)history.replaceState(null,'',location.pathname+location.search);

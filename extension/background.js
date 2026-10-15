@@ -3,7 +3,7 @@
 //   while the frame that owns the microphone (usually the top one) plays the audio.
 // - Turns lines into audio: text via the offscreen eSpeak-NG engine, clips from IndexedDB.
 // - Forwards chrome.commands shortcuts (Alt+1…9) to the call tab.
-importScripts('config.js', 'defaults.js', 'packs.js', 'db.js');
+importScripts('config.js', 'defaults.js', 'packs.js', 'db.js', 'lib/player-route.js');
 
 const { TONES, LIMITS } = globalThis.MEME;
 
@@ -473,11 +473,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'open-options') {
     if (msg.hash === 'online') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#online-card') }).catch(() => {});
     else if (msg.hash === 'pictures') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#lines-card') }).catch(() => {});
-    else if (msg.hash === 'plans') chrome.tabs.create({ url: chrome.runtime.getURL('plans.html') }).catch(() => {});
+    else if (msg.hash === 'plans') {
+      const section = ['music', 'characters', 'filters', 'outfits', 'passes'].includes(msg.section) ? '#' + msg.section : '';
+      chrome.tabs.create({ url: chrome.runtime.getURL('plans.html' + section) }).catch(() => {});
+    }
     else if (msg.hash === 'music-room' || msg.hash === 'meme-room') {
-      const local=SITE_URL.startsWith('http://127.0.0.1:');const url=new URL(local?'http://127.0.0.1:8790/music-room.html':new URL('/music-room',SITE_URL));
-      if(msg.hash==='meme-room')url.searchParams.set('mode','memes');url.hash=new URLSearchParams({extension:chrome.runtime.id,audience:msg.audience==='call'?'call':'me'}).toString();
-      chrome.tabs.create({url:url.href}).then(async tab=>{if(sender.tab)await updateCallTab(sender.tab.id,e=>{e.playerTab=tab.id});}).catch(()=>{});
+      (async () => {
+        const base = await MemePlayerRoute.resolve();
+        const url = MemePlayerRoute.selection(base || chrome.runtime.getURL('music-room.html'), { memes: msg.hash === 'meme-room', extension: chrome.runtime.id, audience: msg.audience });
+        const tab = await chrome.tabs.create({ url });
+        if (sender.tab) await updateCallTab(sender.tab.id, entry => { entry.playerTab = tab.id; });
+      })().catch(() => {});
     }
 
     else if (msg.hash === 'music-preview') chrome.tabs.create({ url: chrome.runtime.getURL('playground.html#music-library') }).catch(() => {});

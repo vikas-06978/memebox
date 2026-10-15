@@ -174,23 +174,24 @@ test('characters: Free has two, Pro ten, Max fourteen; new exclusives require Ma
   assert.equal(plan.canFx('character:unicorn', now), true, 'preserve an existing purchase');
 });
 
-test('music: Free has two tunes, Pro seven, Max thirteen; the lists match the engine', () => {
+test('music: Free has two tunes, Pro eight including Desi Phonk, Max sixteen; every registered tune is discoverable', () => {
   const now = Date.UTC(2026, 9, 1);
   const plan = withConfig({ PRO_ENABLED: true });
   const music = loadScript('lib/music.js', { setInterval() {}, clearInterval() {} }).MemeMusic;
   assert.deepEqual([...plan.FREE_TUNES], [...music.FREE_TUNES]);
-  assert.equal(music.IDS.length, 13);
+  assert.equal(music.IDS.length, 16);
+  assert.deepEqual([...music.IDS].sort(), Object.keys(music.TUNES).sort());
   assert.equal(plan.canFx('music:chill', now), true);
   assert.equal(plan.canFx('music:party', now), false);
   plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', proSeconds: 60, checkedAt: now - 1000 });
   plan.setPass({ on: true });
   assert.equal(plan.canFx('music:party', now), true);
-  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 7);
+  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 8);
   assert.equal(plan.canFx('music:bass', now), false);
   assert.equal(plan.canFx('music:phonk_desi', now), true);
   assert.equal(plan.canFx('music:phonk_drift', now), false);
   plan.setLicense({ key: 'MBX-AAAA-BBBB-CCCC', status: 'active', maxSeconds: 60, checkedAt: now });
-  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 13);
+  assert.equal(music.IDS.filter(id => plan.canFx('music:' + id, now)).length, 16);
   for (const id of music.PHONK_IDS) assert.equal(plan.canFx('music:' + id, now), true);
 });
 

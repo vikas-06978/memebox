@@ -107,6 +107,15 @@ document.getElementById('picture-close').addEventListener('click', closePicture)
 document.addEventListener('keydown', e=>{if(e.key==='Escape')closePicture()});
 window.addEventListener('pagehide', closePicture);
 
+// Product links select the exact preview instead of sending every user to the top.
+const requested=new URLSearchParams(location.search);
+const wantedCharacter=requested.get('character');
+if(MemeFx.CHARACTERS.includes(wantedCharacter))document.querySelector(`[data-character="${wantedCharacter}"]`).click();
+for(const [property,element,values] of [['filter','filter',MemeFx.FILTERS],['outfit','outfit',MemeFx.OUTFITS]]) {
+  const value=requested.get(property);
+  if(values.includes(value)){const select=document.getElementById(element);select.value=value;select.dispatchEvent(new Event('change'));}
+}
+
 document.getElementById('picture-image').addEventListener('error',()=>{closePicture();document.getElementById('picture-status').textContent=t('pg_picture_invalid')});
 
 });

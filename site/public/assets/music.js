@@ -348,7 +348,6 @@
       },
     },
   };
-  const IDS = Object.keys(TUNES);
   // Original arrangements, synthesized locally: no vocal samples, YouTube, CDN or R2 requests.
   const PHONK_IDS = ['phonk_desi', 'phonk_drift', 'phonk_midnight'];
   // Eight-bar phrases with a real pause before each drop. The first drop lands
@@ -417,6 +416,7 @@
   TUNES.phonk_desi = phonk(150, [38, 38, 41, 36], [0, 1, 7, 5, 4, 7, 8, 5], true);
   TUNES.phonk_drift = phonk(156, [33, 36, 31, 34], [0, 7, 3, 10, 7, 3, 12, 10]);
   TUNES.phonk_midnight = phonk(144, [36, 32, 34, 31], [0, 3, 7, 10, 12, 10, 7, 3], false, true);
+  const IDS = Object.keys(TUNES); // Include the Phonk arrangements registered above.
 
   function makeNoise(ctx) {
     const len = Math.floor(ctx.sampleRate * 0.8);

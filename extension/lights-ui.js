@@ -11,7 +11,6 @@
     const { el, t } = api;
 
     const can = (f) => plan.canFx(f);
-    const closed = () => !plan.shopOpen() && !plan.isPro(); // an owner / old key holder (or a pass) keeps the full panel // paid options not on sale yet: locked choices are left out, and so are the Buy buttons
     const TRIAL_MS = 20000;            // a locked choice can be tried on your own screen for 20 s at a time
     let trialUntil = 0;
     let camActive = false;
@@ -43,13 +42,12 @@
     const status = el('div', { className: 'fx-status' });
     const lockBar = el('div', { className: 'fx-lock', hidden: true });
     const plansBtn = el('button', { className: 'btn small', type: 'button' }, t('fx_plans'));
-    plansBtn.addEventListener('click', () => api.openSite('/buy'));
+    plansBtn.addEventListener('click', () => api.send({ type: 'open-options', hash: 'plans', section: 'filters' }));
     lockBar.append(el('span', {}, t('fx_locked')), plansBtn);
 
     const group = (title) => el('div', { className: 'fx-group' }, el('div', { className: 'fx-label' }, title));
     const chipRow = () => el('div', { className: 'fx-chips' });
     const chip = (label, on, locked, onClick) => {
-      if (locked && closed()) return null;
       const b = el('button', { className: 'chip' + (on ? ' on' : '') + (locked ? ' locked' : ''), type: 'button' }, (locked ? '🔒 ' : '') + label);
       b.addEventListener('click', onClick);
       return b;
@@ -89,7 +87,7 @@
     const presetChips = chipRow();
     for (const id of Object.keys(PRESETS)) {
       const b = el('button', { className: 'chip preset', type: 'button' }, t('fx_pre_' + id));
-      b.dataset.preset = id; // render() hides the quick looks that need a paid part while the paid options are not on sale
+      b.dataset.preset = id; // Paid looks remain available as local previews.
       b.addEventListener('click', () => set({ ...PRESETS[id], lampX: null, lampHang: 0, lampSize: 1, on: true }, true));
       presetChips.append(b);
     }
@@ -170,9 +168,14 @@
     const body = el('div', { className: 'settings-body fx-body' },
       el('div', { className: 'fx-how' }, t('fx_how')),
       onRow, presetG, canvas, dragHint, darkBtn, status, lockBar, lampG, colorsG, cornersG, looksG, charG, extras);
-    // Not on sale yet: leave out what only a paid plan can do (corner lights and their shows, lights that follow the memes, Follow me and its
-    // options, the HD touch-up). render() shows them again for key holders.
-    const paidOnly = [cornersG, tryLine, seenLine, sensChips, ...[syncBox, followBox, gestBox, mastiBox, hdBox].map((x) => x.parentElement), hdRange.parentElement].filter(Boolean);
+    const explorePlans = el('div', { className: 'fx-chips' });
+    for (const [section, label] of [['characters', 'Characters & ownership'], ['filters', 'More filters & plans'], ['outfits', 'Outfits & prices']]) {
+      const button = el('button', { className: 'chip', type: 'button' }, label);
+      button.dataset.plansSection = section;
+      button.addEventListener('click', () => api.send({ type: 'open-options', hash: 'plans', section }));
+      explorePlans.append(button);
+    }
+    body.append(explorePlans);
 
     // ---- the time pass: Pro / Pro Max hours of use (the service worker counts them while you are in a call) ----
     const passText = el('div', { className: 'fx-pass-text' });
@@ -186,7 +189,6 @@
       return h ? `${h}:${String(m).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}` : `${m}:${String(s % 60).padStart(2, '0')}`;
     };
     function renderPass() {
-      passRow.hidden = closed(); // no plans on sale yet and no pass: nothing to show
       const l = plan.validLicense();
       const left = plan.passLeft();
       passRow.classList.toggle('on', passOn && left > 0);
@@ -231,12 +233,11 @@
     bright.addEventListener('input', () => set({ intensity: Number(bright.value) / 100 }));
 
     // ---- build the choice lists from what exists ----
-    // A row of choices. While the paid options are not on sale the locked ones are left out (chip() gives null), and a
-    // row that is left with a single choice is hidden altogether.
-    const put = (row, items, hideIfOne) => {
+    // Discoverability is independent of checkout. Locked choices use a local trial.
+    const put = (row, items) => {
       const kept = items.filter(Boolean);
       row.replaceChildren(...kept);
-      if (hideIfOne) row.hidden = closed() && kept.length <= 1;
+      row.hidden = kept.length === 0;
     };
     function fill() {
       const c = cfg();
@@ -252,7 +253,6 @@
         chip(a === 'auto' ? t('fx_angle_auto') : a + '°', c.lightAngle === a, false, () => set({ lightAngle: a }))));
       put(swatches, Object.keys(Fx.COLORS).map((name) => {
         const locked = !Fx.FREE_COLORS.includes(name) && !can('colors');
-        if (locked && closed()) return null;
         const b = el('button', { className: 'fx-sw' + (c.color === name ? ' on' : '') + (locked ? ' locked' : ''), type: 'button' });
         b.style.background = Fx.COLORS[name];
         b.setAttribute('aria-label', name + (locked ? ' 🔒' : ''));
@@ -288,9 +288,7 @@
       renderPass();
       fill();
       const locked = Fx.lockedParts(c, can);
-      for (const n of paidOnly) n.hidden = closed();
-      for (const b of presetChips.children) b.hidden = closed() && Fx.lockedParts(PRESETS[b.dataset.preset], can).length > 0;
-      lockBar.hidden = locked.length === 0 || closed();
+      lockBar.hidden = locked.length === 0;
       status.textContent = !c.on ? t('fx_hint_off') : camActive ? t('fx_active') : t('fx_restart');
       status.className = 'fx-status' + (c.on && camActive ? ' ok' : '');
       if (api.panelIsOpen()) api.placePanel();

@@ -14,7 +14,6 @@
     let local = null;     // { ctx, player }
 
     const can = (id) => plan.canFx('music:' + id);
-    const closed = () => !plan.shopOpen() && !plan.isPro(); // paid options not on sale yet: locked tunes and the Buy button are left out
     const volume = () => {
       const v = Number(api.getSettings().musicVolume);
       return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0.5;
@@ -45,7 +44,7 @@
     vol.setAttribute('aria-label', t('mu_vol'));
     const lock = el('div', { className: 'fx-lock', hidden: true });
     const plansBtn = el('button', { className: 'btn small', type: 'button' }, t('fx_plans'));
-    plansBtn.addEventListener('click', () => api.openSite('/buy'));
+    plansBtn.addEventListener('click', () => api.send({ type: 'open-options', hash: 'plans', section: 'music' }));
     lock.append(el('span', {}, t('mu_locked')), plansBtn);
     const onlyMe = el('button', { className: 'chip', type: 'button' }, '🎧 Only me');
     const everyone = el('button', { className: 'chip', type: 'button' }, '🎙 Everyone in call');
@@ -55,7 +54,10 @@
     const shareBtn = el('button', {className:'chip', type:'button'}, 'Share playlist / meme audio');
     shareBtn.dataset.sharePlayer='true';
     const audienceRow = el('div', { className: 'fx-group' }, el('div', { className: 'fx-label' }, 'Who hears the music?'), el('div', { className: 'fx-chips' }, onlyMe, everyone));
-    const body = el('div', { className: 'settings-body fx-body' }, how, audienceRow, shareBtn, shareHelp, chips, mineBox, status, lock,
+    const browsePlans = el('button', { className: 'chip', type: 'button' }, 'Preview more music · View plans');
+    browsePlans.dataset.musicPlans = 'true';
+    browsePlans.addEventListener('click', () => api.send({ type: 'open-options', hash: 'plans', section: 'music' }));
+    const body = el('div', { className: 'settings-body fx-body' }, how, audienceRow, shareBtn, shareHelp, chips, browsePlans, mineBox, status, lock,
       el('div', { className: 'row' }, el('span', {}, '\u{1F50A}'), vol, stopBtn));
     const sum = el('span', { className: 'sum' });
     const details = el('details', { className: 'settings fx' }, el('summary', {}, el('span', {}, t('mu_title')), sum), body);
@@ -125,8 +127,7 @@
 
     function render() {
       renderMine();
-      addBtn.hidden = closed() && !can('own');
-      chips.replaceChildren(...[...Music.IDS].filter((id) => !(closed() && !can(id))).map((id) => {
+      chips.replaceChildren(...Music.IDS.map((id) => {
         const locked = !can(id);
         const on = id === callId || id === localId;
         const b = el('button', { className: 'chip' + (on ? ' on' : '') + (locked ? ' locked' : ''), type: 'button' },
@@ -135,7 +136,7 @@
         return b;
       }));
       const locked = localId && !can(localId);
-      lock.hidden = !locked || closed();
+      lock.hidden = !locked;
       const callName = callId.startsWith('mine:') ? ((mine.find((m) => 'mine:' + m.id === callId) || {}).name || t('mu_mine')) : callId ? t('mu_t_' + callId) : '';
       status.textContent = callId ? t('mu_in_call', callName)
         : localId ? t('mu_preview', t('mu_t_' + localId), String(PREVIEW_SECONDS))

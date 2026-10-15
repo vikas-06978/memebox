@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { clickPanel } from '../tests/e2e/closed-panel.mjs';
+import { startSite } from './site-dev.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const ext = path.join(root, 'extension'), out = path.join(root, 'site/public/assets');
@@ -15,8 +16,8 @@ const chapters = [
   ['intro', 'Your call.\nYour personality.', 'MemeBox brings memes, music, pictures and camera effects into browser calls.', 'A personal studio for browser calls', 'call'],
   ['memes', 'One click.\nA room full of laughs.', 'Join a browser call. Click 😂 for a random meme; right-click it to choose one.', '01 / Memes and sound effects', 'call'],
   ['panel', 'Everything\nin one panel.', 'Search your library, save favourites and use Alt+1–9. Alt+0 stops all playback.', '02 / Your call controls', 'panel'],
-  ['music', 'Keep the vibe.\nChoose the audience.', 'Only me is private listening. Everyone in call mixes music into your meeting mic.', '03 / Music and audience', 'music'],
-  ['player', 'Playlists and\nvideo memes, too.', 'For player audio, choose Everyone in call, select the player tab and enable Share tab audio.', '04 / Browser-approved tab audio', 'music'],
+  ['music', 'Keep the vibe.\nChoose the audience.', 'Explore all 16 tunes, including three Phonk originals. Preview extras privately; choose who hears your music.', '03 / Music and audience', 'music'],
+  ['player', 'Playlists and\nvideo memes, too.', 'Press Play in the player. For Everyone in call, select this player tab and enable Share tab audio.', '04 / Browser-approved tab audio', 'player'],
   ['pictures', 'A picture.\nWith or without words.', 'Choose a picture, preview it and press Add. Caption and Read caption aloud are optional.', '05 / Pictures and captions', 'picture'],
   ['characters', 'Meet your\nnew companions.', 'Pick a character and outfit. Preview its signature action, waving, dancing and reactions.', '06 / Animated companions', 'companion'],
   ['gestures', 'Small gestures.\nBig personality.', 'Optional Follow me uses local face and hand models. It supports selected gestures, not general sign language.', '07 / Local face and hand reactions', 'companion'],
@@ -30,6 +31,7 @@ const context = await chromium.launchPersistentContext('', {
   channel: 'chromium', headless: true, viewport: { width: 1280, height: 800 },
   args: [`--disable-extensions-except=${ext}`, `--load-extension=${ext}`, '--lang=en-US', '--autoplay-policy=no-user-gesture-required', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
 });
+let demoSite;
 try {
   let [sw] = context.serviceWorkers();
   if (!sw) sw = await context.waitForEvent('serviceworker');
@@ -53,6 +55,9 @@ try {
   await capture('panel', call);
   await clickPanel(call, '.ptab[data-tab="music"]'); await capture('music', call);
   await clickPanel(call, '.ptab[data-tab="sound"]'); await capture('sound', call);
+  demoSite=await startSite();
+  const room=await context.newPage();await room.goto(demoSite.url+'/music-room');
+  await room.locator('[data-playlist-play]').first().waitFor();await capture('player',room);
   await options.bringToFront();
   await options.locator('#line-text').fill('That was close!');
   const pic = await options.evaluate(() => { const c = document.createElement('canvas'); c.width = 600; c.height = 400; const g = c.getContext('2d'); g.fillStyle = '#fff0a5'; g.fillRect(0,0,600,400); g.fillStyle = '#222'; g.font = 'bold 52px system-ui'; g.textAlign = 'center'; g.fillText('THAT WAS CLOSE!',300,160); g.font = '100px sans-serif'; g.fillText('😅',300,300); return c.toDataURL().split(',')[1]; });
@@ -130,4 +135,4 @@ try {
   fs.writeFileSync(path.join(out,'tutorial.en.vtt'),vtt);fs.writeFileSync(path.join(ext,'tutorial.en.vtt'),vtt);
   fs.writeFileSync(path.join(out,'tutorial-chapters.json'),JSON.stringify(chapters.map(({id,label,seconds})=>({id,label,seconds})),null,2)+'\n');
   console.log(`English captioned tour: ${at}s, ${chapters.length} chapters. MP4, WebM, poster and VTT created.`);
-} finally { await context.close(); }
+} finally { await context.close(); if(demoSite)await demoSite.close(); }
