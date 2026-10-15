@@ -69,6 +69,41 @@ async function refreshLicense() {
 }
 refreshLicense().then(() => { passQueue = passQueue.then(() => flushPassDebt()).catch(() => {}); }).catch(() => {});
 
+// ---------- optional product analytics ----------
+// Only allowlisted feature/item ids are queued. Call content and user-created names never enter this path.
+const USAGE_FEATURES = new Set(['meme','music','phonk','video-meme','picture','character','filter','outfit','voice','lights']);
+const USAGE_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
+let usageTimer = 0, usageBusy = false;
+async function queueUsage(feature, item) {
+  if (!USAGE_FEATURES.has(feature) || !USAGE_ID.test(item)) return;
+  const stored = await chrome.storage.local.get(['settings', 'usageQueue', 'usageInstall']);
+  if (stored.settings?.usageAnalytics !== true) return;
+  const install = stored.usageInstall || crypto.randomUUID();
+  const queue = stored.usageQueue && typeof stored.usageQueue === 'object' ? stored.usageQueue : {};
+  const id = feature + ':' + item;
+  queue[id] = Math.min(10000, (Number(queue[id]) || 0) + 1);
+  await chrome.storage.local.set({ usageInstall: install, usageQueue: queue });
+  clearTimeout(usageTimer); usageTimer = setTimeout(() => flushUsage().catch(() => {}), 15000);
+}
+async function flushUsage() {
+  if (usageBusy) return;
+  usageBusy = true;
+  try {
+    const stored = await chrome.storage.local.get(['settings', 'usageQueue', 'usageInstall', 'license']);
+    if (stored.settings?.usageAnalytics !== true || !stored.usageInstall) return;
+    const sent = Object.entries(stored.usageQueue || {}).slice(0, 40);
+    if (!sent.length) return;
+    const events = sent.map(([id, count]) => { const at = id.indexOf(':'); return { feature: id.slice(0, at), item: id.slice(at + 1), count }; });
+    const response = await fetch(SITE_URL + '/api/usage', { method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ install: stored.usageInstall, key: stored.license?.key || '', events }), signal: AbortSignal.timeout(15000) });
+    if (!response.ok) return;
+    const fresh = (await chrome.storage.local.get('usageQueue')).usageQueue || {};
+    for (const [id, count] of sent) { fresh[id] = Math.max(0, (Number(fresh[id]) || 0) - Number(count)); if (!fresh[id]) delete fresh[id]; }
+    await chrome.storage.local.set({ usageQueue: fresh });
+  } catch { /* keep counters for the next worker wake */ } finally { usageBusy = false; }
+}
+chrome.runtime.onStartup.addListener(() => flushUsage().catch(() => {}));
+
 // ---------- time pass (Pro / Pro Max hours) ----------
 // The panel in the call tab reports "a call with the pass on" every PASS_TICK_MS. The seconds are taken off
 // the saved balance here (Pro Max first); every PASS_SYNC_MS they are also reported to the site, which keeps
@@ -429,6 +464,9 @@ async function popupMessage(msg, sendResponse) {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (sender.id !== chrome.runtime.id || !msg || typeof msg !== 'object' || msg.target) return;
+
+  if (msg.type === 'usage-event') { queueUsage(String(msg.feature || ''), String(msg.item || '')).catch(() => {}); return; }
+  if (msg.type === 'usage-flush') { flushUsage().catch(() => {}); return; }
 
   if(msg.type==='room-audio-answer'){const pending=roomOffers.get(msg.requestId);if(pending&&sender.tab?.id===pending.tabId&&sender.frameId===pending.frameId){roomOffers.delete(msg.requestId);clearTimeout(pending.timer);pending.reply({ok:!msg.error,sdp:msg.sdp,error:msg.error});}return;}
   if (msg.type === 'open-options') {

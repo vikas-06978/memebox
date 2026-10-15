@@ -146,6 +146,7 @@
     state.pending.set(reqId, line);
     setTimeout(() => state.pending.delete(reqId), 20000);
     if (!bridge.toRuntime({ type: 'play', frameId: f.id, reqId, item: line })) orphaned();
+    else bridge.toRuntime({ type: 'usage-event', feature: line.pictureId ? 'picture' : 'meme', item: line.pictureId ? 'picture' : line.kind === 'sfx' ? 'sound-effect' : line.kind === 'clip' ? 'personal-clip' : line.packId ? 'pack' : 'line' });
   }
 
   // Meme pictures arrive just before the sound (by request id) and show with the caption.
@@ -284,6 +285,7 @@
       return;
     }
     state.voice = fx;
+    if (fx !== 'off') bridge.toRuntime({ type: 'usage-event', feature: 'voice', item: fx });
     if (fx !== 'off' && state.settings.voiceLast !== fx) {
       state.settings = { ...state.settings, voiceLast: fx };
       saveSetting('voiceLast', fx);

@@ -33,10 +33,10 @@
     packsBtn.addEventListener('click', () => api.openPacks());
     const phonkBtn = el('button', { className: 'chip add-music', type: 'button', title: t('mu_phonk_tip') }, t('mu_phonk')); // Phonk Mode: a page on our site with YouTube's own player
     phonkBtn.dataset.musicRoom='true';
-    phonkBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'music-room', audience }));
+    phonkBtn.addEventListener('click', () => { api.send({ type:'usage-event', feature:'phonk', item:'player' }); api.send({ type:'open-options', hash:'music-room', audience }); });
     phonkBtn.title = t('mu_phonk_local_tip');
     const videoMemesBtn = el('button', { className: 'chip add-music', type: 'button', title: 'Browse admin-curated video memes from every region' }, '🎬 Video memes');
-    videoMemesBtn.addEventListener('click', () => api.send({ type:'open-options', hash:'meme-room', audience }));
+    videoMemesBtn.addEventListener('click', () => { api.send({ type:'usage-event', feature:'video-meme', item:'player' }); api.send({ type:'open-options', hash:'meme-room', audience }); });
     mineBox.append(el('div', { className: 'fx-label' }, t('mu_mine')), mineChips, addInput);
     const chips = el('div', { className: 'fx-chips' });
     const status = el('div', { className: 'fx-status' });
@@ -109,13 +109,14 @@
         return el('span', { className: 'fx-pair' }, b, x);
       }), addBtn, packsBtn, phonkBtn, videoMemesBtn);
     }
-    function playMine(id) {
+    function playMine(id, trackUsage = true) {
       if (callId === 'mine:' + id) { stopAll(); return; }
       if (!can('own') && !(mine.find((x) => x.id === id) || {}).pack) { lock.hidden = false; return; } // a track from a free pack plays for everybody
       const f = api.frameId();
       if (f == null) { api.toast(t('mu_join'), 3500); return; }
       stopAll();
       api.send({ type: 'play-mine', frameId: f, id, volume: volume(), audience });
+      if (trackUsage) api.send({ type: 'usage-event', feature: 'music', item: 'personal' });
     }
     try {
       chrome.storage.local.get('myMusic').then((r) => { mine = Array.isArray(r.myMusic) ? r.myMusic : []; renderMine(); }).catch(() => {});
@@ -148,7 +149,7 @@
       if (api.panelIsOpen()) api.placePanel();
     }
 
-    function pick(id) {
+    function pick(id, trackUsage = true) {
       if (id === callId || id === localId) { stopAll(); return; }
       stopAll();
       if (can(id) && api.inCall() && audience === 'call') {
@@ -162,6 +163,7 @@
         setTimeout(() => { if (localId === id && !l.player.playing) { localId = ''; render(); } }, PREVIEW_SECONDS * 1000 + 400);
       }
       render();
+      if (trackUsage) api.send({ type: 'usage-event', feature: 'music', item: id });
     }
 
     function stopAll() {
@@ -215,7 +217,7 @@
       const playing=callId||localId;
       audience=value;api.setLocal('musicAudience',value);api.saveSetting('musicAudience',value);stopAll();
       if(value==='me'){stopPlayerShare();shareHelp.textContent='Only you hear music. Player audio is disconnected from the call.';}
-      if(playing){if(playing.startsWith('mine:'))playMine(playing.slice(5));else pick(playing);}
+      if(playing){if(playing.startsWith('mine:'))playMine(playing.slice(5), false);else pick(playing, false);}
       render();
     };
     onlyMe.addEventListener('click',()=>setAudience('me'));

@@ -138,3 +138,17 @@ CREATE TABLE IF NOT EXISTS pass_sessions (
   claim TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS pass_sessions_expiry ON pass_sessions(expires_at);
+
+-- Optional, privacy-limited product counters. The extension sends these only after
+-- the user opts in. No captions, filenames, meeting URLs, audio, video or contacts.
+CREATE TABLE IF NOT EXISTS usage_daily (
+  day TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  license_key TEXT NOT NULL DEFAULT '',
+  feature TEXT NOT NULL,
+  item TEXT NOT NULL,
+  count INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY(day, subject, feature, item)
+);
+CREATE INDEX IF NOT EXISTS usage_daily_feature ON usage_daily(day, feature, item);
+CREATE INDEX IF NOT EXISTS usage_daily_license ON usage_daily(license_key, day);

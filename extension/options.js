@@ -286,7 +286,7 @@ function renderLines() {
     const wa = el('button', { type: 'button', className: 'small', title: t('op_share_wa_tip') }, t('op_share_wa'));
     wa.addEventListener('click', () => shareWhatsApp(line));
     const vol = Math.round((line.volume ?? 1) * 100);
-    const about = line.pictureId ? el('td', { className: 'about' }, el('span', {className:'tag'}, t(MEME.silentLine(line) ? 'picture_silent' : 'picture_voice'))) : el('td', { className: 'about' },
+    const about = line.pictureId ? el('td', { className: 'about' }, el('span', { className: 'tag', title: t('tag_picture') }, '🖼'), ' ', el('span', {className:'tag'}, t(MEME.silentLine(line) ? 'picture_silent' : 'picture_voice'))) : el('td', { className: 'about' },
       el('span', { className: 'tag' }, line.kind === 'tts' ? line.lang : '🎵 ' + t(line.kind === 'sfx' ? 'tag_sfx' : 'tag_clip')),
       ' ', el('span', { className: 'tag', title: toneName(line.tone) }, `${tone.emoji} ${toneName(line.tone)}`),
       ' ', el('span', { className: 'tag' }, categoryLabel(line.category)),
@@ -1016,12 +1016,20 @@ chrome.storage.onChanged.addListener((changes, area) => {
   const r = await chrome.storage.local.get(['lines', 'settings']);
   lines = Array.isArray(r.lines) ? r.lines.map(sanitizeLine).filter(Boolean) : MEME_PACKS.all();
   settings = { ...MEME.defaultSettings(), ...(r.settings || {}) };
+  $('usage-analytics').checked = settings.usageAnalytics === true;
   settings.timers = (Array.isArray(settings.timers) ? settings.timers : []).map(sanitizeTimer).filter(Boolean);
   if (!Array.isArray(r.lines)) await chrome.storage.local.set({ lines });
   render();
   resetForm();
   $('clip-cat').value = 'clips';
 })();
+
+$('usage-analytics').addEventListener('change', async () => {
+  const stored = await chrome.storage.local.get('settings');
+  settings = { ...MEME.defaultSettings(), ...stored.settings, usageAnalytics: $('usage-analytics').checked };
+  await chrome.storage.local.set({ settings });
+  if (settings.usageAnalytics) chrome.runtime.sendMessage({ type: 'usage-flush' }).catch(() => {});
+});
 
 // Country-independent discovery; private additions are never published automatically.
 const contentLanguage=$('content-language'),contentStrong=$('content-strong');

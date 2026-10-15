@@ -204,6 +204,17 @@ export async function loadShop(db) {
   const waiting = (await db.prepare("SELECT * FROM orders WHERE status = 'waiting' ORDER BY claimed_at").all()).results;
   const recent = (await db.prepare("SELECT * FROM orders WHERE status IN ('approved', 'rejected') ORDER BY decided_at DESC LIMIT 20").all()).results;
   const licenses = (await db.prepare('SELECT * FROM licenses ORDER BY created_at DESC LIMIT 100').all()).results;
+  try {
+    const usage = (await db.prepare(`SELECT license_key, COALESCE(SUM(billed), 0) AS billed, COUNT(*) AS sessions,
+      MAX(issued_at) AS last_session FROM pass_sessions GROUP BY license_key`).all()).results;
+    const byKey = new Map(usage.map((row) => [row.license_key, row]));
+    for (const license of licenses) {
+      const row = byKey.get(license.key) || {};
+      license.pass_billed = Number(row.billed) || 0;
+      license.pass_sessions = Number(row.sessions) || 0;
+      license.last_session = Number(row.last_session) || 0;
+    }
+  } catch { /* the dashboard stays usable until the pass-session migration is applied */ }
   const earned = await db.prepare("SELECT COALESCE(SUM(amount_inr), 0) AS inr, COUNT(*) AS n FROM orders WHERE status = 'approved'").first();
   const week = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
   const count = async (where, ...args) => Number((await db.prepare(`SELECT COUNT(*) AS n FROM licenses WHERE ${where}`).bind(...args).first()).n);

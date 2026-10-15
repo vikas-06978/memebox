@@ -9,6 +9,7 @@ import { makeSession } from '../../site/src/security.js';
 import { onRequest as licenseApi } from '../../site/functions/api/license.js';
 import { onRequest as orderApi } from '../../site/functions/api/order.js';
 import { onRequest as configApi } from '../../site/functions/api/config.js';
+import { onRequest as usageApi } from '../../site/functions/api/usage.js';
 import { onRequest as adminPage } from '../../site/functions/admin/index.js';
 import { onRequest as adminOrder } from '../../site/functions/admin/order.js';
 import { onRequest as adminLicense } from '../../site/functions/admin/license.js';
@@ -277,7 +278,7 @@ test('admin shows an activity section: earned, funnel, charts and pass time from
   const created = await (await call(orderApi, postJson('/api/order', { action: 'create', product: 'pass_pro_60' }))).json();
   assert.ok(created.ok, JSON.stringify(created));
   const html = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
-  assert.match(html, /id="activity">Activity/);
+  assert.match(html, /id="activity"[\s\S]*Sales and usage/);
   assert.match(html, /<div class="range" id="range"/, '7 / 14 / 30 day buttons');
   assert.match(html, /<nav class="admin-nav"/, 'section nav');
   assert.match(html, /data-pick="reason:too-hard"/, 'a reason bar filters the messages');
@@ -286,7 +287,25 @@ test('admin shows an activity section: earned, funnel, charts and pass time from
   assert.match(html, /checkouts started/);
   assert.match(html, /<svg class="chart"/);
   assert.match(html, /Pass time/);
+  assert.match(html, /What people use/);
+  assert.match(html, /Platform coverage/);
   assert.doesNotMatch(html, /style="/, 'the admin page CSP blocks inline styles');
+});
+
+test('optional usage stores only allowlisted counters and feeds the admin ranking', async () => {
+  const response = await call(usageApi, postJson('/api/usage', {
+    install: '12345678-1234-4123-8123-123456789abc',
+    events: [{ feature: 'character', item: 'panda', count: 2 }, { feature: 'meme', item: 'line' }, { feature: 'caption', item: 'secret' }],
+  }));
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), '*');
+  const rows = (await db.prepare('SELECT * FROM usage_daily ORDER BY feature').all()).results;
+  assert.equal(rows.length, 2, 'unknown feature was discarded');
+  assert.equal(rows[0].subject.length, 64, 'only a one-way installation hash is stored');
+  assert.equal(rows.some((row) => row.feature === 'character' && row.item === 'panda' && row.count === 2), true);
+  const html = await (await call(adminPage, req('/admin', { headers: { Cookie: cookie } }))).text();
+  assert.match(html, /character: panda/);
+  assert.doesNotMatch(html, /12345678-1234-4123/);
 });
 
 test('buying a character: new purchases and the eight-character bundle add permanent ownership', async () => {

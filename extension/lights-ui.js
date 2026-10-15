@@ -24,6 +24,8 @@
       api.saveSetting('fx', next);
       api.setLocal('fx', next);
       if (tryIt && Fx.lockedParts(next, can).length) trialUntil = Date.now() + TRIAL_MS;
+      for (const feature of ['character', 'filter', 'outfit']) if (typeof patch[feature] === 'string') api.send({ type: 'usage-event', feature, item: patch[feature] });
+      if (patch.on === true) api.send({ type: 'usage-event', feature: 'lights', item: 'enabled' });
       render();
     };
 

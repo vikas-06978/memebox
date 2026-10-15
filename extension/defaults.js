@@ -97,6 +97,7 @@
     fx: {},               // Lights & looks (lib/fx.js): lamp, colours, light show, filter. {} = the defaults
     timersEnabled: false, // master switch for timed lines (off by default)
     timers: [],           // { id, lineId, mode: 'clock'|'interval', time: 'HH:MM', minutes, enabled }
+    usageAnalytics: false, // optional anonymous feature counters; never call content
   };
 
   const LIMITS = {

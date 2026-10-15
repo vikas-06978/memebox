@@ -1,13 +1,13 @@
 # MemeBox Privacy Policy
 
-_Last updated: 28 September 2026_
+_Last updated: 15 October 2026_
 
 MemeBox is a browser extension. It plays short meme lines or sound clips into your microphone during a video call, so the other people in the call can hear them.
 
 ## The short version
 
 - MemeBox **does not collect, record, store or send** any of your audio.
-- It has **no servers, no accounts, no analytics, no ads and no tracking**.
+- Anonymous feature counters are **optional and off by default**. There are no ads or cross-site tracking.
 - Everything you create (your lines, clips and settings) stays **in your own browser**.
 
 ## Your microphone
@@ -60,6 +60,8 @@ The **voice changer** (Chipmunk, Deep, Robot, Echo, Radio) changes your live mic
 If you add a clip from a direct file link (.mp3, .mp4, .wav, .ogg or .webm), MemeBox fetches that file once, without cookies, when you click Fetch. You then trim it and save it on your device. Like any web request, that website can see your IP address. MemeBox contacts no other website.
 
 ## Feedback form and uninstall survey
+
+If you enable **Share anonymous feature usage**, MemeBox sends daily counters containing only a feature and safe built-in item ID, such as `character:panda`. A random installation ID is one-way hashed before storage; an active license key may be associated so the owner can understand paid usage. MemeBox never sends meme text, captions, uploaded filenames, call audio or video, meeting URLs or contacts. This is off by default, can be switched off at any time, and counters are retained for up to 400 days.
 
 MemeBox has a **Feedback** button, and after your 10th meme it asks once if you'd like to rate it. Both open our feedback page. The link carries only the MemeBox version and which call site you were on (for example `?v=1.0.0&site=meet`). It carries nothing about you.
 
