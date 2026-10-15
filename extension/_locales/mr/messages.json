@@ -2148,5 +2148,26 @@
   },
   "plans_all_passes": {
     "message": "All passes"
+  },
+  "picture_speak": {
+    "message": "Read caption aloud"
+  },
+  "op_say_ph": {
+    "message": "Optional pronunciation, e.g. that was close"
+  },
+  "adult_enable": {
+    "message": "Show strong-language memes"
+  },
+  "op_clip_url_ph": {
+    "message": "Direct file URL, e.g. https://example.com/sound.mp3"
+  },
+  "fx_gestures_tip": {
+    "message": "Hold a supported hand pose in the camera for about one second. Keep your full hand visible beside your face. This recognizes the shown gestures, not full sign language."
+  },
+  "sound_help": {
+    "message": "My voice changes your microphone sound. Hear memes myself adds a local preview. Auto-duck lowers memes while you speak. Camera captions show text and pictures on your outgoing video."
+  },
+  "picture_add": {
+    "message": "Add picture"
   }
 }

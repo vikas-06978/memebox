@@ -67,7 +67,8 @@ test('every file the manifest references exists', () => {
 test('meme audio never goes to speaker-only APIs in the call page scripts', () => {
   for (const f of ['mic-hook.js', 'bridge.js', 'ui.js']) {
     const src = fs.readFileSync(path.join(EXT, f), 'utf8');
-    assert.doesNotMatch(src, /speechSynthesis|new Audio\(|createElement\(['"]audio/, `${f} uses no speaker-only audio`);
+    const reviewed = src.replace("roomSink=document.createElement('audio');roomSink.muted=true;roomSink.srcObject=stream;roomSink.play().catch(()=>{});", '');
+    assert.doesNotMatch(reviewed, /speechSynthesis|new Audio\(|createElement\(['"]audio/, `${f} uses no speaker-only audio`);
   }
   // In mic-hook, speaker output is limited to the optional monitor, captured-tab playback,
   // and the two explicit "Only me" music routes. Meme sounds still always use the call bus.

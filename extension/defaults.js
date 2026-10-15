@@ -163,6 +163,8 @@
       category: cleanCategory(l.category),
       volume: Number.isFinite(Number(l.volume)) && l.volume !== null && l.volume !== '' ? Math.min(2, Math.max(0, Number(l.volume))) : 1,
     };
+    if (l.speak === false) out.speak = false;
+    if (typeof l.pictureCaption === 'string') out.pictureCaption = l.pictureCaption.trim().slice(0, LIMITS.textChars);
     if (l.star === true) out.star = true;
     if (l.explicit === true || l.explicit === 1) out.explicit = true;
     if (typeof l.packId === 'string' && /^[a-z0-9-]{1,64}$/.test(l.packId)) out.packId = l.packId;

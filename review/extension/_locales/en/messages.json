@@ -324,10 +324,10 @@
     "message": "Text shown in the caption"
   },
   "op_text_ph": {
-    "message": "e.g. Bhai tu rehne de"
+    "message": "Optional for a picture, e.g. That was close!"
   },
   "op_say": {
-    "message": "Pronounce as (optional, e.g. Devanagari for Hinglish lines)"
+    "message": "Pronunciation override (optional)"
   },
   "op_lang": {
     "message": "Language"
@@ -417,13 +417,13 @@
     "message": "Add a clip"
   },
   "op_clips_hint": {
-    "message": "Use an audio file or a video (only its sound is kept), a direct file link, or record yourself. Then trim it. A saved clip can be up to 1 MB."
+    "message": "Choose an audio/video file from your device, record a clip, or use a direct .mp3/.wav file URL. YouTube page links cannot be imported here."
   },
   "op_choose_file": {
     "message": "📁 Choose a file"
   },
   "op_link_ph": {
-    "message": "https://…/sound.mp3  (direct .mp3 .mp4 .wav .ogg .webm link)"
+    "message": "Direct .mp3 or .wav file URL (YouTube links do not work here)"
   },
   "op_fetch": {
     "message": "🔗 Fetch"
@@ -438,7 +438,7 @@
     "message": "My recording"
   },
   "op_video_sites": {
-    "message": "YouTube, Instagram and other video pages are never downloaded. Play them live with the toolbar button → “Send this tab's sound”."
+    "message": "For YouTube playback open Video memes or Music. This importer accepts files from your device or direct media-file URLs."
   },
   "op_start": {
     "message": "Start"
@@ -486,7 +486,7 @@
     "message": "Paste a full link starting with https://"
   },
   "op_err_video_page": {
-    "message": "That's a video page, not a file. MemeBox never downloads from YouTube, Instagram or other video sites. Open it in a tab and use the toolbar button → “Send this tab's sound”."
+    "message": "This is a video page, not an audio file. Upload an audio/video file from your device, use a direct .mp3/.wav URL, or open Video memes for YouTube playback."
   },
   "op_err_not_file": {
     "message": "The link must end in .mp3, .mp4, .wav, .ogg or .webm"
@@ -558,10 +558,10 @@
     "message": "Timed lines / Party mode"
   },
   "op_party_switch": {
-    "message": "Play timed lines automatically"
+    "message": "Enable automatic memes"
   },
   "op_party_hint": {
-    "message": "Off by default. Timers only fire while a call tab is open and your mic is connected."
+    "message": "Choose a meme and a time: at 11:00 each day, or every 15 minutes. Timers play only during a connected call with your microphone unmuted. Turn off automatic memes to pause all timers."
   },
   "op_line": {
     "message": "Line"
@@ -585,7 +585,7 @@
     "message": "Add timer"
   },
   "op_no_timers": {
-    "message": "No timers yet."
+    "message": "No automatic memes yet. Choose a meme and when to play it, then press Add timer."
   },
   "op_daily_at": {
     "message": "every day at $1"
@@ -795,7 +795,7 @@
     "message": "Remove picture"
   },
   "op_picture_hint": {
-    "message": "Your picture stays visible until you close it with ×, Escape or Stop all. Others see it when Caption on my camera is on. Use pictures you own or have permission to share."
+    "message": "Choose a picture, check the preview, then press Add. Caption and speech are optional."
   },
   "op_err_picture": {
     "message": "That file isn't a picture MemeBox can use. Try PNG, JPG, WEBP or GIF."
@@ -905,7 +905,7 @@
     "message": "🌐 Language"
   },
   "lang_auto": {
-    "message": "Auto (like Chrome)"
+    "message": "Auto (English)"
   },
   "lang_reload": {
     "message": "Language changed. Reload this call tab to see MemeBox in it."
@@ -926,7 +926,7 @@
     "message": "Light up my camera"
   },
   "fx_hint_off": {
-    "message": "Switch on to try it. Join or rejoin the call to use it."
+    "message": "Lights are off. Filters and your selected character work independently."
   },
   "fx_restart": {
     "message": "Turn your camera off and on once in the call to start the lights."
@@ -1103,7 +1103,7 @@
     "message": "🎵 Music"
   },
   "mu_how": {
-    "message": "Our original tunes play into your call and get quieter while you talk."
+    "message": "Choose who hears music before playing a tune."
   },
   "mu_stop": {
     "message": "Stop"
@@ -1430,7 +1430,7 @@
     "message": "Like a mirror: your Left is the left of your own video. Untick if it looks the wrong way round."
   },
   "fx_gest": {
-    "message": "React to my face and hands"
+    "message": "React to hand poses and face expressions"
   },
   "fx_gest_tip": {
     "message": "Copies supported waves, smiles and gestures. Keep your face and hands in view; adjust sensitivity if reactions are missed."
@@ -1808,7 +1808,7 @@
     "message": "Pictures"
   },
   "pictures_help": {
-    "message": "Your picture memes, in one place. Pictures stay until ×, Escape or Stop all. Camera captions must be on for other callers to see them."
+    "message": "Choose a saved picture below. Close it with × or Escape. Turn on Camera captions to show it to other callers."
   },
   "pictures_add": {
     "message": "Add a picture meme"
@@ -1820,7 +1820,7 @@
     "message": "Listen to our three original Phonk tracks in the Playground. Free YouTube playlists require the site and verified official links."
   },
   "mu_collection_help": {
-    "message": "Original tunes run on your device. Add your own audio below; no hosted music subscription is required."
+    "message": "For playlist or video meme audio, use Everyone in call inside that player. The browser asks you to share the player tab audio once."
   },
   "pg_persona_cat": {
     "message": "Quiet paws, grooming and stretching. Climbs to your shoulder."
@@ -1874,10 +1874,10 @@
     "message": "Choose a valid PNG, JPEG, WebP or GIF image."
   },
   "adult_optin": {
-    "message": "I’m 18+; show strong-language memes"
+    "message": "Show strong-language memes"
   },
   "adult_mark": {
-    "message": "Contains strong language (18+)"
+    "message": "Contains strong language"
   },
   "adult_help": {
     "message": "Off by default. This is a self-declared preference, not verified age. Turning it off hides marked content and stops current MemeBox playback. Unmarked content cannot be classified automatically."
@@ -1979,7 +1979,7 @@
     "message": "Pick a playlist. Feel the drop."
   },
   "room_intro": {
-    "message": "Free YouTube collections and original MemeBox music in one place. Browse every collection, wherever you are; YouTube availability may vary."
+    "message": "Choose music or browse meme collections."
   },
   "room_pick": {
     "message": "Choose music to start"
@@ -1997,7 +1997,7 @@
     "message": "Shuffle"
   },
   "room_youtube_help": {
-    "message": "YouTube uses its visible player and may show ads or restrict a video. Original music runs on your device."
+    "message": "YouTube may restrict some videos. Use the audio sharing control above to send this player to your call."
   },
   "room_web_player": {
     "message": "Open website player"
@@ -2012,7 +2012,7 @@
     "message": "Free YouTube playlists"
   },
   "room_supplied": {
-    "message": "Starter collections for every listener. Rename or replace them whenever you want; YouTube controls the songs and availability."
+    "message": "Choose a collection to start listening."
   },
   "room_search": {
     "message": "Search your playlists"
@@ -2045,7 +2045,7 @@
     "message": "MemeBox originals"
   },
   "room_original_help": {
-    "message": "Phonk builds into a pause and beat drop, then returns with a layered second drop. Other tunes cover chill, funk, party and more."
+    "message": "Short background tunes for your call."
   },
   "room_all": {
     "message": "All tunes"
@@ -2117,16 +2117,16 @@
     "message": "Selected playlist"
   },
   "room_adult": {
-    "message": "I’m 18+; show collections marked with strong language"
+    "message": "Show After Dark · strong language"
   },
   "room_published": {
-    "message": "Published MemeBox collections"
+    "message": "MemeBox library"
   },
   "room_published_help": {
-    "message": "The owner can update these collections without an extension release. Browse to load the current catalog."
+    "message": "Pick a collection below."
   },
   "room_browse": {
-    "message": "Browse published collections"
+    "message": "Refresh library"
   },
   "room_published_count": {
     "message": "Free · $1 songs"
@@ -2148,5 +2148,26 @@
   },
   "plans_all_passes": {
     "message": "All passes"
+  },
+  "picture_speak": {
+    "message": "Read caption aloud"
+  },
+  "op_say_ph": {
+    "message": "Optional pronunciation, e.g. that was close"
+  },
+  "adult_enable": {
+    "message": "Show strong-language memes"
+  },
+  "op_clip_url_ph": {
+    "message": "Direct file URL, e.g. https://example.com/sound.mp3"
+  },
+  "fx_gestures_tip": {
+    "message": "Hold a supported hand pose in the camera for about one second. Keep your full hand visible beside your face. This recognizes the shown gestures, not full sign language."
+  },
+  "sound_help": {
+    "message": "My voice changes your microphone sound. Hear memes myself adds a local preview. Auto-duck lowers memes while you speak. Camera captions show text and pictures on your outgoing video."
+  },
+  "picture_add": {
+    "message": "Add picture"
   }
 }

@@ -68,10 +68,10 @@ test('the 😂 position is saved for this site', async ({ callPage }) => {
 
 test.describe('Hindi UI', () => {
   test.use({ extraArgs: ['--lang=hi'] });
-  test('popup is shown in Hindi when Chrome runs in Hindi', async ({ context, extensionId }) => {
+  test('Auto uses English even when Chrome runs in Hindi', async ({ context, extensionId }) => {
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/popup.html`);
-    await expect(page.locator('#how summary')).toHaveText('यह कैसे काम करता है?');
+    await expect(page.locator('#how summary')).toHaveText("How does this work?");
   });
 });
 

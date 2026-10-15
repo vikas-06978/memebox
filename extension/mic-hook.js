@@ -81,7 +81,9 @@
       case 'query-status': announce(); break;
       case 'beep': play(d.reqId, beep, '(test beep)'); break;
       case 'play-audio': playAudio(d); break;
-      case 'stop': stopAll(); stopMusic(); clearCamCaption(); break;
+      case 'stop': stopRoomAudio(); stopAll(); stopMusic(); clearCamCaption(); break;
+      case 'room-audio-offer': receiveRoomAudio(d); break;
+      case 'room-audio-stop': stopRoomAudio(); break;
       case 'music-play': startMusic(String(d.value), d.volume, d.audience); break;
       case 'music-bytes': startMine(d); break;
       case 'music-stop': stopMusic(); break;
@@ -108,6 +110,23 @@
       case 'fx-config': fxCfg = globalThis.MemeFx ? globalThis.MemeFx.sanitize(d.value) : null; break;
     }
   });
+
+  let roomPeer=null,roomNode=null,roomSink=null;
+  function stopRoomAudio(){if(roomSink){roomSink.pause();roomSink.srcObject=null;roomSink=null;}if(roomNode)roomNode.disconnect();roomNode=null;if(roomPeer)roomPeer.close();roomPeer=null;}
+  async function receiveRoomAudio(d){
+    if(!isActive()){post({type:'room-audio-answer',requestId:d.requestId,error:'Microphone is not connected.'});return;}
+    stopRoomAudio();const peer=new RTCPeerConnection({iceServers:[]});roomPeer=peer;
+    peer.ontrack=e=>{if(roomPeer!==peer||e.track.kind!=='audio')return;ensureCtx();const stream=new MediaStream([e.track]);
+      // Chromium starts WebRTC audio playout through a media sink; keep it muted to prevent duplicate speaker audio.
+      roomSink=document.createElement('audio');roomSink.muted=true;roomSink.srcObject=stream;roomSink.play().catch(()=>{});
+      roomNode=ctx.createMediaStreamSource(stream);
+      // The player is already audible locally. Send this copy only to meeting tracks and the visual meter.
+      for(const session of sessions)if(!session.closed)roomNode.connect(session.dest);roomNode.connect(fxMeter);e.track.onended=()=>{if(roomPeer===peer)stopRoomAudio()};};
+    try{await peer.setRemoteDescription({type:'offer',sdp:d.sdp});await peer.setLocalDescription(await peer.createAnswer());
+      if(peer.iceGatheringState!=='complete')await new Promise(resolve=>{const timer=setTimeout(resolve,4000);peer.addEventListener('icegatheringstatechange',()=>{if(peer.iceGatheringState==='complete'){clearTimeout(timer);resolve()}})});
+      if(roomPeer===peer)post({type:'room-audio-answer',requestId:d.requestId,sdp:peer.localDescription.sdp});
+    }catch{if(roomPeer===peer)stopRoomAudio();post({type:'room-audio-answer',requestId:d.requestId,error:'Could not connect player audio.'});}
+  }
 
   // ---------- audio graph ----------
 
@@ -176,9 +195,10 @@
     try { s.src.disconnect(); } catch {}
     try { s.mic.disconnect(); } catch {}
     try { board.disconnect(s.dest); } catch {}
+    try { if(roomNode)roomNode.disconnect(s.dest); } catch {}
     if (s.realAudio.readyState === 'live') origStop.call(s.realAudio);
     sessions.delete(s);
-    if (!isActive()) stopTabAudio(); // left the call
+    if (!isActive()) {stopTabAudio();stopRoomAudio();} // left the call
     announce();
   }
 
@@ -192,6 +212,7 @@
     const dest = ctx.createMediaStreamDestination();
     src.connect(mic).connect(dest); // the voice changer, when on, sits between src and mic
     board.connect(dest);
+    if(roomNode)roomNode.connect(dest);
     const meter = ctx.createAnalyser(); // for auto-duck (reads the real voice level)
     meter.fftSize = 1024;
     src.connect(meter);
@@ -330,7 +351,8 @@
       startDuckWatch();
       node.start();
       node.addEventListener('ended', () => playing.delete(node));
-      if (caption || picture) showCamCaption(caption || '', picture);
+      if (caption || picture) await showCamCaption(caption || '', picture);
+      if(generation!==playGeneration){post({type:'played',reqId,ok:false,reason:'cancelled'});return;}
       console.log(LOG, 'playing into mic:', label, `(${sessions.size} mic stream${sessions.size === 1 ? '' : 's'}, context ${ctx.state})`);
       post({ type: 'played', reqId, ok: true, muted: isMuted() });
     } catch (err) {
@@ -801,7 +823,8 @@
     restoreMirror();
   }
 
-  function showCamCaption(text, picture) {
+  async function showCamCaption(text, picture) {
+    if(!camCaptions)return;
     // A new sound without a picture should not dismiss the photo someone pinned.
     if (!picture && (camPicture || camTextUntil === Infinity)) return;
     const seq = ++camCaptionSeq;
@@ -809,13 +832,14 @@
     // A picture stays on the outgoing camera until the person closes it, presses Stop all,
     // plays another picture, or switches camera captions off. Text-only captions still flash.
     camTextUntil = picture ? Infinity : performance.now() + 3000;
-    if (camText) post({ type: 'cam-caption', fixed: unmirrorSelf() > 0 }); // the panel shows its own copy of the caption only when your tile could not be flipped
+    if (camText || picture) post({ type: 'cam-caption', fixed: unmirrorSelf() > 0 }); // the panel shows its own copy of the caption only when your tile could not be flipped
     if (picture) clearTimeout(unmirrorTimer);
     if (camPicture) { camPicture.close(); camPicture = null; }
     if (picture) {
-      createImageBitmap(new Blob([picture.bytes], { type: picture.type })).then((bmp) => {
+      await createImageBitmap(new Blob([picture.bytes], { type: picture.type })).then((bmp) => {
         if (seq !== camCaptionSeq) { bmp.close(); return; }
         camPicture = bmp;
+        for(const video of document.querySelectorAll('video')){if(!video.srcObject?.getVideoTracks?.().some(track=>captionedTracks.has(track)))continue;const rect=video.getBoundingClientRect();if(rect.width&&rect.height){const w=video.videoWidth||rect.width,h=video.videoHeight||rect.height,scale=Math.min(w*.78/bmp.width,h*.72/bmp.height),pw=bmp.width*scale,ph=bmp.height*scale;post({type:'picture-position',left:rect.left+(w-pw)/2/w*rect.width,top:rect.top+((h-ph)/2-(camText?h*.05:0))/h*rect.height,width:pw/w*rect.width,height:ph/h*rect.height});}break;}
         console.log(LOG, 'meme picture ready', bmp.width + 'x' + bmp.height);
       }, () => {});
     }
@@ -829,7 +853,7 @@
     const pw = camPicture.width * s;
     const ph = camPicture.height * s;
     const x = (w - pw) / 2;
-    const y = h * 0.06;
+    const y = (h - ph) / 2 - (camText ? h * .05 : 0);
     g.save();
     g.shadowColor = 'rgba(0,0,0,.5)';
     g.shadowBlur = 12;
@@ -871,12 +895,12 @@
 
   // ---------- Lights & looks, and captions: one pipeline for the camera you send ----------
 
-  const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.filter !== 'none' || fxCfg.enhance > 0);
+  const fxActive = () => !!fxCfg && (fxCfg.on || fxCfg.character !== 'none' || fxCfg.filter !== 'none' || fxCfg.enhance > 0);
   // The camera is always routed through the frame pipeline when the browser has it (frames pass through
   // untouched while nothing is on), so Lights can be switched on at any moment without restarting the camera.
   // Without that support (old browsers) it is only done once Lights has been used, because the fallback
   // costs a little power.
-  const camWanted = () => insertableStreams() || camCaptions || (!!fxCfg && (fxCfg.on || fxCfg.armed || fxCfg.filter !== 'none'));
+  const camWanted = () => insertableStreams() || camCaptions || (!!fxCfg && (fxCfg.on || fxCfg.armed || fxCfg.character !== 'none' || fxCfg.filter !== 'none'));
   const needsPaint = () => fxActive() || performance.now() < camTextUntil;
   const meterBuf = new Float32Array(512);
 
@@ -919,9 +943,9 @@
   function sendFace(src, w, h, now) {
     if (now - faceLast < 35 || (faceBusy && now - faceBusy < 1000) || typeof createImageBitmap !== 'function') return;
     faceLast = now; faceBusy = now; faceN++;
-    const fw = 384, fh = Math.max(16, Math.round(256 * h / w));
+    const fw = 384, fh = Math.max(16, Math.round(fw * h / w));
     createImageBitmap(src, { resizeWidth: fw, resizeHeight: fh, resizeQuality: 'low' })
-      .then((bm) => { try { post({ type: 'face-frame', bitmap: bm, w: fw, h: fh, hands: faceN % 2 === 0 }, [bm]); } catch { faceBusy = 0; } })
+      .then((bm) => { try { post({ type: 'face-frame', bitmap: bm, w: fw, h: fh, hands: fxCfg?.sens === 'high' || faceN % 2 === 0 }, [bm]); } catch { faceBusy = 0; } })
       .catch(() => { faceBusy = 0; });
   }
 

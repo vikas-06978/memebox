@@ -152,5 +152,14 @@
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "externally_connectable": {
+    "matches": [
+      "http://127.0.0.1/*",
+      "http://localhost/*",
+      "https://memebox.site/*",
+      "https://www.memebox.site/*",
+      "https://memebox.pages.dev/*"
+    ]
   }
 }

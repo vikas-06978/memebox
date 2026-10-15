@@ -59,7 +59,7 @@
           <span class="hint" data-i18n="op_picture_hint">Choose a picture and it is ready. A caption is optional. It stays visible until ×, Escape or Stop all.</span>
         </div>
         <label class="wide"><span data-i18n="op_say">Pronounce as (optional, e.g. Devanagari for Hinglish lines)</span>
-          <input id="line-say" maxlength="300" placeholder="भाई तू रहने दे" lang="hi">
+          <input id="line-say" maxlength="300" data-i18n-placeholder="op_say_ph" placeholder="Optional pronunciation">
         </label>
         <label><span data-i18n="op_lang">Language</span>
           <select id="line-lang"></select>
@@ -72,6 +72,7 @@
         <label class="span2"><span data-i18n="op_line_volume">Volume of this line</span>
           <span class="range"><input id="line-vol" type="range" min="0" max="200" step="10" value="100"><output id="line-vol-out">100%</output></span>
         </label>
+        <label class="check wide"><input id="line-speak" type="checkbox" checked><span data-i18n="picture_speak">Read caption aloud</span></label>
         <div class="actions wide">
           <button type="submit" class="primary" id="line-submit" data-i18n="op_add_line">Add line</button>
           <button type="button" id="line-preview" data-i18n="op_preview">▶ Preview</button>
@@ -157,7 +158,7 @@
       <p class="hint" data-i18n="op_packs_hint">A pack holds lines and their clips. Importing adds to your lines, and lines with the same id are replaced. Files are checked strictly.</p>
     </section>
 
-    <section class="card" id="content-card"><h2 data-i18n="content_title">Your meme library</h2><p data-i18n="content_help"></p><label><span data-i18n="content_language">Meme language</span><select id="content-language"></select></label><label class="check"><input id="content-strong" type="checkbox"><span data-i18n="adult_optin">I’m 18+; show strong-language memes</span></label><p class="hint" data-i18n="adult_help"></p><p class="hint" data-i18n="content_private"></p></section>
+    <section class="card" id="content-card"><h2 data-i18n="content_title">Your meme library</h2><label><span data-i18n="content_language">Meme language</span><select id="content-language"></select></label><label class="check"><input id="content-strong" type="checkbox"><span data-i18n="adult_optin">I’m 18+; show strong-language memes</span></label></section>
     <!-- ============ ONLINE PACKS ============ -->
     <section class="card" id="online-card">
       <h2 data-i18n="op_online">Online packs</h2>

@@ -2207,7 +2207,7 @@ void main(){
     }
 
     R.render = function render(g, src, w, h, cfgIn, now, audio, opts = {}) {
-      const cfg = cfgIn;
+      const cfg = cfgIn.on || !cfgIn.character || cfgIn.character === 'none' ? cfgIn : { ...cfgIn, on:true, lamp:false, corners:false, focus:false, studio:false, pattern:'none' };
       // HD enhance first: everything else (filters, lights, characters) is drawn on the better picture
       const darkRaw = measureDark(src, w, h, now);
       const enhK = Math.max(cfg.enhance || 0, cfg.on ? 0.3 : 0); // lights always get a little sharpening, so the glow never makes the picture look soft

@@ -45,7 +45,7 @@ test('Options: the language menu switches MemeBox to Hindi, then Arabic (right t
   await Promise.all([page.waitForEvent('load'), page.locator('#ui-lang').selectOption('auto')]);
   await expect(page.locator('#feedback')).toHaveText('💬 Send feedback');
   await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
-  expect(await page.evaluate(async () => (await chrome.storage.local.get('langPack')).langPack)).toBeUndefined();
+  const automatic=await page.evaluate(async () => (await chrome.storage.local.get('langPack')).langPack);expect(automatic.code).toBe('auto');expect(automatic.messages.lang_code).toBe('en');
 });
 
 test('welcome page swatches set the theme too', async ({ context, extensionId }) => {
@@ -59,6 +59,7 @@ test('welcome page swatches set the theme too', async ({ context, extensionId })
 
 test.describe('extension in Arabic', () => {
   test.use({ extraArgs: ['--lang=ar'] });
+  test.beforeEach(async({context,extensionId})=>{const sw=context.serviceWorkers()[0];await sw.evaluate(async code=>{const raw=await(await fetch(chrome.runtime.getURL('_locales/'+code+'/messages.json'))).json();await chrome.storage.local.set({langPack:{code,messages:Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,v.message]))}})},'ar')});
   test('popup is in Arabic and laid out right to left', async ({ context, extensionId }) => {
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/popup.html`);
@@ -69,6 +70,7 @@ test.describe('extension in Arabic', () => {
 
 test.describe('extension in Spanish', () => {
   test.use({ extraArgs: ['--lang=es'] });
+  test.beforeEach(async({context,extensionId})=>{const sw=context.serviceWorkers()[0];await sw.evaluate(async code=>{const raw=await(await fetch(chrome.runtime.getURL('_locales/'+code+'/messages.json'))).json();await chrome.storage.local.set({langPack:{code,messages:Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,v.message]))}})},'es')});
   test('Options is in Spanish', async ({ context, extensionId }) => {
     const page = await context.newPage();
     await page.goto(`chrome-extension://${extensionId}/options.html`);

@@ -59,17 +59,19 @@
     });
   } catch { /* not an extension page */ }
 
-  // Options calls this when you pick a language. 'auto' goes back to Chrome's language.
+  // Auto retains its menu choice and uses the English message bundle.
   async function setLanguage(code) {
     let stored = null;
-    if (code && code !== 'auto') {
+    const automatic=!code||code==='auto';
+    code=automatic?'en':code;
+    if (code) {
       const [res, fallback] = await Promise.all([
         fetch(chrome.runtime.getURL(`_locales/${code}/messages.json`)),
         fetch(chrome.runtime.getURL('_locales/en/messages.json')),
       ]);
       if (!res.ok || !fallback.ok) throw new Error('Could not load this language.');
       const raw = { ...await fallback.json(), ...await res.json() };
-      stored = { code, messages: Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v.message])) };
+      stored = { code:automatic?'auto':code, messages: Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v.message])) };
     }
     syncPack(stored);
     if (stored) await chrome.storage.local.set({ langPack: stored });

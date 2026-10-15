@@ -203,3 +203,14 @@ test('with "Lights follow the sounds" the corner show moves with the music (and 
   await callPage.screenshot({ path: 'tests/.tmp/laser-with-music.png' });
   expect(moving, 'the lasers move with the music').toBeGreaterThan(still + 8);
 });
+
+test('a selected companion appears on the outgoing camera with camera lights switched off',async({context,callPage})=>{
+ await callPage.evaluate(helpers);
+ await setFx(context,{armed:true,on:false,lamp:false,focus:false,corners:false,character:'none',filter:'none'});
+ await callPage.evaluate(()=>window.openCam());await callPage.waitForTimeout(400);
+ const before=await callPage.evaluate(()=>window.avg(.7,.6,1,1));
+ await setFx(context,{armed:true,on:false,lamp:false,focus:false,corners:false,character:'cat',charPos:'right',filter:'none'});
+ await callPage.waitForTimeout(600);
+ const after=await callPage.evaluate(()=>window.avg(.7,.6,1,1));
+ expect(Math.abs(after.r-before.r)+Math.abs(after.g-before.g)+Math.abs(after.b-before.b)).toBeGreaterThan(.5);
+});

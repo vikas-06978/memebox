@@ -25,18 +25,18 @@ const previewCatalog = [];
 const regionalTitle = lang => ({ fa: 'Persian memes', vi: 'Vietnamese memes', pt: 'Brazil & Portuguese memes', ru: 'Russian memes', uk: 'Ukrainian memes', zh: 'Chinese memes' }[lang] || 'Worldwide & English memes');
 for (const group of CURATED_VIDEO_GROUPS) {
   if (group.name !== 'worldwide') {
-    previewCatalog.push({ kind: group.kind, title: group.packTitle, items: group.items.map(({ videoId, title, credit, explicit, lang }) => ({ videoId, title, credit, explicit, lang })) });
+    previewCatalog.push({ kind: group.kind, title: group.packTitle, items: group.items.map(({ videoId, title, credit, explicit, lang, unavailable }) => ({ videoId, title, credit, explicit, lang, unavailable })) });
     continue;
   }
   for (const item of group.items) {
     const title = regionalTitle(item.lang), existing = previewCatalog.find(pack => pack.kind === group.kind && pack.title === title);
     const pack = existing || { kind: group.kind, title, items: [] };
     if (!existing) previewCatalog.push(pack);
-    const { videoId, credit, explicit, lang } = item;
-    pack.items.push({ videoId, title: item.title, credit, explicit, lang });
+    const { videoId, credit, explicit, lang, unavailable } = item;
+    pack.items.push({ videoId, title: item.title, credit, explicit, lang, unavailable });
   }
 }
 fs.writeFileSync(path.join(reviewRoom, 'preview-catalog.js'), `globalThis.MemeBoxPreviewCatalog=${JSON.stringify(previewCatalog)};\n`);
-const roomHtml = path.join(reviewRoom, 'music-room.html');
-fs.writeFileSync(roomHtml, fs.readFileSync(roomHtml, 'utf8').replace('<script src="music-room.js"></script>', '<script src="preview-catalog.js"></script><script src="music-room.js"></script>'));
+fs.copyFileSync(path.join(reviewRoom,'preview-catalog.js'),path.join(output,'preview-catalog.js'));
+for(const folder of [reviewRoom,output]){const file=path.join(folder,'music-room.html');fs.writeFileSync(file,fs.readFileSync(file,'utf8').replace('<script src="music-room.js"></script>','<script src="preview-catalog.js"></script><script src="music-room.js"></script>'));}
 console.log('Static music room prepared for the local review launcher.');

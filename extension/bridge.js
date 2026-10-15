@@ -41,7 +41,8 @@
     if (e.source !== window) return;
     const d = e.data;
     if (!d || typeof d !== 'object' || d.source !== HOOK) return;
-    if (d.type === 'status') {
+    if(d.type==='room-audio-answer'){toRuntime({type:d.type,requestId:d.requestId,sdp:d.sdp,error:d.error});}
+    else if (d.type === 'status') {
       toRuntime({ type: 'frame-status', active: d.active === true, muted: d.muted === true, ctxState: String(d.ctxState) });
     } else if (d.type === 'played') {
       toRuntime({ type: 'play-result', reqId: d.reqId, ok: d.ok === true, muted: d.muted === true, reason: d.reason ? String(d.reason) : '' });
@@ -49,6 +50,7 @@
       toRuntime({ type: 'music-state', id: typeof d.id === 'string' ? d.id.slice(0, 20) : '' });
     } else if (d.type === 'fx-status') {
       toRuntime({ type: 'fx-status', active: d.active === true });
+    } else if(d.type==='picture-position'){toRuntime({type:d.type,left:d.left,top:d.top,width:d.width,height:d.height});
     } else if (d.type === 'cam-caption') {
       toRuntime({ type: 'cam-caption', fixed: d.fixed === true });
     } else if (d.type === 'fx-seen') {
@@ -67,7 +69,9 @@
       toHook({ type: 'query-status' });
     } else if (msg.type === 'hook' && msg.cmd && typeof msg.cmd === 'object') {
       const cmd = msg.cmd;
-      if (cmd.type === 'play-audio' && typeof cmd.b64 === 'string') {
+      if(cmd.type==='room-audio-offer'&&typeof cmd.sdp==='string'&&cmd.sdp.length<=32768){toHook({type:cmd.type,sdp:cmd.sdp,requestId:cmd.requestId});}
+      else if(cmd.type==='room-audio-stop'){toHook({type:cmd.type});}
+      else if (cmd.type === 'play-audio' && typeof cmd.b64 === 'string') {
         const bytes = base64ToBuffer(cmd.b64);
         const picture = typeof cmd.picture === 'string' ? base64ToBuffer(cmd.picture) : null;
         toHook({

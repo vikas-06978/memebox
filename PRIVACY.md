@@ -39,6 +39,8 @@ Meme lines are turned into speech by eSpeak-NG. This engine is bundled inside th
 
 If you open a video in another tab (for example YouTube or Instagram) and click **Send this tab's sound into my call** in the MemeBox toolbar popup, MemeBox mixes that one tab's sound live into your call microphone. This happens only for the tab you chose, only after that click, and only until you press Stop or close the tab. The sound isn't recorded, saved or uploaded by MemeBox, and nothing is downloaded.
 
+The player also offers **Everyone in call**. After you choose the player tab and enable tab audio in the browser sharing dialog, it sends an audio-only WebRTC stream directly to the extension in the call tab. The selected screen video is never forwarded. Connection messages stay inside your browser, use no relay service, and the audio is not saved. Only me, Stop sharing, closing the player or leaving the call disconnects it. This can include YouTube ad audio.
+
 ## Lights & looks
 
 Lights & looks is optional and off until you switch it on. It draws lights, filters, characters and music onto your own camera picture and microphone inside your browser tab. With **Follow me** switched on, MemeBox also looks at a small copy of your camera picture (about 10 times a second) and runs small face and hand models that are bundled inside the extension (MediaPipe), to know where your face is (left, right, standing up, out of the picture) and how it looks (smile, blink, tongue out), and whether a hand is raised (a wave, thumbs up). This happens only on your computer; it needs no download and no internet. Nothing is recorded, saved or sent, and nobody is recognised or identified. The picture is never saved, recorded or sent anywhere, and nothing is learned about who you are.

@@ -77,7 +77,7 @@ function stopMusic() {
   document.getElementById('music-status').textContent = '';
   for (const b of document.querySelectorAll('[data-tune]')) b.setAttribute('aria-pressed', 'false');
 }
-for (const id of [...MemeMusic.IDS, ...MemeMusic.PHONK_IDS]) {
+for (const id of [...MemeMusic.IDS]) {
   const button = document.createElement('button'); button.type = 'button'; button.dataset.tune = id; button.textContent = t('mu_t_' + id) + ' · ' + (MemeMusic.FREE_TUNES.includes(id) ? t('fx_tier_free') : ['phonk_drift','phonk_midnight','epic','disco','club','bass','house','desi'].includes(id) ? 'Pro Max' : 'Pro'); button.setAttribute('aria-pressed', 'false');
   button.addEventListener('click', async () => {
     stopMusic();

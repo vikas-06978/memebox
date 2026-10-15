@@ -26,12 +26,12 @@ const test = base.extend({
 });
 test.use({ channel: 'chromium' });
 
-test('YouTube playlists are free, originals require a pass, and the YouTube player stays visible', async ({ page, site }) => {
+test('YouTube playlists are free, removed originals stay hidden, and the YouTube player stays visible', async ({ page, site }) => {
   await page.goto(`${site.url}/phonk`);
   await expect(page.locator('h1 [data-t="ph_title"]')).toHaveText('Phonk Mode');
-  await expect(page.locator('#tracks li')).toHaveCount(6);
+  await expect(page.locator('#tracks li')).toHaveCount(3);
   await expect(page.locator('#tracks li').first().locator('button')).toBeEnabled();
-  await expect(page.locator('#tracks').getByRole('button', { name: /Desi Phonk/ })).toBeDisabled();
+  await expect(page.locator('#tracks').getByRole('button', { name: /Desi Phonk/ })).toHaveCount(0);
   await page.locator('#playlists').getByRole('button', { name: 'Phonk Mode' }).click();
   await expect(page.locator('#tracks li')).toHaveCount(3);
   await expect(page.locator('#tracks li').nth(0).locator('.tier')).toHaveText('Free');
@@ -56,21 +56,10 @@ test('YouTube playlists are free, originals require a pass, and the YouTube play
   expect(page.cspErrors).toEqual([]);
 });
 
-test('Pro unlocks Desi original, Max originals stay locked, and the key is removed from the address', async ({ page, site }) => {
-  await page.goto(`${site.url}/phonk#k=${site.proKey}`);
-  await expect(page.locator('#tracks li')).toHaveCount(6);
-  expect(page.url()).toBe(`${site.url}/phonk`); // the key is gone from the address
-  await expect(page.locator('#tracks').getByRole('button', { name: /Desi Phonk/ })).toBeEnabled();
-  await expect(page.locator('#tracks').getByRole('button', { name: /Drift Phonk/ })).toBeDisabled();
-  await expect(page.locator('#tracks').getByRole('button', { name: /Midnight Phonk/ })).toBeDisabled();
-  await page.locator('#tracks').getByRole('button', { name: /Desi Phonk/ }).click();
-  await expect(page.locator('#now')).toContainText('Desi Phonk');
-  await expect(page.locator('#player-box')).toBeHidden();
-  await page.locator('#toggle').click();
-  await expect(page.locator('#toggle')).toHaveAttribute('aria-pressed', 'false');
-  await page.locator('#prev').click();
-  await expect(page.locator('#player')).toHaveAttribute('src', /ccccccccccc/);
-  await page.screenshot({ path: 'tests/.tmp/phonk-page.png', fullPage: true });
+test('removed original tracks stay absent with a Pro key and the key leaves the address',async({page,site})=>{
+ await page.goto(`${site.url}/phonk#k=${site.proKey}`);await expect(page.locator('#tracks li')).toHaveCount(3);expect(page.url()).toBe(`${site.url}/phonk`);
+ await expect(page.locator('#playlists')).not.toContainText('MemeBox Originals');await expect(page.locator('#tracks')).not.toContainText('Desi Phonk');
+ await page.locator('#tracks li').first().locator('button').click();await expect(page.locator('#player')).toHaveAttribute('src',/aaaaaaaaaaa/);
 });
 
 test('Phonk Mode: switched off (PHONK_MODE=off) the page says it is resting and gives no links', async ({ page }) => {

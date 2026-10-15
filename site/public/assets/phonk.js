@@ -214,10 +214,6 @@
       const linkPacks = (packs.packs || []).filter((p) => p.kind === 'links');
       playlists = linkPacks.map((p) => ({ id: p.id, title: p.title, count: p.items.length }));
       tracks = linkPacks.flatMap((p) => p.items.map((i) => ({ id: i.id, title: i.title, artist: i.credit, tier: 'free', explicit:i.explicit===true, videoId: i.videoId, playlist: p.id })));
-      if (cfg.phonkEnabled !== false) {
-        playlists.push({ id: 'memebox-originals', title: '🔥 MemeBox Originals', count: 3 });
-        tracks.push(...MemeMusic.PHONK_IDS.map((id, index) => ({ id, title: ['Desi Phonk', 'Drift Phonk', 'Midnight Phonk'][index], artist: 'MemeBox', tier: index === 0 ? 'pro' : 'max', playlist: 'memebox-originals', original: true })));
-      }
       if (!tracks.length) { status.textContent = t('ph_none'); return; }
       status.hidden = true;
       render();

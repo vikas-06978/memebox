@@ -21,7 +21,7 @@
     apply(); window.dispatchEvent(new CustomEvent('memebox-room-language'));return code;
   }
   const ready=(async()=>{
-    let chosen=navigator.language;try{chosen=localStorage.getItem('memebox-room-language')||chosen}catch{}
+    let chosen='en';try{chosen=localStorage.getItem('memebox-room-language')||chosen}catch{}
     if(inExtension){const stored=await chrome.storage.local.get(['langPack','musicRoomLanguage']);chosen=stored.musicRoomLanguage||stored.langPack?.code||chosen;}
     await load(chosen);
   })();

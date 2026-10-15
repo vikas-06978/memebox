@@ -20,6 +20,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     patch.lines = [...lines, ...MEME_PACKS.missing(lines, seeded || 0)];
   }
   patch.seeded = PACKS_SEEDED;
+  const {langPack}=await chrome.storage.local.get('langPack');if(!langPack){const raw=await(await fetch(chrome.runtime.getURL('_locales/en/messages.json'))).json();patch.langPack={code:'auto',messages:Object.fromEntries(Object.entries(raw).map(([key,value])=>[key,value.message]))};}
   if (!settings || typeof settings !== 'object') patch.settings = MEME.defaultSettings();
   await chrome.storage.local.set(patch);
 });
@@ -262,7 +263,8 @@ const playbackEpoch = new Map();
 async function handlePlay(tabId, { frameId, reqId, item }) {
   const epoch = playbackEpoch.get(tabId) || 0;
   try {
-    const { b64, tone } = await audioFor(item);
+    const silentPicture = item.speak === false || (item.pictureId && item.pictureCaption === '');
+    const { b64, tone } = silentPicture ? { b64: 'UklGRiYAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQIAAAAAAA==', tone: 'normal' } : await audioFor(item);
     const t = TONES[tone];
     const lineVolume = Number.isFinite(Number(item.volume)) ? Math.min(2, Math.max(0, Number(item.volume))) : 1;
     // The line's meme picture: to the UI (your screen) and to the mic frame (your camera).
@@ -282,7 +284,7 @@ async function handlePlay(tabId, { frameId, reqId, item }) {
       type: 'hook',
       cmd: {
         type: 'play-audio', reqId, b64, playbackRate: t.playbackRate, gain: t.gain * lineVolume, effect: t.effect || '',
-        text: String(item.text || '').slice(0, LIMITS.textChars), mood: MEME.moodFor(item),
+        text: String(item.pictureId ? (item.pictureCaption ?? item.text ?? '') : (item.text || '')).slice(0, LIMITS.textChars), mood: MEME.moodFor(item),
         ...(picture ? { picture: picture.b64, pictureType: picture.type } : {}),
       },
     }, frameId);
@@ -428,12 +430,17 @@ async function popupMessage(msg, sendResponse) {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (sender.id !== chrome.runtime.id || !msg || typeof msg !== 'object' || msg.target) return;
 
+  if(msg.type==='room-audio-answer'){const pending=roomOffers.get(msg.requestId);if(pending&&sender.tab?.id===pending.tabId&&sender.frameId===pending.frameId){roomOffers.delete(msg.requestId);clearTimeout(pending.timer);pending.reply({ok:!msg.error,sdp:msg.sdp,error:msg.error});}return;}
   if (msg.type === 'open-options') {
     if (msg.hash === 'online') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#online-card') }).catch(() => {});
     else if (msg.hash === 'pictures') chrome.tabs.create({ url: chrome.runtime.getURL('options.html#lines-card') }).catch(() => {});
     else if (msg.hash === 'plans') chrome.tabs.create({ url: chrome.runtime.getURL('plans.html') }).catch(() => {});
-    else if (msg.hash === 'music-room') chrome.tabs.create({ url: chrome.runtime.getURL('music-room.html') }).catch(() => {});
-    else if (msg.hash === 'meme-room') chrome.tabs.create({ url: chrome.runtime.getURL('music-room.html?mode=memes') }).catch(() => {});
+    else if (msg.hash === 'music-room' || msg.hash === 'meme-room') {
+      const local=SITE_URL.startsWith('http://127.0.0.1:');const url=new URL(local?'http://127.0.0.1:8790/music-room.html':new URL('/music-room',SITE_URL));
+      if(msg.hash==='meme-room')url.searchParams.set('mode','memes');url.hash=new URLSearchParams({extension:chrome.runtime.id}).toString();
+      chrome.tabs.create({url:url.href}).catch(()=>{});
+    }
+
     else if (msg.hash === 'music-preview') chrome.tabs.create({ url: chrome.runtime.getURL('playground.html#music-library') }).catch(() => {});
     else chrome.runtime.openOptionsPage();
     return;
@@ -512,6 +519,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendToTab(tabId, { type: 'fx-status', active: msg.active === true, frameId: sender.frameId }, 0);
       break;
 
+    case 'picture-position':
+      sendToTab(tabId,{type:msg.type,left:msg.left,top:msg.top,width:msg.width,height:msg.height},0);break;
     case 'cam-caption':
       sendToTab(tabId, { type: 'cam-caption', fixed: msg.fixed === true }, 0);
       break;
@@ -597,4 +606,25 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
   const here = tab && all[tab.id] && Object.keys(all[tab.id].frames).length ? tab.id : null;
   const call = here ?? (await currentCall())?.tabId;
   if (call != null) sendToTab(call, { type: 'command', command }, 0);
+});
+
+// Audio-only, user-approved player sharing. No remote scripts or media downloads.
+const roomOffers=new Map();
+chrome.runtime.onMessageExternal.addListener((msg,sender,reply)=>{
+  let url;try{url=new URL(sender.url)}catch{return}
+  const trusted=['https://memebox.site','https://www.memebox.site','https://memebox.pages.dev','http://127.0.0.1:8790','http://localhost:8790'];
+  if(!trusted.includes(url.origin)||!['/music-room','/music-room.html','/music-room/music-room.html'].includes(url.pathname)||!Number.isInteger(sender.tab?.id))return;
+  if(!msg||!['room-audio-offer','room-audio-stop','room-info'].includes(msg.type))return;
+  (async()=>{
+    const call=await currentCall();if(!call){reply({ok:false,error:'Join a call and connect your microphone first.'});return;}
+    const frameId=Number(Object.keys(call.frames)[0]);
+    if(msg.type==='room-info'){reply({ok:true});return;}
+    if(msg.type==='room-audio-stop'){if(call.roomAudioFrom===sender.tab.id)sendToTab(call.tabId,{type:'hook',cmd:{type:'room-audio-stop'}},frameId);reply({ok:true});return;}
+    if(typeof msg.sdp!=='string'||msg.sdp.length>32768||!msg.sdp.includes('m=audio')||msg.sdp.includes('m=video')||(msg.sdp.match(/^m=/gm)||[]).length!==1){reply({ok:false,error:'Invalid audio connection.'});return;}
+    const requestId=crypto.randomUUID();
+    const timer=setTimeout(()=>{roomOffers.delete(requestId);reply({ok:false,error:'Call did not answer. Reload the call tab and try again.'});},12000);
+    roomOffers.set(requestId,{tabId:call.tabId,frameId,reply,timer});
+    await updateCallTab(call.tabId,e=>{e.roomAudioFrom=sender.tab.id});
+    sendToTab(call.tabId,{type:'hook',cmd:{type:'room-audio-offer',sdp:msg.sdp,requestId}},frameId);
+  })().catch(()=>reply({ok:false,error:'Audio connection failed.'}));return true;
 });

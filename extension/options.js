@@ -204,6 +204,7 @@ function shareWhatsApp(line) {
 async function preview(line) {
   if(!MEME.contentAllowed(line,settings)){toast(t('adult_blocked'),true);return;}
   stopPreview();
+  if (line.speak === false || (line.pictureCaption === '' && (line.pictureId || pic.mode === 'new'))) return;
   const generation = previewGeneration;
   try {
     const buffer = await audioCtx().decodeAudioData(await lineBytes(line));
@@ -293,7 +294,7 @@ function renderLines() {
 // ---------- lines ----------
 
 // The language MemeBox is shown in (picked in Options, else Chrome's): new lines start in it, and "My languages" follows it.
-const uiLang = () => MEME.langOf(globalThis.MemeI18n.language !== 'auto' ? globalThis.MemeI18n.language : navigator.language);
+const uiLang = () => MEME.langOf(globalThis.MemeI18n.language !== 'auto' ? globalThis.MemeI18n.language : 'en');
 
 function resetForm() {
   $('line-form').reset();
@@ -325,6 +326,7 @@ function setPicPreview(blob) {
   if (picUrl) img.src = picUrl; else img.removeAttribute('src');
   img.hidden = !picUrl;
   $('line-pic-remove').hidden = !picUrl;
+  if(!$('line-id').value)$('line-submit').textContent=blob?t('picture_add'):t('op_add_line');
 }
 
 // Any image -> at most LIMITS.pictureSide px and LIMITS.pictureBytes (WEBP). GIFs keep their first frame.
@@ -357,8 +359,7 @@ $('line-pic').addEventListener('change', async () => {
     const data = await shrinkPicture(file);
     pic = { mode: 'new', data };
     setPicPreview(new Blob([data.bytes], { type: data.type }));
-    if (!$('line-text').value.trim()) $('line-text').value = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().slice(0, 300) || t('pg_pictures');
-    if (!$('line-id').value) $('line-form').requestSubmit();
+    // Keep the selected picture as a draft until Add is pressed.
   } catch (err) {
     toast(err.message, true);
   }
@@ -372,7 +373,8 @@ $('line-pic-remove').addEventListener('click', () => {
 function startEdit(line) {
   $('line-explicit').checked = line.explicit===true;
   $('line-id').value = line.id;
-  $('line-text').value = line.text;
+  $('line-text').value = line.pictureId ? (line.pictureCaption ?? line.text) : line.text;
+  $('line-speak').checked = line.speak !== false;
   $('line-say').value = line.say || '';
   $('line-lang').value = line.lang;
   $('line-tone').value = line.tone;
@@ -399,11 +401,13 @@ function startEdit(line) {
 
 function formLine() {
   const existing = lines.find((l) => l.id === $('line-id').value);
-  const text = $('line-text').value.trim() || (pic.mode === 'new' ? t('pg_pictures') : '');
+  const text = $('line-text').value.trim() || ((pic.mode === 'new' || (pic.mode === 'keep' && existing?.pictureId)) ? t('pg_pictures') : '');
   return sanitizeLine({
     ...(existing || { id: newId('l'), kind: 'tts' }),
     explicit: $('line-explicit').checked,
     text,
+    pictureCaption: $('line-text').value.trim(),
+    speak: $('line-speak').checked,
     say: $('line-say').value,
     lang: $('line-lang').value,
     tone: $('line-tone').value,
@@ -817,7 +821,7 @@ $('import').addEventListener('change', async () => {
 function renderTimerLineOptions() {
   const s = $('timer-line');
   const keep = s.value;
-  s.replaceChildren(...lines.filter(l=>MEME.contentAllowed(l,settings)).map((l) => el('option', { value: l.id }, l.text)));
+  s.replaceChildren(...MEME.libraryLines(lines,settings,new Set([uiLang()])).map((l) => el('option', { value: l.id }, l.text)));
   if (lines.some((l) => l.id === keep)) s.value = keep;
 }
 
@@ -885,7 +889,7 @@ $('ui-lang').replaceChildren(el('option', { value: 'auto' }, t('lang_auto')), ..
 $('ui-lang').value = globalThis.MemeI18n.language;
 $('ui-lang').addEventListener('change', async () => {
   // Picking a language also brings its built-in lines (once), so the lists are in that language right away.
-  const code = MEME.langOf($('ui-lang').value === 'auto' ? navigator.language : $('ui-lang').value);
+  const code = MEME.langOf($('ui-lang').value === 'auto' ? 'en' : $('ui-lang').value);
   const fresh = MEME_PACKS.worldFor(code).filter((l) => !lines.some((x) => x.id === l.id));
   if (fresh.length) { lines.push(...fresh); await saveLines().catch(() => {}); }
   globalThis.MemeI18n.setLanguage($('ui-lang').value).catch((err) => toast(err.message, true));

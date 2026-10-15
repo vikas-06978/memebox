@@ -122,7 +122,7 @@
     function render() {
       renderMine();
       addBtn.hidden = closed() && !can('own');
-      chips.replaceChildren(...[...Music.IDS, ...Music.PHONK_IDS].filter((id) => !(closed() && !can(id))).map((id) => {
+      chips.replaceChildren(...[...Music.IDS].filter((id) => !(closed() && !can(id))).map((id) => {
         const locked = !can(id);
         const on = id === callId || id === localId;
         const b = el('button', { className: 'chip' + (on ? ' on' : '') + (locked ? ' locked' : ''), type: 'button' },

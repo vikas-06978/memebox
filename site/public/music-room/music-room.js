@@ -6,11 +6,36 @@ MemeRoomI18n.ready.then(async () => {
   const memeMode = new URLSearchParams(location.search).get('mode') === 'memes';
   const catalogKind = memeMode ? 'memevideos' : 'links';
   const inExtension = !!globalThis.chrome?.runtime?.id, needsWeb = inExtension || location.protocol === 'file:', EMBED = 'https://www.youtube-nocookie.com';
-  const originalIds = [...MemeMusic.PHONK_IDS, ...MemeMusic.IDS];
+  const originalIds = [...MemeMusic.IDS];
   let lists = [], showAdult = false, editId = '', selected = '', currentPlaylist = null, originalId = '', tier = 'all';
+  let playerReady=false, playerState='idle', loadTimer=0;
+  const unavailable=new Set();
   let context = null, synth = null, timer = 0, paused = false, shuffle = false, published = [];
   const previewCatalog = Array.isArray(globalThis.MemeBoxPreviewCatalog) ? globalThis.MemeBoxPreviewCatalog : [];
   const previewMemeCount = previewCatalog.filter(pack=>pack?.kind==='memevideos').reduce((total,pack)=>total+(Array.isArray(pack.items)?pack.items.length:0),0);
+  const incoming=new URLSearchParams(location.hash.slice(1));
+  let extensionId=inExtension?chrome.runtime.id:incoming.get('extension');
+  try{if(extensionId&&/^[a-p]{32}$/.test(extensionId))sessionStorage.setItem('memebox-extension',extensionId);else extensionId=sessionStorage.getItem('memebox-extension');}catch{}
+  let shareStream=null,sharePeer=null,shareBusy=false;
+  const shareStatus=text=>{$('room-share-status').textContent=text};
+  const sendExternal=msg=>new Promise((resolve,reject)=>{if(!extensionId||!globalThis.chrome?.runtime?.sendMessage){reject(Error('Open this player from the MemeBox call panel first.'));return;}chrome.runtime.sendMessage(extensionId,msg,result=>{const error=chrome.runtime.lastError;if(error)reject(Error('Reload MemeBox and open the player from your call again.'));else resolve(result)});});
+  function stopSharing(notify=true){if(sharePeer)sharePeer.close();sharePeer=null;if(shareStream)shareStream.getTracks().forEach(track=>track.stop());shareStream=null;$('room-only-me').setAttribute('aria-pressed','true');$('room-everyone').setAttribute('aria-pressed','false');shareStatus('Only you hear this player.');if(notify)sendExternal({type:'room-audio-stop'}).catch(()=>{});}
+  $('room-only-me').addEventListener('click',()=>stopSharing());
+  $('room-everyone').addEventListener('click',async()=>{
+    if(shareBusy||sharePeer)return;shareBusy=true;$('room-everyone').disabled=true;
+    try{
+      if(!extensionId)throw Error('Open this player from Music or Video memes in your call panel.');
+      shareStatus('Choose THIS browser tab and enable Share tab audio.');
+      const stream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser'},audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,suppressLocalAudioPlayback:false},preferCurrentTab:true,selfBrowserSurface:'include',surfaceSwitching:'exclude'});
+      shareStream=stream;const surface=stream.getVideoTracks()[0]?.getSettings().displaySurface;if(surface&&surface!=='browser')throw Error('Choose the player browser tab, not a screen or window, and enable Share tab audio.');const track=stream.getAudioTracks()[0];if(!track)throw Error('No audio shared. Choose this browser tab and tick Share tab audio.');
+      const peer=new RTCPeerConnection({iceServers:[]});sharePeer=peer;const sender=peer.addTrack(track,new MediaStream([track]));const encoding=sender.getParameters();if(encoding.encodings?.length){encoding.encodings[0].maxBitrate=192000;await sender.setParameters(encoding).catch(()=>{});}
+      track.addEventListener('ended',()=>stopSharing());
+      peer.addEventListener('connectionstatechange',()=>{if(sharePeer!==peer)return;if(peer.connectionState==='connected'){shareStatus('Everyone in the call can hear this player while your meeting microphone is unmuted.');$('room-everyone').setAttribute('aria-pressed','true');$('room-only-me').setAttribute('aria-pressed','false');}else if(['failed','closed','disconnected'].includes(peer.connectionState)){stopSharing();shareStatus('Audio sharing stopped. Select Everyone in call to reconnect.');}});
+      await peer.setLocalDescription(await peer.createOffer());
+      if(peer.iceGatheringState!=='complete')await new Promise(resolve=>{const timer=setTimeout(resolve,4000);peer.addEventListener('icegatheringstatechange',()=>{if(peer.iceGatheringState==='complete'){clearTimeout(timer);resolve()}})});
+      shareStatus('Connecting audio to your call…');const result=await sendExternal({type:'room-audio-offer',sdp:peer.localDescription.sdp});if(!result?.ok)throw Error(result?.error||'Could not connect to your call.');await peer.setRemoteDescription({type:'answer',sdp:result.sdp});
+    }catch(error){stopSharing();shareStatus(error.name==='NotAllowedError'?'Sharing cancelled. Only you hear this player.':error.message);}finally{shareBusy=false;$('room-everyone').disabled=false;}
+  });
   const storageKey = 'memebox-room-playlists';
   const allowed = list => !list.explicit || showAdult;
   const make = (tag, text, className = '') => { const node=document.createElement(tag);node.textContent=text;if(className)node.className=className;return node; };
@@ -22,9 +47,9 @@ MemeRoomI18n.ready.then(async () => {
     $('playlist-section').hidden=true;$('original-section').hidden=true;
     document.querySelector('.room-kicker').textContent='Video memes for every country';
     document.querySelector('.room-hero h2').textContent='Pick a meme. Play the moment.';
-    document.querySelector('.room-hero p').textContent='Admin-curated Worldwide, India, Gaming, Trending and After Dark video meme packs. YouTube streams the visible source video.';
+    document.querySelector('.room-hero p').textContent='Browse worldwide and regional collections.';
     document.querySelector('#published-section h2').textContent='Video meme packs';
-    document.querySelector('#published-section > p').textContent='Only the MemeBox admin publishes these categories. Browse to load the current catalog.';
+    document.querySelector('#published-section > p').textContent='Choose a meme below.';
     document.querySelector('#how-to-add h2').textContent='Video memes in your call';
     document.querySelector('#how-to-add > p').textContent='Play the visible YouTube video. To let everyone hear it, click the MemeBox toolbar icon and choose “Send this tab’s sound”.';
   }
@@ -35,7 +60,7 @@ MemeRoomI18n.ready.then(async () => {
   }
   function command(func,args=[]) { if($('youtube-player').hasAttribute('src'))$('youtube-player').contentWindow.postMessage(JSON.stringify({event:'command',func,args}),EMBED); }
   function stop() {
-    clearTimeout(timer); if(synth)synth.stop(); originalId='';selected='';currentPlaylist=null;paused=false;
+    clearTimeout(timer);clearTimeout(loadTimer);playerReady=false;playerState='idle'; if(synth)synth.stop(); originalId='';selected='';currentPlaylist=null;paused=false;
     $('youtube-player').removeAttribute('src');$('youtube-box').hidden=true;$('player-empty').hidden=false;
     $('youtube-link').hidden=true;$('now-title').textContent=memeMode?'Choose a video meme to start':t('room_pick');status('');renderOriginals();renderLists();renderPublished();
   }
@@ -43,22 +68,26 @@ MemeRoomI18n.ready.then(async () => {
     const config=globalThis.MEMEBOX_CONFIG||{},local=(config.SITE_URL||'').startsWith('http://127.0.0.1:');
     const url=new URL(local?'http://127.0.0.1:8790/music-room.html':new URL('/music-room',config.SITE_URL||location.origin));
     if(memeMode)url.searchParams.set('mode','memes');
-    const selection=new URLSearchParams();
+    const selection=new URLSearchParams();if(extensionId)selection.set('extension',extensionId);
     if(list.videos)selection.set('videos',list.videos.join(','));else selection.set('list',list.id);selection.set('name',list.title);
     if(list.explicit)selection.set('explicit','1');url.hash=selection.toString();return url;
   }
+  function watchLoad(list){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{if(selected===list.id){playerState='paused';status('If playback has not started, press Play inside the video once.');renderPublished();}},12000);}
   function playPlaylist(list) {
     if(!allowed(list)){status(t('adult_blocked'));return;}
-    stop();selected=list.id;currentPlaylist=list;$('now-title').textContent=list.title;
+    if (unavailable.has(list.id)) { status('This video cannot play in the embedded player. Choose another meme.'); return; }
+    clearTimeout(timer);if(synth)synth.stop();originalId='';renderOriginals();selected=list.id;currentPlaylist=list;paused=false;playerState='loading';$('now-title').textContent=list.title;
     $('youtube-link').hidden=true;
     if(needsWeb) {
       const url=webUrl(list);$('website-player').href=url.href;$('website-player').hidden=false;
-      status(t('room_web_required'));renderLists();window.open(url.href,'_blank','noopener');return;
+      status(t('room_web_required'));renderLists();location.replace(url.href);return;
     }
+    if(playerReady && list.videos?.length===1){command('loadVideoById',[list.videos[0]]);status('Loading '+list.title+'…');renderPublished();watchLoad(list);return;}
+    playerReady=false;
     const url=new URL(list.videos?'/embed/'+list.videos[0]:'/embed/videoseries',EMBED);if(list.videos&&list.videos.length>1)url.searchParams.set('playlist',list.videos.slice(1).join(','));else if(!list.videos)url.searchParams.set('list',list.id);url.searchParams.set('autoplay','1');url.searchParams.set('playsinline','1');url.searchParams.set('enablejsapi','1');
     if(/^https?:$/.test(location.protocol))url.searchParams.set('origin',location.origin);
     $('youtube-player').src=url.href;$('youtube-box').hidden=false;$('player-empty').hidden=true;
-    status(t('room_youtube_loading'));renderLists();
+    status('Loading '+list.title+'…');renderLists();renderPublished();watchLoad(list);
   }
   function playOriginal(id) {
     if(!MemeMusic.TUNES[id])return;
@@ -93,30 +122,33 @@ MemeRoomI18n.ready.then(async () => {
   function renderPublished() {
     $('published-list').replaceChildren();
     for(const pack of published) {
-      const items=pack.items.filter(item=>showAdult||!item.explicit);if(!items.length)continue;
+      const items=pack.items.filter(item=>!item.unavailable&&(showAdult||!item.explicit));if(!items.length)continue;
       const card=make('article','','room-track');card.dataset.published=pack.id;
-      const details=make('div','');details.append(make('h3',pack.title),make('p',t('room_published_count',items.length)));
-      const songs=make(memeMode?'div':'ol','',memeMode?'meme-items':'');
+      const details=make('div','');details.append(make('h3',pack.title+(pack.items.some(item=>item.explicit)?' · Strong language':'')),make('p',pack.kind==='memevideos'||memeMode?items.length+' memes':t('room_published_count',items.length)));
+      const videoPack=pack.kind==='memevideos'||memeMode;
+      const songs=make(videoPack?'div':'ol','',videoPack?'meme-items':'');
       for(const item of items) {
-        if(memeMode) {
+        if(videoPack) {
           const row=make('div','','meme-item'),name=make('span',item.title),playOne=make('button',needsWeb?t('room_web_player'):t('room_play'));
-          playOne.type='button';playOne.dataset.videoId=item.videoId;playOne.addEventListener('click',()=>playPlaylist({id:item.videoId,title:item.title,videos:[item.videoId],explicit:item.explicit}));
+          playOne.type='button';playOne.dataset.videoId=item.videoId;const active=selected===item.videoId;playOne.disabled=unavailable.has(item.videoId)||(active&&playerState==='loading');playOne.setAttribute('aria-pressed',String(active));if(unavailable.has(item.videoId))playOne.textContent='Unavailable';else if(active)playOne.textContent=playerState==='playing'?'Playing':playerState==='paused'?'Play in video':'Loading…';playOne.addEventListener('click',()=>playPlaylist({id:item.videoId,title:item.title,videos:[item.videoId],explicit:item.explicit}));
           row.append(name,playOne);songs.append(row);
         } else songs.append(make('li',item.title+(item.credit?' · '+item.credit:'')));
       }
       details.append(songs);
       const play=make('button',needsWeb?t('room_web_player'):t('room_play'));play.type='button';play.dataset.publishedPlay=pack.id;
       play.addEventListener('click',()=>{const playable=pack.items.filter(item=>showAdult||!item.explicit);if(playable.length)playPlaylist({id:pack.id,title:pack.title,videos:playable.map(item=>item.videoId),explicit:playable.some(item=>item.explicit)})});
-      card.append(details);if(!memeMode)card.append(play);$('published-list').append(card);
+      card.append(details);if(!videoPack)card.append(play);$('published-list').append(card);
     }
+    if(published.length){let memes=0,music=0;for(const pack of published){const n=pack.items.filter(item=>!item.unavailable&&(showAdult||!item.explicit)).length;if(pack.kind==='memevideos'||memeMode)memes+=n;else music+=n;}$('published-status').textContent=memes+' memes · '+music+' music tracks';}
   }
   function loadPreviewCatalog() {
-    published=previewCatalog.filter(pack=>pack?.kind===catalogKind).map((pack,index)=>({
-      id:'preview-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).filter(item=>/^[A-Za-z0-9_-]{11}$/.test(item.videoId||''))
+    published=previewCatalog.filter(pack=>(memeMode?pack?.kind==='memevideos':['links','memevideos'].includes(pack?.kind))).map((pack,index)=>({
+      id:'preview-'+index,kind:pack.kind,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).filter(item=>/^[A-Za-z0-9_-]{11}$/.test(item.videoId||''))
     })).filter(pack=>pack.items.length);
     renderPublished();
-    const count=published.reduce((n,p)=>n+p.items.length,0);
-    $('published-status').textContent=count?'Local review catalog · '+count+' items':t('room_catalog_unavailable');
+    const count=published.reduce((n,p)=>n+p.items.filter(item=>!item.unavailable&&(showAdult||!item.explicit)).length,0);
+    const memes=published.filter(p=>p.kind==='memevideos').reduce((n,p)=>n+p.items.filter(i=>!i.unavailable&&(showAdult||!i.explicit)).length,0);
+    $('published-status').textContent=count?`${memes} memes · ${count-memes} music tracks`:t('room_catalog_unavailable');
     return count;
   }
   $('published-browse').addEventListener('click',async()=>{
@@ -125,15 +157,15 @@ MemeRoomI18n.ready.then(async () => {
     const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),8000);
     try {
       const catalogBase=!inExtension && /^https?:$/.test(location.protocol) && !MEMEBOX_CONFIG.SITE_URL.startsWith('http://127.0.0.1:') ? location.origin : MEMEBOX_CONFIG.SITE_URL;
-      const api=new URL('/api/packs',catalogBase);api.searchParams.set('kind',catalogKind);
+      const api=new URL('/api/packs',catalogBase);if(memeMode)api.searchParams.set('kind',catalogKind);
       const config=await fetch(new URL('/api/config',catalogBase),{signal:abort.signal});
       if(!config.ok)throw Error('Catalog unavailable');
       const settings=await config.json();if(!memeMode&&settings.phonkEnabled===false){published=[];stop();$('published-status').textContent=t('room_catalog_paused');return;}
       const response=await fetch(api,{signal:abort.signal});if(!response.ok)throw Error('Catalog unavailable');
-      const data=await response.json();published=(Array.isArray(data.packs)?data.packs:[]).filter(pack=>pack?.kind===catalogKind).slice(0,memeMode?30:10).map((pack,index)=>({
-        id:'published-'+index,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).slice(0,50).filter(item=>typeof item?.videoId==='string'&&/^[A-Za-z0-9_-]{11}$/.test(item.videoId)).map(item=>({videoId:item.videoId,title:String(item.title||item.videoId).slice(0,100),credit:String(item.credit||'').slice(0,100),explicit:item.explicit===true}))
+      const data=await response.json();published=(Array.isArray(data.packs)?data.packs:[]).filter(pack=>(memeMode?pack?.kind==='memevideos':['links','memevideos'].includes(pack?.kind))).slice(0,memeMode?30:10).map((pack,index)=>({
+        id:'published-'+index,kind:pack.kind,title:String(pack.title||'').slice(0,80),items:(Array.isArray(pack.items)?pack.items:[]).slice(0,50).filter(item=>typeof item?.videoId==='string'&&/^[A-Za-z0-9_-]{11}$/.test(item.videoId)).map(item=>({videoId:item.videoId,title:String(item.title||item.videoId).slice(0,100),credit:String(item.credit||'').slice(0,100),explicit:item.explicit===true,unavailable:item.unavailable===true}))
       })).filter(pack=>pack.items.length);
-      renderPublished();$('published-status').textContent=published.length?'':t('room_catalog_empty');
+      renderPublished();if(!published.length)$('published-status').textContent=t('room_catalog_empty');
     }catch{loadPreviewCatalog();}
     finally{clearTimeout(timeout);$('published-browse').disabled=false;}
   });
@@ -156,7 +188,7 @@ MemeRoomI18n.ready.then(async () => {
     if(!showAdult&&currentPlaylist?.explicit)stop();
     if(inExtension){const {settings}=await chrome.storage.local.get('settings');await chrome.storage.local.set({settings:{...settings,showStrong:showAdult,adultConfirmed:showAdult}})}
     else try{localStorage.setItem('memebox-room-adult',showAdult?'on':'off')}catch{}
-    renderLists();renderPublished();
+    renderLists();renderPublished();if(previewCatalog.length)loadPreviewCatalog();
   });
   $('stop').addEventListener('click',stop);
   $('pause').addEventListener('click',()=>{if(originalId&&context){if(paused)context.resume().catch(()=>{});else context.suspend().catch(()=>{});paused=!paused}else if(selected){command(paused?'playVideo':'pauseVideo');paused=!paused}});
@@ -165,12 +197,14 @@ MemeRoomI18n.ready.then(async () => {
   $('shuffle').addEventListener('click',()=>{shuffle=!shuffle;$('shuffle').setAttribute('aria-pressed',String(shuffle));if(selected)command('setShuffle',[shuffle]);if(shuffle&&originalId){const ids=originalIds.filter(id=>MemePlan.canFx('music:'+id)&&id!==originalId);playOriginal(ids[Math.floor(Math.random()*ids.length)])}});
   $('room-volume').addEventListener('input',()=>{if(synth)synth.setVolume(Number($('room-volume').value)/100);command('setVolume',[Number($('room-volume').value)])});
   for(const button of document.querySelectorAll('[data-tier]'))button.addEventListener('click',()=>{tier=button.dataset.tier;for(const item of document.querySelectorAll('[data-tier]'))item.setAttribute('aria-pressed',String(item===button));renderOriginals()});
-  $('youtube-player').addEventListener('load',()=>{if($('youtube-player').hasAttribute('src'))$('youtube-player').contentWindow.postMessage(JSON.stringify({event:'listening',id:1,channel:'widget'}),EMBED)});
+  $('youtube-player').addEventListener('load',()=>{if(!$('youtube-player').hasAttribute('src'))return;const target=$('youtube-player').contentWindow;target.postMessage(JSON.stringify({event:'listening',id:1,channel:'widget'}),EMBED);for(const name of ['onReady','onStateChange','onError'])command('addEventListener',[name]);});
   window.addEventListener('message',event=>{
     if(event.origin!==EMBED||event.source!==$('youtube-player').contentWindow||!selected)return;
     let data;try{data=typeof event.data==='string'?JSON.parse(event.data):event.data}catch{return}
-    if(data?.event==='onError')status((currentPlaylist?.title||'This video')+' could not play here. YouTube may have removed it or blocked embedding in your region. Try another meme.');
-    if(data?.event==='onStateChange'&&data.info===1){status(t('room_youtube_playing'));paused=false;command('setVolume',[Number($('room-volume').value)]);if(shuffle)command('setShuffle',[true]);}
+    if(data?.event==='onReady'){playerReady=true;command('playVideo');}
+    if(data?.event==='onError'){playerState='failed';clearTimeout(loadTimer);const code=Number(data.info);if(currentPlaylist?.videos?.length===1)unavailable.add(currentPlaylist.id);status((currentPlaylist?.title||'This video')+(code===150||code===101?' does not allow playback in other websites.':code===100?' was removed or is private.':' is restricted or unavailable in this player.')+' Choose another meme.');renderPublished();}
+    if(data?.event==='onStateChange'&&data.info===1){playerState='playing';clearTimeout(loadTimer);playerReady=true;status(t('room_youtube_playing'));paused=false;command('setVolume',[Number($('room-volume').value)]);if(shuffle)command('setShuffle',[true]);renderPublished();}
+    if(data?.event==='onStateChange'&&data.info===2){playerState='paused';paused=true;renderPublished();}
   });
   if(inExtension) {
     const stored=await chrome.storage.local.get(['musicRoomPlaylists','settings']);lists=MemePlaylists.sanitize(stored.musicRoomPlaylists);showAdult=stored.settings?.showStrong===true&&stored.settings?.adultConfirmed===true;
@@ -185,7 +219,7 @@ MemeRoomI18n.ready.then(async () => {
   $('room-adult').checked=showAdult;$('review-status').hidden=MEMEBOX_CONFIG.PRO_ENABLED!==false;
   $('room-language').replaceChildren(...MemeRoomI18n.choices.map(([id,name])=>new Option(name,id)));$('room-language').value=MemeRoomI18n.code;
   $('room-language').addEventListener('change',async()=>{await MemeRoomI18n.load($('room-language').value,true);renderLists();renderOriginals();renderPublished()});
-  renderLists();renderOriginals();if(previewCatalog.length)loadPreviewCatalog();
+  renderLists();renderOriginals();if(previewCatalog.length)loadPreviewCatalog();else $('published-browse').click();
   const query=new URLSearchParams(location.search),fragment=new URLSearchParams(location.hash.slice(1));
   for(const [key,value] of fragment)if(['list','videos','name','explicit'].includes(key))query.set(key,value);
   if(location.hash)history.replaceState(null,'',location.pathname+location.search);
@@ -202,5 +236,6 @@ MemeRoomI18n.ready.then(async () => {
     const pack={id:'published-shared',title:(query.get('name')||t('room_external')).slice(0,80),items:incomingVideos.map(videoId=>({videoId,title:videoId,explicit:query.get('explicit')==='1'}))};
     published.push(pack);renderPublished();playPlaylist({id:pack.id,title:pack.title,videos:incomingVideos,explicit:query.get('explicit')==='1'});
   }
-  window.addEventListener('pagehide',stop);
+  for(const link of document.querySelectorAll('.room-nav a[href*="music-room"]'))link.addEventListener('click',()=>stopSharing());
+  window.addEventListener('pagehide',()=>{stopSharing();stop()});
 }).catch(()=>{document.getElementById('room-status').textContent='Could not load the music room. Reload this page.'});

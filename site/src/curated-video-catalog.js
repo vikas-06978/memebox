@@ -28,7 +28,8 @@ export const CURATED_VIDEO_GROUPS = [
         "credit": "",
         "lang": "hinglish",
         "tags": "Indian, reaction",
-        "explicit": false
+        "explicit": false,
+        "unavailable": true
       },
       {
         "videoId": "ul1RRx9eCIc",
@@ -268,7 +269,8 @@ export const CURATED_VIDEO_GROUPS = [
         "credit": "",
         "lang": "pt",
         "tags": "Brazilian, technology, reaction",
-        "explicit": false
+        "explicit": false,
+        "unavailable": true
       },
       {
         "videoId": "h7oqtfgvT64",
@@ -276,7 +278,8 @@ export const CURATED_VIDEO_GROUPS = [
         "credit": "",
         "lang": "ru",
         "tags": "dance, kid, Russian",
-        "explicit": false
+        "explicit": false,
+        "unavailable": true
       },
       {
         "videoId": "GttS70x3_QI",
@@ -284,7 +287,8 @@ export const CURATED_VIDEO_GROUPS = [
         "credit": "Guy",
         "lang": "uk",
         "tags": "exam, grade, crying, reaction",
-        "explicit": false
+        "explicit": false,
+        "unavailable": true
       },
       {
         "videoId": "VQ7lKPSUc2g",
@@ -316,18 +320,11 @@ export const CURATED_VIDEO_GROUPS = [
         "credit": "",
         "lang": "zh",
         "tags": "Chinese, reaction, template",
-        "explicit": false
+        "explicit": false,
+        "unavailable": true
       },
       {
-        "videoId": "JqIV1wSYhvM",
-        "title": "Dance Meme (Move Your Body)",
-        "credit": "Aun repost; description credits Spinnin Records",
-        "lang": "",
-        "tags": "dance, music, move your body",
-        "explicit": false
-      },
-      {
-        "videoId": "j9V78UbdzWI",
+        "videoId": "dHER3Vc9GBI",
         "title": "Coffin Dance",
         "credit": "Astronomia",
         "lang": "",

@@ -16,7 +16,7 @@
   const LIMITS = { name: 60, description: 200, lines: 500, clips: 50, text: 300, category: 30, clipName: 120, clipBytes: 1024 * 1024 };
   const ID = /^[A-Za-z0-9_-]{1,64}$/;
   const TOP_KEYS = new Set(['format', 'version', 'name', 'description', 'lines', 'clips']);
-  const LINE_KEYS = new Set(['id', 'kind', 'text', 'say', 'lang', 'tone', 'category', 'fav', 'volume', 'star', 'clipId', 'sfx', 'explicit', 'packId', 'region', 'universal']);
+  const LINE_KEYS = new Set(['id', 'kind', 'text', 'say', 'lang', 'tone', 'category', 'fav', 'volume', 'star', 'clipId', 'sfx', 'explicit', 'packId', 'region', 'universal', 'speak', 'pictureCaption']);
   const CLIP_KEYS = new Set(['id', 'name', 'type', 'data']);
   const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
 
@@ -88,6 +88,8 @@
         ids.add(l.id);
         if (l.kind !== 'tts' && l.kind !== 'clip' && l.kind !== 'sfx') err(`${p}.kind`, 'must be "tts", "clip" or "sfx"');
         if (!isStr(l.text, LIMITS.text, 1) || !l.text.trim() || !noControl(l.text)) err(`${p}.text`, `1-${LIMITS.text} characters`);
+        if(l.speak!==undefined&&typeof l.speak!=='boolean')err(`${p}.speak`,'true or false');
+        if(l.pictureCaption!==undefined&&(!isStr(l.pictureCaption,LIMITS.text)||!noControl(l.pictureCaption)))err(`${p}.pictureCaption`,'a caption string');
         if (l.say !== undefined && (!isStr(l.say, LIMITS.text) || !noControl(l.say))) err(`${p}.say`, `up to ${LIMITS.text} characters`);
         if (!globalThis.MEME.isLang(l.lang)) err(`${p}.lang`, `one of ${Object.keys(globalThis.MEME.LANGS).join(', ')}`);
         if (!Object.prototype.hasOwnProperty.call(TONES, l.tone)) err(`${p}.tone`, `one of ${Object.keys(TONES).join(', ')}`);
@@ -122,6 +124,8 @@
       name: String(name).slice(0, LIMITS.name) || 'MemeBox pack',
       lines: lines.map((l) => {
         const o = { id: l.id, kind: l.kind === 'clip' ? 'clip' : l.kind === 'sfx' ? 'sfx' : 'tts', text: l.text, lang: l.lang, tone: l.tone, category: l.category || 'general' };
+        if(l.speak===false)o.speak=false;
+        if(typeof l.pictureCaption==='string')o.pictureCaption=l.pictureCaption;
         if (l.say) o.say = l.say;
         if (l.fav) o.fav = l.fav;
         if (l.volume !== undefined && l.volume !== 1) o.volume = l.volume;

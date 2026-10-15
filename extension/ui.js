@@ -176,7 +176,8 @@
       if (!startCard.hidden) { startCard.hidden = true; try { chrome.storage.local.set({ startDone: true }); } catch { /* orphaned */ } } // you found out how it works
       celebrate();
       if (line) {
-        showCaption(line.text, picture);
+        if(generation!==captionGeneration){if(picture)picture.close();return;}
+        showCaption(line.pictureId ? (line.pictureCaption ?? line.text) : line.text, picture);
         if (line.id !== 'beep') rememberPlayed(line.id);
         state.nowPlayingId = line.id;
         renderList();
@@ -316,6 +317,7 @@
   bridge.onUiMessage = (msg) => {
     for (const fn of messageCbs) { try { fn(msg); } catch { /* ignore */ } }
     if (msg.type === 'fx-status') state.camLive = msg.active === true; // your camera is going through MemeBox
+    if(msg.type==='picture-position'&&[msg.left,msg.top,msg.width,msg.height].every(Number.isFinite)){state.picturePosition={left:msg.left,top:msg.top,width:msg.width,height:msg.height};return;}
     if (msg.type === 'cam-caption' && msg.fixed === true) state.captionFixedAt = Date.now(); // your own tile now shows the caption the right way round
     if (msg.type === 'frame-status') onFrameStatus(msg);
     else if (msg.type === 'play-result') onPlayResult(msg);
@@ -593,7 +595,7 @@
     details[data-page] > summary { display: none; }
     details[data-page] { border-top: 0; padding-top: 0; }
     details[data-page] .settings-body { padding-top: 2px; }
-    .adult-preference { font-size:11px; line-height:1.35; margin:8px 0; } .panel:not([data-tab=memes]):not([data-tab=pictures]) .adult-preference { display:none; } .pictures-tools { display:none; } .panel[data-tab="pictures"] .pictures-tools { display:grid; gap:10px; padding:10px 0; } .panel[data-tab="pictures"] :is(.chips,.langchips,.memes-row,.packs-link) { display:none; } .pagetabs { flex-wrap:wrap; } .ptab { min-width:62px; } .toggle-help { display:block; font-size:11px; line-height:1.4; color:var(--p-muted); margin-top:3px; }
+    .adult-preference { font-size:11px; line-height:1.35; margin:8px 0; } .panel:not([data-tab=memes]) .adult-preference { display:none; } .pictures-tools { display:none; } .panel[data-tab="pictures"] .pictures-tools { display:grid; gap:10px; padding:10px 0; } .panel[data-tab="pictures"] :is(.chips,.langchips,.memes-row,.packs-link) { display:none; } .pagetabs { flex-wrap:wrap; } .ptab { min-width:0; padding:8px 4px; font-size:12px; justify-content:center; } .pagetabs { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px; } .toggle-help { display:block; font-size:11px; line-height:1.4; color:var(--p-muted); margin-top:3px; }
     .panel[data-tab="memes"] .foot { display: block; }
     .panel:not([data-tab="memes"]) > .foot, .panel:not([data-tab="memes"]) > .start { display: none; }
     .langchips { margin-top: -4px; }
@@ -654,10 +656,10 @@
       text-transform: uppercase; color: #fff; -webkit-text-stroke: 2px #000; paint-order: stroke fill;
       text-shadow: 0 0 2px #000, 3px 3px 0 #000, -1px -1px 0 #000, 0 6px 16px rgba(0,0,0,.5); overflow-wrap: anywhere;
       animation: pop 3s ease forwards; }
-    .caption.pinned { pointer-events: auto; animation: picture-pop .25s ease-out both; padding: 34px 14px 14px; }
+    .caption.pinned { pointer-events: auto; animation: picture-pop .25s ease-out both; padding: 8px; }
     .caption.pinned .meme-pic { display: block; margin: 0 auto 10px; max-width: min(76vw, 900px); max-height: 64vh; width: auto; height: auto;
       border-radius: 14px; box-shadow: 0 8px 26px rgba(0,0,0,.45); }
-    .caption .picture-close { position: absolute; inset-block-start: 0; inset-inline-end: 0; width: 38px; height: 38px; border: 2px solid #fff;
+    .caption .picture-close { position: absolute; inset-block-start: 4px; inset-inline-end: 4px; width: 38px; height: 38px; border: 2px solid #fff;
       border-radius: 999px; background: #17151c; color: #fff; cursor: pointer; font: 700 20px/1 system-ui, sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,.45); }
     .caption .picture-close:focus-visible { outline: 3px solid #ffd43b; outline-offset: 3px; }
     @keyframes picture-pop { from { opacity: 0; transform: translateX(-50%) scale(.92); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
@@ -764,6 +766,7 @@
     pageBtns[id] = b; pageTabs.append(b);
   }
   settings.dataset.page = 'sound';
+  settings.querySelector('.settings-body').prepend(el('p',{className:'fx-how'},t('sound_help')));
   const pictureAdd = el('button', { className: 'chip', type:'button' },t('pictures_add'));
   pictureAdd.addEventListener('click',()=>bridge.toRuntime({type:'open-options',hash:'pictures'}));
   const adultBox = el('input',{type:'checkbox'});
@@ -1030,8 +1033,11 @@
   function showCaption(text, picture) {
     for (const c of shadow.querySelectorAll(picture ? '.caption' : '.caption:not(.pinned)')) c.remove();
     if (!picture && shadow.querySelector('.caption.pinned')) return;
+    if(picture&&state.settings.camCaptions===true&&state.camLive&&state.picturePosition){
+      const rect=state.picturePosition;picture.close();const box=el('div',{className:'caption pinned camera-picture-close'});box.style.cssText='left:'+Math.max(24,Math.min(innerWidth-24,rect.left+rect.width-24))+'px;top:'+Math.max(8,rect.top+8)+'px;padding:0;width:38px;height:38px;background:transparent;box-shadow:none;';const close=el('button',{className:'picture-close',type:'button',title:t('close')},'×');close.setAttribute('aria-label',t('close'));close.addEventListener('click',closePicture);box.append(close);shadow.append(box);return;
+    }
     // PRO: camera captions. With "Caption on my camera" the text is on your own video tile too; when that tile could be flipped back so it reads right, a second copy on the page would be a duplicate.
-    if (!picture && state.settings.camCaptions === true && state.camLive && plan.can('captions') && state.settings.camUnmirror !== false && !showCaption.now) {
+    if (state.settings.camCaptions === true && state.camLive && plan.can('captions') && state.settings.camUnmirror !== false && !showCaption.now) {
       const generation = captionGeneration;
       setTimeout(() => { if (generation !== captionGeneration) return; showCaption.now = true; if (Date.now() - (state.captionFixedAt || 0) > 800) showCaption(text, picture); else if (picture) picture.close(); showCaption.now = false; }, 250);
       return;

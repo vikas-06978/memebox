@@ -97,7 +97,7 @@ export async function onRequest({ request, env }) {
           pack = await getPack(env.DB, id); made++;
         }
         if (pack.kind !== group.kind) throw new Error(`${group.packTitle} already exists with the wrong pack type.`);
-        for (const video of group.items) {
+        for (const video of group.items.filter(video=>!video.unavailable)) {
           const line = `https://www.youtube.com/watch?v=${video.videoId} | ${video.title} | ${video.credit || ''}`;
           const result = await addLinks(env.DB, pack.id, line, { cleared: false, lang: video.lang, tags: video.tags, explicit: video.explicit });
           added += result.added; skipped += result.skipped.length;

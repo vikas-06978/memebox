@@ -2,6 +2,8 @@
 
 Branch: `review/memebox-local-2026-10-14`. Start with [START-HERE](../START-HERE.md). This checklist separates completed local implementation from account/content/release work. No deployment, remote migration, live payment activation or Web Store publication is included.
 
+Latest implementation changes: [15 October review fixes](review-fixes-2026-10-15.md). Those changes supersede older music counts and upload-flow notes below.
+
 ## Completed locally
 
 - [x] Full-page Playground with the shared camera renderer, all 14 characters, actual species actions, manual reactions, position control, Leave/Return and mobile layout.
@@ -12,10 +14,10 @@ Branch: `review/memebox-local-2026-10-14`. Start with [START-HERE](../START-HERE
 - [x] Cat/Dog Free, ten standard characters with Pro, all fourteen with Max. Eight extra standard characters are purchasable; Unicorn/Robot/Snake/Bird are Max-only for new sales. Legacy purchases remain supported.
 - [x] Plans uses server-derived prices, currencies and ownership rules. Standard Pro filters and costumes have permanent individual and bundle prices; Max designs stay pass-only. Checkout stays closed until Razorpay approval, and existing pass/character prices are unchanged.
 - [x] Separate Pictures tab and local picture preview; large pinned call pictures persist until Close/Escape/Stop all. Personal files stay on the device.
-- [x] Unified room from the actual call-panel Phonk button, Welcome, Options and Playground: five fixed supplied playlist references, sixteen tunes, search, volume and Stop/Pause/Next/Shuffle. Shared playlist editing stays admin-only. A localhost launcher provides the HTTP player YouTube requires.
+- [x] Unified room from the actual call-panel Phonk button, Welcome, Options and Playground: five fixed supplied playlist references, thirteen background tunes, search, volume and Stop/Pause/Next/Shuffle. Shared playlist editing stays admin-only. A localhost launcher provides the HTTP player YouTube requires.
 - [x] Published owner collections refresh from existing catalog APIs without an extension release, retain names/credits/adult flags and use cached valid IDs without per-play API calls.
 - [x] Private music uploads work on Free through the actual call-panel file chooser. Premium bundled tunes keep their tiers.
-- [x] Revised originals have builds, pauses, full drops, breakdowns and layered second drops at 144–156 BPM.
+- [x] Three synthesized original phonk choices are removed from consumer Music/Playground views at the owner’s request; internal definitions remain compatible with saved state.
 - [x] Language can change during a call. Own additions and universal effects remain available; curated speech follows the preference. Country never restricts access. For everyone, Worldwide and India are optional collections.
 - [x] Preferred-language and region controls for pack browsing; installed content retains language, region, source and strong-language metadata.
 - [x] Default-off self-declared 18+ preference. Text/clip editors can mark strong language; import/export retains markers. Marked items are guarded in discovery, favorites, random/timers, previews and playback. Opting out stops active/pending media. Site Phonk also excludes marked tracks from queues/player.
