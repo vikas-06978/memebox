@@ -112,7 +112,23 @@ $('mic-start').addEventListener('click', startMic);
 $('mic-stop').addEventListener('click', stopMic);
 $('hear').addEventListener('click', hearMeme);
 $('open-settings').addEventListener('click', () => chrome.runtime.openOptionsPage());
-$('close').addEventListener('click', () => window.close());
+async function launchStudio() {
+  stopMic();
+  document.querySelector('.tutorial video').pause();
+  await chrome.storage.local.set({ onboardingComplete: true });
+  location.assign(chrome.runtime.getURL('playground.html'));
+}
+$('close').addEventListener('click', launchStudio);
+$('launch-studio').addEventListener('click', launchStudio);
+document.querySelectorAll('[data-tour-time]').forEach(button => button.addEventListener('click', () => {
+  const video = document.querySelector('.tutorial video');
+  video.currentTime = Number(button.dataset.tourTime);
+  video.play().catch(() => {});
+}));
+document.querySelectorAll('[data-open-player]').forEach(link => link.addEventListener('click', event => {
+  event.preventDefault();
+  chrome.runtime.sendMessage({ type: 'open-options', hash: 'music-room', audience: 'me' }).catch(() => location.assign(link.href));
+}));
 window.addEventListener('pagehide', stopMic);
 
 // Call tabs that were already open when MemeBox was installed don't have the 😂 button until they

@@ -126,6 +126,7 @@ function landing(template, lang, base) {
   const block = head({ title: t('meta_title'), desc: t('meta_desc'), url, lang, alternates, image: `${base}/assets/og-card.png`, ld });
   let html = template.replace(/<!-- SEO:START[^>]*-->[\s\S]*?<!-- SEO:END -->/,
     `<!-- SEO:START (written by npm run seo; edit tools/seo.mjs or the i18n files instead) -->\n${block}\n  <!-- SEO:END -->`);
+  html = html.replaceAll(STORE_SEARCH, INSTALL_URL);
   if (lang === 'en') return html;
 
   html = html.replace(/<html[^>]*>/, `<html lang="${lang}" dir="${RTL.has(lang) ? 'rtl' : 'ltr'}" data-prerendered="${lang}">`);
@@ -226,9 +227,10 @@ ${head({ title: p.title, desc: p.desc, url, lang: 'en', image: `${base}/assets/o
       </div>
       <figure class="demo">
         <div class="frame"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <video controls autoplay muted loop playsinline preload="auto" width="1280" height="800" poster="/assets/tutorial-poster.png" aria-label="A 30 second tutorial: join a call in the browser, click the laughing button, right-click for the panel, unmute your mic">
+          <video controls autoplay muted loop playsinline preload="metadata" width="1280" height="800" poster="/assets/tutorial-poster.png" aria-label="English captioned MemeBox product tour: memes, music, pictures, characters, filters, voice and passes">
           <source src="/assets/tutorial.webm" type="video/webm">
           <source src="/assets/tutorial.mp4" type="video/mp4">
+          <track kind="captions" src="/assets/tutorial.en.vtt" srclang="en" label="English">
           <img src="/assets/demo.png" width="1280" height="800" alt="MemeBox panel open during a video call, with a big meme caption on screen">
           </video><button type="button" class="soundon">🔊 Sound on</button></div>
       </figure>

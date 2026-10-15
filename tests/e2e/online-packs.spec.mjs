@@ -39,7 +39,7 @@ test('online packs: browse, add free music and memes, paid packs are "Coming soo
   const site = await startSite({ env: { ADMIN_KEY: 'k', HOSTED_AUDIO_ENABLED: 'on', HOSTED_FILES_ENABLED: 'on' } });
   try {
     await seed(site);
-    await context.route('https://memebox.pages.dev/**', async (route) => {
+    await context.route('https://memebox.site/**', async (route) => {
       const u = new URL(route.request().url());
       await route.fulfill({ response: await route.fetch({ url: site.url + u.pathname + u.search }) });
     });

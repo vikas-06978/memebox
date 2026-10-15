@@ -2,279 +2,279 @@
 <!-- Written by npm run seo from SITE_URL in extension/config.js. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://memebox.pages.dev/</loc>
+    <loc>https://memebox.site/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/hi/</loc>
+    <loc>https://memebox.site/hi/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/bn/</loc>
+    <loc>https://memebox.site/bn/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/mr/</loc>
+    <loc>https://memebox.site/mr/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/ta/</loc>
+    <loc>https://memebox.site/ta/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/te/</loc>
+    <loc>https://memebox.site/te/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/gu/</loc>
+    <loc>https://memebox.site/gu/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/es/</loc>
+    <loc>https://memebox.site/es/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/ar/</loc>
+    <loc>https://memebox.site/ar/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/pt/</loc>
+    <loc>https://memebox.site/pt/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/fr/</loc>
+    <loc>https://memebox.site/fr/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/id/</loc>
+    <loc>https://memebox.site/id/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.pages.dev/hi/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.pages.dev/bn/"/>
-    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.pages.dev/mr/"/>
-    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.pages.dev/ta/"/>
-    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.pages.dev/te/"/>
-    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.pages.dev/gu/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.pages.dev/es/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.pages.dev/ar/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.pages.dev/pt/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.pages.dev/fr/"/>
-    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.pages.dev/id/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.pages.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://memebox.site/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://memebox.site/hi/"/>
+    <xhtml:link rel="alternate" hreflang="bn" href="https://memebox.site/bn/"/>
+    <xhtml:link rel="alternate" hreflang="mr" href="https://memebox.site/mr/"/>
+    <xhtml:link rel="alternate" hreflang="ta" href="https://memebox.site/ta/"/>
+    <xhtml:link rel="alternate" hreflang="te" href="https://memebox.site/te/"/>
+    <xhtml:link rel="alternate" hreflang="gu" href="https://memebox.site/gu/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://memebox.site/es/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://memebox.site/ar/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://memebox.site/pt/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://memebox.site/fr/"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://memebox.site/id/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://memebox.site/"/>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/google-meet-soundboard</loc>
+    <loc>https://memebox.site/google-meet-soundboard</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/zoom-soundboard</loc>
+    <loc>https://memebox.site/zoom-soundboard</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/teams-soundboard</loc>
+    <loc>https://memebox.site/teams-soundboard</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/discord-soundboard</loc>
+    <loc>https://memebox.site/discord-soundboard</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/pricing</loc>
+    <loc>https://memebox.site/pricing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/buy</loc>
+    <loc>https://memebox.site/buy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/feedback</loc>
+    <loc>https://memebox.site/feedback</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/privacy</loc>
+    <loc>https://memebox.site/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://memebox.pages.dev/terms</loc>
+    <loc>https://memebox.site/terms</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>

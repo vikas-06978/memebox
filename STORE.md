@@ -32,32 +32,25 @@ MemeBox is a meme soundboard and voice changer for your calls. Click the floatin
 **Where it works**
 In Chrome or Edge, on the web versions of Google Meet, Zoom, Microsoft Teams and Discord.
 
-**Free features**
-• One click plays a random meme. Right-click the button for the full panel: search, categories, favourites, recently played, Random and Stop all.
-• Hindi, Hinglish and English meme lines, spoken by a voice engine that runs on your own computer.
-• Six tones: Normal, Chipmunk, Villain, Robot, Slow-mo and Excited.
-• A big meme caption appears on your screen for 3 seconds.
-• Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They're ignored while you type.
-• Auto-duck lowers the meme sounds while you're talking.
-• Add your own sounds: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
-• Optional Sound effects pack (add it in Settings → Packs): airhorn, rimshot, sad trombone, drumroll, applause, crickets and more.
-• The College pack of friendly roasts. Share your own packs as a file.
-• Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
-• One picture meme: give a line a picture (a monkey, a reaction face, anything) and it flashes on your screen while the line plays.
-• Save any meme as a WAV file, or share its text on WhatsApp (you pick the chat).
+**Explore the complete studio**
+• Preview characters, outfits, camera filters and music before joining a call. The welcome page includes an English product tour with captions.
+• In your call, open five organised pages: Memes, Music, Lights, Pictures and Sound. Search, categories, favourites, recently played and Stop all are close at hand.
+• Meme lines are spoken by a voice engine on your computer, with six tones: Normal, Chipmunk, Villain, Robot, Slow-mo and Excited.
+• Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They are ignored while you type.
+• Add audio or video files (only their sound is kept), a direct media-file link, or a short recording. Trim in the waveform editor. Website links such as YouTube pages are played in the visible player, not downloaded.
+• Upload and preview a picture. Show it silently, add a written caption, or enable Read caption aloud. Caption and speech are optional; filenames are never spoken.
+• Choose Only me or Everyone in call for music. Built-in tunes mix into your meeting mic; playlist and video-meme audio requires selecting the player tab and enabling Share tab audio in the browser dialog.
+• Browse regional video meme collections in a visible YouTube player. Individual videos remain subject to the provider's age, embedding and region restrictions.
+• Preview 14 animated companions, 28 filters, outfits and light shows. Optional local face and hand models support selected gestures and away/return reactions. This is not general sign-language interpretation.
+• Optional voice effects: Chipmunk, Deep, Robot, Echo or Radio. Auto-duck lowers sound while you speak. Party mode can schedule a chosen line during a connected call.
 
-**MemeBox Pro (optional, paid)**
-Pro is a one-time purchase on the MemeBox website, paid by UPI. You get a license key and paste it into MemeBox Options. Pro unlocks:
-• Live voice changer for your own voice: Chipmunk, Deep, Robot, Echo or Radio. Alt+V switches it on and off.
-• Meme captions and pictures on your own camera.
-• Unlimited saved clips, and importing many audio files at once.
-• The Cricket, Office and Party packs.
-• Party mode: a line at a set time or every few minutes.
-• Unlimited picture memes. Extra picture memes can also be bought on their own, without Pro.
-Everything in the free list keeps working without paying.
+**Free and optional paid extras**
+The free soundboard includes local speech, sound effects, favourites, tab audio, up to 10 saved clips, one picture meme, Cat and Dog, three colour filters, a still lamp and Chill/Funky music. Personal music uploads are available free.
+
+Pro and Pro Max passes unlock additional features while the pass is switched on in a connected call. Unused time does not expire. Selected standard characters, filters and outfits may also be bought permanently; Max-exclusive items require the matching pass. Existing owner and legacy purchases are retained. Available products, prices and checkout status are shown on the website. Premium features require a valid license; payment availability depends on the payment provider.
 
 **Private by design**
-Your microphone, camera and tab audio are only mixed inside your browser. They are never recorded, saved or uploaded. No accounts, no ads, no analytics. If you enter a Pro license key, only that key is sent to the MemeBox website to check it, about once a day.
+Your live microphone, camera effects and tab-audio mix are processed inside your browser. Personal clips you deliberately record/import stay on your device. There are no accounts or cross-site tracking. License checks and signed pass-time reports go to the MemeBox site. Optional feature counters are optional and off by default; they never contain call content, captions, filenames, meeting URLs or contacts. Optional YouTube playback follows the provider's privacy policy and may include ads. Details are in our privacy policy.
 
 **Good to know**
 • Memes are silent while you're muted in the call. That's on purpose.
@@ -74,7 +67,7 @@ MemeBox is a soundboard for browser video calls. It plays meme lines, sound effe
 ## Permission justifications
 
 **storage**
-Saves the user's lines, favourite shortcuts, volumes and settings, the button position, and the play count for a one-time feedback question. Stored on the device with chrome.storage.local. Uploaded clips are kept in the extension's IndexedDB. Nothing is synced or sent anywhere.
+Saves the user's lines, favourites, volumes, settings, button position, license and pass balance on the device. Imported clips and pictures are kept in IndexedDB. Also stores pending pass-time reports and optional feature counters, which are sent only when the user enables usage sharing. Call content and personal media are never uploaded to MemeBox servers.
 
 **offscreen**
 Creates an offscreen document (reason: WORKERS) that runs the bundled eSpeak-NG text-to-speech engine, compiled to WebAssembly, in a Web Worker. It turns meme text into audio. It also runs the bundled face and hand models for the optional Follow me. A service worker can't run them, and running them in the call page would slow the call down.
@@ -105,13 +98,13 @@ Reviewers need to try the Pro features, so give them a working key. Make a Pro k
 - **Additional instructions:**
 
 > 1. Open a Google Meet call in the browser (meet.new works with any Google account). The 😂 button appears in the bottom corner. Click it to play a meme through your microphone. Right-click it for the full panel.
-> 2. Free features work without a key. To test MemeBox Pro (voice changer, camera captions, extra packs, party mode, unlimited clips and pictures): open Options (⚙️ in the panel, or right-click the toolbar icon → Options), go to "MemeBox Pro", paste the key MBX-XXXX-XXXX-XXXX and press Activate.
+> 2. Free features work without a key. Welcome → Let's go opens the full studio. To test Pro/Max (voice effects, camera captions, premium companions, filters and timed lines): open Options → MemeBox Pro, paste the reviewer key MBX-XXXX-XXXX-XXXX and press Activate. The publisher must replace this placeholder with a real active owner key before submission.
 > 3. Tab audio: open a YouTube video in another tab, click the MemeBox toolbar icon there and press "Send this tab's sound to my call".
-> 4. Pro is sold on https://memebox.pages.dev/buy as a one-time UPI payment. The key is checked with https://memebox.pages.dev/api/license. Apart from audio links the user adds themselves, MemeBox makes no other network requests.
+> 4. Products and current payment availability appear at https://memebox.site/pricing. A license is checked at the configured MemeBox /api/license endpoint; passes report signed usage to /api/pass-session. Optional /api/usage counters are off unless enabled in Options. Playback does not require other participants to install MemeBox. Use browser calls, not desktop meeting apps.
 
 ## Data usage (Privacy practices tab)
 
-- **Data types:** tick only **Authentication information**. That's the MemeBox license key a user may type in Options: it is sent to the MemeBox site only to check it (about once a day). Leave every other data type unticked.
+- **Data types:** declare **Authentication information** for license keys and **User activity** for signed pass-time reports and optional feature/item counters. Describe optional counters as off by default; they include a pseudonymous installation identifier and may be associated with a license key. Do not claim that the new version collects no usage data.
   - Microphone, camera and tab audio are processed only in the tab and are never collected or sent.
   - Lines, clips and settings are stored only on the device.
   - The extension opens the feedback page with only the extension version and the call site name (for example `?v=1.0.0&site=meet`), and the uninstall survey with only the version. People may choose to type an answer there. That is covered by the website's privacy policy.
@@ -119,8 +112,8 @@ Reviewers need to try the Pro features, so give them a working key. Make a Pro k
   - I do not sell or transfer user data to third parties, outside of the approved use cases.
   - I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
   - I do not use or transfer user data to determine creditworthiness or for lending purposes.
-- **Privacy policy URL:** `https://memebox.pages.dev/privacy` (your `SITE_URL` + `/privacy`).
-- **Homepage URL:** `https://memebox.pages.dev/`. **Support URL:** `https://memebox.pages.dev/feedback`.
+- **Privacy policy URL:** `https://memebox.site/privacy` (your `SITE_URL` + `/privacy`).
+- **Homepage URL:** `https://memebox.site/`. **Support URL:** `https://memebox.site/feedback`.
 
 ## Images
 
@@ -134,6 +127,8 @@ All made by `npm run store-images` from the real extension (in `store/`):
 | `store/screenshot-2-options.png` | 1280×800 | Lines and settings |
 | `store/screenshot-3-welcome.png` | 1280×800 | Welcome page and mic test |
 | `store/screenshot-4-tab-audio.png` | 1280×800 | Sending a tab's sound |
+| `store/screenshot-5-characters.png` | 1280×800 | Actual animated companion and outfit preview |
+| `store/screenshot-6-filters.png` | 1280×800 | Actual camera filter and light preview |
 | `store/promo-440x280.png` | 440×280 | Small promo tile |
 
 The call scene is a mock-up with coloured tiles and first names only. No real people, no platform logos.
@@ -143,10 +138,10 @@ The call scene is a mock-up with coloured tiles and first names only. No real pe
 1. Deploy the site first (README, "Deploy the site") and put its address in `extension/config.js` as `SITE_URL`. Check that `/privacy`, `/feedback` and `/uninstall` load.
 2. Run `npm test`, `npm run test:e2e`, `npm run build` and `npm run zip`. The file to upload is `memebox-<version>.zip`.
 3. Open the Chrome Web Store Developer Dashboard (https://chrome.google.com/webstore/devconsole). Pay the one-time registration fee if you haven't, and verify your contact email.
-4. **Add new item** → upload the zip.
+4. Open the existing item `bbpfkaedpfabehgikgpagbjhjcmlcpnl` → Package → Upload new package. Keep the same item and publisher account so existing users update in place. Do not create a new item for this release.
 5. **Store listing** tab: paste the description, pick the category, upload the icon, the 4 screenshots and the promo tile. Add the homepage and support URLs.
 6. **Test instructions** tab: paste the steps and the Pro key from "Test instructions" above.
-7. **Privacy practices** tab: paste the single purpose and each permission justification from this file. Answer "No" to remote code, tick only **Authentication information** under data types (see "Data usage"), tick the three certifications, and paste the privacy policy URL.
+7. **Privacy practices** tab: paste the single purpose and permission justifications. Answer "No" to remote code. Declare Authentication information and User activity as described above, complete the three certifications truthfully and link the updated privacy policy. Approval remains the store review team's decision.
 8. **Distribution:** Payments: **Contains in-app purchases** while `PRO_ENABLED` is `true` in `extension/config.js` (MemeBox Pro is sold on the site and unlocked with a license key). Pick "Free of charge" only if Pro is switched off. Visibility: Public, all regions (or the ones you want).
 9. **Submit for review.** Reviews usually take a few days. Permissions like tabCapture and host permissions can take longer.
 10. After approval, copy the store address into `extension/config.js` as `STORE_URL` and into the landing page's install button (`site/public/index.html`, `id="install"`). Release a small update with those.

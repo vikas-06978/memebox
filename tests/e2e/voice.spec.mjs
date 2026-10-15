@@ -119,7 +119,7 @@ test('options: save a line as a WAV file, and share its text on WhatsApp', async
   const text = new URL(wa.url()).searchParams.get('text');
   expect(new URL(wa.url()).hostname).toBe('wa.me');
   expect(text).toContain('MemeBox');
-  expect(text).toContain('https://memebox.pages.dev');
+  expect(text).toContain('https://memebox.site');
 });
 
 test('a caption on my camera: my own (mirrored) tile is flipped back while it shows, so I can read it, and restored after', async ({ context, callPage }) => {

@@ -126,7 +126,7 @@ export function activitySection(a) {
   return `
 <section class="admin-section" id="activity"><div class="section-heading"><div><span class="eyebrow">Business overview</span><h2>Sales and usage</h2></div><p>Last ${DAYS} days unless marked all-time.</p></div>
 <div class="range" id="range" role="group" aria-label="Range"><button type="button" data-days="7">7 days</button><button type="button" data-days="14">14 days</button><button type="button" data-days="30">30 days</button></div>
-<p class="muted">Revenue and passes come from billing records. Product usage appears only for people who explicitly enabled anonymous usage counters; it never includes call content.</p>
+<p class="muted">Revenue and passes come from billing records. Product usage appears only for people who explicitly enabled optional usage counters; it never includes call content.</p>
 <div class="tiles">
   <div class="tile"><b>₹${sum(a.revenue)}</b><span>earned</span></div>
   <div class="tile"><b>${a.funnel.approved}</b><span>approved orders</span></div>
@@ -147,7 +147,7 @@ export function activitySection(a) {
     <p>Pro Max: <b>${hours(a.time.soldMax)} h</b> sold, <b>${hours(usedMax)} h</b> used, ${hours(a.time.leftMax)} h left</p>
     <p><b>${hours(a.pass.billed)} h</b> actually billed across ${a.pass.sessions} signed sessions and ${a.pass.keys} keys.</p>
     <p class="muted">The billed number is authoritative. Sold-minus-left remains useful for older/manual top-ups.</p></section>
-  <section class="card span-2"><h2>What people use</h2>${a.usageFeatures.length ? bars(a.usageFeatures.map((r) => [r.feature, r.n])) : '<p class="muted">No opted-in usage yet. This fills after the usage migration and a user enables anonymous counters.</p>'}</section>
+  <section class="card span-2"><h2>What people use</h2>${a.usageFeatures.length ? bars(a.usageFeatures.map((r) => [r.feature, r.n])) : '<p class="muted">No opted-in usage yet. This fills after the usage migration and a user enables optional counters.</p>'}</section>
   <section class="card span-2"><h2>Top characters, filters, music and memes</h2>${a.usageRows.length ? bars(a.usageRows.slice(0, 15).map((r) => [`${r.feature}: ${r.item} · ${r.people} opted-in user${Number(r.people) === 1 ? '' : 's'}`, Number(r.n)])) : '<p class="muted">No opted-in usage yet.</p>'}</section>
   <section class="card span-2"><h2>Platform coverage</h2><div class="status-list"><span class="ok">✓ Google Meet web</span><span class="ok">✓ Zoom web</span><span class="ok">✓ Microsoft Teams web &amp; Teams Live</span><span class="ok">✓ Discord web</span><span class="muted">Desktop Zoom/Teams apps are outside a Chrome extension; feedback selections for them are kept separate.</span></div></section>
   <section class="card"><h2>Extension versions (feedback)</h2>${a.byVersion.length ? bars(a.byVersion) : '<p class="muted">No data yet.</p>'}</section>

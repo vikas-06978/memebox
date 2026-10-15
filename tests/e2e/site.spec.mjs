@@ -194,6 +194,10 @@ test('landing page: the tutorial video autoplays muted, loops, has controls, and
   await expect(page.locator('.soundon')).toBeHidden();
   await expect.poll(() => video.evaluate((v) => v.muted)).toBe(false);
   await expect.poll(() => video.evaluate((v) => v.webkitAudioDecodedByteCount), { timeout: 15000 }).toBeGreaterThan(5000);
+  await video.evaluate(v => { v.textTracks[0].mode = 'hidden'; });
+  await expect.poll(() => video.evaluate(v => v.textTracks[0].cues?.length || 0)).toBe(13);
+  await expect(page.locator('#install')).toHaveAttribute('href', 'https://chromewebstore.google.com/detail/memebox-meme-soundboard-v/bbpfkaedpfabehgikgpagbjhjcmlcpnl');
+  await expect(page.locator('#product-guide .features article')).toHaveCount(6);
   await page.screenshot({ path: 'tests/.tmp/landing-hero.png' });
   expect(page.cspErrors).toEqual([]);
 });

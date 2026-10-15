@@ -22,7 +22,7 @@
     "store-images": "node tools/store-images.mjs",
     "demo-sounds": "node tools/make-demo-sounds.mjs",
     "seo": "node tools/seo.mjs",
-    "tutorial": "node tools/make-tutorial.mjs",
+    "tutorial": "node tools/make-product-tour.mjs",
     "sync-fx": "node tools/sync-fx.mjs",
     "review:build": "npm run build:release && node tools/build-review.mjs"
   },

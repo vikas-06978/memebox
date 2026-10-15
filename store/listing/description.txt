@@ -5,32 +5,25 @@ MemeBox is a meme soundboard and voice changer for your calls. Click the floatin
 Where it works
 In Chrome or Edge, on the web versions of Google Meet, Zoom, Microsoft Teams and Discord.
 
-Free features
-• One click plays a random meme. Right-click the button for the full panel: search, categories, favourites, recently played, Random and Stop all.
-• Hindi, Hinglish and English meme lines, spoken by a voice engine that runs on your own computer.
-• Six tones: Normal, Chipmunk, Villain, Robot, Slow-mo and Excited.
-• A big meme caption appears on your screen for 3 seconds.
-• Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They're ignored while you type.
-• Auto-duck lowers the meme sounds while you're talking.
-• Add your own sounds: upload audio or video files (only the sound is kept), use a direct file link, or record yourself for up to 10 seconds. Trim with the waveform editor. Up to 10 saved clips.
-• Optional Sound effects pack (add it in Settings → Packs): airhorn, rimshot, sad trombone, drumroll, applause, crickets and more.
-• The College pack of friendly roasts. Share your own packs as a file.
-• Send any tab's sound into the call. Start a YouTube video at the funny moment, click the MemeBox icon on that tab, and everyone hears it. Nothing is downloaded.
-• One picture meme: give a line a picture (a monkey, a reaction face, anything) and it flashes on your screen while the line plays.
-• Save any meme as a WAV file, or share its text on WhatsApp (you pick the chat).
+Explore the complete studio
+• Preview characters, outfits, camera filters and music before joining a call. The welcome page includes an English product tour with captions.
+• In your call, open five organised pages: Memes, Music, Lights, Pictures and Sound. Search, categories, favourites, recently played and Stop all are close at hand.
+• Meme lines are spoken by a voice engine on your computer, with six tones: Normal, Chipmunk, Villain, Robot, Slow-mo and Excited.
+• Keyboard shortcuts: Alt+1 to Alt+9 for favourites, Alt+0 to stop, Alt+M to hide. They are ignored while you type.
+• Add audio or video files (only their sound is kept), a direct media-file link, or a short recording. Trim in the waveform editor. Website links such as YouTube pages are played in the visible player, not downloaded.
+• Upload and preview a picture. Show it silently, add a written caption, or enable Read caption aloud. Caption and speech are optional; filenames are never spoken.
+• Choose Only me or Everyone in call for music. Built-in tunes mix into your meeting mic; playlist and video-meme audio requires selecting the player tab and enabling Share tab audio in the browser dialog.
+• Browse regional video meme collections in a visible YouTube player. Individual videos remain subject to the provider's age, embedding and region restrictions.
+• Preview 14 animated companions, 28 filters, outfits and light shows. Optional local face and hand models support selected gestures and away/return reactions. This is not general sign-language interpretation.
+• Optional voice effects: Chipmunk, Deep, Robot, Echo or Radio. Auto-duck lowers sound while you speak. Party mode can schedule a chosen line during a connected call.
 
-MemeBox Pro (optional, paid)
-Pro is a one-time purchase on the MemeBox website, paid by UPI. You get a license key and paste it into MemeBox Options. Pro unlocks:
-• Live voice changer for your own voice: Chipmunk, Deep, Robot, Echo or Radio. Alt+V switches it on and off.
-• Meme captions and pictures on your own camera.
-• Unlimited saved clips, and importing many audio files at once.
-• The Cricket, Office and Party packs.
-• Party mode: a line at a set time or every few minutes.
-• Unlimited picture memes. Extra picture memes can also be bought on their own, without Pro.
-Everything in the free list keeps working without paying.
+Free and optional paid extras
+The free soundboard includes local speech, sound effects, favourites, tab audio, up to 10 saved clips, one picture meme, Cat and Dog, three colour filters, a still lamp and Chill/Funky music. Personal music uploads are available free.
+
+Pro and Pro Max passes unlock additional features while the pass is switched on in a connected call. Unused time does not expire. Selected standard characters, filters and outfits may also be bought permanently; Max-exclusive items require the matching pass. Existing owner and legacy purchases are retained. Available products, prices and checkout status are shown on the website. Premium features require a valid license; payment availability depends on the payment provider.
 
 Private by design
-Your microphone, camera and tab audio are only mixed inside your browser. They are never recorded, saved or uploaded. No accounts, no ads, no analytics. If you enter a Pro license key, only that key is sent to the MemeBox website to check it, about once a day.
+Your live microphone, camera effects and tab-audio mix are processed inside your browser. Personal clips you deliberately record/import stay on your device. There are no accounts or cross-site tracking. License checks and signed pass-time reports go to the MemeBox site. Optional feature counters are optional and off by default; they never contain call content, captions, filenames, meeting URLs or contacts. Optional YouTube playback follows the provider's privacy policy and may include ads. Details are in our privacy policy.
 
 Good to know
 • Memes are silent while you're muted in the call. That's on purpose.

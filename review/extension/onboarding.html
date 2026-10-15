@@ -20,10 +20,15 @@
   </header>
 
   <main>
-    <section class="card studio-shortcuts"><a href="playground.html" data-i18n="ob_try_characters">Try characters and reactions</a><a href="music-room.html" data-i18n="ob_listen_music">Listen to original music</a><a href="options.html#lines-card" data-i18n="ob_add_content">Add memes and pictures</a></section>
+    <section class="card welcome-hero">
+      <div><span class="welcome-kicker">YOUR CALL. YOUR PERSONALITY.</span><h2>Meet your complete call studio.</h2><p>Memes, music, pictures and animated companions, together in one place. Start with a preview, then take your favourites into a browser call.</p><div class="actions"><button type="button" class="primary" id="launch-studio">Open MemeBox studio →</button><a class="button" href="#feature-guide">Explore every feature</a></div><p class="hint">Already using MemeBox? Your saved lines, clips, pictures, settings and license stay on this device when you update.</p></div>
+      <div class="welcome-badges"><span>😂 Memes</span><span>🎵 Music</span><span>🐼 Characters</span><span>🎨 Filters</span><span>🖼 Pictures</span><span>🎙 Voice</span></div>
+    </section>
     <section class="card tutorial">
-<video src="tutorial.webm" controls autoplay muted loop playsinline preload="auto" aria-label="A 30 second tutorial: join a call in the browser, click the laughing button, right-click for the panel, unmute your mic"></video>
+<video src="tutorial.webm" controls autoplay muted loop playsinline preload="metadata" aria-label="English product tour with captions: memes, music, pictures, characters, filters, voice and time passes"><track kind="captions" src="tutorial.en.vtt" srclang="en" label="English"></video>
 <button type="button" id="sound-on" class="soundon" data-i18n="ob_sound">🔊 Sound on</button>
+<div class="tour-note"><b>The complete MemeBox tour</b><span>English · captions included · actual product screens and simulated camera previews</span></div>
+<nav class="tour-chapters" aria-label="Product tour chapters"><button type="button" data-tour-time="8">Memes</button><button type="button" data-tour-time="24">Music &amp; sharing</button><button type="button" data-tour-time="42">Pictures</button><button type="button" data-tour-time="50">Characters</button><button type="button" data-tour-time="68">Filters</button><button type="button" data-tour-time="76">Voice</button><button type="button" data-tour-time="92">Passes</button></nav>
 </section>
 <section class="card reload" id="reload-card" hidden>
 <h2 data-i18n="ob_reload_title">A call tab is already open</h2>
@@ -72,6 +77,20 @@
         <p data-i18n="ob_s3_text">Pick any line, search, change your voice (Alt+V), or play favourites with Alt+1 to Alt+9. To play a YouTube video into the call, click the MemeBox icon in the toolbar on that tab.</p>
       </li>
     </ol>
+
+    <section class="feature-guide" id="feature-guide" aria-labelledby="feature-title">
+      <div class="guide-heading"><span class="welcome-kicker">ONE STUDIO. SIX WAYS TO MAKE IT YOURS.</span><h2 id="feature-title">Know what each page does.</h2><p>Try effects in the studio without joining a call. In a meeting, right-click 😂 to open the five-page call panel.</p></div>
+      <div class="guide-grid">
+        <article class="card"><span class="guide-icon">😂</span><h3>Memes &amp; clips</h3><p>Pick a line, sound effect or saved clip. Search, favourite and use Alt+1–9. Alt+0 stops playback.</p><a href="options.html#lines-card">Build your soundboard →</a></article>
+        <article class="card"><span class="guide-icon">🎵</span><h3>Music &amp; video memes</h3><p>Choose Only me or Everyone in call. For a playlist or video, select the player tab and enable Share tab audio when the browser asks.</p><a href="music-room.html" data-open-player>Open the music &amp; meme player →</a></article>
+        <article class="card"><span class="guide-icon">🐼</span><h3>Animated companions</h3><p>Choose a character and outfit. Preview its signature action, dancing and reactions. Follow me uses bundled face and hand models on your device.</p><a href="playground.html">Meet the characters →</a></article>
+        <article class="card"><span class="guide-icon">🎨</span><h3>Lights &amp; filters</h3><p>Try camera colour filters, a studio lamp and light shows. Premium effects need the matching pass or a permanently owned item.</p><a href="playground.html">Try your camera look →</a></article>
+        <article class="card"><span class="guide-icon">🖼</span><h3>Picture memes</h3><p>Choose a picture, check its preview and press Add. Caption and Read caption aloud are optional. A picture stays visible until you close it.</p><a href="options.html#lines-card">Add a picture →</a></article>
+        <article class="card"><span class="guide-icon">🎙</span><h3>Voice &amp; automation</h3><p>Sound controls change your voice, volume and auto-duck. Party mode schedules a chosen line at a time or interval while your call mic is connected.</p><a href="options.html#party-card">Set up a timed line →</a></article>
+      </div>
+    </section>
+
+    <section class="card welcome-notes"><div><h2>Who hears and sees it?</h2><p>Call audio goes through your meeting microphone: keep it unmuted. Pictures and captions need Caption on my camera for others to see them. Characters and filters need a running camera.</p></div><div><h2>Free, passes and ownership</h2><p>Start free. Pro and Pro Max passes count only while switched on in a connected call; unused time does not expire. Available permanent characters, filters and outfits stay on your license.</p><a href="plans.html">Compare features and plans →</a></div><div><h2>Your call stays yours</h2><p>Speech, camera effects and gesture processing run locally. Optional usage counters are off by default. YouTube playback follows its own availability and privacy rules.</p><a href="options.html#usage-analytics">Privacy preferences →</a></div></section>
 
     <section class="card" id="mic-card">
       <h2 data-i18n="ob_mic">Mic test</h2>

@@ -1,7 +1,30 @@
 /* MemeBox onboarding page (on top of options.css). */
+.welcome-hero { display: grid; grid-template-columns: 1.7fr 1fr; align-items: center; gap: 28px; padding: 32px; background: linear-gradient(125deg, color-mix(in srgb, var(--brand) 17%, var(--card)), var(--card)); }
+.welcome-hero h2 { font-size: clamp(26px, 4vw, 42px); line-height: 1.12; letter-spacing: -.035em; margin: 12px 0; }
+.welcome-hero p { max-width: 64ch; color: var(--muted); }
+.welcome-kicker { font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--muted); }
+.welcome-badges { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.welcome-badges span { padding: 18px 12px; border: 1px solid var(--line); border-radius: 18px; background: var(--field); font-weight: 700; }
+.guide-heading { margin: 36px 0 18px; }
+.guide-heading h2 { font-size: 28px; margin: 8px 0; }
+.guide-heading p { color: var(--muted); }
+.guide-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.guide-grid .card { margin: 0; display: flex; flex-direction: column; align-items: start; }
+.guide-grid h3 { margin: 12px 0 0; font-size: 18px; }
+.guide-grid p { color: var(--muted); flex: 1; }
+.guide-grid a, .welcome-notes a { font-weight: 700; font-size: 14px; }
+.guide-icon { background: color-mix(in srgb, var(--brand) 18%, var(--field)); border-radius: 16px; padding: 10px; font-size: 26px; }
+.welcome-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.welcome-notes h2 { font-size: 17px; }.welcome-notes p { color: var(--muted); }
+.tour-note { padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }.tour-note span { color: var(--muted); font-size: 13px; }
+.tour-chapters { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 18px; }.tour-chapters button { padding: 6px 12px; font-size: 12px; }
+.welcome-hero h2::before, .welcome-notes h2::before { display: none; }
+@media (max-width: 800px) { .welcome-hero, .welcome-notes { grid-template-columns: 1fr; }.guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .welcome-hero { padding: 22px; }.guide-grid { grid-template-columns: 1fr; }.welcome-badges span { padding: 12px; } }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
 .step svg { display: block; width: 100%; height: auto; max-height: 170px; margin-bottom: 10px; }
 .step h2 { font-size: 17px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
+.step h2::before { display: none; }
 .step p { margin: 0; color: var(--muted); }
 .num { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: var(--on-brand); font-size: 14px; flex: none; }
 

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "intro",
+    "label": "A personal studio for browser calls",
+    "seconds": 8
+  },
+  {
+    "id": "memes",
+    "label": "01 / Memes and sound effects",
+    "seconds": 8
+  },
+  {
+    "id": "panel",
+    "label": "02 / Your call controls",
+    "seconds": 8
+  },
+  {
+    "id": "music",
+    "label": "03 / Music and audience",
+    "seconds": 8
+  },
+  {
+    "id": "player",
+    "label": "04 / Browser-approved tab audio",
+    "seconds": 10
+  },
+  {
+    "id": "pictures",
+    "label": "05 / Pictures and captions",
+    "seconds": 8
+  },
+  {
+    "id": "characters",
+    "label": "06 / Animated companions",
+    "seconds": 8
+  },
+  {
+    "id": "gestures",
+    "label": "07 / Local face and hand reactions",
+    "seconds": 10
+  },
+  {
+    "id": "filters",
+    "label": "08 / Lights and camera filters",
+    "seconds": 8
+  },
+  {
+    "id": "voice",
+    "label": "09 / Voice and sound",
+    "seconds": 8
+  },
+  {
+    "id": "timers",
+    "label": "10 / Timed lines",
+    "seconds": 8
+  },
+  {
+    "id": "plans",
+    "label": "11 / Passes and ownership",
+    "seconds": 10
+  },
+  {
+    "id": "ready",
+    "label": "Ready for your next call",
+    "seconds": 8
+  }
+]

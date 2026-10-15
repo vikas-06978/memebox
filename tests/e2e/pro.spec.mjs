@@ -1,6 +1,6 @@
 // 1.1.0: bulk audio import, picture memes, the UPI buy page and license keys, end to end.
 // The MemeBox site runs locally (real Pages Functions on SQLite) and stands in for
-// https://memebox.pages.dev, so the extension talks to it exactly as it would online.
+// https://memebox.site, so the extension talks to it exactly as it would online.
 import { test as base, expect } from './fixtures.mjs';
 import { clickPanel, panelElement } from './closed-panel.mjs';
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ const ICON = fs.readFileSync(path.resolve('extension/icons/icon128.png'));
 const test = base.extend({
   site: async ({ context }, use) => {
     const site = await startSite({ env: { ADMIN_KEY, RATE_SALT: 's', UPI_ID: 'memebox@upi', UPI_NAME: 'MemeBox' } });
-    await context.route('https://memebox.pages.dev/**', async (route) => {
+    await context.route('https://memebox.site/**', async (route) => {
       const r = route.request();
       const u = new URL(r.url());
       const res = await fetch(site.url + u.pathname + u.search, {
@@ -37,7 +37,7 @@ const test = base.extend({
       }
       await route.fulfill({ status: res.status, headers, body: Buffer.from(await res.arrayBuffer()) });
     });
-    site.adminCookie = async () => ({ name: 'memebox_admin', value: await makeSession(ADMIN_KEY), url: 'https://memebox.pages.dev/admin' });
+    site.adminCookie = async () => ({ name: 'memebox_admin', value: await makeSession(ADMIN_KEY), url: 'https://memebox.site/admin' });
     await use(site);
     await site.close();
   },
@@ -172,7 +172,7 @@ test('picture meme: add a picture to a line; playing it shows the picture on my 
 
 test('buy page: QR for memebox@upi with the amount and order note; UTR; admin approves; the key appears', async ({ context, site }) => {
   const buyer = await context.newPage();
-  await buyer.goto('https://memebox.pages.dev/buy');
+  await buyer.goto('https://memebox.site/buy');
   await expect(buyer.locator('.product')).toHaveCount(36);
   await expect(buyer.locator('.product.best')).toHaveCount(3);
   await buyer.locator('button[data-product="pass_pro_60"]').click();
@@ -199,7 +199,7 @@ test('buy page: QR for memebox@upi with the amount and order note; UTR; admin ap
   // The admin approves it on /admin.
   await context.addCookies([await site.adminCookie()]);
   const admin = await context.newPage();
-  await admin.goto('https://memebox.pages.dev/admin');
+  await admin.goto('https://memebox.site/admin');
   await expect(admin.getByText('Payments waiting for you (1)')).toBeVisible();
   await admin.getByRole('button', { name: 'Approve' }).click();
   await expect(admin.locator('.notice')).toContainText(`Order ${orderId} approved`);
@@ -212,7 +212,7 @@ test('buy page: QR for memebox@upi with the amount and order note; UTR; admin ap
 
 test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhere with a note instead of Buy buttons', async ({ context, site }) => {
   const page = await context.newPage();
-  await page.goto('https://memebox.pages.dev/pricing?cur=inr');
+  await page.goto('https://memebox.site/pricing?cur=inr');
   await expect(page.locator('h1')).toHaveText('Plans and prices');
   await expect(page.locator('.pass')).toHaveCount(7);
   await expect(page.locator('.char-card')).toHaveCount(9);
@@ -238,7 +238,7 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
   await page.screenshot({ path: 'tests/.tmp/pricing-usd.png', fullPage: true });
 
   // "Buy" goes straight to the payment step for that pass.
-  await page.goto('https://memebox.pages.dev/pricing?cur=inr');
+  await page.goto('https://memebox.site/pricing?cur=inr');
   await page.locator('#passes-pro a.button').nth(2).click();
   await expect(page.locator('#pay')).toBeVisible();
   await expect(page.locator('#amount')).toHaveText('₹25');
@@ -247,7 +247,7 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
 test('owner key from /admin activates in Options; turning it off in /admin is picked up', async ({ context, extensionId, site }) => {
   await context.addCookies([await site.adminCookie()]);
   const admin = await context.newPage();
-  await admin.goto('https://memebox.pages.dev/admin#licenses');
+  await admin.goto('https://memebox.site/admin#licenses');
   await admin.locator('select[name=kind]').selectOption('owner');
   await admin.locator('input[name=note]').fill('my laptop');
   await admin.getByRole('button', { name: 'Make a key' }).click();
@@ -262,7 +262,7 @@ test('owner key from /admin activates in Options; turning it off in /admin is pi
   expect(license).toMatchObject({ key, status: 'active', unlimited: true });
 
   // Turn it off in /admin, then check again from Options.
-  await admin.goto('https://memebox.pages.dev/admin#licenses');
+  await admin.goto('https://memebox.site/admin#licenses');
   await admin.getByRole('button', { name: 'Turn off' }).click();
   await page.locator('#license-key').fill(key);
   await page.getByRole('button', { name: 'Activate' }).click();

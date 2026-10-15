@@ -76,8 +76,8 @@ await call.evaluate(() => window.joinCall());
 await call.waitForTimeout(800);
 await call.mouse.click(42, 800 - 120 - 26, { button: 'right' }); // open the panel
 await call.waitForTimeout(400);
-await call.keyboard.type('chai');
-await call.keyboard.press('Enter'); // plays "Chai break!" -> big caption
+await call.keyboard.type('bruh');
+await call.keyboard.press('Enter'); // English meme -> outgoing sound and caption
 await call.waitForTimeout(900);
 await call.screenshot({ path: shot('screenshot-1-call.png') });
 
@@ -93,6 +93,16 @@ if (!welcome.url().endsWith('/onboarding.html')) await welcome.goto(`chrome-exte
 await welcome.setViewportSize({ width: 1280, height: 800 });
 await welcome.waitForTimeout(300);
 await welcome.screenshot({ path: shot('screenshot-3-welcome.png') });
+
+// 5 / 6. Actual character and filter previews, labelled as previews in the UI.
+const playground = await context.newPage();
+await playground.goto(`chrome-extension://${id}/playground.html`);
+await playground.locator('[data-character="panda"]').click();
+await playground.selectOption('#outfit', 'glasses');
+await playground.screenshot({ path: shot('screenshot-5-characters.png') });
+await playground.selectOption('#filter', 'neon');
+await playground.selectOption('#fixture', 'discoball');
+await playground.screenshot({ path: shot('screenshot-6-filters.png') });
 
 // 4. The toolbar popup, framed with a headline.
 const popup = await context.newPage();

@@ -7,6 +7,7 @@ test('Options → Send feedback opens the feedback page with only the version', 
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/options.html`);
   const version = await page.evaluate(() => chrome.runtime.getManifest().version);
+  const siteUrl = await page.evaluate(() => MEMEBOX_CONFIG.SITE_URL);
   // Observe the real tabs.create request. The extension intentionally lacks the
   // broad tabs permission, and a restricted network can turn the opened page
   // into chrome-error://chromewebdata before Playwright observes its URL.
@@ -19,7 +20,7 @@ test('Options → Send feedback opens the feedback page with only the version', 
   });
   try {
     await page.locator('#feedback').click();
-    await expect.poll(() => worker.evaluate(() => globalThis.feedbackTabRequest)).toEqual({ url: `https://memebox.pages.dev/feedback?v=${version}` });
+    await expect.poll(() => worker.evaluate(() => globalThis.feedbackTabRequest)).toEqual({ url: `${siteUrl}/feedback?v=${version}` });
   } finally {
     await worker.evaluate(() => { globalThis.restoreTabsCreate(); delete globalThis.restoreTabsCreate; delete globalThis.feedbackTabRequest; });
   }

@@ -10,7 +10,7 @@ const { TONES, LIMITS } = globalThis.MEME;
 // First install: the general pack + every built-in pack. Updates from before packs existed
 // get the new packs added once (their own lines are kept).
 const PACKS_SEEDED = 2;
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+async function initializeInstall({ reason }) {
   if (reason === 'install') chrome.tabs.create({ url: 'onboarding.html' }).catch(() => {});
   const { lines, settings, seeded } = await chrome.storage.local.get(['lines', 'settings', 'seeded']);
   const patch = {};
@@ -23,7 +23,8 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   const {langPack}=await chrome.storage.local.get('langPack');if(!langPack){const raw=await(await fetch(chrome.runtime.getURL('_locales/en/messages.json'))).json();patch.langPack={code:'auto',messages:Object.fromEntries(Object.entries(raw).map(([key,value])=>[key,value.message]))};}
   if (!settings || typeof settings !== 'object') patch.settings = MEME.defaultSettings();
   await chrome.storage.local.set(patch);
-});
+}
+chrome.runtime.onInstalled.addListener(initializeInstall);
 
 async function addLangLines(lang) {
   const { lines } = await chrome.storage.local.get('lines');

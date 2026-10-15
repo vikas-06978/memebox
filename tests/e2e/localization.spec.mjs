@@ -21,7 +21,7 @@ test('Japanese website controls load with English fallback and a visible Beta la
     await page.goto(site.url + '/phonk?lang=ja');
     await expect(page.locator('[data-t="ph_title"]')).toHaveText('Phonk モード');
     await expect(page.locator('#search')).toHaveAttribute('placeholder', '曲を検索');
-    await expect(page.locator('[data-t="ph_intro"]')).toContainText('Original MemeBox');
+    await expect(page.locator('[data-t="ph_intro"]')).toHaveText('Free YouTube music collections for every country.');
     expect(await page.evaluate(() => window.MemeSite.t('buy_how'))).toBe('How to use your key');
     await expect(page.locator('option[value="ja"]')).toHaveText('日本語 (Beta)');
   } finally { await site.close(); }
