@@ -197,7 +197,7 @@ test('with "Lights follow the sounds" the corner show moves with the music (and 
   };
   await callPage.waitForTimeout(800);
   const still = await motion();
-  await callPage.evaluate(() => window.postMessage({ source: 'memebox-bridge-9c1e', type: 'music-play', value: 'club', volume: 0.9 }, '*'));
+  await callPage.evaluate(() => window.postMessage({ source: 'memebox-bridge-9c1e', type: 'music-play', value: 'club', volume: 0.9, audience: 'call' }, '*'));
   await callPage.waitForTimeout(2500);
   const moving = await motion();
   await callPage.screenshot({ path: 'tests/.tmp/laser-with-music.png' });

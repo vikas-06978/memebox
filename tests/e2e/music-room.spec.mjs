@@ -3,7 +3,9 @@ import {clickPanel} from './closed-panel.mjs';
 
 test('Music and Phonk links open a real room with five supplied collections, sixteen originals and pricing',async({context,extensionId,callPage})=>{
  await callPage.evaluate(()=>window.joinCall());await callPage.waitForTimeout(600);await callPage.mouse.click(42,574,{button:'right'});await clickPanel(callPage,'[data-tab="music"]');
- const created=context.waitForEvent('page');await clickPanel(callPage,'[data-music-room]');const page=await created;await page.waitForURL(`chrome-extension://${extensionId}/music-room.html`);
+ await clickPanel(callPage,'[data-music-room]');
+ await expect.poll(()=>context.pages().some(page=>page.url()===`chrome-extension://${extensionId}/music-room.html`),{timeout:5000}).toBe(true);
+ const page=context.pages().find(page=>page.url()===`chrome-extension://${extensionId}/music-room.html`);
  await expect(page.locator('[data-playlist]')).toHaveCount(5);await expect(page.locator('[data-original]')).toHaveCount(16);
  await expect(page.locator('#original-section')).toContainText('Drop at 12.3s');await expect(page.locator('nav a[href="plans.html"]')).toBeVisible();
  await page.locator('[data-tier="phonk"]').click();await expect(page.locator('[data-original]')).toHaveCount(3);
@@ -11,12 +13,12 @@ test('Music and Phonk links open a real room with five supplied collections, six
  await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
-test('personal playlist changes persist, retain adult markers, and restore the supplied collections',async({context,extensionId})=>{
+test('supplied playlists are fixed for users and playlist management stays admin-only',async({context,extensionId})=>{
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(`chrome-extension://${extensionId}/music-room.html`);await expect(page.locator('[data-playlist]')).toHaveCount(5);
- await page.locator('#playlist-manager summary').click();await page.locator('#playlist-name').fill('My worldwide collection');await page.locator('#playlist-url').fill('https://youtube.com/playlist?list=PL123456789012345678901234567890');await page.locator('#playlist-explicit').check();await page.locator('#playlist-save').click();await expect(page.locator('#manager-status')).toContainText('saved');await expect(page.locator('[data-playlist]')).toHaveCount(5);
- await page.locator('#room-adult').check();await expect(page.locator('[data-playlist]')).toHaveCount(6);await page.reload();await expect(page.locator('[data-playlist]')).toHaveCount(6);
- const card=page.locator('[data-playlist="PL123456789012345678901234567890"]');await card.getByRole('button',{name:'Edit',exact:true}).click();await page.locator('#playlist-name').fill('<script>harmless title</script>');await page.locator('#playlist-save').click();await expect(card.locator('h3')).toHaveText('<script>harmless title</script>');expect(await card.locator('script').count()).toBe(0);
- await page.locator('#room-adult').uncheck();await expect(page.locator('[data-playlist]')).toHaveCount(5);await page.locator('#playlist-restore').click();await page.reload();await expect(page.locator('[data-playlist]')).toHaveCount(5);expect(errors).toEqual([]);
+ await expect(page.locator('#playlist-manager')).toBeHidden();
+ await expect(page.locator('[data-playlist-edit]')).toHaveCount(0);
+ await expect(page.locator('[data-playlist-remove]')).toHaveCount(0);
+ expect(errors).toEqual([]);
 });
 
 test('extension playlist playback opens the configured website player without sending a license key',async({context,extensionId})=>{

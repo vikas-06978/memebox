@@ -44,7 +44,7 @@ test('my own music: added from the panel, plays in the call on repeat, stops, an
   const quiet = await callPage.evaluate(() => window.peakOver(500));
   await sw.evaluate(async (id) => {
     const [tab] = await chrome.tabs.query({ url: 'https://meet.google.com/*' });
-    await playMine(tab.id, { frameId: 0, id, volume: 0.9 });
+    await playMine(tab.id, { frameId: 0, id, volume: 0.9, audience: 'call' });
   }, added.id);
   await callPage.waitForTimeout(500);
   const loud = await callPage.evaluate(() => window.peakOver(2600)); // longer than the 1.2 s track: it repeats
@@ -66,6 +66,7 @@ test.describe('free personal music',()=>{
   await callPage.mouse.click(42,574,{button:'right'});await clickPanel(callPage,'[data-tab="music"]');
   const selected=callPage.waitForEvent('filechooser');await clickPanel(callPage,'.add-music');const chooser=await selected;await chooser.setFiles({name:'Personal beat.wav',mimeType:'audio/wav',buffer:Buffer.from(toneWavB64(330,1.5),'base64')});
   const sw=context.serviceWorkers()[0];await expect.poll(()=>sw.evaluate(async()=>{const {myMusic}=await chrome.storage.local.get('myMusic');return myMusic?.length||0})).toBe(1);
+  await clickPanel(callPage,'[data-audience="call"]');
   await clickPanel(callPage,'.fx-chips button[title="Personal beat"]');expect(await callPage.evaluate(()=>window.peakOver(900))).toBeGreaterThan(Math.max(.1,quiet*2));
   await callPage.keyboard.press('Alt+Digit0');await expect.poll(()=>callPage.evaluate(()=>window.peakOver(250))).toBeLessThan(.1);
  });

@@ -80,7 +80,7 @@ test('prices match the current passes and eight-character bundle; exclusive char
   const separately = Object.entries(p).filter(([id]) => id.startsWith('char_')).reduce((a, [, x]) => a + x.inr, 0);
   assert.ok(p.chars_eight.inr < separately, 'the bundle is cheaper than buying one by one');
   assert.deepEqual(forSale().map(([id]) => id).slice(0, 5), ['pass_pro_30', 'pass_pro_60', 'pass_pro_120', 'pass_max_60', 'pass_max_180']);
-  assert.equal(forSale().length, 7 + 8 + 1);
+  assert.equal(forSale().length, 7 + 8 + 1 + 15 + 3 + 2);
   assert.ok(forSale().every(([id]) => !['char_unicorn', 'char_robot', 'char_snake', 'char_bird', 'chars_all'].includes(id)));
 });
 
@@ -315,20 +315,37 @@ test('buying a character: new purchases and the eight-character bundle add perma
   assert.match(dash, /Character: Panda/);
 });
 
-test('cosmetic draft purchases stay closed and Max-only cosmetics have no individual product', async () => {
+test('standard Pro cosmetics sell individually and in bundles; Max cosmetics stay pass-only', async () => {
   const {PRODUCTS, COSMETIC_DRAFTS, forSale}=await import('../../site/src/shop.js');
-  for(const id of COSMETIC_DRAFTS.filters) assert.equal(PRODUCTS['filter_'+id].closed,true);
-  for(const id of COSMETIC_DRAFTS.outfits) assert.equal(PRODUCTS['outfit_'+id].closed,true);
+  for(const id of COSMETIC_DRAFTS.filters) assert.equal(PRODUCTS['filter_'+id].closed,undefined);
+  for(const id of COSMETIC_DRAFTS.outfits) assert.equal(PRODUCTS['outfit_'+id].closed,undefined);
   for(const id of COSMETIC_DRAFTS.maxFilters) assert.equal(PRODUCTS['filter_'+id],undefined);
   for(const id of COSMETIC_DRAFTS.maxOutfits) assert.equal(PRODUCTS['outfit_'+id],undefined);
-  assert.ok(forSale().every(([id])=>!id.startsWith('filter_')&&!id.startsWith('outfit_')));
+  assert.equal(PRODUCTS.filters_fifteen.addons.length,15);
+  assert.equal(PRODUCTS.outfits_three.addons.length,3);
+  assert.ok(PRODUCTS.filters_fifteen.inr < COSMETIC_DRAFTS.filters.reduce((sum,id)=>sum+PRODUCTS['filter_'+id].inr,0));
+  assert.ok(PRODUCTS.outfits_three.inr < COSMETIC_DRAFTS.outfits.reduce((sum,id)=>sum+PRODUCTS['outfit_'+id].inr,0));
+  assert.ok(forSale().some(([id])=>id==='filter_vintage'));
+  assert.ok(forSale().some(([id])=>id==='outfit_hoodie'));
+  const buy = async (product, forKey = '') => {
+    const created=await (await call(orderApi,postJson('/api/order',{action:'create',product,forKey}))).json();assert.ok(created.ok,JSON.stringify(created));
+    await call(orderApi,postJson('/api/order',{action:'claim',orderId:created.orderId,utr:String(Math.floor(1e11+Math.random()*9e11))}));
+    await call(adminOrder,adminForm('/admin/order',{id:created.orderId,action:'approve'}));
+    return (await (await call(orderApi,req('/api/order?id='+created.orderId))).json()).order.licenseKey;
+  };
+  const key=await buy('filter_vintage');await buy('outfits_three',key);
+  const view=(await (await call(licenseApi,postJson('/api/license',{key}))).json()).license;
+  assert.deepEqual(view.addons.map(x=>x.id).sort(),['filter:vintage','outfit:bow','outfit:glasses','outfit:hoodie']);
 });
 
-test('the local public catalog uses authoritative server prices and keeps draft cosmetics closed', async()=>{
+test('the local public catalog uses authoritative server prices and excludes Max-only cosmetics', async()=>{
   const {loadScript}=await import('./helpers.mjs');const {PRODUCTS}=await import('../../site/src/shop.js');
   const {MemeShop}=loadScript('lib/shop-catalog.js');
   for(const [id,product] of Object.entries(MemeShop.products)){
     assert.equal(product.inr,PRODUCTS[id].inr,id+' INR');assert.equal(product.usd,PRODUCTS[id].usd,id+' USD');assert.equal(product.closed,!!PRODUCTS[id].closed,id+' availability');
   }
+  assert.equal(MemeShop.products.filter_vintage.closed,false);
+  assert.equal(MemeShop.products.filters_fifteen.inr,249);
+  assert.equal(MemeShop.products.outfits_three.inr,79);
   assert.equal(MemeShop.products.filter_prism,undefined);
 });

@@ -6,13 +6,13 @@ test('paid labels have a working local plans route, with accurate tiers, currenc
  await page.goto(`chrome-extension://${extensionId}/playground.html`);
  await page.locator('a[href="plans.html"]').click();
  await expect(page.locator('#shop-status')).toContainText('Payments are not open');
- await expect(page.locator('#filter-list article')).toHaveCount(28);
- await expect(page.locator('#outfit-list article')).toHaveCount(9);
+ await expect(page.locator('#filter-list article')).toHaveCount(29);
+ await expect(page.locator('#outfit-list article')).toHaveCount(10);
  await expect(page.locator('#character-list article')).toHaveCount(9);
  const prism=page.locator('#filter-list article',{has:page.getByRole('heading',{name:'Prism light',exact:true})});
  await expect(prism).toContainText('never individually sold');await expect(prism.locator('.price')).toHaveCount(0);
  const teal=page.locator('#filter-list article',{has:page.getByRole('heading',{name:'Teal',exact:true})});
- await expect(teal).toContainText('₹19');await expect(teal).toContainText('not on sale yet');
+ await expect(teal).toContainText('₹29');await expect(teal).toContainText('Owned forever');
  await page.locator('#currency').selectOption('usd');await expect(teal).toContainText('$0.99');
  expect(await page.locator('a[href*="/buy?"]').count()).toBe(0);expect(requests).toEqual([]);
 });

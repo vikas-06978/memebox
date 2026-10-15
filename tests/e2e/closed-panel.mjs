@@ -14,7 +14,7 @@ export async function panelElement(page, selector) {
     const { object } = await session.send('DOM.resolveNode', { nodeId: shadow.nodeId });
     const result = await session.send('Runtime.callFunctionOn', {
       objectId: object.objectId, returnByValue: true,
-      functionDeclaration: 'function(selector) { const el=this.querySelector(selector); if(!el) throw Error("Panel element missing: "+selector); const r=el.getBoundingClientRect(); return {text:el.textContent, x:r.x+r.width/2, y:r.y+r.height/2, width:r.width, height:r.height}; }',
+      functionDeclaration: 'function(selector) { const el=this.querySelector(selector); if(!el) throw Error("Panel element missing: "+selector); el.scrollIntoView({block:"center",inline:"nearest"}); const r=el.getBoundingClientRect(); return {text:el.textContent, x:r.x+r.width/2, y:r.y+r.height/2, width:r.width, height:r.height}; }',
       arguments: [{ value: selector }],
     });
     if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);

@@ -21,8 +21,12 @@ function entry(title,p,status,productId=''){
 function render(){
  document.getElementById('pass-list').replaceChildren(...Object.entries(products).filter(([id,p])=>id.startsWith('pass_')&&(tierSelect.value==='all'||(tierSelect.value==='max'?p.maxSeconds>0:p.proSeconds>0))).map(([id,p])=>entry(p.name,p,shopOpen?t('plans_checkout_help'):t('plans_closed'),id)));
  document.getElementById('character-list').replaceChildren(...Object.entries(products).filter(([id,p])=>(id.startsWith('char_')||id==='chars_eight')&&!p.closed).map(([id,p])=>entry(p.name,p,t('plans_forever'),id)));
- document.getElementById('filter-list').replaceChildren(...MemeFx.FILTERS.filter(id=>id!=='none').map(id=>{const p=products['filter_'+id],free=MemeFx.FREE_FILTERS.includes(id);return entry(t('fx_filter_'+id),p,free?t('fx_tier_free'):p?t('plans_draft'):t('plans_max_only'),'filter_'+id)}));
- document.getElementById('outfit-list').replaceChildren(...MemeFx.OUTFITS.filter(id=>id!=='none').map(id=>{const p=products['outfit_'+id],free=MemeFx.FREE_OUTFITS.includes(id);return entry(t('fx_outfit_'+id),p,free?t('fx_tier_free'):p?t('plans_draft'):t('plans_max_only'),'outfit_'+id)}));
+ const filterCards=MemeFx.FILTERS.filter(id=>id!=='none').map(id=>{const p=products['filter_'+id],free=MemeFx.FREE_FILTERS.includes(id);return entry(t('fx_filter_'+id),p,free?t('fx_tier_free'):p?(p.closed?t('plans_draft'):t('plans_forever')):t('plans_max_only'),'filter_'+id)});
+ if(products.filters_fifteen)filterCards.splice(MemeFx.FREE_FILTERS.length,0,entry(products.filters_fifteen.name,products.filters_fifteen,t('plans_forever'),'filters_fifteen'));
+ document.getElementById('filter-list').replaceChildren(...filterCards);
+ const outfitCards=MemeFx.OUTFITS.filter(id=>id!=='none').map(id=>{const p=products['outfit_'+id],free=MemeFx.FREE_OUTFITS.includes(id);return entry(t('fx_outfit_'+id),p,free?t('fx_tier_free'):p?(p.closed?t('plans_draft'):t('plans_forever')):t('plans_max_only'),'outfit_'+id)});
+ if(products.outfits_three)outfitCards.splice(MemeFx.FREE_OUTFITS.length,0,entry(products.outfits_three.name,products.outfits_three,t('plans_forever'),'outfits_three'));
+ document.getElementById('outfit-list').replaceChildren(...outfitCards);
 }
 currency.addEventListener('change',render);tierSelect.addEventListener('change',render);render();
 

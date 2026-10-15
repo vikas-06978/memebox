@@ -8,7 +8,7 @@ test('all three original Phonk arrangements produce audio in the outgoing call s
   await callPage.evaluate(async () => { await window.joinCall(); await window.noDuck(); });
   const quiet = await callPage.evaluate(() => window.peakOver(500));
   for (const id of ['phonk_desi', 'phonk_drift', 'phonk_midnight']) {
-    await send(callPage, { type: 'music-play', value: id, volume: 0.7 });
+    await send(callPage, { type: 'music-play', value: id, volume: 0.7, audience: 'call' });
     await callPage.waitForTimeout(400);
     const peak = await callPage.evaluate(() => window.peakOver(2000)); // Includes a full sparse intro beat cycle.
     expect(peak, id + ' produces audible output').toBeGreaterThan(Math.max(0.08, quiet * 2));
@@ -19,7 +19,7 @@ test('all three original Phonk arrangements produce audio in the outgoing call s
 test('a tune plays into the mic stream and stops; the music is audible, not just silence', async ({ callPage }) => {
   await callPage.evaluate(async () => { await window.joinCall(); await window.noDuck(); });
   const quiet = await callPage.evaluate(() => window.peakOver(600));
-  await send(callPage, { type: 'music-play', value: 'party', volume: 0.9 });
+  await send(callPage, { type: 'music-play', value: 'party', volume: 0.9, audience: 'call' });
   await callPage.waitForTimeout(500);
   const withMusic = await callPage.evaluate(() => window.peakOver(1500));
   expect(withMusic, 'the party tune is in the stream').toBeGreaterThan(quiet * 2);
@@ -33,10 +33,10 @@ test('a tune plays into the mic stream and stops; the music is audible, not just
 
 test('"stop all" (Alt+0 path) also stops the music, and an unknown tune is ignored', async ({ callPage }) => {
   await callPage.evaluate(async () => { await window.joinCall(); await window.noDuck(); });
-  await send(callPage, { type: 'music-play', value: 'not-a-tune' });
+  await send(callPage, { type: 'music-play', value: 'not-a-tune', audience: 'call' });
   await callPage.waitForTimeout(400);
   const none = await callPage.evaluate(() => window.peakOver(600));
-  await send(callPage, { type: 'music-play', value: 'retro', volume: 0.9 });
+  await send(callPage, { type: 'music-play', value: 'retro', volume: 0.9, audience: 'call' });
   await callPage.waitForTimeout(500);
   const loud = await callPage.evaluate(() => window.peakOver(900));
   await send(callPage, { type: 'stop' });

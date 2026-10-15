@@ -19,7 +19,11 @@
     char_penguin: { inr: 39, usd: 1.49, addons: ['character:penguin'] }, char_lion: { inr: 39, usd: 1.49, addons: ['character:lion'] },
     char_monkey: { inr: 39, usd: 1.49, addons: ['character:monkey'] }, char_frog: { inr: 39, usd: 1.49, addons: ['character:frog'] },
     chars_eight: { inr: 199, usd: 4.99, addons: new Array(8).fill('x') },
+    filters_fifteen: { name: 'All 15 Pro filters', inr: 249, usd: 5.99, addons: new Array(15).fill('x') },
+    outfits_three: { name: 'All 3 Pro costumes', inr: 79, usd: 2.49, addons: new Array(3).fill('x') },
   };
+  for (const id of ['vintage','cool','noir','dream','sunset','neon','pixel','vhs','glam','sepia','peach','teal','soft','dusk','contrast']) FALLBACK['filter_'+id]={name:id,inr:29,usd:.99,addons:['filter:'+id]};
+  for (const id of ['hoodie','bow','glasses']) FALLBACK['outfit_'+id]={name:id,inr:39,usd:1.49,addons:['outfit:'+id]};
   const isChar = (id) => /^char_/.test(id);
 
   const fromTimezone = () => {
@@ -41,7 +45,7 @@
       const box = document.getElementById(boxId);
       box.replaceChildren();
       for (const [id, p] of Object.entries(products)) {
-        if (isChar(id) || id === 'chars_eight') continue;
+        if (!id.startsWith('pass_')) continue;
         if ((tier === 'max') !== (p.maxSeconds > 0)) continue;
         const row = document.createElement('div');
         row.className = 'pass';
@@ -62,6 +66,21 @@
       }
     }
     renderCharacters();
+    renderCosmetics();
+  }
+  function renderCosmetics() {
+    const labels={vintage:'Vintage',cool:'Cool',noir:'Noir',dream:'Dream',sunset:'Sunset',neon:'Neon',pixel:'Pixel',vhs:'VHS',glam:'Glam',sepia:'Sepia',peach:'Peach',teal:'Teal',soft:'Soft focus',dusk:'Dusk',contrast:'High contrast',hoodie:'Cozy hoodie',bow:'Bow tie',glasses:'Round glasses'};
+    for(const [boxId,prefix,bundle] of [['filter-grid','filter_','filters_fifteen'],['outfit-grid','outfit_','outfits_three']]){
+      const grid=document.getElementById(boxId);if(!grid)continue;grid.replaceChildren();
+      for(const [id,p] of Object.entries(products)){
+        if(!id.startsWith(prefix)&&id!==bundle)continue;
+        const card=document.createElement('div');card.className='cosmetic-card'+(id===bundle?' all':'');
+        const name=document.createElement('b');name.textContent=id===bundle?p.name:labels[id.slice(prefix.length)]||p.name;
+        const amount=document.createElement('span');amount.className='pass-price';amount.textContent=money(p);card.append(name,amount);
+        if(canBuy()){const a=document.createElement('a');a.className='button primary small';a.href=buyLink(id);a.textContent=T('pr_buy');card.append(a)}
+        grid.append(card);
+      }
+    }
   }
 
   // Characters: one-time prices, and the bundle.

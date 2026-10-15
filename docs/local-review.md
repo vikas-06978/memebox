@@ -4,9 +4,9 @@ Download the branch review/memebox-local-2026-10-14 as a GitHub ZIP and extract 
 
 On Windows, run review/Start-MemeBox-Music.cmd and keep its console open. It serves the public preview files on loopback at http://127.0.0.1:8790/music-room.html. No Node installation, administrator permission, software installation or Windows policy change is performed. A Python 3 launcher is also provided for macOS/Linux. The ready-to-load extension is review/extension; its paid features are unlocked for local testing only. Never publish that copy.
 
-The unified music room now displays the five exact supplied playlist references and sixteen bundled tunes. It has search, private add/edit/remove/restore, a default-off strong-language preference, playback controls and visible price/tier links. Welcome, Options, Playground and the actual call-panel Phonk button lead there. The local web player supplies the referrer YouTube requires; extension/file selections open that HTTP view. Original music runs on the device. Max music links select Max passes, and personal music uploads are Free with existing local size/count limits.
+The unified music room now displays the five exact supplied playlist references and sixteen bundled tunes. It has search, a default-off strong-language preference, playback controls and visible price/tier links. Shared playlists and published collections are fixed for users and editable only by the admin. Welcome, Options, Playground and the actual call-panel Phonk button lead there. The local web player supplies the referrer YouTube requires; extension/file selections open that HTTP view. Original music runs on the device. Max music links select Max passes, and personal music uploads are Free with existing local size/count limits.
 
-Characters opens the shared Playground with fourteen companions, their species actions, manual emotes, head/shoulder/corner positions, leave/return behavior, nine outfits and twenty-eight filters. Plans shows server-derived prices and ownership rules with checkout explicitly closed. Its cosmetics remain closed drafts; Max-exclusive items have no individual product.
+Characters opens the shared Playground with fourteen companions, their species actions, manual emotes, head/shoulder/corner positions, leave/return behavior, nine outfits and twenty-eight filters. Plans shows server-derived prices and ownership rules with checkout explicitly closed. Fifteen standard filters and three standard costumes can be bought permanently, separately or in discounted bundles; Max-exclusive items remain pass-only.
 
 Published owner collections can be refreshed from the existing catalog API, with titles/credits, validated video IDs and adult markers. Admin catalog changes need no extension release. No per-song API call is needed for playback. The static launcher contains no backend, credentials or database; without a running backend, the private supplied references and local originals still work.
 
@@ -20,9 +20,9 @@ Five playlist references are wired into the preview. The separate thirty-title s
 
 ## Current validation, 2026-10-14
 
-- Final unit run: 205 passed, no failures.
-- Full source Chromium run: 133/133 passed.
-- Packaged review: 21 focused music-room, music, Playground and content cases passed. Later focused rechecks cover privacy-marker persistence and pricing refinements.
+- Final unit run: 211 passed, no failures.
+- Full source Chromium coverage: all 137 cases pass (136 in the consolidated run, followed by the corrected admin-pack case).
+- Packaged review: 22 focused music-room, music, Playground and content cases passed.
 - The additional Free-user test uploaded through the real call-panel file chooser, measured audible outgoing audio and verified Stop all.
 - All five checkout cases and the additional real-site/CSP/catalog case passed after the final routing changes.
 - The three original WAVs have finite/non-silent/non-clipping samples and measured contrast before/after both drops. Their first-drop buttons play offline without external requests.

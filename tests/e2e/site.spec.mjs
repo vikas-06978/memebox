@@ -221,7 +221,7 @@ test('admin packs: make a pack, upload music with a licence, add India memes wit
   await page.locator('form:has(input[name=files]) input[name=licenceNote]').fill('made by me');
   await page.locator('form:has(input[name=files]) button[type=submit]').click();
   await expect(page.locator('.notice').first()).toContainText('1 file uploaded');
-  await expect(page.locator('audio')).toHaveCount(1);
+  await expect(page.locator('tr:has(input[name=title][value="drift night"]) audio')).toHaveCount(1);
   await expect(page.locator('input[name=title][value="drift night"]')).toBeVisible();
 
   // publish the pack
@@ -232,7 +232,7 @@ test('admin packs: make a pack, upload music with a licence, add India memes wit
   await page.getByRole('link', { name: 'All packs' }).click();
   await page.getByLabel('Name', { exact: true }).fill('India memes');
   await page.getByLabel('Type').selectOption('memes');
-  await page.getByLabel('For').selectOption('in');
+  await page.locator('form:has(button:has-text("Make the pack")) select[name=region]').selectOption('in');
   await page.getByRole('button', { name: 'Make the pack' }).click();
   await page.locator('textarea[name=lines]').fill('Bhai tu rehne de | hinglish\nkadak line | hi | strong');
   await page.locator('form:has(textarea[name=lines]) input[name=cleared]').check();

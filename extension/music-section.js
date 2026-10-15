@@ -49,6 +49,8 @@
     lock.append(el('span', {}, t('mu_locked')), plansBtn);
     const onlyMe = el('button', { className: 'chip', type: 'button' }, '🎧 Only me');
     const everyone = el('button', { className: 'chip', type: 'button' }, '🎙 Everyone in call');
+    onlyMe.dataset.audience = 'me';
+    everyone.dataset.audience = 'call';
     const audienceRow = el('div', { className: 'fx-group' }, el('div', { className: 'fx-label' }, 'Who hears the music?'), el('div', { className: 'fx-chips' }, onlyMe, everyone));
     const body = el('div', { className: 'settings-body fx-body' }, how, audienceRow, chips, mineBox, status, lock,
       el('div', { className: 'row' }, el('span', {}, '\u{1F50A}'), vol, stopBtn));

@@ -173,7 +173,7 @@ test('picture meme: add a picture to a line; playing it shows the picture on my 
 test('buy page: QR for memebox@upi with the amount and order note; UTR; admin approves; the key appears', async ({ context, site }) => {
   const buyer = await context.newPage();
   await buyer.goto('https://memebox.pages.dev/buy');
-  await expect(buyer.locator('.product')).toHaveCount(16);
+  await expect(buyer.locator('.product')).toHaveCount(36);
   await expect(buyer.locator('.product.best')).toHaveCount(3);
   await buyer.locator('button[data-product="pass_pro_60"]').click();
   await expect(buyer.locator('#pay')).toBeVisible();
@@ -216,11 +216,16 @@ test('pricing page: rupees in India mode with Buy links to /buy, dollars elsewhe
   await expect(page.locator('h1')).toHaveText('Plans and prices');
   await expect(page.locator('.pass')).toHaveCount(7);
   await expect(page.locator('.char-card')).toHaveCount(9);
+  await expect(page.locator('#filter-grid .cosmetic-card')).toHaveCount(16);
+  await expect(page.locator('#outfit-grid .cosmetic-card')).toHaveCount(4);
   await expect(page.locator('#passes-pro .pass-price')).toHaveText(['₹9', '₹15', '₹25', '₹49']);
   await expect(page.locator('#passes-max .pass-price')).toHaveText(['₹25', '₹49', '₹99']);
   await expect(page.locator('#passes-max a.button').nth(1)).toHaveAttribute('href', '/buy?product=pass_max_180');
   await expect(page.locator('.char-card .pass-price').first()).toHaveText('₹29');
   await expect(page.locator('.char-card.all .pass-price')).toHaveText('₹199');
+  await expect(page.locator('#filter-grid .cosmetic-card').first().locator('.pass-price')).toHaveText('₹29');
+  await expect(page.locator('#filter-grid .cosmetic-card.all .pass-price')).toHaveText('₹249');
+  await expect(page.locator('#outfit-grid .cosmetic-card.all .pass-price')).toHaveText('₹79');
   await expect(page.locator('#usd-note')).toBeHidden();
   await page.screenshot({ path: 'tests/.tmp/pricing-inr.png', fullPage: true });
 

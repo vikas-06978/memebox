@@ -376,8 +376,8 @@ td audio { width: 220px; max-width: 100%; display: block; margin-bottom: 4px; }
 .itemform input, .itemform select { width: auto; max-width: 100%; }
 /* pricing: characters */
 .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 12px 0; }
-.char-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; background: var(--card); }
-.char-card.all { grid-column: 1 / -1; background: var(--bg-2); }
+.char-card, .cosmetic-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; background: var(--card); }
+.char-card.all, .cosmetic-card.all { grid-column: 1 / -1; background: var(--bg-2); }
 
 /* admin: interactive dashboard */
 .admin-nav { position: sticky; top: 0; z-index: 5; display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 0; margin: 8px 0 4px; background: var(--bg); border-bottom: 1px solid var(--line); }
