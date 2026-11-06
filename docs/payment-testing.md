@@ -1,6 +1,6 @@
 # Local payment and pass testing
 
-Nothing has been deployed, no remote migration has run, and live payments remain closed. The gateway code deliberately accepts only Razorpay **test** keys and `RAZORPAY_MODE=test`. It refuses live mode, even with a live key.
+Nothing has been deployed and no remote migration has run. The gateway supports both modes, but it is **closed until configured**: `RAZORPAY_MODE` picks the mode, and the key id must carry the matching prefix (`rzp_test_` with `test`, `rzp_live_` with `live`), so a mismatch keeps it shut rather than guessing. Work through this page in the sandbox first; `RAZORPAY-LIVE.md` covers going live.
 
 ## Configuration for an isolated test environment
 
@@ -13,7 +13,7 @@ Set secret values only in ignored local development configuration or secure envi
 - `RAZORPAY_WEBHOOK_SECRET`: independently generated webhook secret matching the test dashboard.
 - `PASS_SESSION_SECRET`: independently generated random secret of at least 32 characters.
 
-Set `RAZORPAY_MODE=test`. USD test checkout additionally requires `RAZORPAY_TEST_INTERNATIONAL=on`; this does not establish eligibility for live international payments. `PASS_LEGACY_REPORTS=off` rejects unsigned usage reports, so leave legacy reports available until installed older extensions have a compatible rollout path.
+Set `RAZORPAY_MODE=test`. USD test checkout additionally requires `RAZORPAY_TEST_INTERNATIONAL=on`; this does not establish eligibility for live international payments, which has its own flag (`RAZORPAY_INTERNATIONAL`) and its own approval from Razorpay. `PASS_LEGACY_REPORTS=off` rejects unsigned usage reports, so leave legacy reports available until installed older extensions have a compatible rollout path.
 
 New local schema tables are included in `site/db/schema.sql`. The production migration files are `2026-10-gateway.sql` and `2026-10-pass-sessions.sql`; do not apply them remotely until the owner authorizes deployment.
 
