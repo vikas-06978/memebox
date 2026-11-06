@@ -92,5 +92,20 @@ $('stop').addEventListener('click', async () => {
 
 $('options').addEventListener('click', () => { chrome.runtime.openOptionsPage(); window.close(); });
 
+// After an update the worker sets `whatsNew` and a dot on the icon. Show the card once here,
+// where opening the popup is already the person's own choice, and clear both when they close it.
+async function showWhatsNew() {
+  const { whatsNew } = await chrome.storage.local.get('whatsNew');
+  if (!whatsNew) return;
+  $('whats-new').hidden = false;
+  $('whats-new-ok').addEventListener('click', async () => {
+    $('whats-new').hidden = true;
+    await chrome.storage.local.remove('whatsNew').catch(() => {});
+    chrome.action.setBadgeText({ text: '' }).catch(() => {});
+  });
+}
+
+showWhatsNew().catch(() => {});
+
 loadVolume().catch(() => {});
 refresh().catch((err) => show(t('pp_error', err.message), 'err'));

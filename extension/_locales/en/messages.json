@@ -2148,5 +2148,25 @@
   },
   "plans_all_passes": {
     "message": "All passes"
+  },
+  "wn_title": {
+    "message": "What's new",
+    "description": "Heading of the one-time card shown after the extension updates itself."
+  },
+  "wn_1": {
+    "message": "Memes in 26 languages, spoken in that language's voice.",
+    "description": "What is new, line 1."
+  },
+  "wn_2": {
+    "message": "Free packs: more sounds and memes to add.",
+    "description": "What is new, line 2."
+  },
+  "wn_3": {
+    "message": "Lights, and a cat or dog, on your camera.",
+    "description": "What is new, line 3."
+  },
+  "wn_ok": {
+    "message": "Got it",
+    "description": "Button that closes the what-is-new card."
   }
 }

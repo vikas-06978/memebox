@@ -2148,5 +2148,20 @@
   },
   "plans_all_passes": {
     "message": "All passes"
+  },
+  "wn_title": {
+    "message": "Nouveautés"
+  },
+  "wn_1": {
+    "message": "Des mèmes en 26 langues, dits avec la voix de chaque langue."
+  },
+  "wn_2": {
+    "message": "Packs gratuits : plus de sons et de mèmes à ajouter."
+  },
+  "wn_3": {
+    "message": "Des lumières, et un chat ou un chien, sur votre caméra."
+  },
+  "wn_ok": {
+    "message": "J'ai compris"
   }
 }

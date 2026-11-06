@@ -2148,5 +2148,20 @@
   },
   "plans_all_passes": {
     "message": "All passes"
+  },
+  "wn_title": {
+    "message": "Apa yang baru"
+  },
+  "wn_1": {
+    "message": "Meme dalam 26 bahasa, diucapkan dengan suara bahasa itu."
+  },
+  "wn_2": {
+    "message": "Paket gratis: lebih banyak suara dan meme untuk ditambahkan."
+  },
+  "wn_3": {
+    "message": "Lampu, dan kucing atau anjing, di kamera kamu."
+  },
+  "wn_ok": {
+    "message": "Mengerti"
   }
 }

@@ -12,6 +12,14 @@ const { TONES, LIMITS } = globalThis.MEME;
 const PACKS_SEEDED = 2;
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') chrome.tabs.create({ url: 'onboarding.html' }).catch(() => {});
+  // After an update, mark the toolbar icon and let the popup show what changed once.
+  // A dot, not a word, so it reads the same in every language. Nothing opens by itself:
+  // people already in a call are not interrupted.
+  if (reason === 'update') {
+    chrome.storage.local.set({ whatsNew: chrome.runtime.getManifest().version }).catch(() => {});
+    chrome.action.setBadgeText({ text: '\u2022' }).catch(() => {});
+    chrome.action.setBadgeBackgroundColor({ color: '#e8484d' }).catch(() => {});
+  }
   const { lines, settings, seeded } = await chrome.storage.local.get(['lines', 'settings', 'seeded']);
   const patch = {};
   if (!Array.isArray(lines)) {

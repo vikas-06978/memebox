@@ -2148,5 +2148,20 @@
   },
   "plans_all_passes": {
     "message": "All passes"
+  },
+  "wn_title": {
+    "message": "Novidades"
+  },
+  "wn_1": {
+    "message": "Memes em 26 idiomas, falados com a voz de cada idioma."
+  },
+  "wn_2": {
+    "message": "Pacotes grátis: mais sons e memes para adicionar."
+  },
+  "wn_3": {
+    "message": "Luzes, e um gato ou cachorro, na sua câmera."
+  },
+  "wn_ok": {
+    "message": "Entendi"
   }
 }
