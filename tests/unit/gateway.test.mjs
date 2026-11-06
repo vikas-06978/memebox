@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { D1 } from '../../tools/d1-sqlite.mjs';
 import { createLicense, getLicense } from '../../site/src/shop.js';
-import { gatewayEnabled, createGatewayOrder, recoveredOrder, fulfillCaptured, recordRefund, confirmGatewayPayment } from '../../site/src/gateway.js';
+import { gatewayEnabled, gatewayMode, gatewayCurrencies, createGatewayOrder, recoveredOrder, fulfillCaptured, recordRefund, confirmGatewayPayment } from '../../site/src/gateway.js';
 import { onRequest as webhook } from '../../site/functions/api/razorpay-webhook.js';
 import { hmacHex } from '../../site/src/security.js';
 import { onRequest as checkout } from '../../site/functions/api/checkout.js';
@@ -19,10 +19,41 @@ async function order(env, product = 'pass_pro_60', forKey = '') {
 }
 const payment = o => ({ id: 'pay_' + crypto.randomUUID().replaceAll('-', ''), order_id: o.gatewayOrderId, amount: o.amount, currency: o.currency, status: 'captured', captured: true });
 
-test('gateway defaults closed and live keys cannot activate this development integration', () => {
+test('the gateway is closed until a mode is set, and the key must match that mode', () => {
+  const secrets = { RAZORPAY_KEY_SECRET: 'fixture-only', RAZORPAY_WEBHOOK_SECRET: 'webhook-fixture' };
+  // Nothing configured, or a mode we don't know: closed.
   assert.equal(gatewayEnabled({}), false);
+  assert.equal(gatewayMode({}), '');
+  assert.equal(gatewayEnabled({ ...secrets, RAZORPAY_MODE: 'sandbox', RAZORPAY_KEY_ID: 'rzp_test_fixture' }), false);
+
+  // Both modes work when the mode and the key prefix agree.
   assert.equal(gatewayEnabled(environment()), true);
-  assert.equal(gatewayEnabled({ ...environment(), RAZORPAY_MODE: 'live', RAZORPAY_KEY_ID: 'rzp_live_fixture' }), false);
+  assert.equal(gatewayMode(environment()), 'test');
+  const live = { ...secrets, RAZORPAY_MODE: 'live', RAZORPAY_KEY_ID: 'rzp_live_fixture' };
+  assert.equal(gatewayEnabled(live), true);
+  assert.equal(gatewayMode(live), 'live');
+
+  // Half-finished configuration must never charge anyone: a live key under test settings, or
+  // a test key presented as live, keeps the gateway shut.
+  assert.equal(gatewayEnabled({ ...secrets, RAZORPAY_MODE: 'live', RAZORPAY_KEY_ID: 'rzp_test_fixture' }), false);
+  assert.equal(gatewayEnabled({ ...secrets, RAZORPAY_MODE: 'test', RAZORPAY_KEY_ID: 'rzp_live_fixture' }), false);
+
+  // A missing secret is also a closed gateway, in either mode.
+  assert.equal(gatewayEnabled({ RAZORPAY_KEY_SECRET: 'x', RAZORPAY_MODE: 'live', RAZORPAY_KEY_ID: 'rzp_live_fixture' }), false);
+  assert.equal(gatewayEnabled({ RAZORPAY_WEBHOOK_SECRET: 'x', RAZORPAY_MODE: 'live', RAZORPAY_KEY_ID: 'rzp_live_fixture' }), false);
+});
+
+test('dollars need international payments switched on for that same mode', () => {
+  const secrets = { RAZORPAY_KEY_SECRET: 'fixture-only', RAZORPAY_WEBHOOK_SECRET: 'webhook-fixture' };
+  const live = { ...secrets, RAZORPAY_MODE: 'live', RAZORPAY_KEY_ID: 'rzp_live_fixture' };
+  assert.deepEqual(gatewayCurrencies(environment()), ['INR']);
+  assert.deepEqual(gatewayCurrencies({ ...environment(), RAZORPAY_TEST_INTERNATIONAL: 'on' }), ['INR', 'USD']);
+  assert.deepEqual(gatewayCurrencies(live), ['INR']);
+  assert.deepEqual(gatewayCurrencies({ ...live, RAZORPAY_INTERNATIONAL: 'on' }), ['INR', 'USD']);
+  // Passing the sandbox says nothing about the live account, so the test flag must not open USD live.
+  assert.deepEqual(gatewayCurrencies({ ...live, RAZORPAY_TEST_INTERNATIONAL: 'on' }), ['INR']);
+  // ...and the live flag must not open USD in the sandbox either.
+  assert.deepEqual(gatewayCurrencies({ ...environment(), RAZORPAY_INTERNATIONAL: 'on' }), ['INR']);
 });
 test('server fixes prices and recovery requires the secret, which is stored only hashed', async () => {
   const env = environment(), o = await order(env);

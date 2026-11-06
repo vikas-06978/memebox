@@ -19,11 +19,11 @@
 
     <p id="closed" class="error" hidden data-t="buy_closed">Payments aren't open yet. Please check back soon.</p>
     <section id="gateway-notice" class="card" hidden>
-      <h2>Test checkout</h2>
-      <p>No real money is collected. Your key is issued only after the server verifies payment.</p>
+      <h2 id="gateway-title">Checkout</h2>
+      <p id="gateway-blurb">Your key is issued only after the server verifies the payment.</p>
       <label class="field">Currency <select id="checkout-currency"><option value="INR">INR ₹</option></select></label>
       <p id="gateway-message" role="status" aria-live="polite"></p>
-      <label id="gateway-history-label" class="field" hidden>Previous test orders on this browser <select id="gateway-history"></select></label>
+      <label id="gateway-history-label" class="field" hidden><span id="gateway-history-text">Previous orders on this browser</span> <select id="gateway-history"></select></label>
       <button id="gateway-check" type="button" hidden>Check my payment</button>
       <button id="gateway-new" type="button" hidden>Choose another product</button>
     </section>

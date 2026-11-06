@@ -4,7 +4,7 @@ import { gatewayEnabled, GatewayError, createGatewayOrder, recoveredOrder, gatew
 
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return methodNotAllowed('POST');
-  if (!env.DB || !gatewayEnabled(env)) return json({ ok: false, error: 'Test checkout is not configured.' }, 503);
+  if (!env.DB || !gatewayEnabled(env)) return json({ ok: false, error: 'Checkout is not configured.' }, 503);
   if (request.headers.get('Origin') && request.headers.get('Origin') !== new URL(request.url).origin) return json({ ok: false, error: 'Invalid origin.' }, 403);
   try {
     const body = await readJsonLimited(request);

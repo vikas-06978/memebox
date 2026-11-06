@@ -1,13 +1,33 @@
-// Test-mode integration only. Secrets never enter public configuration or browser code.
+// Razorpay integration. Secrets never enter public configuration or browser code.
+//
+// RAZORPAY_MODE picks the mode and nothing else does: 'test' for the sandbox, 'live' for real
+// money. The key id must carry the matching prefix, so a live key can never be charged while the
+// rest of the configuration still says test, and a test key can never be presented as live.
+// Set up both modes with their own webhook secret, and never point a test deployment at the
+// database that holds real licenses (see docs/payment-testing.md and docs/RAZORPAY-LIVE.md).
 import { PRODUCTS, newOrderId, newLicenseKey, cleanKey, getLicense } from './shop.js';
 import { sha256Hex, hmacHex, safeEqual } from './security.js';
 
-export function gatewayEnabled(env) {
-  return env.RAZORPAY_MODE === 'test' && /^rzp_test_[A-Za-z0-9]+$/.test(env.RAZORPAY_KEY_ID || '') &&
-    !!env.RAZORPAY_KEY_SECRET && !!env.RAZORPAY_WEBHOOK_SECRET;
+// 'test', 'live', or '' when the mode is missing or not one we know.
+export function gatewayMode(env) {
+  const mode = String((env && env.RAZORPAY_MODE) || '');
+  return mode === 'test' || mode === 'live' ? mode : '';
 }
+
+export function gatewayEnabled(env) {
+  const mode = gatewayMode(env);
+  if (!mode) return false;
+  const keyId = (env && env.RAZORPAY_KEY_ID) || '';
+  // The prefix has to agree with the mode: half-finished configuration must not charge anyone.
+  if (!new RegExp(`^rzp_${mode}_[A-Za-z0-9]+$`).test(keyId)) return false;
+  return !!env.RAZORPAY_KEY_SECRET && !!env.RAZORPAY_WEBHOOK_SECRET;
+}
+
+// Dollars need international payments switched on at Razorpay, and that is granted per mode:
+// passing the test sandbox says nothing about the live account, so each has its own flag.
 export function gatewayCurrencies(env) {
-  return env.RAZORPAY_TEST_INTERNATIONAL === 'on' ? ['INR', 'USD'] : ['INR'];
+  const on = gatewayMode(env) === 'live' ? env.RAZORPAY_INTERNATIONAL === 'on' : env.RAZORPAY_TEST_INTERNATIONAL === 'on';
+  return on ? ['INR', 'USD'] : ['INR'];
 }
 const token = () => [...crypto.getRandomValues(new Uint8Array(32))].map(b => b.toString(16).padStart(2, '0')).join('');
 const entityId = (s, prefix) => typeof s === 'string' && new RegExp(`^${prefix}_[A-Za-z0-9]{1,64}$`).test(s);
@@ -16,7 +36,7 @@ export class GatewayError extends Error {
 }
 
 export async function razorpay(env, path, body) {
-  if (!gatewayEnabled(env)) throw new GatewayError('Test checkout is not configured.', 503);
+  if (!gatewayEnabled(env)) throw new GatewayError('Checkout is not configured.', 503);
   const response = await fetch(`https://api.razorpay.com/v1/${path}`, {
     method: body === undefined ? 'GET' : 'POST',
     headers: { Authorization: 'Basic ' + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`), 'Content-Type': 'application/json' },
@@ -28,7 +48,7 @@ export async function razorpay(env, path, body) {
 }
 
 export async function createGatewayOrder(env, body) {
-  if (!gatewayEnabled(env)) throw new GatewayError('Test checkout is not configured.', 503);
+  if (!gatewayEnabled(env)) throw new GatewayError('Checkout is not configured.', 503);
   const p = Object.hasOwn(PRODUCTS, body.product) ? PRODUCTS[body.product] : null;
   if (!p || p.closed) throw new GatewayError('Unknown product.');
   const currency = body.currency || 'INR';
@@ -43,7 +63,8 @@ export async function createGatewayOrder(env, body) {
   const remote = await razorpay(env, 'orders', { amount, currency, receipt: id, notes: { site: 'memebox', order: id } });
   if (!entityId(remote.id, 'order') || remote.amount !== amount || remote.currency !== currency) throw new GatewayError('Unexpected payment provider response.', 502);
   await env.DB.prepare('UPDATE gateway_orders SET gateway_id = ? WHERE id = ?').bind(remote.id, id).run();
-  return { orderId: id, recoveryToken, gatewayOrderId: remote.id, keyId: env.RAZORPAY_KEY_ID, amount, currency, product: body.product, testMode: true };
+  const mode = gatewayMode(env);
+  return { orderId: id, recoveryToken, gatewayOrderId: remote.id, keyId: env.RAZORPAY_KEY_ID, amount, currency, product: body.product, mode, testMode: mode === 'test' };
 }
 
 export async function recoveredOrder(env, id, recoveryToken) {

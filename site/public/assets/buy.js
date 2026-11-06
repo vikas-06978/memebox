@@ -9,7 +9,9 @@
   let pollTimer = 0;
   let gateway = null, gatewayOrder = null, buying = false, sdkReady = null;
   let historyOrders = [], gatewayTimer = 0, statusAttempts = 0;
-  const storageKey = 'memebox-test-checkout';
+  // Set once the site settings say which mode we are in: test receipts must never be
+  // offered to someone paying real money, and the other way round.
+  let storageKey = 'memebox-checkout-test';
   async function checkout(body) {
     const r = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const data = await r.json();
@@ -216,9 +218,18 @@
     if (!c.payments) { $('closed').hidden = false; $('choose').hidden = true; return; }
     gateway = c.checkout;
     if (gateway) {
+      const testing = gateway.mode !== 'live';
+      storageKey = 'memebox-checkout-' + (testing ? 'test' : 'live');
       $('gateway-notice').hidden = false;
+      $('gateway-title').textContent = testing ? 'Test checkout' : 'Checkout';
+      $('gateway-blurb').textContent = testing
+        ? 'No real money is collected. Your key is issued only after the server verifies payment.'
+        : 'Pay by card, UPI, net banking or wallet. Your key is issued only after the server verifies the payment.';
+      $('gateway-history-text').textContent = testing ? 'Previous test orders on this browser' : 'Previous orders on this browser';
       document.querySelector('[data-t="buy_intro"]').hidden = true;
-      document.querySelector('[data-t="buy_help"]').textContent = 'Test payments are verified automatically. Problems? Write with your order code to';
+      document.querySelector('[data-t="buy_help"]').textContent = testing
+        ? 'Test payments are verified automatically. Problems? Write with your order code to'
+        : 'Payments are verified automatically. Problems or a refund? Write with your order code to';
       if (gateway.currencies.includes('USD')) {
         const option = document.createElement('option'); option.value = 'USD'; option.textContent = 'USD $'; $('checkout-currency').append(option);
       }
