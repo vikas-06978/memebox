@@ -2,6 +2,7 @@
 import { escapeHtml as h } from './http.js';
 import { FEATURES, REASONS, PLATFORMS, DEVICES } from './validate.js';
 import { PRODUCTS, parseAddons } from './shop.js';
+import { funnelStats, share } from './funnel.js';
 
 export const RATING_FACES = { 1: '😞', 2: '😐', 3: '🙂', 4: '😍' };
 const REASON_TEXT = {
@@ -88,8 +89,11 @@ export async function loadActivity(db) {
   for (const r of byProduct) { const p = PRODUCTS[r.product]; if (p) { soldPro += p.proSeconds * Number(r.n); soldMax += p.maxSeconds * Number(r.n); } }
   const group = async (col) => safe(async () => (await db.prepare(`SELECT ${col} AS v, COUNT(*) AS n FROM feedback WHERE ${col} <> '' GROUP BY ${col} ORDER BY n DESC LIMIT 6`).all()).results.map((r) => [r.v, Number(r.n)]), []);
   const keys = await safe(async () => await db.prepare("SELECT COUNT(*) AS n, SUM(CASE WHEN last_seen >= ? THEN 1 ELSE 0 END) AS a FROM licenses WHERE status = 'active'").bind(days[DAYS - 7]).first(), { n: 0, a: 0 });
+  // The Razorpay funnel, including the step the old one could not see: how many people
+  // opened the buy page at all.
+  const buying = await safe(() => funnelStats(db, { days: DAYS }), null);
   return {
-    days, orders, revenue, feedback, checkins, funnel, byProduct,
+    days, orders, revenue, feedback, checkins, funnel, byProduct, buying,
     time: { soldPro, soldMax, leftPro: Number(left?.p || 0), leftMax: Number(left?.m || 0) },
     byVersion: await group('version'), byLang: await group('lang'),
     keys: { total: Number(keys?.n || 0), active7: Number(keys?.a || 0) },
@@ -107,6 +111,24 @@ function chart(series, label) {
 }
 const sum = (s) => s.reduce((a, x) => a + x.n, 0);
 const hours = (sec) => (sec / 3600).toFixed(1);
+
+// Where people fall out on the way to paying. Read the two gaps, not the three numbers:
+// a gap at the top means they never reach the page, a gap at the bottom means paying breaks.
+export function buyingCard(f) {
+  if (!f) return '';
+  const money = Object.entries(f.earned).map(([c, v]) => `${c} ${(v / 100).toFixed(2)}`).join(' · ');
+  const advice = !f.opened ? 'Nobody has opened the buy page yet, so there is nothing to read here.'
+    : !f.started ? 'People reach the page and leave without starting a checkout: the page or the price is not convincing them.'
+    : f.paid < f.started ? `${f.abandoned} left in the middle of paying. If that keeps happening, something in the payment itself is going wrong.`
+    : 'Everyone who started a checkout finished it.';
+  return `<section class="card"><h2>Buying funnel (card and UPI)</h2>
+    ${bars([['Opened the buy page', f.opened], ['Started a checkout', f.started], ['Paid', f.paid]])}
+    <p class="muted">Opened → started: ${h(share(f.started, f.opened))}. Started → paid: ${h(share(f.paid, f.started))}.</p>
+    ${money ? `<p>Completed: <b>${h(money)}</b> <span class="muted">(captured, before fees)</span></p>` : ''}
+    <p class="muted">${h(advice)}</p>
+    ${f.byProduct.length ? `<h3>Per product</h3>${bars(f.byProduct.map((r) => [`${(PRODUCTS[r.product] || { name: r.product }).name} — ${r.paid}/${r.started} paid`, r.started]))}` : ''}
+  </section>`;
+}
 
 export function activitySection(a) {
   const pct = (x, y) => (y ? Math.round((x / y) * 100) + '%' : 'n/a');
@@ -128,7 +150,8 @@ export function activitySection(a) {
   <section class="card"><h2>Checkouts started per day</h2>${chart(a.orders, 'Checkouts started per day')}</section>
   <section class="card"><h2>Keys checked per day</h2>${chart(a.checkins, 'License keys that checked in per day')}<p class="muted">Each key counts on the day of its last check.</p></section>
   <section class="card"><h2>Feedback per day</h2>${chart(a.feedback, 'Feedback answers per day')}</section>
-  <section class="card"><h2>Checkout funnel</h2>${bars([['Started', a.funnel.started], ['Paid (UTR sent)', a.funnel.paid], ['Approved', a.funnel.approved]])}</section>
+  <section class="card"><h2>Checkout funnel (UPI, by hand)</h2>${bars([['Started', a.funnel.started], ['Paid (UTR sent)', a.funnel.paid], ['Approved', a.funnel.approved]])}</section>
+  ${buyingCard(a.buying)}
   <section class="card"><h2>What sells</h2>${a.byProduct.length ? bars(a.byProduct.map((r) => [(PRODUCTS[r.product] || { name: r.product }).name + ` (₹${Number(r.inr)})`, Number(r.n)])) : '<p class="muted">No approved orders yet.</p>'}</section>
   <section class="card"><h2>Pass time</h2>
     <p>Pro: <b>${hours(a.time.soldPro)} h</b> sold, <b>${hours(usedPro)} h</b> used, ${hours(a.time.leftPro)} h left</p>

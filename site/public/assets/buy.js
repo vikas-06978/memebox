@@ -214,7 +214,8 @@
   // Products and whether payments are open come from the site settings. Wait for the
   // translations too, or the cards show raw keys like "buy_for" when the config wins the race.
   const translations = window.MemeSite ? window.MemeSite.ready.catch(() => {}) : Promise.resolve();
-  Promise.all([fetch('/api/config').then((r) => r.json()), translations]).then(([c]) => {
+  // ?from=buy tells the server one person opened this page: that is the top of the funnel.
+  Promise.all([fetch('/api/config?from=buy').then((r) => r.json()), translations]).then(([c]) => {
     if (!c.payments) { $('closed').hidden = false; $('choose').hidden = true; return; }
     gateway = c.checkout;
     if (gateway) {

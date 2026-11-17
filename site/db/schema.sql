@@ -138,3 +138,12 @@ CREATE TABLE IF NOT EXISTS pass_sessions (
   claim TEXT NOT NULL DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS pass_sessions_expiry ON pass_sessions(expires_at);
+
+-- How many people opened the buy page, per day. Counts only: no IP, no cookie, no visitor id.
+-- Together with gateway_orders this gives the funnel: opened -> started checkout -> paid.
+CREATE TABLE IF NOT EXISTS page_hits (
+  day  TEXT    NOT NULL,              -- YYYY-MM-DD, UTC
+  page TEXT    NOT NULL,              -- 'buy' for now
+  n    INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, page)
+);
